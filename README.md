@@ -1,4 +1,4 @@
-https://travis-ci.org/alphagov/notify-functional-tests
+https://travis-ci.org/alphagov/notifications-functional-tests
 
-# notify-functional-tests
-Functional tests for Notify
+# notifications-functional-tests
+Functional tests for Notification applications
