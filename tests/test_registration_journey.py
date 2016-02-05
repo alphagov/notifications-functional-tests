@@ -19,7 +19,7 @@ def test_registration_journey():
     assert 'Create an account' in get_reg_resp.text
 
     user_name = str(uuid.uuid4())
-    email = Config.FUNCTION_TEST_EMAIL.format(user_name)
+    email = Config.FUNCTIONAL_TEST_EMAIL.format(user_name)
 
     register_body = {
         'name': user_name,

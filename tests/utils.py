@@ -11,7 +11,8 @@ def retrieve_sms(user_name):
 
     x = 1
     messages = client.messages.list(to="+44 1509 323441")
-    while x < 12 and len(messages) == 0:
+    msgs = [m for m in messages if m.direction == 'inbound']
+    while x < 12 and len(msgs) == 0:
         print("In loop {} times".format(x))
         for m in messages:
             print("verify code: {}".format(m.body))
@@ -19,8 +20,8 @@ def retrieve_sms(user_name):
         x += 1
         sleep(5)
         messages = client.messages.list(to=Config.TWILIO_TEST_NUMBER)
+        msgs = [m for m in messages if m.direction== 'inbound']
 
-    msgs = [m for m in messages if m.direction== 'inbound']
     assert len(msgs) > 0, 'No sms retrieved for functional test for user: {}'.format(user_name)
     return sorted(msgs, key=attrgetter('date_created'), reverse=True)
 
