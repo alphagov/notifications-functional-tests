@@ -1,5 +1,8 @@
 from operator import attrgetter
 from time import sleep
+
+from bs4 import BeautifulSoup
+
 from config import Config
 from twilio.rest import TwilioRestClient
 
@@ -36,3 +39,9 @@ def delete_sms_messge(sid):
 
     client = TwilioRestClient(Config.TWILIO_ACCOUNT_SID, Config.TWILIO_AUTH_TOKEN)
     client.messages.delete(sid)
+
+
+def find_csrf_token(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    token = soup.find('input', {'name': 'csrf_token'}).get('value')
+    return token
