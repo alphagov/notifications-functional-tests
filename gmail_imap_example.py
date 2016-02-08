@@ -15,9 +15,7 @@ import email
 import email.header
 import datetime
 
-
-# EMAIL_ACCOUNT = "rebecca.law+a2f12c72-7015-475c-af1e-242697a37b19@digital.cabinet-office.gov.uk"
-EMAIL_ACCOUNT = "becca.m.law@gmail.com"
+EMAIL_ACCOUNT = "something@gmail.com"
 
 # Use 'INBOX' to read inbox.  Note that whatever folder is specified,
 # after successfully running this script all emails in that folder
@@ -52,8 +50,7 @@ def process_mailbox(M):
         if date_tuple:
             local_date = datetime.datetime.fromtimestamp(
                 email.utils.mktime_tz(date_tuple))
-            print ("Local Date:", \
-                local_date.strftime("%a, %d %b %Y %H:%M:%S"))
+            print("Local Date:", local_date.strftime("%a, %d %b %Y %H:%M:%S"))
 
 
 M = imaplib.IMAP4_SSL('imap.gmail.com')
@@ -61,7 +58,7 @@ M = imaplib.IMAP4_SSL('imap.gmail.com')
 try:
     rv, data = M.login(EMAIL_ACCOUNT, getpass.getpass())
 except imaplib.IMAP4.error:
-    print ("LOGIN FAILED!!! ")
+    print("LOGIN FAILED!!! ")
     sys.exit(1)
 
 print(rv, data)
