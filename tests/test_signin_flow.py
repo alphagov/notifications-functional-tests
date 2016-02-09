@@ -9,6 +9,7 @@ from tests.utils import (retrieve_sms_with_wait,
 
 def test_sign_in_journey():
     base_url = Config.NOTIFY_ADMIN_URL
+    assert base_url == 'https://www.notify.works'
     index_resp = get(base_url)
     assert index_resp.status_code == 200
     assert 'GOV.UK Notify' in index_resp.text
