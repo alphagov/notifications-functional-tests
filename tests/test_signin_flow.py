@@ -22,8 +22,6 @@ def test_sign_in_journey():
         # it is possible to assert that headers are set properly here.
 
         assert 200 == get_sign_resp.status_code
-        assert '<p>If you do not have an account, you can <a href="register">register for one now</a>.</p>' in \
-               get_sign_resp.text
 
         token = find_csrf_token(get_sign_resp.text)
 
