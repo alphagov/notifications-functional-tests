@@ -8,6 +8,7 @@
 # Use default environment vars for localhost if not already set
 
 set -o pipefail
+source environment.sh
 
 function display_result {
   RESULT=$1
