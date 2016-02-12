@@ -45,3 +45,8 @@ def find_csrf_token(html):
     soup = BeautifulSoup(html, 'html.parser')
     token = soup.find('input', {'name': 'csrf_token'}).get('value')
     return token
+
+
+def find_page_title(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    return soup.title.text.strip()
