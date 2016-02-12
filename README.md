@@ -53,15 +53,6 @@ To create/update these variable run the following travis commands, replacing the
     travis encrypt NOTIFY_ADMIN_URL=***
 ```
 
-# Sign in Journey
-- GET to start page of GOV.UK Notify
-- GET sign-in page
-- POST sign-in 
-- GET two-factor
-- Retrieve the sms with verify code via the Twilio client
-- POST two-factor
-- Finally delete the sms messages for the test number
-
 ## About CSRF tokens
 Each functional test journey will need to use the Requests.session to retain the notify_admin_session for the requests. 
 The CSRF token is needed for each post request, this is obtained using BeautifulSoup to get the token from the hidden field in the form on the previous page. 
