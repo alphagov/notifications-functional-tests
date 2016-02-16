@@ -8,3 +8,5 @@ class Config(object):
     TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
     FUNCTIONAL_TEST_EMAIL = os.environ['FUNCTIONAL_TEST_EMAIL']
     FUNCTIONAL_TEST_PASSWORD = os.environ['FUNCTIONAL_TEST_PASSWORD']
+    EMAIL_FOLDER = 'notify'
+
