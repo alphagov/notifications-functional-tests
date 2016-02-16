@@ -10,4 +10,3 @@ class Config(object):
     FUNCTIONAL_TEST_PASSWORD = os.environ['FUNCTIONAL_TEST_PASSWORD']
     EMAIL_FOLDER = 'notify'
     EMAIL_TIMEOUT = 45
-

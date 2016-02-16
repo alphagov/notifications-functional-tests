@@ -76,7 +76,7 @@ def _get_email_code(email, pwd, email_folder):
         rv, data = gimap.search(None, "ALL")
         for num in data[0].split():
             gimap.store(num, '+FLAGS', '\\Deleted')
-        gimap.expunge() 
+        gimap.expunge()
         gimap.close()
         gimap.logout()
 
