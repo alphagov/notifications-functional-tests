@@ -53,8 +53,11 @@ def test_sign_in_journey():
         post_two_factor = client.post(base_url + '/two-factor', data=two_factor_data,
                                       headers=dict(Referer=base_url+'/two-factor'))
         assert post_two_factor.status_code == 200
-        assert 'Functional Test Service – GOV.UK Notify' in post_two_factor.text
+        assert 'Preview' in post_two_factor.text
+        assert 'dashboard' in post_two_factor.url
         delete_sms_messge(m.sid)
+        get_logout = client.get(base_url + '/sign-out')
+        assert get_logout.status_code == 200
 
     finally:
         # Delete all messages even if the test fails.
