@@ -35,50 +35,39 @@ def _get_sms_code(email):
 
 
 def _get_email_code(email, pwd, email_folder):
-    gimap = imaplib.IMAP4_SSL('imap.gmail.com')
-    try:
+    timer = 0
+    gimap = None
+    while timer < Config.EMAIL_TIMEOUT:
         try:
-            rv, data = gimap.login(email, pwd)
-        except imaplib.IMAP4.error:
-            pytest.fail("Login to email account has failed.")
-
-        rv, data = gimap.select(email_folder)
-        if rv == 'OK':
-            email_available = False
-            timer = 0
-            while not email_available:
-                rv, data = gimap.search(None, "ALL")
-                if rv != 'OK':
-                    pytest.fail("Unable to retrieve emails from {}".format(email_folder))
-                ids_count = len(data[0].split())
-                if ids_count > 1:
-                    pytest.fail("There is more than token email")
-                if ids_count == 1:
-                    email_available = True
-                timer += 1
-                time.sleep(1)
-                if timer == Config.EMAIL_TIMEOUT:
-                    pytest.fail(
-                        "Email hasn't been delivered after timeout ({})".format(Config.EMAIL_TIMEOUT))
-            num = data[0].split()[0]
-            rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
-            if rv != 'OK':
-                pytest.fail("Unable to retrieve individual message.")
-            msg = email_lib.message_from_bytes(data[0][1])
-            # Delete the message
-            gimap.store(num, '+FLAGS', '\\Deleted')
-            gimap.expunge()
-            return msg.get_payload().strip()
-        else:
-            pytest.fail("Unable to locate email label {}".format(email_folder))
-    finally:
-        # Delete all the messages
-        rv, data = gimap.search(None, "ALL")
-        for num in data[0].split():
-            gimap.store(num, '+FLAGS', '\\Deleted')
-        gimap.expunge()
-        gimap.close()
-        gimap.logout()
+            gimap = imaplib.IMAP4_SSL('imap.gmail.com')
+            try:
+                rv, data = gimap.login(email, pwd)
+            except imaplib.IMAP4.error:
+                    pytest.fail("Login to email account has failed.")
+            rv, data = gimap.select(email_folder)
+            rv, data = gimap.search(None, "ALL")
+            ids_count = len(data[0].split())
+            if ids_count > 1:
+                pytest.fail("There is more than token email")
+            elif ids_count == 1:
+                num = data[0].split()[0]
+                rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
+                msg = email_lib.message_from_bytes(data[0][1])
+                gimap.store(num, '+FLAGS', '\\Deleted')
+                gimap.expunge()
+                return msg.get_payload().strip()
+            timer += 30
+            time.sleep(30)
+        except:
+            pytest.fail("Unable to retrieve the verify code from the email")
+        finally:
+            if gimap:
+                gimap.close()
+                gimap.logout()
+            gimap = None
+    # Fail if timer is exceeded
+    pytest.fail(
+        "Email hasn't been delivered after timeout ({} seconds)".format(Config.EMAIL_TIMEOUT))
 
 
 def test_register_journey():
@@ -110,8 +99,11 @@ def test_register_journey():
     assert post_register_resp.status_code == 200
 
     next_token = find_csrf_token(post_register_resp.text)
-    sms_code = _get_sms_code(email)
-    email_code = _get_email_code(email, Config.FUNCTIONAL_TEST_PASSWORD, Config.EMAIL_FOLDER)
+    sms_code = _get_sms_code(Config.FUNCTIONAL_TEST_EMAIL)
+    email_code = _get_email_code(
+        Config.FUNCTIONAL_TEST_EMAIL,
+        Config.FUNCTIONAL_TEST_PASSWORD,
+        Config.EMAIL_FOLDER)
     two_factor_data = {'sms_code': sms_code,
                        'email_code': email_code,
                        'csrf_token': next_token}
@@ -119,3 +111,5 @@ def test_register_journey():
                               headers=dict(Referer=base_url+'/verify'))
     assert post_verify.status_code == 200
     assert 'Which service do you want to set up notifications for?' in post_verify.text
+    get_logout = client.get(base_url + '/sign-out')
+    assert get_logout.status_code == 200
