@@ -56,10 +56,8 @@ def _get_email_code(email, pwd, email_folder):
                 gimap.store(num, '+FLAGS', '\\Deleted')
                 gimap.expunge()
                 return msg.get_payload().strip()
-            timer += 30
-            time.sleep(30)
-        except:
-            pytest.fail("Unable to retrieve the verify code from the email")
+            timer += 15
+            time.sleep(15)
         finally:
             if gimap:
                 gimap.close()
