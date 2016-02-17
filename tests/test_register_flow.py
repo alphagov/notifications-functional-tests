@@ -59,7 +59,7 @@ def _get_email_code(email, pwd, email_folder):
                 time.sleep(1)
                 if timer == Config.EMAIL_TIMEOUT:
                     pytest.fail(
-                        "Email hasn't been delivered after timeout ({})".format(Confi.EMAIL_TIMEOUT))
+                        "Email hasn't been delivered after timeout ({})".format(Config.EMAIL_TIMEOUT))
             num = data[0].split()[0]
             rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
             if rv != 'OK':
