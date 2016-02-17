@@ -4,7 +4,8 @@ from config import Config
 from tests.utils import (retrieve_sms_with_wait,
                          delete_sms_messge,
                          find_csrf_token,
-                         get_sms
+                         get_sms,
+                         find_page_title
                          )
 
 
@@ -15,13 +16,13 @@ def test_sign_in_journey():
         base_url = Config.NOTIFY_ADMIN_URL
         index_resp = client.get(base_url)
         assert index_resp.status_code == 200
-        assert 'GOV.UK Notify' in index_resp.text
+        assert 'GOV.UK Notify' == find_page_title(index_resp.text)
 
         get_sign_resp = client.get(base_url + '/sign-in')
         # print('headers: {}'.format(get_reg_resp.headers))
         # it is possible to assert that headers are set properly here.
-
         assert 200 == get_sign_resp.status_code
+        assert 'Sign in - GOV.UK Notify'
 
         token = find_csrf_token(get_sign_resp.text)
 
@@ -37,7 +38,9 @@ def test_sign_in_journey():
 
         get_two_factor = client.get(base_url + '/two-factor')
         assert get_two_factor.status_code == 200
+        assert 'Text verification – GOV.UK Notify' == find_page_title(get_two_factor.text)
         next_token = find_csrf_token(get_two_factor.text)
+
         # Test will fail if there is not 1 message (we expect only 1 message)
         messages = retrieve_sms_with_wait(user_name)
         assert len(messages) == 1, 'Expecting to retrieve 1 sms message in functional test for user: {}'.format(
