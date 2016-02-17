@@ -52,7 +52,7 @@ def _get_email_code(email, pwd, email_folder):
                     pytest.fail("Unable to retrieve emails from {}".format(email_folder))
                 ids_count = len(data[0].split())
                 if ids_count > 1:
-                    py.test.fail("There is more than token email")
+                    pytest.fail("There is more than token email")
                 if ids_count == 1:
                     email_available = True
                 timer += 1
