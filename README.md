@@ -20,6 +20,8 @@ Contents of the environment.sh file
     export FUNCTIONAL_TEST_EMAIL=user_name@***.gov.uk
     export FUNCTIONAL_TEST_PASSWORD=****
     export NOTIFY_ADMIN_URL=http://localhost:6012
+    export TEMPLATE_ID=***
+    export SERVICE_ID=****
 ```
 
 `TWILIO_ACCOUNT_SID` = account sid for used to read the sms
@@ -51,6 +53,8 @@ To create/update these variable run the following travis commands, replacing the
     travis encrypt FUNCTIONAL_TEST_EMAIL=*** --add
     travis encrypt FUNCTIONAL_TEST_PASSWORD=*** --add
     travis encrypt NOTIFY_ADMIN_URL=*** --add
+    travis encrypt TEMPLATE_ID=*** --add
+    travis encrypt SERVICE_ID=*** --add
 ```
 
 ## About CSRF tokens

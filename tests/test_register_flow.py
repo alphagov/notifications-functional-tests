@@ -12,7 +12,8 @@ from config import Config
 from tests.utils import (retrieve_sms_with_wait,
                          delete_sms_messge,
                          find_csrf_token,
-                         get_sms)
+                         get_sms,
+                         sign_out)
 
 
 def _generate_unique_email(email, uuid_):
@@ -109,5 +110,4 @@ def test_register_journey():
                               headers=dict(Referer=base_url+'/verify'))
     assert post_verify.status_code == 200
     assert 'Which service do you want to set up notifications for?' in post_verify.text
-    get_logout = client.get(base_url + '/sign-out')
-    assert get_logout.status_code == 200
+    sign_out(client, base_url)
