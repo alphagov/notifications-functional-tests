@@ -43,7 +43,7 @@ def _get_email_code(email, pwd, email_folder):
             try:
                 rv, data = gimap.login(email, pwd)
             except imaplib.IMAP4.error:
-                    pytest.fail("Login to email account has failed.")
+                pytest.fail("Login to email account has failed.")
             rv, data = gimap.select(email_folder)
             rv, data = gimap.search(None, "ALL")
             ids_count = len(data[0].split())
@@ -75,8 +75,8 @@ def test_register_journey():
     client = session()
     base_url = Config.NOTIFY_ADMIN_URL
     index_resp = client.get(base_url)
+    # Check the site is up and running
     assert index_resp.status_code == 200
-    assert 'GOV.UK Notify' in index_resp.text
 
     get_register_resp = client.get(base_url + '/register')
 
