@@ -48,7 +48,7 @@ def _get_email_code(email, pwd, email_folder):
             rv, data = gimap.search(None, "ALL")
             ids_count = len(data[0].split())
             if ids_count > 1:
-                pytest.fail("There is more than token email")
+                pytest.fail("There is more than one token email")
             elif ids_count == 1:
                 num = data[0].split()[0]
                 rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
