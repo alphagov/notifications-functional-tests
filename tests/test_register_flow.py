@@ -7,6 +7,7 @@ import imaplib
 import email as email_lib
 import email.header
 import pytest
+from retry import retry
 from requests import session
 from config import Config
 from tests.utils import (retrieve_sms_with_wait,
@@ -34,38 +35,37 @@ def _get_sms_code(email):
             delete_sms_messge(m.sid)
 
 
+class RetryException(Exception):
+    pass
+
+
+@retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
 def _get_email_code(email, pwd, email_folder):
-    timer = 0
     gimap = None
-    while timer < Config.EMAIL_TIMEOUT:
+    try:
+        gimap = imaplib.IMAP4_SSL('imap.gmail.com')
         try:
-            gimap = imaplib.IMAP4_SSL('imap.gmail.com')
-            try:
-                rv, data = gimap.login(email, pwd)
-            except imaplib.IMAP4.error:
-                pytest.fail("Login to email account has failed.")
-            rv, data = gimap.select(email_folder)
-            rv, data = gimap.search(None, "ALL")
-            ids_count = len(data[0].split())
-            if ids_count > 1:
-                pytest.fail("There is more than one token email")
-            elif ids_count == 1:
-                num = data[0].split()[0]
-                rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
-                msg = email_lib.message_from_bytes(data[0][1])
-                gimap.store(num, '+FLAGS', '\\Deleted')
-                gimap.expunge()
-                return msg.get_payload().strip()
-            timer += 15
-            time.sleep(15)
-        finally:
-            if gimap:
-                gimap.close()
-                gimap.logout()
-            gimap = None
-    # Fail if timer is exceeded
-    pytest.fail(
-        "Email hasn't been delivered after timeout ({} seconds)".format(Config.EMAIL_TIMEOUT))
+            rv, data = gimap.login(email, pwd)
+        except imaplib.IMAP4.error:
+            pytest.fail("Login to email account has failed.")
+        rv, data = gimap.select(email_folder)
+        rv, data = gimap.search(None, "ALL")
+        ids_count = len(data[0].split())
+        if ids_count > 1:
+            pytest.fail("There is more than one token email")
+        elif ids_count == 1:
+            num = data[0].split()[0]
+            rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
+            msg = email_lib.message_from_bytes(data[0][1])
+            gimap.store(num, '+FLAGS', '\\Deleted')
+            gimap.expunge()
+            return msg.get_payload().strip()
+        else:
+            raise RetryException("Failed to retrieve the email from the email server.")
+    finally:
+        if gimap:
+            gimap.close()
+            gimap.logout()
 
 
 def test_register_journey():
