@@ -1,0 +1,33 @@
+from flask import Flask, request, jsonify
+from flask.ext.cache import Cache
+
+app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+
+@app.route('/', methods=['GET'])
+def get_nessage():
+    result = cache.get('sms')
+    if result:
+        cache.clear()
+        return jsonify({
+            'result': 'sucess',
+            'sms_code': result
+        }), 200
+    else:
+        return jsonify({
+            'result': 'error',
+            'message': 'no code found'
+        }), 404
+
+
+@app.route('/', methods=['POST'])
+def receive_message():
+    cache.set('sms', request.args['sms_code'], timeout=300)
+    return jsonify({
+        'result': 'success'
+    }), 200
+
+
+if __name__ == '__main__':
+    app.run()
