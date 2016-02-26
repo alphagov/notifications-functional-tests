@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask.ext.cache import Cache
 
@@ -30,4 +31,5 @@ def receive_message():
 
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get('PORT', 6001))	
+    app.runapp.run(host='0.0.0.0', port=port)
