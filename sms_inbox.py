@@ -24,6 +24,8 @@ def get_nessage():
 
 @app.route('/', methods=['POST'])
 def receive_message():
+    for arg in request.args:
+        print(arg)
     cache.set('sms', request.args['sms_code'], timeout=300)
     return jsonify({
         'result': 'success'
@@ -32,4 +34,4 @@ def receive_message():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 6001))	
-    app.runapp.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port)
