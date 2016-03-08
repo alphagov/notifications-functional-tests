@@ -45,12 +45,12 @@ as scripted in the [trigger-dependent-build.sh](https://github.com/alphagov/noti
 When Travis kicks off the functional tests it will use the encrypted environment variables in the [.travis.yml](https://github.com/alphagov/notifications-functional-tests/blob/master/.travis.yml).
 To create/update these variable run the following travis commands, replacing the *** with the values.
 ```shell
-    travis encrypt TWILIO_ACCOUNT_SID=***
-    travis encrypt TWILIO_AUTH_TOKEN=***
-    travis encrypt TWILIO_TEST_NUMBER=***
-    travis encrypt FUNCTIONAL_TEST_EMAIL=***
-    travis encrypt FUNCTIONAL_TEST_PASSWORD=***
-    travis encrypt NOTIFY_ADMIN_URL=***
+    travis encrypt TWILIO_ACCOUNT_SID=*** --add
+    travis encrypt TWILIO_AUTH_TOKEN=*** --add
+    travis encrypt TWILIO_TEST_NUMBER=*** --add
+    travis encrypt FUNCTIONAL_TEST_EMAIL=*** --add
+    travis encrypt FUNCTIONAL_TEST_PASSWORD=*** --add
+    travis encrypt NOTIFY_ADMIN_URL=*** --add
 ```
 
 ## About CSRF tokens
