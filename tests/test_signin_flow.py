@@ -5,6 +5,7 @@ from tests.utils import (retrieve_sms_with_wait,
                          delete_sms_messge,
                          find_csrf_token,
                          get_sms,
+                         sign_out,
                          find_page_title
                          )
 
@@ -54,9 +55,7 @@ def test_sign_in_journey():
         assert 'Preview' in post_two_factor.text
         assert 'dashboard' in post_two_factor.url
         delete_sms_messge(m.sid)
-        get_logout = client.get(base_url + '/sign-out')
-        assert get_logout.status_code == 200
-
+        sign_out(client, base_url)
     finally:
         # Delete all messages even if the test fails.
         messages = get_sms()

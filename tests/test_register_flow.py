@@ -13,7 +13,9 @@ from config import Config
 from tests.utils import (retrieve_sms_with_wait,
                          delete_sms_messge,
                          find_csrf_token,
-                         get_sms)
+                         get_sms,
+                         sign_out,
+                         remove_all_emails)
 
 
 def _generate_unique_email(email, uuid_):
@@ -92,16 +94,25 @@ def test_register_journey():
             'password': Config.FUNCTIONAL_TEST_PASSWORD,
             'csrf_token': token}
     # Redirects followed
-    post_register_resp = client.post(base_url + '/register', data=data,
-                                     headers=dict(Referer=base_url+'/register'))
-    assert post_register_resp.status_code == 200
+    try:
+        post_register_resp = client.post(base_url + '/register', data=data,
+                                         headers=dict(Referer=base_url+'/register'))
+        assert post_register_resp.status_code == 200
 
-    next_token = find_csrf_token(post_register_resp.text)
-    sms_code = _get_sms_code(Config.FUNCTIONAL_TEST_EMAIL)
-    email_code = _get_email_code(
-        Config.FUNCTIONAL_TEST_EMAIL,
-        Config.FUNCTIONAL_TEST_PASSWORD,
-        Config.EMAIL_FOLDER)
+        next_token = find_csrf_token(post_register_resp.text)
+        sms_code = _get_sms_code(Config.FUNCTIONAL_TEST_EMAIL)
+
+        email_code = _get_email_code(
+            Config.FUNCTIONAL_TEST_EMAIL,
+            Config.FUNCTIONAL_TEST_PASSWORD,
+            Config.EMAIL_FOLDER)
+    finally:
+        # Just in case email are left over
+        remove_all_emails(
+            Config.FUNCTIONAL_TEST_EMAIL,
+            Config.FUNCTIONAL_TEST_PASSWORD,
+            Config.EMAIL_FOLDER)
+
     two_factor_data = {'sms_code': sms_code,
                        'email_code': email_code,
                        'csrf_token': next_token}
@@ -109,5 +120,4 @@ def test_register_journey():
                               headers=dict(Referer=base_url+'/verify'))
     assert post_verify.status_code == 200
     assert 'Which service do you want to set up notifications for?' in post_verify.text
-    get_logout = client.get(base_url + '/sign-out')
-    assert get_logout.status_code == 200
+    sign_out(client, base_url)
