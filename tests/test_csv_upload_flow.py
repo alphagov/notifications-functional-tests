@@ -50,7 +50,6 @@ def test_csv_upload_journey():
             post_csv_upload.url,
             data=data,
             headers=dict(Referer=post_csv_upload.url))
-        print(post_check_sms.text)
         assert post_check_sms.status_code == 200
         assert '/jobs' in post_check_sms.url
         msgs = retrieve_sms_with_wait(Config.FUNCTIONAL_TEST_EMAIL)
