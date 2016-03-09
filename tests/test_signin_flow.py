@@ -20,8 +20,6 @@ def test_sign_in_journey():
         assert 'GOV.UK Notify' == find_page_title(index_resp.text)
 
         get_sign_resp = client.get(base_url + '/sign-in')
-        # print('headers: {}'.format(get_reg_resp.headers))
-        # it is possible to assert that headers are set properly here.
         assert 200 == get_sign_resp.status_code
         assert 'Sign in - GOV.UK Notify'
 

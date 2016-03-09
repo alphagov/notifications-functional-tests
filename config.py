@@ -11,4 +11,5 @@ class Config(object):
     FUNCTIONAL_TEMPLATE_ID = os.environ['TEMPLATE_ID']
     FUNCTIONAL_SERVICE_ID = os.environ['SERVICE_ID']
     EMAIL_FOLDER = 'notify'
-    EMAIL_TIMEOUT = 120
+    EMAIL_TRIES = 10
+    EMAIL_DELAY = 5

@@ -1,11 +1,11 @@
 import pytest
-from io import (StringIO, BytesIO)
 import csv
+import imaplib
+import email as email_lib
 from operator import attrgetter
 from time import sleep
-
+from io import (StringIO, BytesIO)
 from bs4 import BeautifulSoup
-
 from config import Config
 from twilio.rest import TwilioRestClient
 
@@ -35,6 +35,22 @@ def get_sms():
     if len(messages) > 0:
         msgs = [m for m in messages if m.direction == 'inbound']
     return msgs
+
+
+def remove_all_emails(email, pwd, email_folder):
+    gimap = None
+    try:
+        gimap = imaplib.IMAP4_SSL('imap.gmail.com')
+        rv, data = gimap.login(email, pwd)
+        rv, data = gimap.select(email_folder)
+        rv, data = gimap.search(None, "ALL")
+        for num in data[0].split():
+            gimap.store(num, '+FLAGS', '\\Deleted')
+            gimap.expunge()
+    finally:
+        if gimap:
+            gimap.close()
+            gimap.logout()
 
 
 def delete_sms_messge(sid):
@@ -92,10 +108,7 @@ def create_sample_csv_file(numbers):
     retval = None
     with content as csvfile:
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(["phone"])
+        csvwriter.writerow(["phone number"])
         csvwriter.writerows(numbers)
         retval = BytesIO(content.getvalue().encode('utf-8'))
-
-    contents = 'phone\n+447400172675'
-    retval = BytesIO(contents.encode('utf-8'))
     return retval
