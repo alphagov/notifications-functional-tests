@@ -35,6 +35,7 @@ def receive_message():
 @app.route('/test-integration', methods=['POST'])
 def test_integration():
     print(request.get_data())
+    print(request.headers)
     return jsonify({
         'result': 'success'
     }), 200
