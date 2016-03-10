@@ -4,6 +4,7 @@ from flask.ext.cache import Cache
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+app.debug = True
 
 
 @app.route('/', methods=['GET'])
@@ -26,6 +27,14 @@ def get_nessage():
 def receive_message():
     print(request.values)
     cache.set('sms', request.form['Body'], timeout=300)
+    return jsonify({
+        'result': 'success'
+    }), 200
+
+
+@app.route('/test-integration', methods=['POST'])
+def test_integration():
+    print(request.get_data())
     return jsonify({
         'result': 'success'
     }), 200
