@@ -36,6 +36,7 @@ def receive_message():
 def test_integration():
     print(request.get_data())
     print(request.headers)
+    print(request.json)
     return jsonify({
         'result': 'success'
     }), 200
