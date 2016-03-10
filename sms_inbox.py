@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, json
 from flask.ext.cache import Cache
 
 app = Flask(__name__)
@@ -34,9 +34,8 @@ def receive_message():
 
 @app.route('/test-integration', methods=['POST'])
 def test_integration():
-    print(request.get_data())
+    print(json.loads(request.get_data()))
     print(request.headers)
-    print(request.json)
     return jsonify({
         'result': 'success'
     }), 200
