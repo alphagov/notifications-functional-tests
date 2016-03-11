@@ -2,16 +2,17 @@ from requests import session
 
 from config import Config
 from tests.utils import (retrieve_sms_with_wait,
-                         delete_sms_messge,
+                         delete_sms_message,
                          find_csrf_token,
                          get_sms,
                          sign_out,
-                         find_page_title
+                         find_page_title,
+                         delete_default_sms
                          )
 
 
 def test_sign_in_journey():
-
+    delete_default_sms()
     try:
         client = session()
         base_url = Config.NOTIFY_ADMIN_URL
@@ -54,10 +55,8 @@ def test_sign_in_journey():
         assert post_two_factor.status_code == 200
         assert 'Preview' in post_two_factor.text
         assert 'dashboard' in post_two_factor.url
-        delete_sms_messge(m.sid)
+        delete_sms_message(m.sid)
         sign_out(client, base_url)
     finally:
         # Delete all messages even if the test fails.
-        messages = get_sms()
-        for m in messages:
-            delete_sms_messge(m.sid)
+        delete_default_sms()

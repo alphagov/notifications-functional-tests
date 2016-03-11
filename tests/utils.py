@@ -37,7 +37,13 @@ def get_sms():
     return msgs
 
 
-def remove_all_emails(email, pwd, email_folder):
+def remove_all_emails(email=None, pwd=None, email_folder=None):
+    if not email:
+        email = Config.FUNCTIONAL_TEST_EMAIL
+    if not pwd:
+        pwd = Config.FUNCTIONAL_TEST_PASSWORD
+    if not email_folder:
+        email_folder = Config.EMAIL_FOLDER
     gimap = None
     try:
         gimap = imaplib.IMAP4_SSL('imap.gmail.com')
@@ -53,9 +59,14 @@ def remove_all_emails(email, pwd, email_folder):
             gimap.logout()
 
 
-def delete_sms_messge(sid):
-    from twilio.rest import TwilioRestClient
+def delete_default_sms():
+    msgs = get_sms()
+    for msg in msgs:
+        if msg.status != 'queued':
+            delete_sms_message(msg.sid)
 
+
+def delete_sms_message(sid):
     client = TwilioRestClient(Config.TWILIO_ACCOUNT_SID, Config.TWILIO_AUTH_TOKEN)
     client.messages.delete(sid)
 
@@ -90,7 +101,7 @@ def sign_in(client, base_url, email, pwd):
                            'csrf_token': next_token}
         post_two_factor = client.post(base_url + '/two-factor', data=two_factor_data,
                                       headers=dict(Referer=base_url+'/two-factor'))
-        delete_sms_messge(m.sid)
+        delete_sms_message(m.sid)
     except:
         pytest.fail("Unable to log in")
 
