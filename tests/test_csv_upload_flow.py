@@ -10,15 +10,17 @@ import pytest
 from requests import session
 from config import Config
 from tests.utils import (retrieve_sms_with_wait,
-                         delete_sms_messge,
+                         delete_sms_message,
                          find_csrf_token,
                          get_sms,
                          create_sample_csv_file,
                          sign_in,
-                         sign_out)
+                         sign_out,
+                         delete_default_sms)
 
 
 def test_csv_upload_journey():
+    delete_default_sms()
     client = session()
     base_url = Config.NOTIFY_ADMIN_URL
     try:
@@ -55,8 +57,7 @@ def test_csv_upload_journey():
         msgs = retrieve_sms_with_wait(Config.FUNCTIONAL_TEST_EMAIL)
     finally:
         # Make sure to delete all msgs from the account
-        for m in msgs:
-            delete_sms_messge(m.sid)
+        delete_default_sms()
     # Test will fail if there is not 1 message (we expect only 1 message)
     assert len(msgs) == 1, 'Expecting to retrieve 1 sms message in functional test for user: {}'.format(
         Config.FUNCTIONAL_TEST_EMAIL)

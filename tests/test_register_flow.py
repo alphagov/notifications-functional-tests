@@ -11,11 +11,12 @@ from retry import retry
 from requests import session
 from config import Config
 from tests.utils import (retrieve_sms_with_wait,
-                         delete_sms_messge,
+                         delete_sms_message,
                          find_csrf_token,
                          get_sms,
                          sign_out,
-                         remove_all_emails)
+                         remove_all_emails,
+                         delete_default_sms)
 
 
 def _generate_unique_email(email, uuid_):
@@ -34,7 +35,7 @@ def _get_sms_code(email):
         return m.body
     finally:
         if m:
-            delete_sms_messge(m.sid)
+            delete_sms_message(m.sid)
 
 
 class RetryException(Exception):
@@ -74,6 +75,8 @@ def test_register_journey():
     '''
     Runs through the register flow creating a new user.
     '''
+    delete_default_sms()
+    remove_all_emails()
     client = session()
     base_url = Config.NOTIFY_ADMIN_URL
     index_resp = client.get(base_url)
@@ -107,11 +110,8 @@ def test_register_journey():
             Config.FUNCTIONAL_TEST_PASSWORD,
             Config.EMAIL_FOLDER)
     finally:
-        # Just in case email are left over
-        remove_all_emails(
-            Config.FUNCTIONAL_TEST_EMAIL,
-            Config.FUNCTIONAL_TEST_PASSWORD,
-            Config.EMAIL_FOLDER)
+        delete_default_sms()
+        remove_all_emails()
 
     two_factor_data = {'sms_code': sms_code,
                        'email_code': email_code,
