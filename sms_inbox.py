@@ -13,7 +13,7 @@ def get_nessage():
     if result:
         cache.clear()
         return jsonify({
-            'result': 'sucess',
+            'result': 'success',
             'sms_code': result
         }), 200
     else:
@@ -25,7 +25,6 @@ def get_nessage():
 
 @app.route('/', methods=['POST'])
 def receive_message():
-    print(request.values)
     cache.set('sms', request.form['Body'], timeout=300)
     return jsonify({
         'result': 'success'
@@ -34,13 +33,11 @@ def receive_message():
 
 @app.route('/test-integration', methods=['POST'])
 def test_integration():
-    print(request.get_data())
-    print(request.headers)
     return jsonify({
         'result': 'success'
     }), 200
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 6001))	
+    port = int(os.environ.get('PORT', 6001))
     app.run(host='0.0.0.0', port=port)
