@@ -20,6 +20,8 @@ Contents of the environment.sh file
     export FUNCTIONAL_TEST_EMAIL=user_name@***.gov.uk
     export FUNCTIONAL_TEST_PASSWORD=****
     export NOTIFY_ADMIN_URL=http://localhost:6012
+    export TEMPLATE_ID=***
+    export SERVICE_ID=****
 ```
 
 `TWILIO_ACCOUNT_SID` = account sid for used to read the sms
@@ -45,12 +47,14 @@ as scripted in the [trigger-dependent-build.sh](https://github.com/alphagov/noti
 When Travis kicks off the functional tests it will use the encrypted environment variables in the [.travis.yml](https://github.com/alphagov/notifications-functional-tests/blob/master/.travis.yml).
 To create/update these variable run the following travis commands, replacing the *** with the values.
 ```shell
-    travis encrypt TWILIO_ACCOUNT_SID=***
-    travis encrypt TWILIO_AUTH_TOKEN=***
-    travis encrypt TWILIO_TEST_NUMBER=***
-    travis encrypt FUNCTIONAL_TEST_EMAIL=***
-    travis encrypt FUNCTIONAL_TEST_PASSWORD=***
-    travis encrypt NOTIFY_ADMIN_URL=***
+    travis encrypt TWILIO_ACCOUNT_SID=*** --add
+    travis encrypt TWILIO_AUTH_TOKEN=*** --add
+    travis encrypt TWILIO_TEST_NUMBER=*** --add
+    travis encrypt FUNCTIONAL_TEST_EMAIL=*** --add
+    travis encrypt FUNCTIONAL_TEST_PASSWORD=*** --add
+    travis encrypt NOTIFY_ADMIN_URL=*** --add
+    travis encrypt TEMPLATE_ID=*** --add
+    travis encrypt SERVICE_ID=*** --add
 ```
 
 ## About CSRF tokens
