@@ -1,40 +1,12 @@
 import pytest
 import csv
 import imaplib
-import email as email_lib
-from operator import attrgetter
 from time import sleep
 from io import (StringIO, BytesIO)
+
+from _pytest.runner import fail
 from bs4 import BeautifulSoup
 from config import Config
-from twilio.rest import TwilioRestClient
-
-
-def retrieve_sms_with_wait(user_name):
-    x = 0
-    msgs = get_sms()
-    loop_condition = True
-    while loop_condition:
-        if len(msgs) != 0:
-            loop_condition = False
-            break
-        if x > 12:
-            loop_condition = False
-            break
-        x += 1
-        sleep(5)
-        msgs = get_sms()
-
-    return sorted(msgs, key=attrgetter('date_created'), reverse=True)
-
-
-def get_sms():
-    client = TwilioRestClient(Config.TWILIO_ACCOUNT_SID, Config.TWILIO_AUTH_TOKEN)
-    messages = client.messages.list(to=Config.TWILIO_TEST_NUMBER)
-    msgs = []
-    if len(messages) > 0:
-        msgs = [m for m in messages if m.direction == 'inbound']
-    return msgs
 
 
 def remove_all_emails(email=None, pwd=None, email_folder=None):
@@ -57,18 +29,6 @@ def remove_all_emails(email=None, pwd=None, email_folder=None):
         if gimap:
             gimap.close()
             gimap.logout()
-
-
-def delete_default_sms():
-    msgs = get_sms()
-    for msg in msgs:
-        if msg.status != 'queued':
-            delete_sms_message(msg.sid)
-
-
-def delete_sms_message(sid):
-    client = TwilioRestClient(Config.TWILIO_ACCOUNT_SID, Config.TWILIO_AUTH_TOKEN)
-    client.messages.delete(sid)
 
 
 def find_csrf_token(html):
@@ -95,13 +55,12 @@ def sign_in(client, base_url, email, pwd):
             headers=dict(Referer=base_url+'/sign-in'))
         get_two_factor = client.get(base_url + '/two-factor')
         next_token = find_csrf_token(get_two_factor.text)
-        messages = retrieve_sms_with_wait(email)
-        m = messages[0]
-        two_factor_data = {'sms_code': m.body,
+        sms_code = get_sms_via_heroku(client)
+        two_factor_data = {'sms_code': sms_code,
                            'csrf_token': next_token}
         post_two_factor = client.post(base_url + '/two-factor', data=two_factor_data,
                                       headers=dict(Referer=base_url+'/two-factor'))
-        delete_sms_message(m.sid)
+
     except:
         pytest.fail("Unable to log in")
 
@@ -123,3 +82,26 @@ def create_sample_csv_file(numbers):
         csvwriter.writerows(numbers)
         retval = BytesIO(content.getvalue().encode('utf-8'))
     return retval
+
+
+def get_sms_via_heroku(client):
+    import json
+    response = client.get('https://notify-sms-inbox.herokuapp.com/')
+    j = json.loads(response.text)
+    x = 0
+    loop_condition = True
+    while loop_condition:
+        if response.status_code == 200:
+            loop_condition = False
+        if x > 12:
+            loop_condition = False
+        if j['result'] == 'error':
+            sleep(5)
+            x += 1
+            response = client.get('https://notify-sms-inbox.herokuapp.com/')
+            j = json.loads(response.text)
+
+    try:
+        return j['sms_code']
+    except KeyError:
+        fail('No sms code delivered')

@@ -1,41 +1,21 @@
-import uuid
-import datetime
-import sys
-import re
-import time
-import imaplib
 import email as email_lib
-import email.header
+import imaplib
+import uuid
+
 import pytest
-from retry import retry
 from requests import session
+from retry import retry
+
 from config import Config
-from tests.utils import (retrieve_sms_with_wait,
-                         delete_sms_message,
-                         find_csrf_token,
-                         get_sms,
+from tests.utils import (find_csrf_token,
+                         get_sms_via_heroku,
                          sign_out,
-                         remove_all_emails,
-                         delete_default_sms)
+                         remove_all_emails)
 
 
 def _generate_unique_email(email, uuid_):
     parts = email.split('@')
     return "{}+{}@{}".format(parts[0], uuid_, parts[1])
-
-
-def _get_sms_code(email):
-    # Test will fail if there is not 1 message (we expect only 1 message)
-    m = None
-    try:
-        messages = retrieve_sms_with_wait(email)
-        assert len(messages) == 1, ('Expecting to retrieve 1 sms message in functional'
-                                    ' test for user: {}').format(email)
-        m = messages[0]
-        return m.body
-    finally:
-        if m:
-            delete_sms_message(m.sid)
 
 
 class RetryException(Exception):
@@ -75,7 +55,6 @@ def test_register_journey():
     '''
     Runs through the register flow creating a new user.
     '''
-    delete_default_sms()
     remove_all_emails()
     client = session()
     base_url = Config.NOTIFY_ADMIN_URL
@@ -103,14 +82,13 @@ def test_register_journey():
         assert post_register_resp.status_code == 200
 
         next_token = find_csrf_token(post_register_resp.text)
-        sms_code = _get_sms_code(Config.FUNCTIONAL_TEST_EMAIL)
-
+        # sms_code = _get_sms_code(Config.FUNCTIONAL_TEST_EMAIL)
+        sms_code = get_sms_via_heroku(client)
         email_code = _get_email_code(
             Config.FUNCTIONAL_TEST_EMAIL,
             Config.FUNCTIONAL_TEST_PASSWORD,
             Config.EMAIL_FOLDER)
     finally:
-        delete_default_sms()
         remove_all_emails()
 
     two_factor_data = {'sms_code': sms_code,
