@@ -78,7 +78,7 @@ def test_register_journey():
     # Redirects followed
     try:
         post_register_resp = client.post(base_url + '/register', data=data,
-                                         headers=dict(Referer=base_url+'/register'))
+                                         headers=dict(Referer=base_url + '/register'))
         assert post_register_resp.status_code == 200
 
         next_token = find_csrf_token(post_register_resp.text)
@@ -95,7 +95,7 @@ def test_register_journey():
                        'email_code': email_code,
                        'csrf_token': next_token}
     post_verify = client.post(base_url + '/verify', data=two_factor_data,
-                              headers=dict(Referer=base_url+'/verify'))
+                              headers=dict(Referer=base_url + '/verify'))
     assert post_verify.status_code == 200
     assert 'Which service do you want to set up notifications for?' in post_verify.text
     sign_out(client, base_url)

@@ -43,9 +43,8 @@ def test_sign_in_journey():
     two_factor_data = {'sms_code': sms_code,
                        'csrf_token': next_token}
     post_two_factor = client.post(base_url + '/two-factor', data=two_factor_data,
-                                  headers=dict(Referer=base_url+'/two-factor'))
+                                  headers=dict(Referer=base_url + '/two-factor'))
     assert post_two_factor.status_code == 200
     assert 'Preview' in post_two_factor.text
     assert 'dashboard' in post_two_factor.url
     sign_out(client, base_url)
-

@@ -52,14 +52,14 @@ def sign_in(client, base_url, email, pwd):
         post_sign_in_resp = client.post(
             base_url + '/sign-in',
             data=data,
-            headers=dict(Referer=base_url+'/sign-in'))
+            headers=dict(Referer=base_url + '/sign-in'))
         get_two_factor = client.get(base_url + '/two-factor')
         next_token = find_csrf_token(get_two_factor.text)
         sms_code = get_sms_via_heroku(client)
         two_factor_data = {'sms_code': sms_code,
                            'csrf_token': next_token}
         post_two_factor = client.post(base_url + '/two-factor', data=two_factor_data,
-                                      headers=dict(Referer=base_url+'/two-factor'))
+                                      headers=dict(Referer=base_url + '/two-factor'))
 
     except:
         pytest.fail("Unable to log in")
