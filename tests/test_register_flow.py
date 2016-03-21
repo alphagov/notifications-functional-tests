@@ -104,7 +104,7 @@ def test_register_journey():
 
     resp = requests.get(registration_link)
     resp.raise_for_status()
-    assert resp.url == base_url +'/verify'
+    assert resp.url == base_url + '/verify'
 
     sms_code = get_sms_via_heroku(client)
     next_token = find_csrf_token(resp.text)
@@ -113,7 +113,7 @@ def test_register_journey():
                        'csrf_token': next_token}
 
     post_verify = client.post(base_url + '/verify', data=two_factor_data,
-                               headers=dict(Referer=base_url + '/verify'))
+                              headers=dict(Referer=base_url + '/verify'))
     assert post_verify.status_code == 200
     assert 'Which service do you want to set up notifications for?' in post_verify.text
     sign_out(client, base_url)
