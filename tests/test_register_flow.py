@@ -3,6 +3,7 @@ import imaplib
 import uuid
 
 import pytest
+import requests
 from requests import session
 from retry import retry
 
@@ -51,6 +52,15 @@ def _get_email_code(email, pwd, email_folder):
             gimap.logout()
 
 
+def _get_registration_link(email_body):
+    import re
+    match = re.search('http[s]?://\S+', email_body)
+    if match:
+        return match.group(0)
+    else:
+        return None
+
+
 def test_register_journey():
     '''
     Runs through the register flow creating a new user.
@@ -81,21 +91,29 @@ def test_register_journey():
                                          headers=dict(Referer=base_url + '/register'))
         assert post_register_resp.status_code == 200
 
-        next_token = find_csrf_token(post_register_resp.text)
-        # sms_code = _get_sms_code(Config.FUNCTIONAL_TEST_EMAIL)
-        sms_code = get_sms_via_heroku(client)
-        email_code = _get_email_code(
+        email_body = _get_email_code(
             Config.FUNCTIONAL_TEST_EMAIL,
             Config.FUNCTIONAL_TEST_PASSWORD,
-            Config.EMAIL_FOLDER)
+            Config.REGISTRATION_EMAIL)
     finally:
         remove_all_emails()
 
+    registration_link = _get_registration_link(email_body)
+    if not registration_link:
+        pytest.fail("Couldn't get the registraion link from the email")
+
+    resp = requests.get(registration_link)
+    resp.raise_for_status()
+    assert resp.url == base_url +'/verify'
+
+    sms_code = get_sms_via_heroku(client)
+    next_token = find_csrf_token(resp.text)
+
     two_factor_data = {'sms_code': sms_code,
-                       'email_code': email_code,
                        'csrf_token': next_token}
+
     post_verify = client.post(base_url + '/verify', data=two_factor_data,
-                              headers=dict(Referer=base_url + '/verify'))
+                               headers=dict(Referer=base_url + '/verify'))
     assert post_verify.status_code == 200
     assert 'Which service do you want to set up notifications for?' in post_verify.text
     sign_out(client, base_url)
