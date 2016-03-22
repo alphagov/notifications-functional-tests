@@ -6,6 +6,7 @@ import pytest
 import requests
 from requests import session
 from retry import retry
+from bs4 import BeautifulSoup
 
 from config import Config
 from tests.utils import (find_csrf_token,
@@ -115,5 +116,7 @@ def test_register_journey():
     post_verify = client.post(base_url + '/verify', data=two_factor_data,
                               headers=dict(Referer=base_url + '/verify'))
     assert post_verify.status_code == 200
-    assert 'Which service do you want to set up notifications for?' in post_verify.text
+
+    page = BeautifulSoup(post_verify.text, 'html.parser')
+    assert page.h1.string.strip() == 'When people receive notifications, who should they be from?'
     sign_out(client, base_url)
