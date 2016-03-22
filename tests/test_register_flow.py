@@ -3,7 +3,6 @@ import imaplib
 import uuid
 
 import pytest
-import requests
 from requests import session
 from retry import retry
 from bs4 import BeautifulSoup
@@ -103,7 +102,7 @@ def test_register_journey():
     if not registration_link:
         pytest.fail("Couldn't get the registraion link from the email")
 
-    resp = requests.get(registration_link)
+    resp = client.get(registration_link)
     resp.raise_for_status()
     assert resp.url == base_url + '/verify'
 
