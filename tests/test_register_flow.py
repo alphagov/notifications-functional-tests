@@ -97,6 +97,7 @@ def test_register_journey():
             Config.REGISTRATION_EMAIL)
     finally:
         remove_all_emails()
+        remove_all_emails(email_folder=Config.REGISTRATION_EMAIL)
 
     registration_link = _get_registration_link(email_body)
     if not registration_link:
