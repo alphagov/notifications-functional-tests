@@ -31,7 +31,7 @@ def test_csv_upload_journey():
         files=files,
         headers=dict(Referer=csv_upload_url))
     assert post_csv_upload.status_code == 200
-    assert 'services/{}/check'.format(Config.FUNCTIONAL_SERVICE_ID) in post_csv_upload.url
+    assert 'services/{}/sms/check'.format(Config.FUNCTIONAL_SERVICE_ID) in post_csv_upload.url
     next_token = find_csrf_token(post_csv_upload.text)
     data = {'csrf_token': next_token}
     post_check_sms = client.post(
