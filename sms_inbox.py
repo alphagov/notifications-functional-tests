@@ -7,11 +7,15 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 app.debug = True
 
 
-@app.route('/', methods=['GET'])
-def get_nessage():
-    result = cache.get('sms')
+def cache_key(prefix):
+    return "{}_sms".format(prefix)
+
+
+@app.route('/<environment>', methods=['GET'])
+def get_message(environment):
+    result = cache.get(cache_key(environment))
     if result:
-        cache.clear()
+        cache.delete(cache_key(environment))
         return jsonify({
             'result': 'success',
             'sms_code': result
@@ -23,9 +27,9 @@ def get_nessage():
         }), 404
 
 
-@app.route('/', methods=['POST'])
-def receive_message():
-    cache.set('sms', request.form['Body'], timeout=300)
+@app.route('/<environment>', methods=['POST'])
+def receive_message(environment):
+    cache.set(cache_key(environment), request.form['Body'], timeout=300)
     return jsonify({
         'result': 'success'
     }), 200
