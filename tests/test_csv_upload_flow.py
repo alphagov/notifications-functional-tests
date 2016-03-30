@@ -25,17 +25,19 @@ def test_csv_upload_journey():
     csv_file = create_sample_csv_file([[Config.TWILIO_TEST_NUMBER]])
     files = {'file': ("preview_file.csv", csv_file, 'text/csv')}
     data = {'csrf_token': next_token}
+
     post_csv_upload = client.post(
         csv_upload_url,
         data=data,
         files=files,
         headers=dict(Referer=csv_upload_url))
+
     assert post_csv_upload.status_code == 200
-    assert 'services/{}/sms/check'.format(Config.FUNCTIONAL_SERVICE_ID) in post_csv_upload.url
     next_token = find_csrf_token(post_csv_upload.text)
     data = {'csrf_token': next_token}
+    start_job_url = '{}{}'.format(base_url, _get_start_job_url(post_csv_upload.text))
     post_check_sms = client.post(
-        post_csv_upload.url,
+        start_job_url,
         data=data,
         headers=dict(Referer=post_csv_upload.url))
     assert post_check_sms.status_code == 200
@@ -45,3 +47,9 @@ def test_csv_upload_journey():
     # Verify the correct sms message was sent
     assert "The quick brown fox jumped over the lazy dog" in message
     sign_out(client, base_url)
+
+
+def _get_start_job_url(html):
+    from bs4 import BeautifulSoup
+    page = BeautifulSoup(html, 'html.parser')
+    return page.find('form')['action']
