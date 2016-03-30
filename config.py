@@ -2,6 +2,7 @@ import os
 
 
 class Config(object):
+    ENVIRONMENT = os.environ['ENVIRONMENT']
     NOTIFY_ADMIN_URL = os.environ['NOTIFY_ADMIN_URL']
     TWILIO_TEST_NUMBER = os.environ['TWILIO_TEST_NUMBER']
     TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']

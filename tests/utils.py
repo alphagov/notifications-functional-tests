@@ -1,6 +1,7 @@
 import pytest
 import csv
 import imaplib
+import json
 from time import sleep
 from io import (StringIO, BytesIO)
 
@@ -84,9 +85,11 @@ def create_sample_csv_file(numbers):
     return retval
 
 
-def get_sms_via_heroku(client):
-    import json
-    response = client.get('https://notify-sms-inbox.herokuapp.com/')
+def get_sms_via_heroku(client, environment=None):
+    if environment is None:
+        environment = Config.ENVIRONMENT
+    url = 'https://notify-sms-inbox.herokuapp.com/' + environment
+    response = client.get(url)
     j = json.loads(response.text)
     x = 0
     loop_condition = True
@@ -98,7 +101,7 @@ def get_sms_via_heroku(client):
         if j['result'] == 'error':
             sleep(5)
             x += 1
-            response = client.get('https://notify-sms-inbox.herokuapp.com/')
+            response = client.get(url)
             j = json.loads(response.text)
 
     try:
