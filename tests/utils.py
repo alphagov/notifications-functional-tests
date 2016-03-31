@@ -1,13 +1,18 @@
 import pytest
 import csv
+import email as email_lib
 import imaplib
 import json
 from time import sleep
 from io import (StringIO, BytesIO)
-
+from retry import retry
 from _pytest.runner import fail
 from bs4 import BeautifulSoup
 from config import Config
+
+
+class RetryException(Exception):
+    pass
 
 
 def remove_all_emails(email=None, pwd=None, email_folder=None):
@@ -108,3 +113,32 @@ def get_sms_via_heroku(client, environment=None):
         return j['sms_code']
     except KeyError:
         fail('No sms code delivered')
+
+
+@retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
+def get_email_body(email, pwd, email_folder):
+    gimap = None
+    try:
+        gimap = imaplib.IMAP4_SSL('imap.gmail.com')
+        try:
+            rv, data = gimap.login(email, pwd)
+        except imaplib.IMAP4.error:
+            pytest.fail("Login to email account has failed.")
+        rv, data = gimap.select(email_folder)
+        rv, data = gimap.search(None, "ALL")
+        ids_count = len(data[0].split())
+        if ids_count > 1:
+            pytest.fail("There is more than one token email")
+        elif ids_count == 1:
+            num = data[0].split()[0]
+            rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
+            msg = email_lib.message_from_bytes(data[0][1])
+            gimap.store(num, '+FLAGS', '\\Deleted')
+            gimap.expunge()
+            return msg.get_payload().strip()
+        else:
+            raise RetryException("Failed to retrieve the email from the email server.")
+    finally:
+        if gimap:
+            gimap.close()
+            gimap.logout()

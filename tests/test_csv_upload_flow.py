@@ -19,7 +19,7 @@ def test_csv_upload_journey():
     csv_upload_url = '{}/services/{}/send/{}'.format(
         base_url,
         Config.FUNCTIONAL_SERVICE_ID,
-        Config.FUNCTIONAL_TEMPLATE_ID)
+        Config.FUNCTIONAL_SMS_TEMPLATE_ID)
     get_csv_upload = client.get(csv_upload_url)
     next_token = find_csrf_token(get_csv_upload.text)
     csv_file = create_sample_csv_file([[Config.TWILIO_TEST_NUMBER]])

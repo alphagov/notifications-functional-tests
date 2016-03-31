@@ -1,55 +1,20 @@
-import email as email_lib
-import imaplib
 import uuid
 
 import pytest
 from requests import session
-from retry import retry
 from bs4 import BeautifulSoup
 
 from config import Config
 from tests.utils import (find_csrf_token,
                          get_sms_via_heroku,
                          sign_out,
-                         remove_all_emails)
+                         remove_all_emails,
+                         get_email_body)
 
 
 def _generate_unique_email(email, uuid_):
     parts = email.split('@')
     return "{}+{}@{}".format(parts[0], uuid_, parts[1])
-
-
-class RetryException(Exception):
-    pass
-
-
-@retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
-def _get_email_code(email, pwd, email_folder):
-    gimap = None
-    try:
-        gimap = imaplib.IMAP4_SSL('imap.gmail.com')
-        try:
-            rv, data = gimap.login(email, pwd)
-        except imaplib.IMAP4.error:
-            pytest.fail("Login to email account has failed.")
-        rv, data = gimap.select(email_folder)
-        rv, data = gimap.search(None, "ALL")
-        ids_count = len(data[0].split())
-        if ids_count > 1:
-            pytest.fail("There is more than one token email")
-        elif ids_count == 1:
-            num = data[0].split()[0]
-            rv, data = gimap.fetch(num, '(UID BODY[TEXT])')
-            msg = email_lib.message_from_bytes(data[0][1])
-            gimap.store(num, '+FLAGS', '\\Deleted')
-            gimap.expunge()
-            return msg.get_payload().strip()
-        else:
-            raise RetryException("Failed to retrieve the email from the email server.")
-    finally:
-        if gimap:
-            gimap.close()
-            gimap.logout()
 
 
 def _get_registration_link(email_body):
@@ -65,7 +30,7 @@ def test_register_journey():
     '''
     Runs through the register flow creating a new user.
     '''
-    remove_all_emails()
+    remove_all_emails(email_folder=Config.REGISTRATION_EMAIL_LABEL)
     client = session()
     base_url = Config.NOTIFY_ADMIN_URL
     index_resp = client.get(base_url)
@@ -91,13 +56,12 @@ def test_register_journey():
                                          headers=dict(Referer=base_url + '/register'))
         assert post_register_resp.status_code == 200
 
-        email_body = _get_email_code(
+        email_body = get_email_body(
             Config.FUNCTIONAL_TEST_EMAIL,
             Config.FUNCTIONAL_TEST_PASSWORD,
-            Config.REGISTRATION_EMAIL)
+            Config.REGISTRATION_EMAIL_LABEL)
     finally:
-        remove_all_emails()
-        remove_all_emails(email_folder=Config.REGISTRATION_EMAIL)
+        remove_all_emails(email_folder=Config.REGISTRATION_EMAIL_LABEL)
 
     registration_link = _get_registration_link(email_body)
     if not registration_link:
