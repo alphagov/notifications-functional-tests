@@ -29,7 +29,19 @@ display_result $? 1 "Code style check"
 ## Code coverage
 #py.test --cov=app tests/
 #display_result $? 2 "Code coverage"
-
-py.test -v
+if [ "$#" -eq 1 ]; then
+	export ENVIRONMENT=$1
+	if [ $1 = "live" ]; then
+		py.test -v tests/test_signin_flow.py tests/test_csv_upload_flow.py
+	elif [ $1 = "preview" ]; then
+		py.test -v
+	else
+		echo -e "Invalid environment '$1' argument."
+		exit 3
+	fi
+else
+	py.test -v
+fi
+#
 display_result $? 3 "Unit tests"
 
