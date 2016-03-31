@@ -21,7 +21,6 @@ def test_python_client_sms():
     resp_json = client.send_sms_notification(
         Config.TWILIO_TEST_NUMBER,
         Config.FUNCTIONAL_SMS_TEMPLATE_ID)
-    print(resp_json)
     assert 'result' not in resp_json['data']
     notification_id = resp_json['data']['notification']['id']
     message = get_sms_via_heroku(session())
@@ -37,7 +36,6 @@ def test_python_client_email():
         resp_json = client.send_email_notification(
             Config.FUNCTIONAL_TEST_EMAIL,
             Config.FUNCTIONAL_EMAIL_TEMPLATE_ID)
-        print(resp_json)
         assert 'result' not in resp_json['data']
         notification_id = resp_json['data']['notification']['id']
         message = get_email_body(
