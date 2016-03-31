@@ -32,7 +32,7 @@ display_result $? 1 "Code style check"
 if [ "$#" -eq 1 ]; then
 	export ENVIRONMENT=$1
 	if [ $1 = "live" ]; then
-		py.test -v tests/test_signin_flow.py tests/test_csv_upload_flow.py
+		py.test -v tests/test_signin_flow.py tests/test_csv_upload_flow.py tests/test_python_client_flow.py
 	elif [ $1 = "preview" ]; then
 		py.test -v
 	else

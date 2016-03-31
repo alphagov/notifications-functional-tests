@@ -4,6 +4,7 @@ import os
 class Config(object):
     ENVIRONMENT = os.environ['ENVIRONMENT']
     NOTIFY_ADMIN_URL = os.environ[os.environ['ENVIRONMENT'] + '_NOTIFY_ADMIN_URL']
+    NOTIFY_API_URL = os.environ[os.environ['ENVIRONMENT'] + '_NOTIFY_API_URL']
     TWILIO_TEST_NUMBER = os.environ[os.environ['ENVIRONMENT'] + '_TWILIO_TEST_NUMBER']
     TWILIO_ACCOUNT_SID = os.environ[os.environ['ENVIRONMENT'] + '_TWILIO_ACCOUNT_SID']
     TWILIO_AUTH_TOKEN = os.environ[os.environ['ENVIRONMENT'] + '_TWILIO_AUTH_TOKEN']
@@ -11,6 +12,7 @@ class Config(object):
     FUNCTIONAL_TEST_PASSWORD = os.environ[os.environ['ENVIRONMENT'] + '_FUNCTIONAL_TEST_PASSWORD']
     FUNCTIONAL_TEMPLATE_ID = os.environ[os.environ['ENVIRONMENT'] + '_TEMPLATE_ID']
     FUNCTIONAL_SERVICE_ID = os.environ[os.environ['ENVIRONMENT'] + '_SERVICE_ID']
+    FUNCTIONAL_API_KEY = os.environ[os.environ['ENVIRONMENT'] + '_API_KEY']
     EMAIL_FOLDER = 'notify'
     REGISTRATION_EMAIL = 'registration'
     EMAIL_TRIES = 10
