@@ -32,16 +32,19 @@ display_result $? 1 "Code style check"
 if [ "$#" -eq 1 ]; then
 	export ENVIRONMENT=$1
 	if [ $1 = "live" ]; then
-		py.test -v tests/test_signin_flow.py tests/test_csv_upload_flow.py tests/test_python_client_flow.py
+		# py.test -v
+    echo 'doing nothing yet'
 	elif [ $1 = "preview" ]; then
-		py.test -v
+		py.test -v -x tests/test_registration_flow.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_python_client_flow.py
 	else
 		echo -e "Invalid environment '$1' argument."
 		exit 3
 	fi
 else
-	py.test -v
+    # Note registration *must* run before any other tests as it registers the user for use
+    # in later tests
+	py.test -v -x tests/test_registration_flow.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_python_client_flow.py
 fi
-#
+
 display_result $? 3 "Unit tests"
 
