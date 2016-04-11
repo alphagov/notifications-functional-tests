@@ -108,12 +108,9 @@ class TourPage(BasePage):
         return self.driver.current_url.endswith('/tour/1')
 
     def get_me_out_of_here(self):
-        while True:
-            try:
-                element = self.driver.find_element(By.LINK_TEXT, 'Next')
-                element.click()
-            except:
-                break
+        for i in range(0, 4):
+            element = self.driver.find_element(By.LINK_TEXT, 'Next')
+            element.click()
 
 
 class SignInPage(BasePage):
