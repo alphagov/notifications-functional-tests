@@ -44,4 +44,4 @@ def test_create_sms_template_and_send_from_csv(driver, base_url, test_profile):
     message = get_sms_via_heroku(session())
     assert "The quick brown fox jumped over the lazy dog" in message
 
-    upload_csv_page.sign_out()
+    # upload_csv_page.sign_out()
