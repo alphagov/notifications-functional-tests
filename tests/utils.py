@@ -4,10 +4,10 @@ import email as email_lib
 import imaplib
 import json
 from time import sleep
-from io import (StringIO, BytesIO)
+from io import BytesIO
 from retry import retry
 from _pytest.runner import fail
-from bs4 import BeautifulSoup
+
 from config import Config
 
 
@@ -37,57 +37,17 @@ def remove_all_emails(email=None, pwd=None, email_folder=None):
             gimap.logout()
 
 
-def find_csrf_token(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    token = soup.find('input', {'name': 'csrf_token'}).get('value')
-    return token
-
-
-def find_page_title(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    return soup.title.text.strip()
-
-
-def sign_in(client, base_url, email, pwd):
-    try:
-        get_sign_resp = client.get(base_url + '/sign-in')
-        token = find_csrf_token(get_sign_resp.text)
-        data = {'email_address': email,
-                'password': pwd,
-                'csrf_token': token}
-        post_sign_in_resp = client.post(
-            base_url + '/sign-in',
-            data=data,
-            headers=dict(Referer=base_url + '/sign-in'))
-        get_two_factor = client.get(base_url + '/two-factor')
-        next_token = find_csrf_token(get_two_factor.text)
-        sms_code = get_sms_via_heroku(client)
-        two_factor_data = {'sms_code': sms_code,
-                           'csrf_token': next_token}
-        post_two_factor = client.post(base_url + '/two-factor', data=two_factor_data,
-                                      headers=dict(Referer=base_url + '/two-factor'))
-
-    except:
-        pytest.fail("Unable to log in")
-
-
-def sign_out(client, base_url):
-    try:
-        get_logout = client.get(base_url + '/sign-out')
-        assert get_logout.status_code == 200
-    except:
-        pytest.fail("Unable to log out")
-
-
-def create_sample_csv_file(numbers):
-    content = StringIO()
-    retval = None
-    with content as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(["phone number"])
-        csvwriter.writerows(numbers)
-        retval = BytesIO(content.getvalue().encode('utf-8'))
-    return retval
+def create_temp_csv(number, field_name):
+    import os
+    import tempfile
+    directory_name = tempfile.mkdtemp()
+    csv_file_path = os.path.join(directory_name, 'sample.csv')
+    with open(csv_file_path, 'w') as csv_file:
+        fieldnames = [field_name]
+        csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        csv_writer.writeheader()
+        csv_writer.writerow({field_name: number})
+    return directory_name, 'sample.csv'
 
 
 def get_sms_via_heroku(client, environment=None):
