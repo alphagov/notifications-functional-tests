@@ -6,6 +6,7 @@ class CommonPageLocators(object):
     EMAIL_INPUT = (By.NAME, 'email_address')
     PASSWORD_INPUT = (By.NAME, 'password')
     CONTINUE_BUTTON = (By.CLASS_NAME, 'button')
+    H1 = (By.TAG_NAME, 'H1')
 
 
 class MainPageLocators(object):
@@ -29,6 +30,7 @@ class DashboardPageLocators(object):
     H2 = (By.CLASS_NAME, 'navigation-service-name')
     SMS_TEMPLATES_LINK = (By.LINK_TEXT, 'Text message templates')
     EMAIL_TEMPLATES_LINK = (By.LINK_TEXT, 'Email templates')
+    TEAM_MEMBERS_LINK = (By.LINK_TEXT, 'Team members')
 
 
 class NavigationLocators(object):
@@ -49,3 +51,15 @@ class EditTemplatePageLocators(object):
 class UploadCsvLocators(object):
     FILE_INPUT = (By.ID, 'file')
     SEND_BUTTON = (By.CLASS_NAME, 'button')
+
+
+class TeamMembersPageLocators(object):
+    H1 = (By.TAG_NAME, 'h1')
+    INVITE_TEAM_MEMBER_BUTTON = (By.CLASS_NAME, 'button')
+
+
+class InviteUserPageLocators(object):
+    SEND_MESSAGES_CHECKBOX = (By.NAME, 'send_messages')
+    MANAGE_SERVICES_CHECKBOX = (By.NAME, 'manage_services')
+    MANAGE_API_KEYS_CHECKBOX = (By.NAME, 'manage_api_keys')
+    SEND_INVITATION_BUTTON = (By.CLASS_NAME, 'button')

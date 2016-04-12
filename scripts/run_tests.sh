@@ -35,7 +35,7 @@ if [ "$#" -eq 1 ]; then
 		# py.test -v
     echo 'doing nothing yet'
 	elif [ $1 = "preview" ]; then
-		py.test -v -x tests/test_registration_flow.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_python_client_flow.py
+		py.test -v -x tests/test_registration.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_python_client_flow.py
 	else
 		echo -e "Invalid environment '$1' argument."
 		exit 3
@@ -43,7 +43,7 @@ if [ "$#" -eq 1 ]; then
 else
     # Note registration *must* run before any other tests as it registers the user for use
     # in later tests
-	py.test -v -x tests/test_registration_flow.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_python_client_flow.py
+	py.test -v -x tests/test_registration.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_invite_new_user.py tests/test_python_client_flow.py
 fi
 
 display_result $? 3 "Unit tests"

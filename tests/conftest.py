@@ -5,15 +5,14 @@ from selenium import webdriver
 
 from config import Config
 
+from tests.utils import (
+    generate_unique_email
+)
+
 uuid_for_test_run = str(uuid.uuid1())
 
-
-def _generate_unique_email(email, uuid_):
-    parts = email.split('@')
-    return "{}+{}@{}".format(parts[0], uuid_, parts[1])
-
 functional_test_name = Config.FUNCTIONAL_TEST_NAME + uuid_for_test_run
-functional_test_email = _generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
+functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
 functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
 functional_test_password = Config.FUNCTIONAL_TEST_PASSWORD
 functional_test_mobile = Config.TWILIO_TEST_NUMBER

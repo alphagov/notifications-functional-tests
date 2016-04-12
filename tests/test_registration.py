@@ -1,11 +1,8 @@
-import pytest
-
 from config import Config
 
 from tests.utils import (
-    get_email_body,
-    remove_all_emails,
-    get_sms_via_heroku
+    get_link,
+    get_verify_code
 )
 
 from tests.pages import (
@@ -16,33 +13,6 @@ from tests.pages import (
     AddServicePage,
     TourPage
 )
-
-
-# TODO maybe move these to utils
-def _get_registration_link():
-    import re
-
-    try:
-        email_body = get_email_body(Config.FUNCTIONAL_TEST_EMAIL,
-                                    Config.FUNCTIONAL_TEST_PASSWORD,
-                                    Config.REGISTRATION_EMAIL_LABEL)
-        match = re.search('http[s]?://\S+', email_body)
-        if match:
-            return match.group(0)
-        else:
-            pytest.fail("Couldn't get the registraion link from the email")
-    finally:
-        remove_all_emails(email_folder=Config.REGISTRATION_EMAIL_LABEL)
-
-
-def _get_verify_code():
-    from requests import session
-    verify_code = get_sms_via_heroku(session())
-    if not verify_code:
-        pytest.fail("Could not get the verify code")
-    return verify_code
-
-# end utils to move
 
 
 def test_user_registration(driver, base_url, test_profile):
@@ -61,9 +31,11 @@ def test_user_registration(driver, base_url, test_profile):
 
     assert driver.current_url == base_url + '/registration-continue'
 
-    registration_link = _get_registration_link()
+    registration_link = get_link(test_profile['email'],
+                                 test_profile['password'],
+                                 Config.REGISTRATION_EMAIL_LABEL)
     driver.get(registration_link)
-    verify_code = _get_verify_code()
+    verify_code = get_verify_code()
 
     verify_page = VerifyPage(driver)
     assert verify_page.is_current()

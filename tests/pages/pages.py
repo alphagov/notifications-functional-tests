@@ -28,7 +28,9 @@ from tests.pages.locators import (
     NavigationLocators,
     TemplatePageLocators,
     EditTemplatePageLocators,
-    UploadCsvLocators
+    UploadCsvLocators,
+    TeamMembersPageLocators,
+    InviteUserPageLocators
 )
 
 
@@ -180,6 +182,7 @@ class DashboardPage(BasePage):
     h2 = DashboardPageLocators.H2
     sms_templates_link = DashboardPageLocators.SMS_TEMPLATES_LINK
     email_templates_link = DashboardPageLocators.EMAIL_TEMPLATES_LINK
+    team_members_link = DashboardPageLocators.TEAM_MEMBERS_LINK
 
     def is_current(self):
         return self.driver.current_url.endswith('/dashboard')
@@ -194,6 +197,14 @@ class DashboardPage(BasePage):
 
     def click_email_templates(self):
         element = self.wait_for_element(DashboardPage.email_templates_link)
+        element.click()
+
+    def click_team_members_link(self):
+        element = self.wait_for_element(DashboardPage.team_members_link)
+        element.click()
+
+    def click_user_profile_link(self, link_text):
+        element = self.wait_for_element((By.LINK_TEXT, link_text))
         element.click()
 
 
@@ -264,10 +275,10 @@ class EditEmailTemplatePage(BasePage):
 class UploadCsvPage(BasePage):
 
     file_input_element = FileInputElement()
-    click_send_button = UploadCsvLocators.SEND_BUTTON
+    send_button = UploadCsvLocators.SEND_BUTTON
 
     def click_send(self):
-        element = self.wait_for_element(UploadCsvPage.click_send_button)
+        element = self.wait_for_element(UploadCsvPage.send_button)
         element.click()
 
     def upload_csv(self, directory, path):
@@ -275,3 +286,68 @@ class UploadCsvPage(BasePage):
         self.file_input_element = file_path
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
+
+
+class TeamMembersPage(BasePage):
+
+    h1 = TeamMembersPageLocators.H1
+    invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
+
+    def h1_is_team_members(self):
+        element = self.wait_for_element(TeamMembersPage.h1)
+        return element.text == 'Team members'
+
+    def click_invite_user(self):
+        element = self.wait_for_element(TeamMembersPage.invite_team_member_button)
+        element.click()
+
+
+class InviteUserPage(BasePage):
+
+    email_input = EmailInputElement()
+    send_messages_checkbox = InviteUserPageLocators.SEND_MESSAGES_CHECKBOX
+    manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
+    manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
+    send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
+
+    def fill_invitation_form(self, email, send_messages=False, manage_services=False, manage_api_keys=False):
+        self.email_input = email
+        if send_messages:
+            element = self.wait_for_element(InviteUserPage.send_messages_checkbox)
+            element.click()
+        if manage_services:
+            element = self.wait_for_element(InviteUserPage.manage_services_checkbox)
+            element.click()
+        if manage_api_keys:
+            element = self.wait_for_element(InviteUserPage.manage_api_keys_checkbox)
+            element.click()
+
+    def send_invitation(self):
+        element = self.wait_for_element(InviteUserPage.send_invitation_button)
+        element.click()
+
+
+class RegisterFromInvite(BasePage):
+
+    name_input = NameInputElement()
+    mobile_input = MobileInputElement()
+    password_input = PasswordInputElement()
+    continue_button = CommonPageLocators.CONTINUE_BUTTON
+
+    def fill_registration_form(self, name, mobile, password):
+        self.name_input = name
+        self.mobile_input = mobile
+        self.password_input = password
+
+    def click_continue(self):
+        element = self.wait_for_element(RegisterFromInvite.continue_button)
+        element.click()
+
+
+class ProfilePage(BasePage):
+
+    h1 = CommonPageLocators.H1
+
+    def h1_is_correct(self):
+        element = self.wait_for_element(ProfilePage.h1)
+        return element.text == 'Your profile'

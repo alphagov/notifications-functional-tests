@@ -4,7 +4,6 @@ import email as email_lib
 import imaplib
 import json
 from time import sleep
-from io import BytesIO
 from retry import retry
 from _pytest.runner import fail
 
@@ -102,3 +101,29 @@ def get_email_body(email, pwd, email_folder):
         if gimap:
             gimap.close()
             gimap.logout()
+
+
+def generate_unique_email(email, uuid):
+    parts = email.split('@')
+    return "{}+{}@{}".format(parts[0], uuid, parts[1])
+
+
+def get_link(email, password, email_label):
+    import re
+    try:
+        email_body = get_email_body(email, password, email_label)
+        match = re.search('http[s]?://\S+', email_body)
+        if match:
+            return match.group(0)
+        else:
+            pytest.fail("Couldn't get the registraion link from the email")
+    finally:
+        remove_all_emails(email_folder=email_label)
+
+
+def get_verify_code():
+    from requests import session
+    verify_code = get_sms_via_heroku(session())
+    if not verify_code:
+        pytest.fail("Could not get the verify code")
+    return verify_code

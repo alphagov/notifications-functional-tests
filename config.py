@@ -17,6 +17,7 @@ class Config(object):
     FUNCTIONAL_API_KEY = os.environ[os.environ['ENVIRONMENT'] + '_API_KEY']
     EMAIL_NOTIFICATION_LABEL = 'notify'
     REGISTRATION_EMAIL_LABEL = 'registration'
+    INVITATION_EMAIL_LABEL = 'invite'
     EMAIL_TRIES = 10
     EMAIL_DELAY = 5
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ['ENVIRONMENT'] + '_Functional Test Service_'
