@@ -69,4 +69,9 @@ def test_user_can_invite_someone_to_notify(driver, base_url, test_profile):
     dashboard_page = DashboardPage(driver)
     assert dashboard_page.is_current()
     assert dashboard_page.h2_is_service_name(test_profile['service_name'])
-    dashboard_page.sign_out()
+    dashboard_page.click_user_profile_link(invited_user_name)
+
+    profile_page = ProfilePage(driver)
+    profile_page.h1_is_correct()
+    assert profile_page.contains_user_email(invite_email)
+    profile_page.sign_out()

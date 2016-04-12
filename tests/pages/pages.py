@@ -48,8 +48,12 @@ class BasePage(object):
         )
 
     def sign_out(self):
-        # getting and clicking on sign out link not working on travis
-        self.driver.get(self.base_url+'/sign-out')
+        element = self.wait_for_element(BasePage.sign_out_link)
+        element.click()
+
+    def click_user_profile_link(self, link_text):
+        element = self.wait_for_element((By.LINK_TEXT, link_text))
+        element.click()
 
 
 class MainPage(BasePage):
@@ -201,10 +205,6 @@ class DashboardPage(BasePage):
 
     def click_team_members_link(self):
         element = self.wait_for_element(DashboardPage.team_members_link)
-        element.click()
-
-    def click_user_profile_link(self, link_text):
-        element = self.wait_for_element((By.LINK_TEXT, link_text))
         element.click()
 
 
