@@ -67,11 +67,6 @@ def test_user_can_invite_someone_to_notify(driver, base_url, test_profile):
     tour_page.get_me_out_of_here()
 
     dashboard_page = DashboardPage(driver)
-    dashboard_page = DashboardPage(driver)
     assert dashboard_page.is_current()
     assert dashboard_page.h2_is_service_name(test_profile['service_name'])
-    dashboard_page.click_user_profile_link(invited_user_name)
-
-    profile_page = ProfilePage(driver)
-    assert profile_page.h1_is_correct()
-    profile_page.sign_out()
+    dashboard_page.sign_out()
