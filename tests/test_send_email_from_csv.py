@@ -52,5 +52,4 @@ def test_create_email_template_and_send_from_csv(driver, base_url, test_profile)
 
     email_body = _get_email_message()
     assert "The quick brown fox jumped over the lazy dog" in email_body
-
-    # upload_csv_page.sign_out()
+    upload_csv_page.sign_out()

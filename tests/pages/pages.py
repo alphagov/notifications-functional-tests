@@ -48,8 +48,8 @@ class BasePage(object):
         )
 
     def sign_out(self):
-        element = self.wait_for_element(BasePage.sign_out_link)
-        element.click()
+        # getting and clicking on sign out link not working on travis
+        self.driver.get(self.base_url+'/sign-out')
 
 
 class MainPage(BasePage):

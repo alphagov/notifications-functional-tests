@@ -74,3 +74,4 @@ def test_user_can_invite_someone_to_notify(driver, base_url, test_profile):
 
     profile_page = ProfilePage(driver)
     assert profile_page.h1_is_correct()
+    profile_page.sign_out()
