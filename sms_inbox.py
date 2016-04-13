@@ -30,9 +30,7 @@ def get_message(environment):
 @app.route('/<environment>', methods=['POST'])
 def receive_message(environment):
     cache.set(cache_key(environment), request.form['Body'], timeout=300)
-    return jsonify({
-        'result': 'success'
-    }), 200
+    return "OK", 200
 
 
 @app.route('/test-integration', methods=['POST'])
