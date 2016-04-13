@@ -7,7 +7,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 app.debug = True
 
 
-def create_key(prefix):
+def cache_key(prefix):
     return "{}_sms".format(prefix)
 
 
