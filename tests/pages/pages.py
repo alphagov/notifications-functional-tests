@@ -16,7 +16,8 @@ from tests.pages.element import (
     ServiceInputElement,
     TemplateContentElement,
     FileInputElement,
-    SubjectInputElement
+    SubjectInputElement,
+    KeyNameInputElement
 )
 
 
@@ -30,7 +31,8 @@ from tests.pages.locators import (
     EditTemplatePageLocators,
     UploadCsvLocators,
     TeamMembersPageLocators,
-    InviteUserPageLocators
+    InviteUserPageLocators,
+    ApiKeysPageLocators
 )
 
 
@@ -183,6 +185,7 @@ class DashboardPage(BasePage):
     sms_templates_link = DashboardPageLocators.SMS_TEMPLATES_LINK
     email_templates_link = DashboardPageLocators.EMAIL_TEMPLATES_LINK
     team_members_link = DashboardPageLocators.TEAM_MEMBERS_LINK
+    api_keys_link = DashboardPageLocators.API_KEYS_LINK
 
     def is_current(self):
         return self.driver.current_url.endswith('/dashboard')
@@ -207,14 +210,26 @@ class DashboardPage(BasePage):
         element = self.wait_for_element((By.LINK_TEXT, link_text))
         element.click()
 
+    def click_api_keys_link(self):
+        element = self.wait_for_element(DashboardPage.api_keys_link)
+        element.click()
+
+    def get_service_id(self):
+        return self.driver.current_url.split('/services/')[1].split('/')[0]
+
 
 class SendSmsTemplatePage(BasePage):
 
     new_sms_template_link = TemplatePageLocators.NEW_TEMPLATE_LINK
+    edit_sms_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
     send_from_csv_link = TemplatePageLocators.SEND_FROM_CSV_LINK
 
     def click_add_new_template(self):
         element = self.wait_for_element(SendSmsTemplatePage.new_sms_template_link)
+        element.click()
+
+    def click_edit_template(self):
+        element = self.wait_for_element(SendSmsTemplatePage.edit_sms_template_link)
         element.click()
 
     def click_send_from_csv_link(self):
@@ -237,14 +252,25 @@ class EditSmsTemplatePage(BasePage):
         self.template_content_input = 'The quick brown fox jumped over the lazy dog'
         self.click_save()
 
+    def get_id(self):
+        # e.g.
+        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
+        # circle back and do better
+        return self.driver.current_url.split('/templates/')[1].split('/')[0]
+
 
 class SendEmailTemplatePage(BasePage):
 
     new_email_template_link = TemplatePageLocators.NEW_TEMPLATE_LINK
+    edit_email_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
     send_from_csv_link = TemplatePageLocators.SEND_FROM_CSV_LINK
 
     def click_add_new_template(self):
         element = self.wait_for_element(SendEmailTemplatePage.new_email_template_link)
+        element.click()
+
+    def click_edit_template(self):
+        element = self.wait_for_element(SendEmailTemplatePage.edit_email_template_link)
         element.click()
 
     def click_send_from_csv_link(self):
@@ -270,6 +296,12 @@ class EditEmailTemplatePage(BasePage):
         self.subject_input = 'Test email from functional tests ' + str(uuid.uuid1())
         self.template_content_input = 'The quick brown fox jumped over the lazy dog'
         self.click_save()
+
+    def get_id(self):
+        # e.g.
+        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
+        # circle back and do better
+        return self.driver.current_url.split('/templates/')[1].split('/')[0]
 
 
 class UploadCsvPage(BasePage):
@@ -351,3 +383,26 @@ class ProfilePage(BasePage):
     def h1_is_correct(self):
         element = self.wait_for_element(ProfilePage.h1)
         return element.text == 'Your profile'
+
+
+class ApiKeyPage(BasePage):
+
+    key_name_input = KeyNameInputElement()
+    create_key_link = ApiKeysPageLocators.CREATE_KEY_LINK
+    continue_button = CommonPageLocators.CONTINUE_BUTTON
+    api_key_element = ApiKeysPageLocators.API_KEY_ELEMENT
+
+    def enter_key_name(self):
+        self.key_name_input = 'Test'
+
+    def click_create_key(self):
+        element = self.wait_for_element(ApiKeyPage.create_key_link)
+        element.click()
+
+    def click_continue(self):
+        element = self.wait_for_element(ApiKeyPage.continue_button)
+        element.click()
+
+    def get_api_key(self):
+        element = self.wait_for_element(ApiKeyPage.api_key_element)
+        return element.text

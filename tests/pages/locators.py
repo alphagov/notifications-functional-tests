@@ -31,6 +31,7 @@ class DashboardPageLocators(object):
     SMS_TEMPLATES_LINK = (By.LINK_TEXT, 'Text message templates')
     EMAIL_TEMPLATES_LINK = (By.LINK_TEXT, 'Email templates')
     TEAM_MEMBERS_LINK = (By.LINK_TEXT, 'Team members')
+    API_KEYS_LINK = (By.LINK_TEXT, 'API keys')
 
 
 class NavigationLocators(object):
@@ -40,6 +41,7 @@ class NavigationLocators(object):
 class TemplatePageLocators(object):
     SEND_FROM_CSV_LINK = (By.LINK_TEXT, 'Send from a CSV file')
     NEW_TEMPLATE_LINK = (By.LINK_TEXT, 'Add a new template')
+    EDIT_TEMPLATE_LINK = (By.LINK_TEXT, 'Edit template')
 
 
 class EditTemplatePageLocators(object):
@@ -63,3 +65,9 @@ class InviteUserPageLocators(object):
     MANAGE_SERVICES_CHECKBOX = (By.NAME, 'manage_services')
     MANAGE_API_KEYS_CHECKBOX = (By.NAME, 'manage_api_keys')
     SEND_INVITATION_BUTTON = (By.CLASS_NAME, 'button')
+
+
+class ApiKeysPageLocators(object):
+    KEY_NAME_INPUT = (By.NAME, 'key_name')
+    CREATE_KEY_LINK = (By.LINK_TEXT, 'Create a new API key')
+    API_KEY_ELEMENT = (By.CLASS_NAME, 'api-key-key')

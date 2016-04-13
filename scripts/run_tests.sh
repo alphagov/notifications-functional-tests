@@ -42,7 +42,8 @@ if [ "$#" -eq 1 ]; then
 	fi
 else
     # Note registration *must* run before any other tests as it registers the user for use
-    # in later tests
+    # in later tests and test_python_client_flow.py needs to run last as it will use templates created
+    # by sms and email tests
 	py.test -v -x tests/test_registration.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_invite_new_user.py tests/test_python_client_flow.py
 fi
 

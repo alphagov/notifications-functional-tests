@@ -6,7 +6,8 @@ from tests.pages.locators import (
     SignUpPageLocators,
     AddServicePageLocators,
     EditTemplatePageLocators,
-    UploadCsvLocators
+    UploadCsvLocators,
+    ApiKeysPageLocators
 )
 
 
@@ -60,3 +61,7 @@ class FileInputElement(BasePageElement):
 
 class SubjectInputElement(BasePageElement):
     locator = EditTemplatePageLocators.TEMPLATE_SUBJECT_INPUT[1]
+
+
+class KeyNameInputElement(BasePageElement):
+    locator = ApiKeysPageLocators.KEY_NAME_INPUT[1]
