@@ -60,4 +60,6 @@ def get_service_templates_and_api_key_for_tests(driver, test_profile):
     api_key_page.click_continue()
     api_key = api_key_page.get_api_key()
 
+    api_key_page.sign_out()
+
     return {'service_id': service_id, 'email_template_id': email_template_id, 'sms_template_id': sms_template_id, 'api_key': api_key}  # noqa
