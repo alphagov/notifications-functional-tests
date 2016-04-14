@@ -33,9 +33,6 @@ def get_test_ids_and_client(driver, test_profile):
 
 def test_python_client_sms(driver, test_profile):
 
-    # test_ids = get_service_templates_and_api_key_for_tests(driver, test_profile)
-    # client = _create_client(test_ids['service_id'], test_ids['api_key'])
-
     test_controls = get_test_ids_and_client(driver, test_profile)
     client = test_controls['client']
     test_ids = test_controls['test_ids']
@@ -54,9 +51,6 @@ def test_python_client_sms(driver, test_profile):
 def test_python_client_email(driver, test_profile):
 
     remove_all_emails(email_folder=Config.EMAIL_NOTIFICATION_LABEL)
-
-    # test_ids = get_service_templates_and_api_key_for_tests(driver, test_profile)
-    # client = _create_client(test_ids['service_id'], test_ids['api_key'])
 
     test_controls = get_test_ids_and_client(driver, test_profile)
     client = test_controls['client']
