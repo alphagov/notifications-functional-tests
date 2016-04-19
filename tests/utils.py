@@ -94,7 +94,7 @@ def get_email_body(email, pwd, email_folder):
             msg = email_lib.message_from_bytes(data[0][1])
             gimap.store(num, '+FLAGS', '\\Deleted')
             gimap.expunge()
-            return msg.get_payload().strip()
+            return msg.get_payload().strip().replace('=\r\n', '')  # yikes
         else:
             raise RetryException("Failed to retrieve the email from the email server.")
     finally:
@@ -109,10 +109,11 @@ def generate_unique_email(email, uuid):
 
 
 def get_link(email, password, email_label):
+
     import re
     try:
         email_body = get_email_body(email, password, email_label)
-        match = re.search('http[s]?://\S+', email_body)
+        match = re.search('http[s]?://\S+', email_body, re.MULTILINE)
         if match:
             return match.group(0)
         else:
