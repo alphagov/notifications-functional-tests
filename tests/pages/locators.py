@@ -39,7 +39,8 @@ class NavigationLocators(object):
 
 
 class TemplatePageLocators(object):
-    SEND_FROM_CSV_LINK = (By.LINK_TEXT, 'Send from a CSV file')
+    SEND_TEST_MESSAGES_LINK = (By.LINK_TEXT, 'Send text messages')
+    SEND_EMAIL_LINK = (By.LINK_TEXT, 'Send emails')
     NEW_TEMPLATE_LINK = (By.LINK_TEXT, 'Add a new template')
     EDIT_TEMPLATE_LINK = (By.LINK_TEXT, 'Edit template')
 

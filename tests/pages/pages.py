@@ -222,7 +222,7 @@ class SendSmsTemplatePage(BasePage):
 
     new_sms_template_link = TemplatePageLocators.NEW_TEMPLATE_LINK
     edit_sms_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
-    send_from_csv_link = TemplatePageLocators.SEND_FROM_CSV_LINK
+    send_text_messages_link = TemplatePageLocators.SEND_TEST_MESSAGES_LINK
 
     def click_add_new_template(self):
         element = self.wait_for_element(SendSmsTemplatePage.new_sms_template_link)
@@ -233,7 +233,7 @@ class SendSmsTemplatePage(BasePage):
         element.click()
 
     def click_send_from_csv_link(self):
-        element = self.wait_for_element(SendSmsTemplatePage.send_from_csv_link)
+        element = self.wait_for_element(SendSmsTemplatePage.send_text_messages_link)
         element.click()
 
 
@@ -263,7 +263,7 @@ class SendEmailTemplatePage(BasePage):
 
     new_email_template_link = TemplatePageLocators.NEW_TEMPLATE_LINK
     edit_email_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
-    send_from_csv_link = TemplatePageLocators.SEND_FROM_CSV_LINK
+    send_email_link = TemplatePageLocators.SEND_EMAIL_LINK
 
     def click_add_new_template(self):
         element = self.wait_for_element(SendEmailTemplatePage.new_email_template_link)
@@ -274,7 +274,7 @@ class SendEmailTemplatePage(BasePage):
         element.click()
 
     def click_send_from_csv_link(self):
-        element = self.wait_for_element(SendEmailTemplatePage.send_from_csv_link)
+        element = self.wait_for_element(SendEmailTemplatePage.send_email_link)
         element.click()
 
 
