@@ -127,4 +127,4 @@ def get_verify_code():
     verify_code = get_sms_via_heroku(session())
     if not verify_code:
         pytest.fail("Could not get the verify code")
-    return verify_code
+    return verify_code[0:5]
