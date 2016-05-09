@@ -26,7 +26,8 @@ function display_result {
 pep8 .
 display_result $? 1 "Code style check"
 
-: "${ENVIRONMENT:?Need to set ENVIRONMENT variable to non empty value}"
+environment=${ENVIRONMENT:=preview}
+export ENVIRONMENT=$environment
 
 case $ENVIRONMENT in
     staging)
