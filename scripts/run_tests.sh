@@ -26,19 +26,17 @@ function display_result {
 pep8 .
 display_result $? 1 "Code style check"
 
+# default env to preview
 environment=${ENVIRONMENT:=preview}
 export ENVIRONMENT=$environment
 
 case $ENVIRONMENT in
-    staging)
+    staging|live)
       echo 'Running staging tests'
-      py.test -v -x tests/stating_live/test_send_notifications_from_csv.py
-      ;;
-    live)
-      echo 'Nothing to run on live yet'
+      py.test -v -x tests/staging_live/test_send_notifications_from_csv.py
       ;;
     preview|*)
-      echo 'Default test run - for preview and' $ENVIRONMENT
+      echo 'Default test run - for' $ENVIRONMENT
       # Note registration *must* run before any other tests as it registers the user for use
       # in later tests and test_python_client_flow.py needs to run last as it will use templates created
       # by sms and email tests

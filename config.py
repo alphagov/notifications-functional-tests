@@ -17,3 +17,17 @@ class Config(object):
     EMAIL_TRIES = 10
     EMAIL_DELAY = 5
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ['ENVIRONMENT'] + '_Functional Test Service_'
+
+
+class StagingConfig(Config):
+    FUNCTIONAL_TEST_SERVICE_NAME = 'Staging FunctionalTest'
+    SMS_TEMPLATE_ID = os.environ.get('staging_SMS_TEMPLATE_ID')
+    EMAIL_TEMPLATE_ID = os.environ.get('staging_EMAIL_TEMPLATE_ID')
+    SERVICE_ID = os.environ.get('staging_SERVICE_ID')
+
+
+class LiveConfig(Config):
+    FUNCTIONAL_TEST_SERVICE_NAME = 'Live FunctionalTest'
+    SMS_TEMPLATE_ID = os.environ.get('live_SMS_TEMPLATE_ID')
+    EMAIL_TEMPLATE_ID = os.environ.get('live_EMAIL_TEMPLATE_ID')
+    SERVICE_ID = os.environ.get('live_SERVICE_ID')

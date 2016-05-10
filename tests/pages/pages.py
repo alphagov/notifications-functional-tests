@@ -217,6 +217,10 @@ class DashboardPage(BasePage):
     def get_service_id(self):
         return self.driver.current_url.split('/services/')[1].split('/')[0]
 
+    def go_to_dashboard_for_service(self, service_id):
+        url = "{}/services/{}/dashboard".format(self.base_url, service_id)
+        self.driver.get(url)
+
 
 class SendSmsTemplatePage(BasePage):
 
@@ -318,6 +322,10 @@ class UploadCsvPage(BasePage):
         self.file_input_element = file_path
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
+
+    def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
+        url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
+        self.driver.get(url)
 
 
 class TeamMembersPage(BasePage):

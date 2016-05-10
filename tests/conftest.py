@@ -1,30 +1,56 @@
+import os
 import uuid
 import pytest
 
 from selenium import webdriver
 
-from config import Config
-
 from tests.utils import (
     generate_unique_email
 )
 
-uuid_for_test_run = str(uuid.uuid1())
-
-functional_test_name = Config.FUNCTIONAL_TEST_NAME + uuid_for_test_run
-functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
-functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
-functional_test_password = Config.FUNCTIONAL_TEST_PASSWORD
-functional_test_mobile = Config.TWILIO_TEST_NUMBER
+from config import Config
 
 
 @pytest.fixture(scope="session")
-def test_profile():
-    return {'name': functional_test_name,
-            'email': functional_test_email,
-            'service_name': functional_test_service_name,
-            'password': functional_test_password,
-            'mobile': functional_test_mobile}
+def profile():
+    env = os.environ['ENVIRONMENT'].lower()
+    if env == 'staging':
+        from config import StagingConfig
+        return {'name': StagingConfig.FUNCTIONAL_TEST_NAME,
+                'email': StagingConfig.FUNCTIONAL_TEST_EMAIL,
+                'service_name': StagingConfig.FUNCTIONAL_TEST_SERVICE_NAME,
+                'password': StagingConfig.FUNCTIONAL_TEST_PASSWORD,
+                'mobile': StagingConfig.TWILIO_TEST_NUMBER,
+                'service_id': StagingConfig.SERVICE_ID,
+                'email_template_id': StagingConfig.EMAIL_TEMPLATE_ID,
+                'sms_template_id': StagingConfig.SMS_TEMPLATE_ID,
+                'config': StagingConfig}
+
+    elif env == 'live':
+        from config import LiveConfig
+        return {'name': LiveConfig.FUNCTIONAL_TEST_NAME,
+                'email': LiveConfig.FUNCTIONAL_TEST_EMAIL,
+                'service_name': LiveConfig.FUNCTIONAL_TEST_SERVICE_NAME,
+                'password': LiveConfig.FUNCTIONAL_TEST_PASSWORD,
+                'mobile': LiveConfig.TWILIO_TEST_NUMBER,
+                'service_id': LiveConfig.SERVICE_ID,
+                'email_template_id': LiveConfig.EMAIL_TEMPLATE_ID,
+                'sms_template_id': LiveConfig.SMS_TEMPLATE_ID,
+                'config': LiveConfig}
+    else:
+        from config import Config
+        uuid_for_test_run = str(uuid.uuid1())
+        functional_test_name = Config.FUNCTIONAL_TEST_NAME + uuid_for_test_run
+        functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
+        functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
+        functional_test_password = Config.FUNCTIONAL_TEST_PASSWORD
+        functional_test_mobile = Config.TWILIO_TEST_NUMBER
+        return {'name': functional_test_name,
+                'email': functional_test_email,
+                'service_name': functional_test_service_name,
+                'password': functional_test_password,
+                'mobile': functional_test_mobile,
+                'config': Config}
 
 
 @pytest.fixture(scope="module")

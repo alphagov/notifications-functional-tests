@@ -1,7 +1,5 @@
 from requests import session
 
-from config import Config
-
 from tests.pages.rollups import sign_in
 
 from tests.utils import (
@@ -17,9 +15,9 @@ from tests.pages import (
 )
 
 
-def test_create_sms_template_and_send_from_csv(driver, base_url, test_profile):
+def test_create_sms_template_and_send_from_csv(driver, base_url, profile):
 
-    sign_in(driver, test_profile)
+    sign_in(driver, profile)
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_sms_templates()
@@ -33,7 +31,7 @@ def test_create_sms_template_and_send_from_csv(driver, base_url, test_profile):
     send_sms_page = SendSmsTemplatePage(driver)
     send_sms_page.click_send_from_csv_link()
 
-    directory, filename = create_temp_csv(Config.TWILIO_TEST_NUMBER, 'phone number')
+    directory, filename = create_temp_csv(profile['mobile'], 'phone number')
 
     upload_csv_page = UploadCsvPage(driver)
     upload_csv_page.upload_csv(directory, filename)

@@ -8,8 +8,7 @@ from tests.pages import (
     InviteUserPage,
     RegisterFromInvite,
     TwoFactorPage,
-    TourPage,
-    ProfilePage
+    TourPage
 )
 
 from tests.utils import (
@@ -18,12 +17,10 @@ from tests.utils import (
     get_verify_code
 )
 
-from config import Config
 
+def test_user_can_invite_someone_to_notify(driver, base_url, profile):
 
-def test_user_can_invite_someone_to_notify(driver, base_url, test_profile):
-
-    sign_in(driver, test_profile)
+    sign_in(driver, profile)
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
@@ -36,26 +33,26 @@ def test_user_can_invite_someone_to_notify(driver, base_url, test_profile):
 
     invited_user_randomness = str(uuid.uuid1())
     invited_user_name = 'Invited User ' + invited_user_randomness
-    invite_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, invited_user_randomness)
+    invite_email = generate_unique_email(profile['email'], invited_user_randomness)
 
     invite_user_page.fill_invitation_form(invite_email, send_messages=True)
     invite_user_page.send_invitation()
 
-    invite_link = get_link(test_profile['email'],
-                           test_profile['password'],
-                           Config.INVITATION_EMAIL_LABEL)
+    invite_link = get_link(profile['email'],
+                           profile['password'],
+                           profile['config'].INVITATION_EMAIL_LABEL)
 
     invite_user_page.sign_out()
 
     # next part of interaction is from point of view of invitee
     # i.e. after visting invite_link we'll be registering using invite_email
-    # but use same mobile number and password as test_profile
+    # but use same mobile number and password as profile
 
     driver.get(invite_link)
     register_from_invite_page = RegisterFromInvite(driver)
     register_from_invite_page.fill_registration_form(invited_user_name,
-                                                     test_profile['mobile'],
-                                                     test_profile['password'])
+                                                     profile['mobile'],
+                                                     profile['password'])
     register_from_invite_page.click_continue()
 
     two_factor_page = TwoFactorPage(driver)
@@ -68,5 +65,5 @@ def test_user_can_invite_someone_to_notify(driver, base_url, test_profile):
 
     dashboard_page = DashboardPage(driver)
     assert dashboard_page.is_current()
-    assert dashboard_page.h2_is_service_name(test_profile['service_name'])
+    assert dashboard_page.h2_is_service_name(profile['service_name'])
     dashboard_page.sign_out()

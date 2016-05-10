@@ -81,7 +81,7 @@ def get_email_body(email, pwd, email_folder):
         gimap = imaplib.IMAP4_SSL('imap.gmail.com')
         try:
             rv, data = gimap.login(email, pwd)
-        except imaplib.IMAP4.error:
+        except imaplib.IMAP4.error as e:
             pytest.fail("Login to email account has failed.")
         rv, data = gimap.select(email_folder)
         rv, data = gimap.search(None, "ALL")
