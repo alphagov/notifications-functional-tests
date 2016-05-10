@@ -4,50 +4,38 @@
 Functional tests for Notification applications
 
 # Running the tests
+
 ## On a local dev machine
 
-There are two types of test in this repo. Those using selenium webdriver which test user registration, sending of sms notifications and sending of email notifications.
+The majority of tests that are used in local development and also run on master build on travis (running against preview environemnt) are Selenium web driver tests.
 
-There is an ordering dependency in these tests. The registration test must run before any of the other tests as the user account created is used for all later browser based tests. Each test run will first register a user account using the configured FUNCTIONAL_TEST_EMAIL. The email account will have random characters added so that we do not have uniqueness issues with the email address of registered user.
+There is an order dependency in the main tests. The registration test must run before any of the other tests as a new user account created for each test run. That user account is used for all later browser based tests. Each test run will first register a user account using the configured FUNCTIONAL_TEST_EMAIL. The email account will have random characters added so that we do not have uniqueness issues with the email address of registered user.
 
-In addition there are tests of the python client for the notifications api. For the moment, the client tests require an existing user, service and both email and sms templates. The setup of this account is a bit long winded but the client tests have not yet been adapted to do their own setup.
+In the main suite there are also tests that that directly use the [python client](https://github.com/alphagov/notifications-python-client) for the notifications api. The client tests require an existing user, service, api key and both email and sms templates.
 
-Therefore to run all of the tests in this suite locally you will need to seed a user using the notify. See the config below for FUNCTIONAL_TEST_EMAIL, FUNCTIONAL_TEST_PASSWORD, TEMPLATE_ID, SERVICE_ID.
+To run locally you need to populate a .gitignored environment.sh file with the relevant values. On travis the environment variables are set in the build settings page.
 
+## Local environment file
 
 - Create a local environment.sh file in the root directory of the project /notifications-functional-tests/environment.sh
 
 This file is included in the .gitignore to prevent the file from being accidentally committed
-- Make sure all the apps on running locally.
+- Make sure all the apps are running locally.
 
 
 Contents of the environment.sh file
 
 ```shell
-    export ENVIRONMENT=preview
-    export preview_TWILIO_ACCOUNT_SID=****
-    export preview_TWILIO_AUTH_TOKEN=****
-    export preview_TWILIO_TEST_NUMBER="+447*********"
-    export preview_FUNCTIONAL_TEST_EMAIL=[use the notify tests preview email account]
-    export preview_FUNCTIONAL_TEST_PASSWORD=*****
-    export preview_NOTIFY_ADMIN_URL=http://localhost:6012
-    export preview_SMS_TEMPLATE_ID=***
-    export preview_EMAIL_TEMPLATE_ID=***
-    export preview_SERVICE_ID=****
+    export ENVIRONMENT=someenv
+    export someenv_TWILIO_ACCOUNT_SID=[something]
+    export someenv_TWILIO_AUTH_TOKEN=[something]
+    export someenv_TWILIO_TEST_NUMBER=[something]
+    export someenv_FUNCTIONAL_TEST_EMAIL=[something]
+    export someenv_FUNCTIONAL_TEST_PASSWORD=[something]
+    export someenv_NOTIFY_ADMIN_URL=http://localhost:6012
+    export someenv_NOTIFY_API_URL=http://localhost:6011
+
 ```
-
-`preview_TWILIO_ACCOUNT_SID` = account sid for used to read the sms #
-`preview_TWILIO_AUTH_TOKEN` = auth token for used to make the api calls to read the sms
-`preview_TWILIO_TEST_NUMBER` = for the moment use the preview twilio number - ask for help
-`preview_FUNCTIONAL_TEST_EMAIL` = email to use for the tests, this will need to exist for the sign-in flow to work
-`preview_FUNCTIONAL_TEST_PASSWORD` = password for the functional test user created, this will need to exist for the sign-in flow to work
-`preview_SMS_TEMPLATE_ID` = the id of a test sms template you need to have created for test user and service
-`preview_EMAIL_TEMPLATE_ID` = the id of a test email template you need to have created for test user and service
-`NOTIFY_ADMIN_URL`  = url of the environment
-
-
-- Note: to run locally create a test user account on your local apps using the email and password that matches the values for FUNCTIONAL_TEST_EMAIL and FUNCTIONAL_TEST_PASSWORD in environment.sh
-
 
 Running the tests
 
@@ -57,26 +45,28 @@ Running the tests
 
 ## Tests running on Travis
 
+
+### Preview - tests against master
+
+The same suite as local development runs master code deployed on preview environment env [www.notify.works](https://www.notify.works)
+
+All the relevant environment variables are setup in the build settings on travis for this repo.
+
+
+### Staging and Live builds - test against staging and live branches repectively
+
+To run against staging and live environments a seeded user account on each of those environemnts has been created. In addition a service for the user has been created as well as an email and sms template created.
+
+To run against those instances of Notify, additional environment variables for all of SMS_TEMPLATE_ID, EMAIL_TEMPLATE_ID and SERVICE_ID. These have already been set up on the travis build using the settings page.
+
 The [notifications-api](https://github.com/alphagov/notifications-api) and [notifications-admin](https://github.com/alphagov/notifications-admin) builds
 will trigger the [notifications-functional-test](https://github.com/alphagov/notifications-functional-tests) build,
 as scripted in the [trigger-dependent-build.sh](https://github.com/alphagov/notifications-admin/blob/master/scripts/trigger-dependent-build.sh).
 
-When Travis kicks off the functional tests it will use the encrypted environment variables in the [.travis.yml](https://github.com/alphagov/notifications-functional-tests/blob/master/.travis.yml).
+The trigger-dependent-build.sh scripts on admin or api repos kick off the functional tests passing and pass the branch name as a param to the targeted build script (run_tests.sh). The branch name is set as an environment variable that the run_test.sh script in this repo picks up to decide which tests to run and againsts which instance of notify. This could be a run of tests agaings one of master, staging or live.
 
-Note on travis environment variables are prefixed 'preview'
 
-To create/update these variable run the following travis commands, replacing the *** with the values.
-```shell
-    travis encrypt preview_TWILIO_ACCOUNT_SID=*** --add
-    travis encrypt preview_TWILIO_AUTH_TOKEN=*** --add
-    travis encrypt preview_TWILIO_TEST_NUMBER=*** --add
-    travis encrypt preview_FUNCTIONAL_TEST_EMAIL=*** --add
-    travis encrypt preview_FUNCTIONAL_TEST_PASSWORD=*** --add
-    travis encrypt preview_NOTIFY_ADMIN_URL=*** --add
-    travis encrypt preview_SMS_TEMPLATE_ID=*** --add
-    travis encrypt preview_EMAIL_TEMPLATE_ID=*** --add
-    travis encrypt preview_SERVICE_ID=*** --add
-```
+Note on travis environment variables are prefixed 'master', 'staging' and 'live'
 
 ## What we want to test here and what we do not want to test here
 We do not want to test contents of the page beyond a simple check that would prove we are on the page we expect to be for example check the page title or a heading in the page.
