@@ -7,7 +7,7 @@ Functional tests for Notification applications
 
 ## On a local dev machine
 
-The majority of tests that are used in local development and also run on master build on travis (running against preview environemnt) are Selenium web driver tests.
+The majority of tests that are used in local development and also run on master build on travis (running against preview environment) are Selenium web driver tests.
 
 There is an order dependency in the main tests. The registration test must run before any of the other tests as a new user account created for each test run. That user account is used for all later browser based tests. Each test run will first register a user account using the configured FUNCTIONAL_TEST_EMAIL. The email account will have random characters added so that we do not have uniqueness issues with the email address of registered user.
 
