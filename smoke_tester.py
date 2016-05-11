@@ -9,7 +9,7 @@ data = {"request":
         {"branch": "master",
          "config":
             {"env":
-                {"global": ["TEST=smoketest"]},
+                {"global": ["TEST_SUITE=smoketest"]},
                 "script": "./scripts/run_smoke_tests.sh"
              }
          }
