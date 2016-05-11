@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, json
+from flask import Flask, request, jsonify
 from flask.ext.cache import Cache
 
 app = Flask(__name__)
@@ -9,6 +9,11 @@ app.debug = True
 
 def cache_key(prefix):
     return "{}_sms".format(prefix)
+
+
+@app.route('/')
+def index():
+    return 'Nothing to see here. Move along.', 200
 
 
 @app.route('/<environment>', methods=['GET'])
