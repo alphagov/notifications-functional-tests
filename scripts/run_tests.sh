@@ -30,17 +30,26 @@ display_result $? 1 "Code style check"
 environment=${ENVIRONMENT:=master}
 export ENVIRONMENT=$environment
 
+
+# get status page for env under tests and spit out to console
+function display_status {
+  url=$ENVIRONMENT'_NOTIFY_ADMIN_URL'
+  curl ${!url}/'_status'
+}
+
 case $ENVIRONMENT in
     staging|live)
       echo 'Running staging tests'
+      display_status $ENVIRONMENT
       py.test -v -x tests/staging_live/test_send_notifications_from_csv.py
       ;;
     master|*)
       echo 'Default test run - for' $ENVIRONMENT
+      display_status $ENVIRONMENT
       # Note registration *must* run before any other tests as it registers the user for use
       # in later tests and test_python_client_flow.py needs to run last as it will use templates created
       # by sms and email tests
-      py.test -v -x tests/test_registration.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_invite_new_user.py tests/test_python_client_flow.py
+      # py.test -v -x tests/test_registration.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_invite_new_user.py tests/test_python_client_flow.py
       ;;
 esac
 
