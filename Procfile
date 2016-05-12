@@ -1,1 +1,1 @@
-web: python sms_inbox.py
+web: gunicorn sms_inbox:app
