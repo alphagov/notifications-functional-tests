@@ -187,8 +187,9 @@ class DashboardPage(BasePage):
     team_members_link = DashboardPageLocators.TEAM_MEMBERS_LINK
     api_keys_link = DashboardPageLocators.API_KEYS_LINK
 
-    def is_current(self):
-        return self.driver.current_url.endswith('/dashboard')
+    def is_current(self, service_id):
+        expected = '{}/services/{}/dashboard'.format(self.base_url, service_id)
+        return self.driver.current_url == expected
 
     def h2_is_service_name(self, expected_name):
         element = self.wait_for_element(DashboardPage.h2)

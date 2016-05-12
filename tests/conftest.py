@@ -8,6 +8,8 @@ from tests.utils import (
     generate_unique_email
 )
 
+from tests.pages.rollups import sign_in
+
 from config import Config
 
 
@@ -68,3 +70,8 @@ def driver(request):
 @pytest.fixture(scope="session")
 def base_url():
     return Config.NOTIFY_ADMIN_URL
+
+
+@pytest.fixture(scope="module")
+def login_user(driver, profile):
+    sign_in(driver, profile)

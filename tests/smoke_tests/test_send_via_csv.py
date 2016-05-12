@@ -1,9 +1,7 @@
 from requests import session
-from tests.pages.rollups import sign_in
 
 from tests.utils import (
     create_temp_csv,
-    get_email_body,
     get_sms_via_heroku,
     get_email_message
 )
@@ -11,9 +9,7 @@ from tests.utils import (
 from tests.pages import UploadCsvPage
 
 
-def test_send_notifications_from_csv(driver, base_url, profile):
-
-    sign_in(driver, profile)
+def test_send_email_from_csv(driver, base_url, profile, login_user):
 
     # go to upload csv for email notification page
     upload_csv_page = UploadCsvPage(driver)
@@ -28,7 +24,11 @@ def test_send_notifications_from_csv(driver, base_url, profile):
     email_body = get_email_message(profile['config'])
     assert "The quick brown fox jumped over the lazy dog" in email_body
 
+
+def test_send_sms_from_csv(driver, base_url, profile, login_user):
+
     # go to upload csv for sms notification page
+    upload_csv_page = UploadCsvPage(driver)
     upload_csv_page.go_to_upload_csv_for_service_and_template(profile['service_id'],
                                                               profile['sms_template_id'])
 

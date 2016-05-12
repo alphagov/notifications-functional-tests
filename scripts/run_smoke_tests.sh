@@ -26,7 +26,7 @@ function display_result {
 pep8 .
 display_result $? 1 "Code style check"
 
-export ENVIRONMENT='master'
+environment=${ENVIRONMENT:=live}
 test_suite=${TEST_SUITE:=smoketest}
 
 # get status page for env under tests and spit out to console
@@ -37,6 +37,6 @@ function display_status {
 
 display_status $ENVIRONMENT
 
-echo "This will be where $test_suite runs"
+py.test -v tests/smoke_tests/test_sign_in.py # tests/smoke_tests/test_send_via_csv.py tests/smoke_tests/test_send_via_api.py
 
 display_result $? 3 "Unit tests"

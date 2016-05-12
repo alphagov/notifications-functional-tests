@@ -1,7 +1,5 @@
 import uuid
 
-from tests.pages.rollups import sign_in
-
 from tests.pages import (
     DashboardPage,
     TeamMembersPage,
@@ -18,9 +16,7 @@ from tests.utils import (
 )
 
 
-def test_user_can_invite_someone_to_notify(driver, base_url, profile):
-
-    sign_in(driver, profile)
+def test_user_can_invite_someone_to_notify(driver, base_url, profile, login_user):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
@@ -64,6 +60,5 @@ def test_user_can_invite_someone_to_notify(driver, base_url, profile):
     tour_page.get_me_out_of_here()
 
     dashboard_page = DashboardPage(driver)
-    assert dashboard_page.is_current()
     assert dashboard_page.h2_is_service_name(profile['service_name'])
     dashboard_page.sign_out()

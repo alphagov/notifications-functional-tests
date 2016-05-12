@@ -1,7 +1,5 @@
 from requests import session
 
-from tests.pages.rollups import sign_in
-
 from tests.utils import (
     create_temp_csv,
     get_sms_via_heroku
@@ -15,9 +13,7 @@ from tests.pages import (
 )
 
 
-def test_create_sms_template_and_send_from_csv(driver, base_url, profile):
-
-    sign_in(driver, profile)
+def test_create_sms_template_and_send_from_csv(driver, base_url, profile, login_user):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_sms_templates()

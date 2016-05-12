@@ -128,3 +128,44 @@ def get_verify_code():
     if not verify_code:
         pytest.fail("Could not get the verify code")
     return verify_code[0:5]
+
+
+def get_email_message(config):
+    try:
+        return get_email_body(config.FUNCTIONAL_TEST_EMAIL,
+                              config.FUNCTIONAL_TEST_PASSWORD,
+                              config.EMAIL_NOTIFICATION_LABEL)
+    except:
+        pytest.fail("Couldn't get notification email")
+    finally:
+        remove_all_emails(email_folder=config.EMAIL_NOTIFICATION_LABEL)
+
+
+def send_to_deskpro(config, message):
+    import os
+    import requests
+    email = os.environ.get('live_DESKPRO_PERSON_EMAIL')
+    deskpro_team_id = os.environ.get('live_DESKPRO_TEAM_ID')
+    deskpro_api_key = os.environ.get('live_DESKPRO_API_KEY')
+    deskpro_api_host = os.environ.get('live_DESKPRO_API_HOST')
+    message = message
+
+    data = {'person_email': email,
+            'department_id': deskpro_team_id,
+            'subject': 'Notify incident report',
+            'message': message
+            }
+    headers = {
+        "X-DeskPRO-API-Key": deskpro_api_key,
+        'Content-Type': "application/x-www-form-urlencoded"
+    }
+    import pdb
+    pdb.set_trace()
+
+    resp = requests.post(
+        deskpro_api_host + '/api/tickets',
+        data=data,
+        headers=headers)
+
+    if resp.status_code != 201:
+        print("Deskpro create ticket request failed with {} '{}'".format(resp.status_code, resp.json()))

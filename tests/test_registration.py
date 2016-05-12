@@ -48,6 +48,6 @@ def test_user_registration(driver, base_url, profile):
     tour_page.get_me_out_of_here()
 
     dashboard_page = DashboardPage(driver)
-    assert dashboard_page.is_current()
+
     assert dashboard_page.h2_is_service_name(profile['service_name'])
     dashboard_page.sign_out()

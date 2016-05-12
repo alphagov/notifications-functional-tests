@@ -31,3 +31,4 @@ class LiveConfig(Config):
     SMS_TEMPLATE_ID = os.environ.get('live_SMS_TEMPLATE_ID')
     EMAIL_TEMPLATE_ID = os.environ.get('live_EMAIL_TEMPLATE_ID')
     SERVICE_ID = os.environ.get('live_SERVICE_ID')
+    API_KEY = os.environ.get('live_API_KEY')

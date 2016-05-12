@@ -1,9 +1,5 @@
 import pytest
 
-from config import Config
-
-from tests.pages.rollups import sign_in
-
 from tests.utils import (
     create_temp_csv,
     get_email_body,
@@ -29,9 +25,7 @@ def _get_email_message(config):
         remove_all_emails(email_folder=config.EMAIL_NOTIFICATION_LABEL)
 
 
-def test_create_email_template_and_send_from_csv(driver, base_url, profile):
-
-    sign_in(driver, profile)
+def test_create_email_template_and_send_from_csv(driver, base_url, profile, login_user):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_email_templates()
