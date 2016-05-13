@@ -1,3 +1,13 @@
 Flask>=0.10.1
 Flask-Cache==0.13.1
 gunicorn==19.5.0
+requests==2.9.1
+twilio>=3.3.6
+beautifulsoup4>=4.4.0
+pep8==1.5.7
+pytest==2.8.1
+retry==0.9.1
+selenium==2.53.1
+
+git+https://github.com/alphagov/notifications-python-client.git@1.0.0#egg=notifications-python-client==1.0.0
+
