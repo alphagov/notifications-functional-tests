@@ -21,7 +21,7 @@ headers = {'Content-Type': 'application/json',
            'Travis-API-Version': '3',
            'Authorization': 'token ' + os.environ['TRAVIS_AUTH_TOKEN']
            }
-url = "https://api.travis-ci.org/repo/alphagov%2Fnotifications-functional-tests/requests"
+url = "https://api.travis-ci.org/repo/alphagov%2Fnotifications-smoke-tests/requests"
 resp = requests.post(url, data=json.dumps(data), headers=headers)
 
 print(resp.status_code)
