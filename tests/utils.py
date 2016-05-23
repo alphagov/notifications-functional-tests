@@ -18,7 +18,7 @@ def remove_all_emails(email=None, pwd=None, email_folder=None):
     if not email:
         email = Config.FUNCTIONAL_TEST_EMAIL
     if not pwd:
-        pwd = Config.FUNCTIONAL_TEST_PASSWORD
+        pwd = Config.FUNCTIONAL_TEST_EMAIL_PASSWORD
     if not email_folder:
         email_folder = Config.EMAIL_FOLDER
     gimap = None
@@ -133,7 +133,7 @@ def get_verify_code():
 def get_email_message(config):
     try:
         return get_email_body(config.FUNCTIONAL_TEST_EMAIL,
-                              config.FUNCTIONAL_TEST_PASSWORD,
+                              config.FUNCTIONAL_TEST_EMAIL_PASSWORD,
                               config.EMAIL_NOTIFICATION_LABEL)
     except:
         pytest.fail("Couldn't get notification email")

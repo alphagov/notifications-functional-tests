@@ -35,7 +35,7 @@ def test_user_can_invite_someone_to_notify(driver, base_url, profile, login_user
     invite_user_page.send_invitation()
 
     invite_link = get_link(profile['email'],
-                           profile['password'],
+                           profile['email_password'],
                            profile['config'].INVITATION_EMAIL_LABEL)
 
     invite_user_page.sign_out()

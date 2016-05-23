@@ -30,7 +30,7 @@ def test_user_registration(driver, base_url, profile):
     assert driver.current_url == base_url + '/registration-continue'
 
     registration_link = get_link(profile['email'],
-                                 profile['password'],
+                                 profile['email_password'],
                                  profile['config'].REGISTRATION_EMAIL_LABEL)
     driver.get(registration_link)
     verify_code = get_verify_code()

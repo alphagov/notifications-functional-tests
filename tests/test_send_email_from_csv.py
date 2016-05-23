@@ -17,7 +17,7 @@ from tests.pages import (
 def _get_email_message(config):
     try:
         return get_email_body(config.FUNCTIONAL_TEST_EMAIL,
-                              config.FUNCTIONAL_TEST_PASSWORD,
+                              config.FUNCTIONAL_TEST_EMAIL_PASSWORD,
                               config.EMAIL_NOTIFICATION_LABEL)
     except:
         pytest.fail("Couldn't get notification email")

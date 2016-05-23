@@ -64,7 +64,7 @@ def test_python_client_email(driver, profile):
         notification_id = resp_json['data']['notification']['id']
         message = get_email_body(
             profile['email'],
-            profile['password'],
+            profile['email_password'],
             profile['config'].EMAIL_NOTIFICATION_LABEL)
     finally:
         remove_all_emails(email_folder=profile['config'].EMAIL_NOTIFICATION_LABEL)
