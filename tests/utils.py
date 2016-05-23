@@ -145,22 +145,23 @@ def send_to_deskpro(config, message):
     import os
     import requests
     email = os.environ.get('live_DESKPRO_PERSON_EMAIL')
-    deskpro_team_id = os.environ.get('live_DESKPRO_TEAM_ID')
+    deskpro_department_id = os.environ.get('live_DESKPRO_DEPT_ID')
     deskpro_api_key = os.environ.get('live_DESKPRO_API_KEY')
     deskpro_api_host = os.environ.get('live_DESKPRO_API_HOST')
+    deskpro_agent_team_id = os.environ.get('live_DESKPRO_ASSIGNED_AGENT_TEAM_ID')
+
     message = message
 
     data = {'person_email': email,
-            'department_id': deskpro_team_id,
+            'department_id': deskpro_department_id,
             'subject': 'Notify incident report',
-            'message': message
+            'message': message,
+            'agent_team_id': deskpro_agent_team_id
             }
     headers = {
         "X-DeskPRO-API-Key": deskpro_api_key,
         'Content-Type': "application/x-www-form-urlencoded"
     }
-    import pdb
-    pdb.set_trace()
 
     resp = requests.post(
         deskpro_api_host + '/api/tickets',
