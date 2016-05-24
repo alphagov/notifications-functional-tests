@@ -38,7 +38,7 @@ def test_python_client_sms(driver, profile):
     test_ids = test_controls['test_ids']
 
     resp_json = client.send_sms_notification(
-        profile['mobile'],
+        profile.mobile,
         test_ids['sms_template_id'])
     assert 'result' not in resp_json['data']
     notification_id = resp_json['data']['notification']['id']
@@ -50,7 +50,7 @@ def test_python_client_sms(driver, profile):
 
 def test_python_client_email(driver, profile):
 
-    remove_all_emails(email_folder=profile['config'].EMAIL_NOTIFICATION_LABEL)
+    remove_all_emails(email_folder=profile.email_notification_label)
 
     test_controls = get_test_ids_and_client(driver, profile)
     client = test_controls['client']
@@ -58,16 +58,13 @@ def test_python_client_email(driver, profile):
 
     try:
         resp_json = client.send_email_notification(
-            profile['email'],
+            profile.email,
             test_ids['email_template_id'])
         assert 'result' not in resp_json['data']
         notification_id = resp_json['data']['notification']['id']
-        message = get_email_body(
-            profile['email'],
-            profile['email_password'],
-            profile['config'].EMAIL_NOTIFICATION_LABEL)
+        message = get_email_body(profile, profile.email_notification_label)
     finally:
-        remove_all_emails(email_folder=profile['config'].EMAIL_NOTIFICATION_LABEL)
+        remove_all_emails(email_folder=profile.email_notification_label)
     assert "The quick brown fox jumped over the lazy dog" in message
     resp_json = client.get_notification_by_id(notification_id)
     assert resp_json['data']['notification']['status'] in ['sending', 'delivered']

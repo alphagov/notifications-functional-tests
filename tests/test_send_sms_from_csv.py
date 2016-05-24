@@ -27,7 +27,7 @@ def test_create_sms_template_and_send_from_csv(driver, base_url, profile, login_
     send_sms_page = SendSmsTemplatePage(driver)
     send_sms_page.click_send_from_csv_link()
 
-    directory, filename = create_temp_csv(profile['mobile'], 'phone number')
+    directory, filename = create_temp_csv(profile.mobile, 'phone number')
 
     upload_csv_page = UploadCsvPage(driver)
     upload_csv_page.upload_csv(directory, filename)

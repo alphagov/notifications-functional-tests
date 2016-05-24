@@ -77,11 +77,11 @@ class RegistrationPage(BasePage):
     def is_current(self):
         return self.driver.current_url == self.base_url + '/register'
 
-    def register(self, name, email, mobile_number, password):
-        self.name_input = name
-        self.email_input = email
-        self.mobile_input = mobile_number
-        self.password_input = password
+    def register(self, profile):
+        self.name_input = profile.name
+        self.email_input = profile.email
+        self.mobile_input = profile.mobile
+        self.password_input = profile.password
         self.click_continue_button()
 
     def click_continue_button(self):
@@ -132,16 +132,16 @@ class SignInPage(BasePage):
     def is_currect(self):
         return self.driver.current_url == self.base_url+'/sign-in'
 
-    def fill_login_form(self, email, password):
-        self.email_input = email
-        self.password_input = password
+    def fill_login_form(self, profile):
+        self.email_input = profile.email
+        self.password_input = profile.password
 
     def click_continue_button(self):
         element = self.wait_for_element(SignInPage.continue_button)
         element.click()
 
-    def login(self, email, password):
-        self.fill_login_form(email, password)
+    def login(self, profile):
+        self.fill_login_form(profile)
         self.click_continue_button()
 
 
@@ -375,10 +375,10 @@ class RegisterFromInvite(BasePage):
     password_input = PasswordInputElement()
     continue_button = CommonPageLocators.CONTINUE_BUTTON
 
-    def fill_registration_form(self, name, mobile, password):
+    def fill_registration_form(self, name, profile):
         self.name_input = name
-        self.mobile_input = mobile
-        self.password_input = password
+        self.mobile_input = profile.mobile
+        self.password_input = profile.password
 
     def click_continue(self):
         element = self.wait_for_element(RegisterFromInvite.continue_button)

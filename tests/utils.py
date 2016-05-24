@@ -75,12 +75,12 @@ def get_sms_via_heroku(client, environment=None):
 
 
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
-def get_email_body(email, pwd, email_folder):
+def get_email_body(profile, email_folder):
     gimap = None
     try:
         gimap = imaplib.IMAP4_SSL('imap.gmail.com')
         try:
-            rv, data = gimap.login(email, pwd)
+            rv, data = gimap.login(profile.email, profile.email_password)
         except imaplib.IMAP4.error as e:
             pytest.fail("Login to email account has failed.")
         rv, data = gimap.select(email_folder)
@@ -108,11 +108,10 @@ def generate_unique_email(email, uuid):
     return "{}+{}@{}".format(parts[0], uuid, parts[1])
 
 
-def get_link(email, password, email_label):
-
+def get_link(profile, email_label):
     import re
     try:
-        email_body = get_email_body(email, password, email_label)
+        email_body = get_email_body(profile, email_label)
         match = re.search('http[s]?://\S+', email_body, re.MULTILINE)
         if match:
             return match.group(0)
@@ -130,15 +129,15 @@ def get_verify_code():
     return verify_code[0:5]
 
 
-def get_email_message(config):
+def get_email_message(profile, email_label):
     try:
-        return get_email_body(config.FUNCTIONAL_TEST_EMAIL,
-                              config.FUNCTIONAL_TEST_EMAIL_PASSWORD,
-                              config.EMAIL_NOTIFICATION_LABEL)
+        return get_email_body(profile.email,
+                              profile.email_password,
+                              email_label)
     except:
         pytest.fail("Couldn't get notification email")
     finally:
-        remove_all_emails(email_folder=config.EMAIL_NOTIFICATION_LABEL)
+        remove_all_emails(email_folder=email_label)
 
 
 def send_to_deskpro(config, message):

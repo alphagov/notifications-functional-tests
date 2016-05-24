@@ -29,14 +29,12 @@ def test_user_can_invite_someone_to_notify(driver, base_url, profile, login_user
 
     invited_user_randomness = str(uuid.uuid1())
     invited_user_name = 'Invited User ' + invited_user_randomness
-    invite_email = generate_unique_email(profile['email'], invited_user_randomness)
+    invite_email = generate_unique_email(profile.email, invited_user_randomness)
 
     invite_user_page.fill_invitation_form(invite_email, send_messages=True)
     invite_user_page.send_invitation()
 
-    invite_link = get_link(profile['email'],
-                           profile['email_password'],
-                           profile['config'].INVITATION_EMAIL_LABEL)
+    invite_link = get_link(profile, profile.invitation_email_label)
 
     invite_user_page.sign_out()
 
@@ -46,9 +44,7 @@ def test_user_can_invite_someone_to_notify(driver, base_url, profile, login_user
 
     driver.get(invite_link)
     register_from_invite_page = RegisterFromInvite(driver)
-    register_from_invite_page.fill_registration_form(invited_user_name,
-                                                     profile['mobile'],
-                                                     profile['password'])
+    register_from_invite_page.fill_registration_form(invited_user_name, profile)
     register_from_invite_page.click_continue()
 
     two_factor_page = TwoFactorPage(driver)
@@ -60,5 +56,5 @@ def test_user_can_invite_someone_to_notify(driver, base_url, profile, login_user
     tour_page.get_me_out_of_here()
 
     dashboard_page = DashboardPage(driver)
-    assert dashboard_page.h2_is_service_name(profile['service_name'])
+    assert dashboard_page.h2_is_service_name(profile.service_name)
     dashboard_page.sign_out()

@@ -22,16 +22,12 @@ def test_user_registration(driver, base_url, profile):
     registration_page = RegistrationPage(driver)
     assert registration_page.is_current()
 
-    registration_page.register(profile['name'],
-                               profile['email'],
-                               profile['mobile'],
-                               profile['password'])
+    registration_page.register(profile)
 
     assert driver.current_url == base_url + '/registration-continue'
 
-    registration_link = get_link(profile['email'],
-                                 profile['email_password'],
-                                 profile['config'].REGISTRATION_EMAIL_LABEL)
+    registration_link = get_link(profile, profile.registration_email_label)
+
     driver.get(registration_link)
     verify_code = get_verify_code()
 
@@ -41,7 +37,7 @@ def test_user_registration(driver, base_url, profile):
 
     add_service_page = AddServicePage(driver)
     assert add_service_page.is_current()
-    add_service_page.add_service(profile['service_name'])
+    add_service_page.add_service(profile.service_name)
 
     tour_page = TourPage(driver)
     assert tour_page.is_current()
@@ -49,5 +45,5 @@ def test_user_registration(driver, base_url, profile):
 
     dashboard_page = DashboardPage(driver)
 
-    assert dashboard_page.h2_is_service_name(profile['service_name'])
+    assert dashboard_page.h2_is_service_name(profile.service_name)
     dashboard_page.sign_out()
