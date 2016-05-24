@@ -131,9 +131,7 @@ def get_verify_code():
 
 def get_email_message(profile, email_label):
     try:
-        return get_email_body(profile.email,
-                              profile.email_password,
-                              email_label)
+        return get_email_body(profile, email_label)
     except:
         pytest.fail("Couldn't get notification email")
     finally:

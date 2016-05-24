@@ -25,8 +25,6 @@ def sign_in(driver, test_profile):
         verify_code = get_verify_code()
         two_factor_page.verify(verify_code)
     except Exception as e:
-        import pdb
-        pdb.set_trace()
         pytest.fail("Unable to log in")
 
 
