@@ -106,17 +106,6 @@ class AddServicePage(BasePage):
         element.click()
 
 
-class TourPage(BasePage):
-
-    def is_current(self):
-        return self.driver.current_url.endswith('/tour/1')
-
-    def get_me_out_of_here(self):
-        for i in range(0, 4):
-            element = self.driver.find_element(By.LINK_TEXT, 'Next')
-            element.click()
-
-
 class SignInPage(BasePage):
 
     email_input = EmailInputElement()
@@ -235,10 +224,18 @@ class SendSmsTemplatePage(BasePage):
 
     def click_edit_template(self):
         element = self.wait_for_element(SendSmsTemplatePage.edit_sms_template_link)
+        # if element is present then ok to proceed, but since sample template has
+        # been introducted we actually need the second template in list i.e. second
+        # link of same name
+        element = self.driver.find_elements_by_link_text(SendSmsTemplatePage.edit_sms_template_link[1])[1]
         element.click()
 
     def click_send_from_csv_link(self):
         element = self.wait_for_element(SendSmsTemplatePage.send_text_messages_link)
+        # if element is present then ok to proceed, but since sample template has
+        # been introducted we actually need the second template in list i.e. second
+        # link of same name
+        element = self.driver.find_elements_by_link_text(SendSmsTemplatePage.send_text_messages_link[1])[1]
         element.click()
 
 
@@ -276,10 +273,18 @@ class SendEmailTemplatePage(BasePage):
 
     def click_edit_template(self):
         element = self.wait_for_element(SendEmailTemplatePage.edit_email_template_link)
+        # if element is present then ok to proceed, but since sample template has
+        # been introducted we actually need the second template in list i.e. second
+        # link of same name
+        element = self.driver.find_elements_by_link_text(SendEmailTemplatePage.edit_email_template_link[1])[1]
         element.click()
 
     def click_send_from_csv_link(self):
         element = self.wait_for_element(SendEmailTemplatePage.send_email_link)
+        # if element is present then ok to proceed, but since sample template has
+        # been introducted we actually need the second template in list i.e. second
+        # link of same name
+        element = self.driver.find_elements_by_link_text(SendEmailTemplatePage.send_email_link[1])[1]
         element.click()
 
 

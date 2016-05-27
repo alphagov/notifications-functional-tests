@@ -5,8 +5,7 @@ from tests.pages import (
     TeamMembersPage,
     InviteUserPage,
     RegisterFromInvite,
-    TwoFactorPage,
-    TourPage
+    TwoFactorPage
 )
 
 from tests.utils import (
@@ -51,10 +50,10 @@ def test_user_can_invite_someone_to_notify(driver, base_url, profile, login_user
     verify_code = get_verify_code()
     two_factor_page.verify(verify_code)
 
-    tour_page = TourPage(driver)
-    assert tour_page.is_current()
-    tour_page.get_me_out_of_here()
-
     dashboard_page = DashboardPage(driver)
+    service_id = dashboard_page.get_service_id()
+    dashboard_page.go_to_dashboard_for_service(service_id)
+
     assert dashboard_page.h2_is_service_name(profile.service_name)
+
     dashboard_page.sign_out()

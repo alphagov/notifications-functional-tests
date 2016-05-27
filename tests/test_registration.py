@@ -8,8 +8,7 @@ from tests.pages import (
     RegistrationPage,
     VerifyPage,
     DashboardPage,
-    AddServicePage,
-    TourPage
+    AddServicePage
 )
 
 
@@ -39,11 +38,9 @@ def test_user_registration(driver, base_url, profile):
     assert add_service_page.is_current()
     add_service_page.add_service(profile.service_name)
 
-    tour_page = TourPage(driver)
-    assert tour_page.is_current()
-    tour_page.get_me_out_of_here()
-
     dashboard_page = DashboardPage(driver)
+    service_id = dashboard_page.get_service_id()
+    dashboard_page.go_to_dashboard_for_service(service_id)
 
     assert dashboard_page.h2_is_service_name(profile.service_name)
     dashboard_page.sign_out()
