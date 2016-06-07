@@ -126,7 +126,11 @@ def get_verify_code():
     verify_code = get_sms_via_heroku(session())
     if not verify_code:
         pytest.fail("Could not get the verify code")
-    return verify_code[0:5]
+    import re
+    m = re.search('\d{5}', verify_code)
+    if not m:
+        pytest.fail("Could not get the verify code")
+    return m.group(0)
 
 
 def get_email_message(profile, email_label):
