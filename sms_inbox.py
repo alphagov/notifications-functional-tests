@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from flask.ext.cache import Cache
 
 app = Flask(__name__)
@@ -15,26 +15,30 @@ def index():
     return 'Nothing to see here. Move along.', 200
 
 
-@app.route('/<environment>', methods=['GET'])
-def get_message(environment):
-    result = cache.get(cache_key(environment))
-    if result:
-        cache.delete(cache_key(environment))
-        return jsonify({
-            'result': 'success',
-            'sms_code': result
-        }), 200
+@app.route('/<environment>', methods=['GET', 'POST'])
+def message(environment):
+    if request.method == 'GET':
+        result = cache.get(cache_key(environment))
+        if result:
+            cache.delete(cache_key(environment))
+            return jsonify({
+                'result': 'success',
+                'sms_code': result
+            }), 200
+        else:
+            return jsonify({
+                'result': 'error',
+                'message': 'no code found'
+            }), 404
+    elif request.method == 'POST':
+        cache.set(cache_key(environment), request.form['Body'], timeout=300)
+        from flask import make_response
+        resp = '<?xml version="1.0" encoding="UTF-8" ?><Response />'
+        response = make_response(resp)
+        response.headers['Content-Type'] = 'text/xml; charset=utf-8'
+        return response
     else:
-        return jsonify({
-            'result': 'error',
-            'message': 'no code found'
-        }), 404
-
-
-@app.route('/<environment>', methods=['POST'])
-def receive_message(environment):
-    cache.set(cache_key(environment), request.form['Body'], timeout=300)
-    return "OK", 200
+        abort(400)
 
 
 @app.route('/test-integration', methods=['POST'])
