@@ -39,7 +39,7 @@ function display_status {
 
 case $ENVIRONMENT in
     staging|live)
-      echo 'Running staging tests'
+      echo Running $ENVIRONMENT tests
       display_status $ENVIRONMENT
       py.test -x tests/staging_live/test_send_notifications_from_csv.py
       ;;
