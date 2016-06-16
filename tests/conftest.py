@@ -80,7 +80,7 @@ def profile():
 
 @pytest.fixture(scope="module")
 def driver(request):
-    driver = webdriver.Chrome()
+    driver = webdriver.Firefox()
 
     def clear_up():
         driver.delete_all_cookies()
