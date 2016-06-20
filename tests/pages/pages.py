@@ -280,15 +280,23 @@ class EditEmailTemplatePage(BasePage):
     subject_input = SubjectInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
+    delete_button = EditTemplatePageLocators.DELETE_BUTTON
+    confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
     def click_save(self):
         element = self.wait_for_element(EditEmailTemplatePage.save_button)
         element.click()
 
-    def create_template(self):
+    def click_delete(self):
+        element = self.wait_for_element(EditEmailTemplatePage.delete_button)
+        element.click()
+        element = self.wait_for_element(EditEmailTemplatePage.confirm_delete_button)
+        element.click()
+
+    def create_template(self, name='Test email template'):
         # TODO remove the uuid mularkey once uniqueness of email subject no longer a thing
         import uuid
-        self.name_input = 'Test email template'
+        self.name_input = name
         self.subject_input = 'Test email from functional tests ' + str(uuid.uuid1())
         self.template_content_input = 'The quick brown fox jumped over the lazy dog'
         self.click_save()
