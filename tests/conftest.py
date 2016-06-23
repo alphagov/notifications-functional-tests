@@ -8,7 +8,7 @@ from tests.utils import (
     generate_unique_email
 )
 
-from tests.pages.rollups import sign_in
+from tests.pages.rollups import sign_in, old_sign_in
 
 from config import Config
 
@@ -34,7 +34,7 @@ def profile():
                           'service_name': StagingConfig.FUNCTIONAL_TEST_SERVICE_NAME,
                           'password': StagingConfig.FUNCTIONAL_TEST_PASSWORD,
                           'email_password': StagingConfig.FUNCTIONAL_TEST_EMAIL_PASSWORD,
-                          'mobile': StagingConfig.TWILIO_TEST_NUMBER,
+                          'mobile': StagingConfig.TEST_NUMBER,
                           'service_id': StagingConfig.SERVICE_ID,
                           'email_template_id': StagingConfig.EMAIL_TEMPLATE_ID,
                           'sms_template_id': StagingConfig.SMS_TEMPLATE_ID,
@@ -50,7 +50,7 @@ def profile():
                           'service_name': LiveConfig.FUNCTIONAL_TEST_SERVICE_NAME,
                           'password': LiveConfig.FUNCTIONAL_TEST_PASSWORD,
                           'email_password': LiveConfig.FUNCTIONAL_TEST_EMAIL_PASSWORD,
-                          'mobile': LiveConfig.TWILIO_TEST_NUMBER,
+                          'mobile': LiveConfig.TEST_NUMBER,
                           'service_id': LiveConfig.SERVICE_ID,
                           'email_template_id': LiveConfig.EMAIL_TEMPLATE_ID,
                           'sms_template_id': LiveConfig.SMS_TEMPLATE_ID,
@@ -65,7 +65,7 @@ def profile():
         functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
         functional_test_password = Config.FUNCTIONAL_TEST_PASSWORD
         functional_test_email_password = Config.FUNCTIONAL_TEST_EMAIL_PASSWORD
-        functional_test_mobile = Config.TWILIO_TEST_NUMBER
+        functional_test_mobile = Config.TEST_NUMBER
         return Profile(**{'env': Config.ENVIRONMENT,
                           'name': functional_test_name,
                           'email': functional_test_email,
@@ -80,7 +80,8 @@ def profile():
 
 @pytest.fixture(scope="module")
 def driver(request):
-    driver = webdriver.Firefox()
+    driver = webdriver.Chrome()
+    driver.delete_all_cookies()
 
     def clear_up():
         driver.delete_all_cookies()
@@ -98,3 +99,8 @@ def base_url():
 @pytest.fixture(scope="module")
 def login_user(driver, profile):
     sign_in(driver, profile)
+
+
+@pytest.fixture(scope="module")
+def old_login_user(driver, profile):
+    old_sign_in(driver, profile)

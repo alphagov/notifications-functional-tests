@@ -9,7 +9,7 @@ from tests.utils import (
 from tests.pages import UploadCsvPage
 
 
-def test_send_notifications_from_csv(driver, base_url, profile, login_user):
+def test_send_notifications_from_csv(driver, base_url, profile, old_login_user):
 
     # go to upload csv for email notification page
     upload_csv_page = UploadCsvPage(driver)

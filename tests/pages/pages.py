@@ -4,6 +4,7 @@ import shutil
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 
 from config import Config
 
@@ -32,7 +33,8 @@ from tests.pages.locators import (
     UploadCsvLocators,
     TeamMembersPageLocators,
     InviteUserPageLocators,
-    ApiKeysPageLocators
+    ApiKeysPageLocators,
+    TwoFactorPageLocators
 )
 
 
@@ -139,16 +141,22 @@ class VerifyPage(BasePage):
     sms_input = SmsInputElement()
     continue_button = CommonPageLocators.CONTINUE_BUTTON
 
-    def is_current(self):
-        return self.driver.current_url == self.base_url+'/verify'
-
     def click_continue_button(self):
         element = self.wait_for_element(VerifyPage.continue_button)
         element.click()
 
     def verify(self, code):
+        element = self.wait_for_element(TwoFactorPageLocators.SMS_INPUT)
+        element.clear()
         self.sms_input = code
         self.click_continue_button()
+
+    def has_code_error(self):
+        try:
+            self.driver.find_element_by_class_name('error-message')
+        except NoSuchElementException:
+            return False
+        return True
 
 
 class TwoFactorPage(BasePage):
@@ -318,6 +326,9 @@ class UploadCsvPage(BasePage):
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
         self.driver.get(url)
+
+    def get_template_id(self):
+        return self.driver.current_url.split('//')[1].split('/')[4]
 
 
 class TeamMembersPage(BasePage):
