@@ -81,7 +81,10 @@ def profile():
 
 @pytest.fixture(scope="module")
 def driver(request):
-    driver = webdriver.Firefox()
+    if os.environ.get('TRAVIS'):
+        driver = webdriver.Firefox()
+    else:
+        driver = webdriver.Chrome()
     driver.delete_all_cookies()
 
     def clear_up():
