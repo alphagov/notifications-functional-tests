@@ -169,7 +169,6 @@ def get_sms_via_api(service_id, template_id, profile, api_key):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
-
     resp = client.get('notifications')
     for notification in resp['notifications']:
         if notification['template']['id'] == template_id and notification['to'] == profile.mobile:

@@ -40,8 +40,8 @@ def profile():
                           'sms_template_id': StagingConfig.SMS_TEMPLATE_ID,
                           'email_notification_label': StagingConfig.EMAIL_NOTIFICATION_LABEL,
                           'registration_email_label': StagingConfig.REGISTRATION_EMAIL_LABEL,
-                          'invitation_email_label': StagingConfig.INVITATION_EMAIL_LABEL
-                          })
+                          'invitation_email_label': StagingConfig.INVITATION_EMAIL_LABEL,
+                          'api_key': StagingConfig.SERVICE_API_KEY})
     elif env == 'live':
         from config import LiveConfig
         return Profile(**{'env': LiveConfig.ENVIRONMENT,
@@ -56,7 +56,8 @@ def profile():
                           'sms_template_id': LiveConfig.SMS_TEMPLATE_ID,
                           'email_notification_label': LiveConfig.EMAIL_NOTIFICATION_LABEL,
                           'registration_email_label': LiveConfig.REGISTRATION_EMAIL_LABEL,
-                          'invitation_email_label': LiveConfig.INVITATION_EMAIL_LABEL})
+                          'invitation_email_label': LiveConfig.INVITATION_EMAIL_LABEL,
+                          'api_key': LiveConfig.SERVICE_API_KEY})
     else:
         from config import Config
         uuid_for_test_run = str(uuid.uuid1())
@@ -99,8 +100,3 @@ def base_url():
 @pytest.fixture(scope="module")
 def login_user(driver, profile):
     sign_in(driver, profile)
-
-
-@pytest.fixture(scope="module")
-def old_login_user(driver, profile):
-    old_sign_in(driver, profile)
