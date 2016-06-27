@@ -1,5 +1,3 @@
-from requests import session
-
 from tests.utils import (
     create_temp_csv,
     get_sms_via_api,
