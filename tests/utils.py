@@ -171,7 +171,10 @@ def get_sms_via_api(service_id, template_id, profile, api_key):
                                     api_key)
     resp = client.get('notifications')
     for notification in resp['notifications']:
-        if notification['template']['id'] == template_id and notification['to'] == profile.mobile:
+        t_id = notification['template']['id']
+        to = notification['to']
+        status = notification['to']
+        if t_id == template_id and to == profile.mobile and status != 'created':
             return notification['body']
     else:
         message = 'Could not find notification with template {} to number {}'.format(template_id, profile.mobile)

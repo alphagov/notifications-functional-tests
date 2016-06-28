@@ -190,8 +190,9 @@ def do_test_python_client_sms(driver, profile, test_ids):
     message = get_sms_via_api(test_ids['service_id'], test_ids['sms_template_id'], profile, test_ids['api_key'])
 
     assert "The quick brown fox jumped over the lazy dog" in message
+
     resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['status'] in ['sending', 'delivered']
+    assert resp_json['data']['notification']['id'] == notification_id
 
 
 def do_test_python_client_email(driver, profile, test_ids):
