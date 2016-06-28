@@ -17,7 +17,7 @@ class SignUpPageLocators(object):
     MOBILE_INPUT = (By.NAME, 'mobile_number')
 
 
-class TwoFactorPageLocators(object):
+class VerifyPageLocators(object):
     SMS_INPUT = (By.NAME, 'sms_code')
 
 

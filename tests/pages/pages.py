@@ -34,7 +34,7 @@ from tests.pages.locators import (
     TeamMembersPageLocators,
     InviteUserPageLocators,
     ApiKeysPageLocators,
-    TwoFactorPageLocators
+    VerifyPageLocators
 )
 
 
@@ -146,7 +146,7 @@ class VerifyPage(BasePage):
         element.click()
 
     def verify(self, code):
-        element = self.wait_for_element(TwoFactorPageLocators.SMS_INPUT)
+        element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
         element.clear()
         self.sms_input = code
         self.click_continue_button()
@@ -157,23 +157,6 @@ class VerifyPage(BasePage):
         except NoSuchElementException:
             return False
         return True
-
-
-class TwoFactorPage(BasePage):
-
-    sms_input = SmsInputElement()
-    continue_button = CommonPageLocators.CONTINUE_BUTTON
-
-    def is_current(self):
-        return self.driver.current_url == self.base_url+'/two-factor'
-
-    def click_continue_button(self):
-        element = self.wait_for_element(TwoFactorPage.continue_button)
-        element.click()
-
-    def verify(self, code):
-        self.sms_input = code
-        self.click_continue_button()
 
 
 class DashboardPage(BasePage):

@@ -8,11 +8,10 @@ from tests.pages import (
     EditEmailTemplatePage,
     SendSmsTemplatePage,
     EditSmsTemplatePage,
-    ApiKeyPage,
-    TwoFactorPage
+    ApiKeyPage
 )
 
-from tests.utils import do_verify, get_verify_code
+from tests.utils import do_verify
 
 
 def sign_in(driver, test_profile):
@@ -24,20 +23,6 @@ def sign_in(driver, test_profile):
         sleep(5)
         do_verify(driver, test_profile),
     except Exception:
-        pytest.fail("Unable to log in")
-
-
-def old_sign_in(driver, test_profile):
-    try:
-        sign_in_page = SignInPage(driver)
-        sign_in_page.get()
-        assert sign_in_page.is_current()
-        sign_in_page.login(test_profile)
-        two_factor_page = TwoFactorPage(driver)
-        assert two_factor_page.is_current()
-        verify_code = get_verify_code()
-        two_factor_page.verify(verify_code)
-    except Exception as e:
         pytest.fail("Unable to log in")
 
 

@@ -8,7 +8,7 @@ from tests.utils import (
     generate_unique_email
 )
 
-from tests.pages.rollups import sign_in, old_sign_in
+from tests.pages.rollups import sign_in
 
 from config import Config
 

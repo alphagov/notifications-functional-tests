@@ -2,7 +2,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
     CommonPageLocators,
-    TwoFactorPageLocators,
+    VerifyPageLocators,
     SignUpPageLocators,
     AddServicePageLocators,
     EditTemplatePageLocators,
@@ -40,7 +40,7 @@ class PasswordInputElement(BasePageElement):
 
 
 class SmsInputElement(BasePageElement):
-    locator = TwoFactorPageLocators.SMS_INPUT[1]
+    locator = VerifyPageLocators.SMS_INPUT[1]
 
 
 class NameInputElement(BasePageElement):
