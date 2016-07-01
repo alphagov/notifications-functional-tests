@@ -169,15 +169,22 @@ def get_sms_via_api(service_id, template_id, profile, api_key):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
+    if profile.env == 'dev':
+        expected_status = 'sending'
+    else:
+        expected_status = 'delivered'
     resp = client.get('notifications')
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['to']
-        status = notification['to']
-        if t_id == template_id and to == profile.mobile and status != 'created':
+        status = notification['status']
+        if t_id == template_id and to == profile.mobile and status == expected_status:
             return notification['body']
     else:
-        message = 'Could not find notification with template {} to number {}'.format(template_id, profile.mobile)
+        message = 'Could not find notification with template {} to number {} with a status of {}' \
+            .format(template_id,
+                    profile.mobile,
+                    expected_status)
         raise RetryException(message)
 
 

@@ -26,14 +26,15 @@ This file is included in the .gitignore to prevent the file from being accidenta
 Contents of the environment.sh file
 
 ```shell
-    export ENVIRONMENT=someenv
-    export someenv_TWILIO_ACCOUNT_SID=[something]
-    export someenv_TWILIO_AUTH_TOKEN=[something]
-    export someenv_TWILIO_TEST_NUMBER=[something]
-    export someenv_FUNCTIONAL_TEST_EMAIL=[something]
-    export someenv_FUNCTIONAL_TEST_PASSWORD=[something]
-    export someenv_NOTIFY_ADMIN_URL=http://localhost:6012
-    export someenv_NOTIFY_API_URL=http://localhost:6011
+export ENVIRONMENT=dev  # for local environments use dev 
+export dev_TEST_NUMBER= [use your own number]
+export dev_FUNCTIONAL_TEST_EMAIL=[some gmail account @digital.cabinet-office.gov.uk]
+export dev_FUNCTIONAL_TEST_PASSWORD=xxx # password for gmail account and user account created in test
+export dev_FUNCTIONAL_TEST_EMAIL_PASSWORD=xxx  # set up in gmail
+export dev_NOTIFY_ADMIN_URL=http://localhost:6012
+export dev_NOTIFY_API_URL=http://localhost:6011
+export dev_NOTIFY_SERVICE_ID=d6aa2c68-a2d9-4437-ab19-3ae8eb202553
+export dev_NOTIFY_SERVICE_API_KEY=xxx  # create an api key for the GOV.UK Notify service via the admin app
 
 ```
 
