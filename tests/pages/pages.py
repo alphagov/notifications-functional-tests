@@ -207,7 +207,7 @@ class DashboardPage(BasePage):
 
 class SendSmsTemplatePage(BasePage):
 
-    new_sms_template_link = TemplatePageLocators.NEW_TEMPLATE_LINK
+    new_sms_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
     edit_sms_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
     send_text_messages_link = TemplatePageLocators.SEND_TEST_MESSAGES_LINK
 
@@ -248,7 +248,7 @@ class EditSmsTemplatePage(BasePage):
 
 class SendEmailTemplatePage(BasePage):
 
-    new_email_template_link = TemplatePageLocators.NEW_TEMPLATE_LINK
+    new_email_template_link = TemplatePageLocators.ADD_A_NEW_TEMPLATE_LINK
     edit_email_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
     send_email_link = TemplatePageLocators.SEND_EMAIL_LINK
 
