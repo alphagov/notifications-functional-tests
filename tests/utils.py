@@ -3,11 +3,15 @@ import csv
 import email as email_lib
 import imaplib
 import json
+import re
 from time import sleep
 from retry import retry
 from _pytest.runner import fail
 
+from notifications_python_client.notifications import NotificationsAPIClient
 from config import Config
+
+from tests.pages import VerifyPage
 
 
 class RetryException(Exception):
@@ -126,11 +130,62 @@ def get_verify_code():
     verify_code = get_sms_via_heroku(session())
     if not verify_code:
         pytest.fail("Could not get the verify code")
-    import re
     m = re.search('\d{5}', verify_code)
     if not m:
         pytest.fail("Could not get the verify code")
     return m.group(0)
+
+
+@retry(RetryException, tries=15, delay=2)
+def do_verify(driver, profile):
+    verify_code = get_verify_code_from_api(profile)
+    verify_page = VerifyPage(driver)
+    verify_page.verify(verify_code)
+    if verify_page.has_code_error():
+        raise RetryException
+
+
+def get_verify_code_from_api(profile):
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
+                                    Config.NOTIFY_SERVICE_ID,
+                                    Config.NOTIFY_SERVICE_API_KEY)
+    resp = client.get('notifications')
+    verify_code_message = _get_latest_verify_code_message(resp, profile)
+    m = re.search('\d{5}', verify_code_message)
+    if not m:
+        pytest.fail("Could not find the verify code in notification body")
+    return m.group(0)
+
+
+def _get_latest_verify_code_message(resp, profile):
+    for notification in resp['notifications']:
+        if notification['to'] == profile.mobile and notification['template']['name'] == 'Notify SMS verify code':
+            return notification['body']
+    raise RetryException
+
+
+@retry(RetryException, tries=15, delay=2)
+def get_sms_via_api(service_id, template_id, profile, api_key):
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
+                                    service_id,
+                                    api_key)
+    if profile.env == 'dev':
+        expected_status = 'sending'
+    else:
+        expected_status = 'delivered'
+    resp = client.get('notifications')
+    for notification in resp['notifications']:
+        t_id = notification['template']['id']
+        to = notification['to']
+        status = notification['status']
+        if t_id == template_id and to == profile.mobile and status == expected_status:
+            return notification['body']
+    else:
+        message = 'Could not find notification with template {} to number {} with a status of {}' \
+            .format(template_id,
+                    profile.mobile,
+                    expected_status)
+        raise RetryException(message)
 
 
 def get_email_message(profile, email_label):

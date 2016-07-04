@@ -1,8 +1,6 @@
-from requests import session
-
 from tests.utils import (
     create_temp_csv,
-    get_sms_via_heroku,
+    get_sms_via_api,
     get_email_message
 )
 
@@ -32,6 +30,7 @@ def test_send_notifications_from_csv(driver, base_url, profile, login_user):
     directory, filename = create_temp_csv(profile.mobile, 'phone number')
     upload_csv_page.upload_csv(directory, filename)
 
-    message = get_sms_via_heroku(session(), profile.env)
+    message = get_sms_via_api(profile.service_id, profile.sms_template_id, profile, profile.api_key)
+
     assert "The quick brown fox jumped over the lazy dog" in message
     upload_csv_page.sign_out()

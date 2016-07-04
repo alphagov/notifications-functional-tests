@@ -46,13 +46,7 @@ case $ENVIRONMENT in
     master|*)
       echo 'Default test run - for' $ENVIRONMENT
       display_status $ENVIRONMENT
-      # Note registration *must* run before any other tests as it registers the user for use
-      # in later tests and test_python_client_flow.py needs to run last as it will use templates created
-      # by sms and email tests
-      # py.test -x tests/test_registration.py tests/test_send_sms_from_csv.py tests/test_send_email_from_csv.py tests/test_invite_new_user.py tests/test_python_client_flow.py
-
-      # try this for a while to reduce number of logins
-      py.test -x tests/test_all_the_things.py tests/test_python_client_flow.py
+      py.test -x tests/test_all_the_things.py
       ;;
 esac
 

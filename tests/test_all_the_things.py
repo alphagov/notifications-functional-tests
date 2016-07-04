@@ -1,50 +1,60 @@
 import pytest
 import uuid
+from time import sleep
 
-from requests import session
+from tests.pages.rollups import get_service_templates_and_api_key_for_tests
+
+from notifications_python_client.notifications import NotificationsAPIClient
+
+from config import Config
 
 from tests.utils import (
     get_link,
     create_temp_csv,
     get_email_body,
     remove_all_emails,
-    get_sms_via_heroku,
     generate_unique_email,
-    get_verify_code
+    get_sms_via_api,
+    do_verify
 )
 
 from tests.pages import (
     MainPage,
     RegistrationPage,
-    VerifyPage,
     DashboardPage,
     AddServicePage,
     SendEmailTemplatePage,
-    EditEmailTemplatePage,
     UploadCsvPage,
     SendSmsTemplatePage,
-    EditSmsTemplatePage,
     TeamMembersPage,
     InviteUserPage,
-    RegisterFromInvite,
-    TwoFactorPage
+    RegisterFromInvite
 )
 
 
 def _get_email_message(profile):
     try:
         return get_email_body(profile, profile.email_notification_label)
-    except Exception as e:
+    except Exception:
         pytest.fail("Couldn't get notification email")
     finally:
         remove_all_emails(email_folder=profile.email_notification_label)
 
 
+# Note registration *must* run before any other tests as it registers the user for use
+# in later tests and test_python_client_flow.py needs to run last as it will use templates created
+# by sms and email tests
 def test_everything(driver, base_url, profile):
     do_user_registration(driver, base_url, profile)
+
+    # TODO move this to profile and setup in conftest
+    test_ids = get_service_templates_and_api_key_for_tests(driver, profile)
+
     do_create_email_template_and_send_from_csv(driver, base_url, profile)
-    do_create_sms_template_and_send_from_csv(driver, base_url, profile)
+    do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids)
     do_user_can_invite_someone_to_notify(driver, base_url, profile)
+    do_test_python_client_sms(driver, profile, test_ids)
+    do_test_python_client_email(driver, profile, test_ids)
 
 
 def do_user_registration(driver, base_url, profile):
@@ -63,11 +73,9 @@ def do_user_registration(driver, base_url, profile):
     registration_link = get_link(profile, profile.registration_email_label)
 
     driver.get(registration_link)
-    verify_code = get_verify_code()
 
-    verify_page = VerifyPage(driver)
-    assert verify_page.is_current()
-    verify_page.verify(verify_code)
+    sleep(5)
+    do_verify(driver, profile)
 
     add_service_page = AddServicePage(driver)
     assert add_service_page.is_current()
@@ -85,12 +93,6 @@ def do_create_email_template_and_send_from_csv(driver, base_url, profile):
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_email_templates()
 
-    email_template_page = SendEmailTemplatePage(driver)
-    email_template_page.click_add_new_template()
-
-    new_email_template = EditEmailTemplatePage(driver)
-    new_email_template.create_template()
-
     send_email_page = SendEmailTemplatePage(driver)
     send_email_page.click_send_from_csv_link()
 
@@ -105,16 +107,11 @@ def do_create_email_template_and_send_from_csv(driver, base_url, profile):
     dashboard_page.go_to_dashboard_for_service()
 
 
-def do_create_sms_template_and_send_from_csv(driver, base_url, profile):
+def do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids):
 
     dashboard_page = DashboardPage(driver)
+    service_id = dashboard_page.get_service_id()
     dashboard_page.click_sms_templates()
-
-    sms_template_page = SendSmsTemplatePage(driver)
-    sms_template_page.click_add_new_template()
-
-    new_sms_template = EditSmsTemplatePage(driver)
-    new_sms_template.create_template()
 
     send_sms_page = SendSmsTemplatePage(driver)
     send_sms_page.click_send_from_csv_link()
@@ -122,12 +119,14 @@ def do_create_sms_template_and_send_from_csv(driver, base_url, profile):
     directory, filename = create_temp_csv(profile.mobile, 'phone number')
 
     upload_csv_page = UploadCsvPage(driver)
+    template_id = upload_csv_page.get_template_id()
+
     upload_csv_page.upload_csv(directory, filename)
 
-    # check we are on jobs page and status is sending?
-    # assert '/jobs' in post_check_sms.url
-
-    message = get_sms_via_heroku(session())
+    # we could check the current page and wait for the status
+    # of sending to go to 1, but for the moment get notifications
+    # via api
+    message = get_sms_via_api(service_id, template_id, profile, test_ids['api_key'])
     assert "The quick brown fox jumped over the lazy dog" in message
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
@@ -164,9 +163,7 @@ def do_user_can_invite_someone_to_notify(driver, base_url, profile):
     register_from_invite_page.fill_registration_form(invited_user_name, profile)
     register_from_invite_page.click_continue()
 
-    two_factor_page = TwoFactorPage(driver)
-    verify_code = get_verify_code()
-    two_factor_page.verify(verify_code)
+    do_verify(driver, profile)
 
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
@@ -175,3 +172,46 @@ def do_user_can_invite_someone_to_notify(driver, base_url, profile):
     assert dashboard_page.h2_is_service_name(profile.service_name)
 
     dashboard_page.sign_out()
+
+
+def do_test_python_client_sms(driver, profile, test_ids):
+
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
+                                    test_ids['service_id'],
+                                    test_ids['api_key'])
+
+    resp_json = client.send_sms_notification(
+        profile.mobile,
+        test_ids['sms_template_id'])
+
+    notification_id = resp_json['data']['notification']['id']
+
+    sleep(5)
+    message = get_sms_via_api(test_ids['service_id'], test_ids['sms_template_id'], profile, test_ids['api_key'])
+
+    assert "The quick brown fox jumped over the lazy dog" in message
+
+    resp_json = client.get_notification_by_id(notification_id)
+    assert resp_json['data']['notification']['id'] == notification_id
+
+
+def do_test_python_client_email(driver, profile, test_ids):
+
+    remove_all_emails(email_folder=profile.email_notification_label)
+
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
+                                    test_ids['service_id'],
+                                    test_ids['api_key'])
+
+    try:
+        resp_json = client.send_email_notification(
+            profile.email,
+            test_ids['email_template_id'])
+        assert 'result' not in resp_json['data']
+        notification_id = resp_json['data']['notification']['id']
+        message = get_email_body(profile, profile.email_notification_label)
+    finally:
+        remove_all_emails(email_folder=profile.email_notification_label)
+    assert "The quick brown fox jumped over the lazy dog" in message
+    resp_json = client.get_notification_by_id(notification_id)
+    assert resp_json['data']['notification']['status'] in ['sending', 'delivered']
