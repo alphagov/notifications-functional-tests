@@ -33,7 +33,7 @@ def get_service_templates_and_api_key_for_tests(driver, test_profile):
     service_id = dashboard_page.get_service_id()
 
     email_template_page = SendEmailTemplatePage(driver)
-    email_template_page.click_add_new_template()
+    email_template_page.click_add_a_new_template()
 
     new_email_template_page = EditEmailTemplatePage(driver)
     new_email_template_page.create_template()
