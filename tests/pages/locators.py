@@ -50,6 +50,8 @@ class EditTemplatePageLocators(object):
     TEMPLATE_SUBJECT_INPUT = (By.NAME, 'subject')
     TEMPLATE_CONTENT_INPUT = (By.NAME, 'template_content')
     SAVE_BUTTON = (By.CLASS_NAME, 'button')
+    DELETE_BUTTON = (By.LINK_TEXT, 'Delete this template')
+    CONFIRM_DELETE_BUTTON = (By.NAME, 'delete')
 
 
 class UploadCsvLocators(object):

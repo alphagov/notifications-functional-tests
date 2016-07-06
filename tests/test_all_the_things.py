@@ -28,7 +28,8 @@ from tests.pages import (
     SendSmsTemplatePage,
     TeamMembersPage,
     InviteUserPage,
-    RegisterFromInvite
+    RegisterFromInvite,
+    EditEmailTemplatePage
 )
 
 
@@ -52,7 +53,9 @@ def test_everything(driver, base_url, profile):
 
     do_create_email_template_and_send_from_csv(driver, base_url, profile)
     do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids)
+    do_create_edit_and_delete_email_template(driver, base_url, profile)
     do_user_can_invite_someone_to_notify(driver, base_url, profile)
+
     do_test_python_client_sms(driver, profile, test_ids)
     do_test_python_client_email(driver, profile, test_ids)
 
@@ -130,6 +133,28 @@ def do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids
     assert "The quick brown fox jumped over the lazy dog" in message
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
+
+
+def do_create_edit_and_delete_email_template(driver, base_url, profile):
+    test_name = 'edit/delete test'
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.click_email_templates()
+
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    all_templates_page = SendEmailTemplatePage(driver)
+    all_templates_page.click_add_new_template()
+
+    template_page = EditEmailTemplatePage(driver)
+    template_page.create_template(name=test_name)
+
+    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    all_templates_page.click_edit_template()
+    template_page.click_delete()
+
+    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
 def do_user_can_invite_someone_to_notify(driver, base_url, profile):

@@ -234,8 +234,8 @@ class EditSmsTemplatePage(BasePage):
         element = self.wait_for_element(EditSmsTemplatePage.save_button)
         element.click()
 
-    def create_template(self):
-        self.name_input = 'Test'
+    def create_template(self, name='Test email template'):
+        self.name_input = name
         self.template_content_input = 'The quick brown fox jumped over the lazy dog'
         self.click_save()
 
@@ -248,12 +248,17 @@ class EditSmsTemplatePage(BasePage):
 
 class SendEmailTemplatePage(BasePage):
 
-    new_email_template_link = TemplatePageLocators.ADD_A_NEW_TEMPLATE_LINK
+    add_a_new_email_template_link = TemplatePageLocators.ADD_A_NEW_TEMPLATE_LINK
+    add_new_email_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
     edit_email_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
     send_email_link = TemplatePageLocators.SEND_EMAIL_LINK
 
+    def click_add_a_new_template(self):
+        element = self.wait_for_element(SendEmailTemplatePage.add_a_new_email_template_link)
+        element.click()
+
     def click_add_new_template(self):
-        element = self.wait_for_element(SendEmailTemplatePage.new_email_template_link)
+        element = self.wait_for_element(SendEmailTemplatePage.add_new_email_template_link)
         element.click()
 
     def click_edit_template(self):
@@ -271,15 +276,23 @@ class EditEmailTemplatePage(BasePage):
     subject_input = SubjectInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
+    delete_button = EditTemplatePageLocators.DELETE_BUTTON
+    confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
     def click_save(self):
         element = self.wait_for_element(EditEmailTemplatePage.save_button)
         element.click()
 
-    def create_template(self):
+    def click_delete(self):
+        element = self.wait_for_element(EditEmailTemplatePage.delete_button)
+        element.click()
+        element = self.wait_for_element(EditEmailTemplatePage.confirm_delete_button)
+        element.click()
+
+    def create_template(self, name='Test email template'):
         # TODO remove the uuid mularkey once uniqueness of email subject no longer a thing
         import uuid
-        self.name_input = 'Test email template'
+        self.name_input = name
         self.subject_input = 'Test email from functional tests ' + str(uuid.uuid1())
         self.template_content_input = 'The quick brown fox jumped over the lazy dog'
         self.click_save()
