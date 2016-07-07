@@ -97,7 +97,7 @@ def do_create_email_template_and_send_from_csv(driver, base_url, profile):
     dashboard_page.click_email_templates()
 
     send_email_page = SendEmailTemplatePage(driver)
-    send_email_page.click_send_from_csv_link()
+    send_email_page.click_upload_recipients()
 
     directory, filename = create_temp_csv(profile.email, 'email address')
 
@@ -117,7 +117,7 @@ def do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids
     dashboard_page.click_sms_templates()
 
     send_sms_page = SendSmsTemplatePage(driver)
-    send_sms_page.click_send_from_csv_link()
+    send_sms_page.click_upload_recipients()
 
     directory, filename = create_temp_csv(profile.mobile, 'phone number')
 

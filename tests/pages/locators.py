@@ -44,6 +44,7 @@ class TemplatePageLocators(object):
     ADD_NEW_TEMPLATE_LINK = (By.LINK_TEXT, 'Add new template')
     ADD_A_NEW_TEMPLATE_LINK = (By.LINK_TEXT, 'Add a new template')
     EDIT_TEMPLATE_LINK = (By.LINK_TEXT, 'Edit template')
+    UPLOAD_RECIPIENTS_LINK = (By.LINK_TEXT, 'Upload recipients')
 
 
 class EditTemplatePageLocators(object):
