@@ -396,6 +396,7 @@ class ApiKeyPage(BasePage):
     create_key_link = ApiKeysPageLocators.CREATE_KEY_LINK
     continue_button = CommonPageLocators.CONTINUE_BUTTON
     api_key_element = ApiKeysPageLocators.API_KEY_ELEMENT
+    key_type_radio = ApiKeysPageLocators.SEND_TO_ALL_KEY_RADIO
 
     def enter_key_name(self):
         self.key_name_input = 'Test'
@@ -411,3 +412,7 @@ class ApiKeyPage(BasePage):
     def get_api_key(self):
         element = self.wait_for_element(ApiKeyPage.api_key_element)
         return element.text
+
+    def click_key_type_radio(self):
+        element = self.wait_for_element(ApiKeyPage.key_type_radio)
+        element.click()

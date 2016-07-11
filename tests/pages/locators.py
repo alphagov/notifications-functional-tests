@@ -31,7 +31,7 @@ class DashboardPageLocators(object):
     SMS_TEMPLATES_LINK = (By.LINK_TEXT, 'Text message templates')
     EMAIL_TEMPLATES_LINK = (By.LINK_TEXT, 'Email templates')
     TEAM_MEMBERS_LINK = (By.LINK_TEXT, 'Team members')
-    API_KEYS_LINK = (By.LINK_TEXT, 'API keys')
+    API_KEYS_LINK = (By.LINK_TEXT, 'API integration')
 
 
 class NavigationLocators(object):
@@ -76,3 +76,4 @@ class ApiKeysPageLocators(object):
     KEY_NAME_INPUT = (By.NAME, 'key_name')
     CREATE_KEY_LINK = (By.LINK_TEXT, 'Create an API key')
     API_KEY_ELEMENT = (By.CLASS_NAME, 'api-key-key')
+    SEND_TO_ALL_KEY_RADIO = (By.XPATH, "//input[@value='normal']")
