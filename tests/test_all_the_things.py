@@ -29,7 +29,8 @@ from tests.pages import (
     TeamMembersPage,
     InviteUserPage,
     RegisterFromInvite,
-    EditEmailTemplatePage
+    EditEmailTemplatePage,
+    ApiKeyPage
 )
 
 
@@ -240,3 +241,17 @@ def do_test_python_client_email(driver, profile, test_ids):
     assert "The quick brown fox jumped over the lazy dog" in message
     resp_json = client.get_notification_by_id(notification_id)
     assert resp_json['data']['notification']['status'] in ['sending', 'delivered']
+
+
+def create_api_key(driver, key_type):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.click_api_keys_link()
+
+    api_key_page = ApiKeyPage(driver)
+    api_key_page.click_create_key()
+
+    api_key_page.click_key_type_radio(key_type)
+    api_key_page.enter_key_name(key_type)
+    api_key_page.click_continue()
+    return api_key_page.get_api_key()
