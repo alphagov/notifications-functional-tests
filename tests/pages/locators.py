@@ -76,4 +76,6 @@ class ApiKeysPageLocators(object):
     KEY_NAME_INPUT = (By.NAME, 'key_name')
     CREATE_KEY_LINK = (By.LINK_TEXT, 'Create an API key')
     API_KEY_ELEMENT = (By.CLASS_NAME, 'api-key-key')
-    SEND_TO_ALL_KEY_RADIO = (By.XPATH, "//input[@value='normal']")
+    NORMAL_KEY_RADIO = (By.XPATH, "//input[@value='normal']")
+    TEST_KEY_RADIO = (By.XPATH, "//input[@value='test']")
+    TEAM_KEY_RADIO = (By.XPATH, "//input[@value='team']")

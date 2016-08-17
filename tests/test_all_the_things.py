@@ -15,7 +15,9 @@ from tests.utils import (
     remove_all_emails,
     generate_unique_email,
     get_sms_via_api,
-    do_verify
+    do_verify,
+    assert_no_email_present,
+    get_delivered_notification
 )
 
 from tests.pages import (
@@ -29,7 +31,8 @@ from tests.pages import (
     TeamMembersPage,
     InviteUserPage,
     RegisterFromInvite,
-    EditEmailTemplatePage
+    EditEmailTemplatePage,
+    ApiKeyPage
 )
 
 
@@ -51,13 +54,17 @@ def test_everything(driver, base_url, profile):
     # TODO move this to profile and setup in conftest
     test_ids = get_service_templates_and_api_key_for_tests(driver, profile)
 
-    do_create_email_template_and_send_from_csv(driver, base_url, profile)
-    do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids)
-    do_create_edit_and_delete_email_template(driver, base_url, profile)
-    do_user_can_invite_someone_to_notify(driver, base_url, profile)
+    do_create_email_template_and_send_from_csv(driver, profile)
+    do_create_sms_template_and_send_from_csv(driver, profile, test_ids)
+    do_create_edit_and_delete_email_template(driver, profile)
 
-    do_test_python_client_sms(driver, profile, test_ids)
-    do_test_python_client_email(driver, profile, test_ids)
+    do_test_python_client_test_api_key(driver, profile, test_ids)
+
+    do_test_python_client_sms(profile, test_ids)
+    do_test_python_client_email(profile, test_ids)
+
+    # must be last, as it signs out the user
+    do_user_can_invite_someone_to_notify(driver, profile)
 
 
 def do_user_registration(driver, base_url, profile):
@@ -91,7 +98,7 @@ def do_user_registration(driver, base_url, profile):
     assert dashboard_page.h2_is_service_name(profile.service_name)
 
 
-def do_create_email_template_and_send_from_csv(driver, base_url, profile):
+def do_create_email_template_and_send_from_csv(driver, profile):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_email_templates()
@@ -110,7 +117,7 @@ def do_create_email_template_and_send_from_csv(driver, base_url, profile):
     dashboard_page.go_to_dashboard_for_service()
 
 
-def do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids):
+def do_create_sms_template_and_send_from_csv(driver, profile, test_ids):
 
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
@@ -135,7 +142,7 @@ def do_create_sms_template_and_send_from_csv(driver, base_url, profile, test_ids
     dashboard_page.go_to_dashboard_for_service()
 
 
-def do_create_edit_and_delete_email_template(driver, base_url, profile):
+def do_create_edit_and_delete_email_template(driver, profile):
     test_name = 'edit/delete test'
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
@@ -157,7 +164,7 @@ def do_create_edit_and_delete_email_template(driver, base_url, profile):
     assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
-def do_user_can_invite_someone_to_notify(driver, base_url, profile):
+def do_user_can_invite_someone_to_notify(driver, profile):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
@@ -199,7 +206,7 @@ def do_user_can_invite_someone_to_notify(driver, base_url, profile):
     dashboard_page.sign_out()
 
 
-def do_test_python_client_sms(driver, profile, test_ids):
+def do_test_python_client_sms(profile, test_ids):
 
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     test_ids['service_id'],
@@ -220,7 +227,7 @@ def do_test_python_client_sms(driver, profile, test_ids):
     assert resp_json['data']['notification']['id'] == notification_id
 
 
-def do_test_python_client_email(driver, profile, test_ids):
+def do_test_python_client_email(profile, test_ids):
 
     remove_all_emails(email_folder=profile.email_notification_label)
 
@@ -240,3 +247,38 @@ def do_test_python_client_email(driver, profile, test_ids):
     assert "The quick brown fox jumped over the lazy dog" in message
     resp_json = client.get_notification_by_id(notification_id)
     assert resp_json['data']['notification']['status'] in ['sending', 'delivered']
+
+
+def do_test_python_client_test_api_key(driver, profile, test_ids):
+    test_key = create_api_key(driver, 'test')
+
+    remove_all_emails(email_folder=profile.email_notification_label)
+
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL, test_ids['service_id'], test_key)
+
+    try:
+        resp_json = client.send_email_notification(
+            profile.email,
+            test_ids['email_template_id'])
+        assert 'result' not in resp_json['data']
+        notification_id = resp_json['data']['notification']['id']
+
+        get_delivered_notification(client, notification_id)
+
+        assert_no_email_present(profile, profile.email_notification_label)
+    finally:
+        remove_all_emails(email_folder=profile.email_notification_label)
+
+
+def create_api_key(driver, key_type):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.click_api_keys_link()
+
+    api_key_page = ApiKeyPage(driver)
+    api_key_page.click_create_key()
+
+    api_key_page.click_key_type_radio(key_type)
+    api_key_page.enter_key_name(key_type)
+    api_key_page.click_continue()
+    return api_key_page.get_api_key()

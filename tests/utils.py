@@ -9,6 +9,7 @@ from retry import retry
 from _pytest.runner import fail
 
 from notifications_python_client.notifications import NotificationsAPIClient
+from notifications_python_client.errors import HTTPError
 from config import Config
 
 from tests.pages import VerifyPage
@@ -105,6 +106,46 @@ def get_email_body(profile, email_folder):
         if gimap:
             gimap.close()
             gimap.logout()
+
+
+def assert_no_email_present(profile, email_folder):
+    gimap = None
+    try:
+        gimap = imaplib.IMAP4_SSL('imap.gmail.com')
+        gimap.login(profile.email, profile.email_password)
+        gimap.select(email_folder)
+        data = gimap.search(None, "ALL")[1]
+        print(data)
+        assert len(data[0].split()) == 0
+    finally:
+        if gimap:
+            gimap.close()
+            gimap.logout()
+
+
+@retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
+def get_delivered_notification(client, notification_id):
+    """
+    Waits until a notification is delivered, and then returns its response json.
+
+    Warning! Will fail after waiting ~3 minutes if:
+    * the notification doesn't get sent (eg celery not running)
+    * you run with a regular (non research-mode or test api key) client!
+
+    """
+    try:
+        resp_json = client.get_notification_by_id(notification_id)
+    except HTTPError as e:
+        if e.status_code == 404:
+            raise RetryException('Notification not created yet')
+        else:
+            raise
+
+    status = resp_json['data']['notification']['status']
+    if status in ('created', 'sending'):
+        raise RetryException('Notification still sending')
+    assert status == 'delivered'
+    return resp_json
 
 
 def generate_unique_email(email, uuid):
