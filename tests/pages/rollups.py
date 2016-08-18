@@ -15,15 +15,12 @@ from tests.utils import do_verify
 
 
 def sign_in(driver, test_profile):
-    try:
-        sign_in_page = SignInPage(driver)
-        sign_in_page.get()
-        assert sign_in_page.is_current()
-        sign_in_page.login(test_profile)
-        sleep(5)
-        do_verify(driver, test_profile),
-    except Exception:
-        pytest.fail("Unable to log in")
+    sign_in_page = SignInPage(driver)
+    sign_in_page.get()
+    assert sign_in_page.is_current()
+    sign_in_page.login(test_profile)
+    sleep(5)
+    do_verify(driver, test_profile),
 
 
 def get_service_templates_and_api_key_for_tests(driver, test_profile):
