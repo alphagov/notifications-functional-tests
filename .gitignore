@@ -60,3 +60,7 @@ target/
 .DS_Store
 # environment variable file
 environment.sh
+
+/cache
+/venv
+docker.env

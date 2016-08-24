@@ -81,10 +81,17 @@ def profile():
 
 @pytest.fixture(scope="module")
 def driver(request):
+    driver_name = os.getenv('SELENIUM_DRIVER', 'chrome').lower()
     if os.environ.get('TRAVIS'):
+        driver_name = 'firefox'
+
+    if driver_name == 'firefox':
         driver = webdriver.Firefox()
-    else:
+    elif driver_name == 'chrome':
         driver = webdriver.Chrome()
+    else:
+        raise ValueError('Invalid Selenium driver', driver_name)
+
     driver.delete_all_cookies()
 
     def clear_up():

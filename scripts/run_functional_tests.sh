@@ -8,7 +8,7 @@
 # Use default environment vars for localhost if not already set
 
 set -o pipefail
-source environment.sh 2> /dev/null
+[ "$IGNORE_ENVIRONMENT_SH" = "1" ] || source environment.sh 2> /dev/null
 
 function display_result {
   RESULT=$1
@@ -23,6 +23,10 @@ function display_result {
   fi
 }
 
+if [ -d venv ]; then
+  source ./venv/bin/activate
+fi
+
 pep8 --exclude=venv .
 display_result $? 1 "Code style check"
 
@@ -34,7 +38,9 @@ export ENVIRONMENT=$environment
 # get status page for env under tests and spit out to console
 function display_status {
   url=$ENVIRONMENT'_NOTIFY_ADMIN_URL'
-  curl ${!url}/'_status'
+  echo 'Build info:'
+  curl -sSL ${!url}/'_status'
+  echo
 }
 
 case $ENVIRONMENT in
