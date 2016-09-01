@@ -153,10 +153,11 @@ def generate_unique_email(email, uuid):
     return "{}+{}@{}".format(parts[0], uuid, parts[1])
 
 
-def get_link(profile, email_label):
+def get_link(profile, email_label, template_id, email):
     import re
     try:
-        email_body = get_email_body(profile, email_label)
+        email_body = get_notification_via_api(profile.notify_service_id, template_id, profile.env,
+                                              profile.notify_service_api_key, email)
         match = re.search('http[s]?://\S+', email_body, re.MULTILINE)
         if match:
             return match.group(0)
@@ -206,11 +207,11 @@ def _get_latest_verify_code_message(resp, profile):
 
 
 @retry(RetryException, tries=15, delay=2)
-def get_sms_via_api(service_id, template_id, profile, api_key):
+def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
-    if profile.env == 'dev':
+    if env == 'dev':
         expected_status = 'sending'
     else:
         expected_status = 'delivered'
@@ -219,12 +220,31 @@ def get_sms_via_api(service_id, template_id, profile, api_key):
         t_id = notification['template']['id']
         to = notification['to']
         status = notification['status']
-        if t_id == template_id and to == profile.mobile and status == expected_status:
+        if t_id == template_id and to == sent_to and status == expected_status:
             return notification['body']
     else:
-        message = 'Could not find notification with template {} to number {} with a status of {}' \
+        message = 'Could not find notification with template {} to {} with a status of {}' \
             .format(template_id,
-                    profile.mobile,
+                    sent_to,
+                    expected_status)
+        raise RetryException(message)
+
+
+@retry(RetryException, tries=15, delay=2)
+def get_notification_via_api_by_id(service_id, env, api_key, notification_id):
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
+                                    service_id,
+                                    api_key)
+    if env == 'dev':
+        expected_status = 'sending'
+    else:
+        expected_status = 'delivered'
+    resp = client.get('notifications/{}'.format(notification_id))
+    if resp['data']['notification']['status'] == expected_status:
+        return resp['data']['notification']['body']
+    else:
+        message = 'Could not find notification for id {} with a status of {}' \
+            .format(id,
                     expected_status)
         raise RetryException(message)
 

@@ -18,6 +18,8 @@ class Config(object):
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ['ENVIRONMENT'] + '_Functional Test Service_'
     NOTIFY_SERVICE_ID = os.environ[os.environ['ENVIRONMENT'] + '_NOTIFY_SERVICE_ID']
     NOTIFY_SERVICE_API_KEY = os.environ[os.environ['ENVIRONMENT'] + '_NOTIFY_SERVICE_API_KEY']
+    REGISTRATION_TEMPLATE_ID = 'ece42649-22a8-4d06-b87f-d52d5d3f0a27'
+    INVITATION_TEMPLATE_ID = '4f46df42-f795-4cc4-83bb-65ca312f49cc'
 
 
 class StagingConfig(Config):
