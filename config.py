@@ -20,6 +20,7 @@ class Config(object):
     NOTIFY_SERVICE_API_KEY = os.environ[os.environ['ENVIRONMENT'] + '_NOTIFY_SERVICE_API_KEY']
     REGISTRATION_TEMPLATE_ID = 'ece42649-22a8-4d06-b87f-d52d5d3f0a27'
     INVITATION_TEMPLATE_ID = '4f46df42-f795-4cc4-83bb-65ca312f49cc'
+    VERIFY_CODE_TEMPLATE_ID = '36fb0730-6259-4da1-8a80-c8de22ad4246'
 
 
 class StagingConfig(Config):

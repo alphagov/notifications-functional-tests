@@ -1,17 +1,14 @@
-import pytest
 import csv
 import email as email_lib
 import imaplib
-import json
 import re
-from time import sleep
-from retry import retry
-from _pytest.runner import fail
 
-from notifications_python_client.notifications import NotificationsAPIClient
+import pytest
 from notifications_python_client.errors import HTTPError
-from config import Config
+from notifications_python_client.notifications import NotificationsAPIClient
+from retry import retry
 
+from config import Config
 from tests.pages import VerifyPage
 
 
@@ -52,31 +49,6 @@ def create_temp_csv(number, field_name):
         csv_writer.writeheader()
         csv_writer.writerow({field_name: number})
     return directory_name, 'sample.csv'
-
-
-def get_sms_via_heroku(client, environment=None):
-    if environment is None:
-        environment = Config.ENVIRONMENT
-    url = 'https://notify-sms-inbox.herokuapp.com/' + environment
-    response = client.get(url)
-    j = json.loads(response.text)
-    x = 0
-    loop_condition = True
-    while loop_condition:
-        if response.status_code == 200:
-            loop_condition = False
-        if x > 12:
-            loop_condition = False
-        if j['result'] == 'error':
-            sleep(5)
-            x += 1
-            response = client.get(url)
-            j = json.loads(response.text)
-
-    try:
-        return j['sms_code']
-    except KeyError:
-        fail('No sms code delivered')
 
 
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
@@ -167,17 +139,6 @@ def get_link(profile, email_label, template_id, email):
         remove_all_emails(email_folder=email_label)
 
 
-def get_verify_code():
-    from requests import session
-    verify_code = get_sms_via_heroku(session())
-    if not verify_code:
-        pytest.fail("Could not get the verify code")
-    m = re.search('\d{5}', verify_code)
-    if not m:
-        pytest.fail("Could not get the verify code")
-    return m.group(0)
-
-
 @retry(RetryException, tries=15, delay=2)
 def do_verify(driver, profile):
     verify_code = get_verify_code_from_api(profile)
@@ -188,22 +149,12 @@ def do_verify(driver, profile):
 
 
 def get_verify_code_from_api(profile):
-    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
-                                    Config.NOTIFY_SERVICE_ID,
-                                    Config.NOTIFY_SERVICE_API_KEY)
-    resp = client.get('notifications')
-    verify_code_message = _get_latest_verify_code_message(resp, profile)
+    verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
+                                                   profile.env, Config.NOTIFY_SERVICE_API_KEY, profile.mobile)
     m = re.search('\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
     return m.group(0)
-
-
-def _get_latest_verify_code_message(resp, profile):
-    for notification in resp['notifications']:
-        if notification['to'] == profile.mobile and notification['template']['name'] == 'Notify SMS verify code':
-            return notification['body']
-    raise RetryException
 
 
 @retry(RetryException, tries=15, delay=2)
