@@ -39,8 +39,7 @@ from tests.pages import (
 def _get_email_message(profile):
     try:
         return get_email_body(profile, profile.email_notification_label)
-    except Exception:
-        pytest.fail("Couldn't get notification email")
+
     finally:
         remove_all_emails(email_folder=profile.email_notification_label)
 

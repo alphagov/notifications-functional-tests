@@ -232,8 +232,6 @@ def get_sms_via_api(service_id, template_id, profile, api_key):
 def get_email_message(profile, email_label):
     try:
         return get_email_body(profile, email_label)
-    except:
-        pytest.fail("Couldn't get notification email")
     finally:
         remove_all_emails(email_folder=email_label)
 
