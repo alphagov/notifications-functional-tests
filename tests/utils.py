@@ -207,34 +207,3 @@ def get_email_message(profile, email_label):
         pytest.fail("Couldn't get notification email")
     finally:
         remove_all_emails(email_folder=email_label)
-
-
-def send_to_deskpro(config, message):
-    import os
-    import requests
-    email = os.environ.get('live_DESKPRO_PERSON_EMAIL')
-    deskpro_department_id = os.environ.get('live_DESKPRO_DEPT_ID')
-    deskpro_api_key = os.environ.get('live_DESKPRO_API_KEY')
-    deskpro_api_host = os.environ.get('live_DESKPRO_API_HOST')
-    deskpro_agent_team_id = os.environ.get('live_DESKPRO_ASSIGNED_AGENT_TEAM_ID')
-
-    message = message
-
-    data = {'person_email': email,
-            'department_id': deskpro_department_id,
-            'subject': 'Notify incident report',
-            'message': message,
-            'agent_team_id': deskpro_agent_team_id
-            }
-    headers = {
-        "X-DeskPRO-API-Key": deskpro_api_key,
-        'Content-Type': "application/x-www-form-urlencoded"
-    }
-
-    resp = requests.post(
-        deskpro_api_host + '/api/tickets',
-        data=data,
-        headers=headers)
-
-    if resp.status_code != 201:
-        print("Deskpro create ticket request failed with {} '{}'".format(resp.status_code, resp.json()))
