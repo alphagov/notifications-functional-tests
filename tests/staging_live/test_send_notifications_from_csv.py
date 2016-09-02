@@ -40,7 +40,7 @@ def sms_via_csv(profile, upload_csv_page):
 
 
 def email_via_csv(profile, upload_csv_page):
-    upload_csv_page.go_to_upload_csv_for_service_and_template(profile.srvice_id,
+    upload_csv_page.go_to_upload_csv_for_service_and_template(profile.service_id,
                                                               profile.email_template_id)
     # create csv file to use for email notification
     directory, filename = create_temp_csv(profile.email, 'email address')
