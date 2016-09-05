@@ -1,17 +1,14 @@
-import pytest
 import csv
 import email as email_lib
 import imaplib
-import json
 import re
-from time import sleep
-from retry import retry
-from _pytest.runner import fail
 
-from notifications_python_client.notifications import NotificationsAPIClient
+import pytest
 from notifications_python_client.errors import HTTPError
-from config import Config
+from notifications_python_client.notifications import NotificationsAPIClient
+from retry import retry
 
+from config import Config
 from tests.pages import VerifyPage
 
 
@@ -52,31 +49,6 @@ def create_temp_csv(number, field_name):
         csv_writer.writeheader()
         csv_writer.writerow({field_name: number})
     return directory_name, 'sample.csv'
-
-
-def get_sms_via_heroku(client, environment=None):
-    if environment is None:
-        environment = Config.ENVIRONMENT
-    url = 'https://notify-sms-inbox.herokuapp.com/' + environment
-    response = client.get(url)
-    j = json.loads(response.text)
-    x = 0
-    loop_condition = True
-    while loop_condition:
-        if response.status_code == 200:
-            loop_condition = False
-        if x > 12:
-            loop_condition = False
-        if j['result'] == 'error':
-            sleep(5)
-            x += 1
-            response = client.get(url)
-            j = json.loads(response.text)
-
-    try:
-        return j['sms_code']
-    except KeyError:
-        fail('No sms code delivered')
 
 
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
@@ -124,9 +96,9 @@ def assert_no_email_present(profile, email_folder):
 
 
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
-def get_delivered_notification(client, notification_id):
+def get_delivered_notification(client, notification_id, expected_status):
     """
-    Waits until a notification is delivered, and then returns its response json.
+    Waits until a notification is the expected, and then returns its response json.
 
     Warning! Will fail after waiting ~3 minutes if:
     * the notification doesn't get sent (eg celery not running)
@@ -142,10 +114,10 @@ def get_delivered_notification(client, notification_id):
             raise
 
     status = resp_json['data']['notification']['status']
-    if status in ('created', 'sending'):
-        raise RetryException('Notification still sending')
-    assert status == 'delivered'
-    return resp_json
+    if status != expected_status:
+        raise RetryException('Notification still in {}'.format(status))
+    assert status == expected_status
+    return resp_json['data']['notification']['body']
 
 
 def generate_unique_email(email, uuid):
@@ -153,10 +125,11 @@ def generate_unique_email(email, uuid):
     return "{}+{}@{}".format(parts[0], uuid, parts[1])
 
 
-def get_link(profile, email_label):
+def get_link(profile, email_label, template_id, email):
     import re
     try:
-        email_body = get_email_body(profile, email_label)
+        email_body = get_notification_via_api(profile.notify_service_id, template_id, profile.env,
+                                              profile.notify_service_api_key, email)
         match = re.search('http[s]?://\S+', email_body, re.MULTILINE)
         if match:
             return match.group(0)
@@ -166,18 +139,7 @@ def get_link(profile, email_label):
         remove_all_emails(email_folder=email_label)
 
 
-def get_verify_code():
-    from requests import session
-    verify_code = get_sms_via_heroku(session())
-    if not verify_code:
-        pytest.fail("Could not get the verify code")
-    m = re.search('\d{5}', verify_code)
-    if not m:
-        pytest.fail("Could not get the verify code")
-    return m.group(0)
-
-
-@retry(RetryException, tries=15, delay=2)
+@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
 def do_verify(driver, profile):
     verify_code = get_verify_code_from_api(profile)
     verify_page = VerifyPage(driver)
@@ -187,44 +149,31 @@ def do_verify(driver, profile):
 
 
 def get_verify_code_from_api(profile):
-    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
-                                    Config.NOTIFY_SERVICE_ID,
-                                    Config.NOTIFY_SERVICE_API_KEY)
-    resp = client.get('notifications')
-    verify_code_message = _get_latest_verify_code_message(resp, profile)
+    verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
+                                                   profile.env, Config.NOTIFY_SERVICE_API_KEY, profile.mobile)
     m = re.search('\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
     return m.group(0)
 
 
-def _get_latest_verify_code_message(resp, profile):
-    for notification in resp['notifications']:
-        if notification['to'] == profile.mobile and notification['template']['name'] == 'Notify SMS verify code':
-            return notification['body']
-    raise RetryException
-
-
-@retry(RetryException, tries=15, delay=2)
-def get_sms_via_api(service_id, template_id, profile, api_key):
+@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
+def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
-    if profile.env == 'dev':
-        expected_status = 'sending'
-    else:
-        expected_status = 'delivered'
+    expected_status = 'sending'if env == 'dev' else 'delivered'
     resp = client.get('notifications')
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['to']
         status = notification['status']
-        if t_id == template_id and to == profile.mobile and status == expected_status:
+        if t_id == template_id and to == sent_to and status == expected_status:
             return notification['body']
     else:
-        message = 'Could not find notification with template {} to number {} with a status of {}' \
+        message = 'Could not find notification with template {} to {} with a status of {}' \
             .format(template_id,
-                    profile.mobile,
+                    sent_to,
                     expected_status)
         raise RetryException(message)
 
@@ -234,34 +183,3 @@ def get_email_message(profile, email_label):
         return get_email_body(profile, email_label)
     finally:
         remove_all_emails(email_folder=email_label)
-
-
-def send_to_deskpro(config, message):
-    import os
-    import requests
-    email = os.environ.get('live_DESKPRO_PERSON_EMAIL')
-    deskpro_department_id = os.environ.get('live_DESKPRO_DEPT_ID')
-    deskpro_api_key = os.environ.get('live_DESKPRO_API_KEY')
-    deskpro_api_host = os.environ.get('live_DESKPRO_API_HOST')
-    deskpro_agent_team_id = os.environ.get('live_DESKPRO_ASSIGNED_AGENT_TEAM_ID')
-
-    message = message
-
-    data = {'person_email': email,
-            'department_id': deskpro_department_id,
-            'subject': 'Notify incident report',
-            'message': message,
-            'agent_team_id': deskpro_agent_team_id
-            }
-    headers = {
-        "X-DeskPRO-API-Key": deskpro_api_key,
-        'Content-Type': "application/x-www-form-urlencoded"
-    }
-
-    resp = requests.post(
-        deskpro_api_host + '/api/tickets',
-        data=data,
-        headers=headers)
-
-    if resp.status_code != 201:
-        print("Deskpro create ticket request failed with {} '{}'".format(resp.status_code, resp.json()))

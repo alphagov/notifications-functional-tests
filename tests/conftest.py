@@ -41,7 +41,10 @@ def profile():
                           'email_notification_label': StagingConfig.EMAIL_NOTIFICATION_LABEL,
                           'registration_email_label': StagingConfig.REGISTRATION_EMAIL_LABEL,
                           'invitation_email_label': StagingConfig.INVITATION_EMAIL_LABEL,
-                          'api_key': StagingConfig.SERVICE_API_KEY})
+                          'api_key': StagingConfig.SERVICE_API_KEY,
+                          'notify_api_url': StagingConfig.NOTIFY_API_URL,
+                          'registration_template_id': StagingConfig.REGISTRATION_TEMPLATE_ID,
+                          'invitation_template_id': StagingConfig.INVITATION_TEMPLATE_ID})
     elif env == 'live':
         from config import LiveConfig
         return Profile(**{'env': LiveConfig.ENVIRONMENT,
@@ -57,7 +60,10 @@ def profile():
                           'email_notification_label': LiveConfig.EMAIL_NOTIFICATION_LABEL,
                           'registration_email_label': LiveConfig.REGISTRATION_EMAIL_LABEL,
                           'invitation_email_label': LiveConfig.INVITATION_EMAIL_LABEL,
-                          'api_key': LiveConfig.SERVICE_API_KEY})
+                          'api_key': LiveConfig.SERVICE_API_KEY,
+                          'notify_api_url': LiveConfig.NOTIFY_API_URL,
+                          'registration_template_id': StagingConfig.REGISTRATION_TEMPLATE_ID,
+                          'invitation_template_id': StagingConfig.INVITATION_TEMPLATE_ID})
     else:
         from config import Config
         uuid_for_test_run = str(uuid.uuid1())
@@ -76,7 +82,11 @@ def profile():
                           'mobile': functional_test_mobile,
                           'email_notification_label': Config.EMAIL_NOTIFICATION_LABEL,
                           'registration_email_label': Config.REGISTRATION_EMAIL_LABEL,
-                          'invitation_email_label': Config.INVITATION_EMAIL_LABEL})
+                          'invitation_email_label': Config.INVITATION_EMAIL_LABEL,
+                          'notify_service_id': Config.NOTIFY_SERVICE_ID,
+                          'notify_service_api_key': Config.NOTIFY_SERVICE_API_KEY,
+                          'registration_template_id': Config.REGISTRATION_TEMPLATE_ID,
+                          'invitation_template_id': Config.INVITATION_TEMPLATE_ID})
 
 
 @pytest.fixture(scope="module")

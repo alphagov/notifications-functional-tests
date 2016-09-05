@@ -322,7 +322,7 @@ class UploadCsvPage(BasePage):
         self.driver.get(url)
 
     def get_template_id(self):
-        return self.driver.current_url.split('//')[1].split('/')[4]
+        return self.driver.current_url.split('//')[1].split('/')[4].split('?')[0]
 
 
 class TeamMembersPage(BasePage):

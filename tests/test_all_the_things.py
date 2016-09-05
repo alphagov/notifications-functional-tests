@@ -1,6 +1,5 @@
 import pytest
 import uuid
-from time import sleep
 
 from tests.pages.rollups import get_service_templates_and_api_key_for_tests
 
@@ -14,11 +13,10 @@ from tests.utils import (
     get_email_body,
     remove_all_emails,
     generate_unique_email,
-    get_sms_via_api,
     do_verify,
     assert_no_email_present,
-    get_delivered_notification
-)
+    get_delivered_notification,
+    get_notification_via_api)
 
 from tests.pages import (
     MainPage,
@@ -53,7 +51,7 @@ def test_everything(driver, base_url, profile):
     # TODO move this to profile and setup in conftest
     test_ids = get_service_templates_and_api_key_for_tests(driver, profile)
 
-    do_create_email_template_and_send_from_csv(driver, profile)
+    do_create_email_template_and_send_from_csv(driver, profile, test_ids)
     do_create_sms_template_and_send_from_csv(driver, profile, test_ids)
     do_create_edit_and_delete_email_template(driver, profile)
 
@@ -79,11 +77,11 @@ def do_user_registration(driver, base_url, profile):
 
     assert driver.current_url == base_url + '/registration-continue'
 
-    registration_link = get_link(profile, profile.registration_email_label)
+    registration_link = get_link(profile, profile.registration_email_label,
+                                 profile.registration_template_id, profile.email)
 
     driver.get(registration_link)
 
-    sleep(5)
     do_verify(driver, profile)
 
     add_service_page = AddServicePage(driver)
@@ -97,7 +95,7 @@ def do_user_registration(driver, base_url, profile):
     assert dashboard_page.h2_is_service_name(profile.service_name)
 
 
-def do_create_email_template_and_send_from_csv(driver, profile):
+def do_create_email_template_and_send_from_csv(driver, profile, test_ids):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_email_templates()
@@ -109,8 +107,9 @@ def do_create_email_template_and_send_from_csv(driver, profile):
 
     upload_csv_page = UploadCsvPage(driver)
     upload_csv_page.upload_csv(directory, filename)
+    email_body = get_notification_via_api(test_ids['service_id'], test_ids['email_template_id'],
+                                          profile.env, test_ids['api_key'], profile.email)
 
-    email_body = _get_email_message(profile)
     assert "The quick brown fox jumped over the lazy dog" in email_body
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
@@ -135,7 +134,8 @@ def do_create_sms_template_and_send_from_csv(driver, profile, test_ids):
     # we could check the current page and wait for the status
     # of sending to go to 1, but for the moment get notifications
     # via api
-    message = get_sms_via_api(service_id, template_id, profile, test_ids['api_key'])
+    message = get_notification_via_api(service_id, template_id, profile.env, test_ids['api_key'], profile.mobile)
+
     assert "The quick brown fox jumped over the lazy dog" in message
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
@@ -181,7 +181,7 @@ def do_user_can_invite_someone_to_notify(driver, profile):
     invite_user_page.fill_invitation_form(invite_email, send_messages=True)
     invite_user_page.send_invitation()
 
-    invite_link = get_link(profile, profile.invitation_email_label)
+    invite_link = get_link(profile, profile.invitation_email_label, profile.invitation_template_id, invite_email)
 
     invite_user_page.sign_out()
 
@@ -217,13 +217,10 @@ def do_test_python_client_sms(profile, test_ids):
 
     notification_id = resp_json['data']['notification']['id']
 
-    sleep(5)
-    message = get_sms_via_api(test_ids['service_id'], test_ids['sms_template_id'], profile, test_ids['api_key'])
+    expected_status = 'sending' if profile.env == 'dev' else 'delivered'
+    message = get_delivered_notification(client, notification_id, expected_status)
 
     assert "The quick brown fox jumped over the lazy dog" in message
-
-    resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['id'] == notification_id
 
 
 def do_test_python_client_email(profile, test_ids):
@@ -240,12 +237,11 @@ def do_test_python_client_email(profile, test_ids):
             test_ids['email_template_id'])
         assert 'result' not in resp_json['data']
         notification_id = resp_json['data']['notification']['id']
-        message = get_email_body(profile, profile.email_notification_label)
+        expected_status = 'sending' if profile.env == 'dev' else 'delivered'
+        message = get_delivered_notification(client, notification_id, expected_status)
+        assert "The quick brown fox jumped over the lazy dog" in message
     finally:
         remove_all_emails(email_folder=profile.email_notification_label)
-    assert "The quick brown fox jumped over the lazy dog" in message
-    resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['status'] in ['sending', 'delivered']
 
 
 def do_test_python_client_test_api_key(driver, profile, test_ids):
@@ -262,7 +258,7 @@ def do_test_python_client_test_api_key(driver, profile, test_ids):
         assert 'result' not in resp_json['data']
         notification_id = resp_json['data']['notification']['id']
 
-        get_delivered_notification(client, notification_id)
+        get_delivered_notification(client, notification_id, 'delivered')
 
         assert_no_email_present(profile, profile.email_notification_label)
     finally:
