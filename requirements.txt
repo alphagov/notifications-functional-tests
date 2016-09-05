@@ -1,11 +1,11 @@
-Flask>=0.10.1
+Flask>=0.11.1
 Flask-Cache==0.13.1
 gunicorn==19.5.0
-requests==2.9.1
-beautifulsoup4>=4.4.0
-pep8==1.5.7
+requests==2.11.1
+beautifulsoup4>=4.5.1
+pep8==1.7.0
 pytest==2.8.3
-retry==0.9.1
+retry==0.9.2
 selenium==2.53.1
 
 git+https://github.com/alphagov/notifications-python-client.git@1.2.0#egg=notifications-python-client==1.2.0
