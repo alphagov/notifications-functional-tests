@@ -96,9 +96,9 @@ def assert_no_email_present(profile, email_folder):
 
 
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
-def get_delivered_notification(client, notification_id):
+def get_delivered_notification(client, notification_id, expected_status):
     """
-    Waits until a notification is delivered, and then returns its response json.
+    Waits until a notification is the expected, and then returns its response json.
 
     Warning! Will fail after waiting ~3 minutes if:
     * the notification doesn't get sent (eg celery not running)
@@ -114,10 +114,10 @@ def get_delivered_notification(client, notification_id):
             raise
 
     status = resp_json['data']['notification']['status']
-    if status in ('created', 'sending'):
-        raise RetryException('Notification still sending')
-    assert status == 'delivered'
-    return resp_json
+    if status != expected_status:
+        raise RetryException('Notification still in {}'.format(status))
+    assert status == expected_status
+    return resp_json['data']['notification']['body']
 
 
 def generate_unique_email(email, uuid):
@@ -139,7 +139,7 @@ def get_link(profile, email_label, template_id, email):
         remove_all_emails(email_folder=email_label)
 
 
-@retry(RetryException, tries=15, delay=2)
+@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
 def do_verify(driver, profile):
     verify_code = get_verify_code_from_api(profile)
     verify_page = VerifyPage(driver)
@@ -157,15 +157,12 @@ def get_verify_code_from_api(profile):
     return m.group(0)
 
 
-@retry(RetryException, tries=15, delay=2)
+@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
 def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
-    if env == 'dev':
-        expected_status = 'sending'
-    else:
-        expected_status = 'delivered'
+    expected_status = 'sending'if env == 'dev' else 'delivered'
     resp = client.get('notifications')
     for notification in resp['notifications']:
         t_id = notification['template']['id']
@@ -177,25 +174,6 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
         message = 'Could not find notification with template {} to {} with a status of {}' \
             .format(template_id,
                     sent_to,
-                    expected_status)
-        raise RetryException(message)
-
-
-@retry(RetryException, tries=15, delay=2)
-def get_notification_via_api_by_id(service_id, env, api_key, notification_id):
-    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
-                                    service_id,
-                                    api_key)
-    if env == 'dev':
-        expected_status = 'sending'
-    else:
-        expected_status = 'delivered'
-    resp = client.get('notifications/{}'.format(notification_id))
-    if resp['data']['notification']['status'] == expected_status:
-        return resp['data']['notification']['body']
-    else:
-        message = 'Could not find notification for id {} with a status of {}' \
-            .format(id,
                     expected_status)
         raise RetryException(message)
 

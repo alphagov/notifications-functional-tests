@@ -1,6 +1,5 @@
 import pytest
 import uuid
-from time import sleep
 
 from tests.pages.rollups import get_service_templates_and_api_key_for_tests
 
@@ -84,7 +83,6 @@ def do_user_registration(driver, base_url, profile):
 
     driver.get(registration_link)
 
-    sleep(5)
     do_verify(driver, profile)
 
     add_service_page = AddServicePage(driver)
@@ -220,14 +218,10 @@ def do_test_python_client_sms(profile, test_ids):
 
     notification_id = resp_json['data']['notification']['id']
 
-    sleep(5)
-    message = get_notification_via_api(test_ids['service_id'], test_ids['sms_template_id'],
-                                       profile.env, test_ids['api_key'], profile.mobile)
+    expected_status = 'sending' if profile.env == 'dev' else 'delivered'
+    message = get_delivered_notification(client, notification_id, expected_status)
 
     assert "The quick brown fox jumped over the lazy dog" in message
-
-    resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['id'] == notification_id
 
 
 def do_test_python_client_email(profile, test_ids):
@@ -244,12 +238,11 @@ def do_test_python_client_email(profile, test_ids):
             test_ids['email_template_id'])
         assert 'result' not in resp_json['data']
         notification_id = resp_json['data']['notification']['id']
-        message = get_email_body(profile, profile.email_notification_label)
+        expected_status = 'sending' if profile.env == 'dev' else 'delivered'
+        message = get_delivered_notification(client, notification_id, expected_status)
+        assert "The quick brown fox jumped over the lazy dog" in message
     finally:
         remove_all_emails(email_folder=profile.email_notification_label)
-    assert "The quick brown fox jumped over the lazy dog" in message
-    resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['status'] in ['sending', 'delivered']
 
 
 def do_test_python_client_test_api_key(driver, profile, test_ids):
@@ -266,7 +259,7 @@ def do_test_python_client_test_api_key(driver, profile, test_ids):
         assert 'result' not in resp_json['data']
         notification_id = resp_json['data']['notification']['id']
 
-        get_delivered_notification(client, notification_id)
+        get_delivered_notification(client, notification_id, 'delivered')
 
         assert_no_email_present(profile, profile.email_notification_label)
     finally:

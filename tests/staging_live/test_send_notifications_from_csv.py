@@ -1,10 +1,7 @@
-from time import sleep
-
 from tests.utils import (
     create_temp_csv,
-    get_notification_via_api_by_id,
-    get_notification_via_api
-)
+    get_notification_via_api,
+    get_delivered_notification)
 
 from tests.pages import UploadCsvPage
 
@@ -52,20 +49,23 @@ def email_via_csv(profile, upload_csv_page):
 
 def send_sms_via_api(client, profile):
     resp_json = client.send_sms_notification(profile.mobile, profile.sms_template_id)
-    notification_id = resp_json['data']['notification']['id']
-    sleep(5)
-    message = get_notification_via_api_by_id(profile.service_id, profile.env, profile.api_key, notification_id)
-
+    message, notification_id = _assert_notification_status(client, profile, resp_json)
     assert_notification_body(client, message, notification_id)
 
 
 def send_email_via_api(client, profile):
     resp_json = client.send_email_notification(profile.email, profile.email_template_id)
-    notification_id = resp_json['data']['notification']['id']
-    sleep(5)
-    message = get_notification_via_api_by_id(profile.service_id, profile.env, profile.api_key, notification_id)
+
+    message, notification_id = _assert_notification_status(client, profile, resp_json)
 
     assert_notification_body(client, message, notification_id)
+
+
+def _assert_notification_status(client, profile, resp_json):
+    notification_id = resp_json['data']['notification']['id']
+    expected_status = 'sending' if profile.env == 'dev' else 'delivered'
+    message = get_delivered_notification(client, notification_id, expected_status)
+    return message, notification_id
 
 
 def assert_notification_body(client, message, notification_id):

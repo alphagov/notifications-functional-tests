@@ -1,6 +1,3 @@
-import pytest
-from time import sleep
-
 from tests.pages import (
     SignInPage,
     DashboardPage,
@@ -19,7 +16,6 @@ def sign_in(driver, test_profile):
     sign_in_page.get()
     assert sign_in_page.is_current()
     sign_in_page.login(test_profile)
-    sleep(5)
     do_verify(driver, test_profile),
 
 
