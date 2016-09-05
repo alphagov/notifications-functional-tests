@@ -62,8 +62,8 @@ def profile():
                           'invitation_email_label': LiveConfig.INVITATION_EMAIL_LABEL,
                           'api_key': LiveConfig.SERVICE_API_KEY,
                           'notify_api_url': LiveConfig.NOTIFY_API_URL,
-                          'registration_template_id': StagingConfig.REGISTRATION_TEMPLATE_ID,
-                          'invitation_template_id': StagingConfig.INVITATION_TEMPLATE_ID})
+                          'registration_template_id': LiveConfig.REGISTRATION_TEMPLATE_ID,
+                          'invitation_template_id': LiveConfig.INVITATION_TEMPLATE_ID})
     else:
         from config import Config
         uuid_for_test_run = str(uuid.uuid1())
