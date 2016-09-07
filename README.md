@@ -26,7 +26,7 @@ This file is included in the .gitignore to prevent the file from being accidenta
 Contents of the environment.sh file
 
 ```shell
-export ENVIRONMENT=dev  # for local environments use dev 
+export ENVIRONMENT=dev  # for local environments use dev
 export dev_TEST_NUMBER= [use your own number]
 export dev_FUNCTIONAL_TEST_EMAIL=[some gmail account @digital.cabinet-office.gov.uk]
 export dev_FUNCTIONAL_TEST_PASSWORD=xxx # password for gmail account and user account created in test
@@ -38,10 +38,16 @@ export dev_NOTIFY_SERVICE_API_KEY=xxx  # create an api key for the GOV.UK Notify
 
 ```
 
+The app uses Selenium to run web automation tests which requires ChromeDriver. Install using the following command.
+
+```shell
+    brew install chromedriver
+```
+
 Running the tests
 
 ```shell
-    ./scripts/run_tests.sh
+    ./scripts/run_functional_tests.sh
 ```
 
 ## Tests running on Travis
@@ -75,7 +81,3 @@ We do not want to test contents of the page beyond a simple check that would pro
 These test are not intended to be used for load testing, however, some performance tolerances could be added.
 Currently the test will fail if the sms is not delivered in a minute, which is too long to wait but it is unclear what a valid wait time should be.
 Testing headers is possible and a good idea to add to these tests.
-
-
-
-
