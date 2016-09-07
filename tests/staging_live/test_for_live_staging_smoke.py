@@ -8,7 +8,7 @@ from tests.pages import UploadCsvPage
 from notifications_python_client.notifications import NotificationsAPIClient
 
 
-def test_send_notifications_from_csv(driver, base_url, profile, login_user):
+def test_for_live_staging_smoke(driver, base_url, profile, login_user):
     upload_csv_page = UploadCsvPage(driver)
 
     email_via_csv(profile, upload_csv_page)
