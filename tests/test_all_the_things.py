@@ -51,9 +51,9 @@ def test_everything(driver, base_url, profile):
     # TODO move this to profile and setup in conftest
     test_ids = get_service_templates_and_api_key_for_tests(driver, profile)
 
-    do_create_email_template_and_send_from_csv(driver, profile, test_ids)
-    do_create_sms_template_and_send_from_csv(driver, profile, test_ids)
-    do_create_edit_and_delete_email_template(driver, profile)
+    do_send_email_from_csv(driver, profile, test_ids)
+    do_send_sms_from_csv(driver, profile, test_ids)
+    do_edit_and_delete_email_template(driver, profile)
 
     do_test_python_client_test_api_key(driver, profile, test_ids)
 
@@ -95,7 +95,7 @@ def do_user_registration(driver, base_url, profile):
     assert dashboard_page.h2_is_service_name(profile.service_name)
 
 
-def do_create_email_template_and_send_from_csv(driver, profile, test_ids):
+def do_send_email_from_csv(driver, profile, test_ids):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_email_templates()
@@ -115,7 +115,7 @@ def do_create_email_template_and_send_from_csv(driver, profile, test_ids):
     dashboard_page.go_to_dashboard_for_service()
 
 
-def do_create_sms_template_and_send_from_csv(driver, profile, test_ids):
+def do_send_sms_from_csv(driver, profile, test_ids):
 
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
@@ -141,7 +141,7 @@ def do_create_sms_template_and_send_from_csv(driver, profile, test_ids):
     dashboard_page.go_to_dashboard_for_service()
 
 
-def do_create_edit_and_delete_email_template(driver, profile):
+def do_edit_and_delete_email_template(driver, profile):
     test_name = 'edit/delete test'
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
