@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from tests.pages import (
     SignInPage,
     DashboardPage,
@@ -15,8 +17,9 @@ def sign_in(driver, test_profile):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
+    expected_created_at = datetime.utcnow()
     sign_in_page.login(test_profile)
-    do_verify(driver, test_profile),
+    do_verify(driver, test_profile, expected_created_at)
 
 
 def get_service_templates_and_api_key_for_tests(driver, test_profile):

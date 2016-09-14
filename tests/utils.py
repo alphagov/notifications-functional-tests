@@ -2,6 +2,7 @@ import csv
 import email as email_lib
 import imaplib
 import re
+from datetime import datetime
 
 import pytest
 from notifications_python_client.errors import HTTPError
@@ -125,11 +126,11 @@ def generate_unique_email(email, uuid):
     return "{}+{}@{}".format(parts[0], uuid, parts[1])
 
 
-def get_link(profile, email_label, template_id, email):
+def get_link(profile, email_label, template_id, email, expected_created_at):
     import re
     try:
         email_body = get_notification_via_api(profile.notify_service_id, template_id, profile.env,
-                                              profile.notify_service_api_key, email)
+                                              profile.notify_service_api_key, email, expected_created_at)
         match = re.search('http[s]?://\S+', email_body, re.MULTILINE)
         if match:
             return match.group(0)
@@ -140,17 +141,18 @@ def get_link(profile, email_label, template_id, email):
 
 
 @retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
-def do_verify(driver, profile):
-    verify_code = get_verify_code_from_api(profile)
+def do_verify(driver, profile, expected_created_at):
+    verify_code = get_verify_code_from_api(profile, expected_created_at)
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
     if verify_page.has_code_error():
         raise RetryException
 
 
-def get_verify_code_from_api(profile):
+def get_verify_code_from_api(profile, expected_created_at):
     verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
-                                                   profile.env, Config.NOTIFY_SERVICE_API_KEY, profile.mobile)
+                                                   profile.env, Config.NOTIFY_SERVICE_API_KEY, profile.mobile,
+                                                   expected_created_at)
     m = re.search('\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
@@ -158,17 +160,18 @@ def get_verify_code_from_api(profile):
 
 
 @retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
-def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
+def get_notification_via_api(service_id, template_id, env, api_key, sent_to, expected_created_at):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
     expected_status = 'sending'if env == 'dev' else 'delivered'
-    resp = client.get('notifications')
+    resp = client.get('notifications?limit_days=1')
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['to']
         status = notification['status']
-        if t_id == template_id and to == sent_to and status == expected_status:
+        created_at = datetime.strptime(notification['created_at'], "%Y-%m-%dT%H:%M:%S.%f+00:00")
+        if t_id == template_id and to == sent_to and created_at > expected_created_at:
             return notification['body']
     else:
         message = 'Could not find notification with template {} to {} with a status of {}' \
@@ -176,10 +179,3 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
                     sent_to,
                     expected_status)
         raise RetryException(message)
-
-
-def get_email_message(profile, email_label):
-    try:
-        return get_email_body(profile, email_label)
-    finally:
-        remove_all_emails(email_folder=email_label)
