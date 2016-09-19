@@ -163,7 +163,7 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
                                     service_id,
                                     api_key)
     expected_status = 'sending'if env == 'dev' else 'delivered'
-    resp = client.get('notifications')
+    resp = client.get('notifications', params={'include_jobs': True})
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['to']
