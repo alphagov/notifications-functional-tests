@@ -139,7 +139,7 @@ def get_link(profile, email_label, template_id, email):
         remove_all_emails(email_folder=email_label)
 
 
-@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
+@retry(RetryException, tries=36, delay=Config.EMAIL_DELAY)
 def do_verify(driver, profile):
     verify_code = get_verify_code_from_api(profile)
     verify_page = VerifyPage(driver)
@@ -157,7 +157,7 @@ def get_verify_code_from_api(profile):
     return m.group(0)
 
 
-@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
+@retry(RetryException, tries=36, delay=Config.EMAIL_DELAY)
 def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
