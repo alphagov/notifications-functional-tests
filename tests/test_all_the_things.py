@@ -220,7 +220,7 @@ def do_test_python_client_sms(profile, test_ids):
     expected_status = 'sending' if profile.env == 'dev' else 'delivered'
     message = get_delivered_notification(client, notification_id, expected_status)
 
-    assert "The quick brown fox jumped over the lazy dog" in message
+    assert "The quick brown fox jumped over the lazy dog" in message['body']
 
 
 def do_test_python_client_email(profile, test_ids):
@@ -239,7 +239,7 @@ def do_test_python_client_email(profile, test_ids):
         notification_id = resp_json['data']['notification']['id']
         expected_status = 'sending' if profile.env == 'dev' else 'delivered'
         message = get_delivered_notification(client, notification_id, expected_status)
-        assert "The quick brown fox jumped over the lazy dog" in message
+        assert "The quick brown fox jumped over the lazy dog" in message['body']
     finally:
         remove_all_emails(email_folder=profile.email_notification_label)
 

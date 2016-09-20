@@ -1,7 +1,8 @@
 from tests.utils import (
     create_temp_csv,
     get_notification_via_api,
-    get_delivered_notification)
+    get_delivered_notification,
+    assert_notification_body)
 
 from tests.pages import UploadCsvPage
 
@@ -66,9 +67,3 @@ def _assert_notification_status(client, profile, resp_json):
     expected_status = 'sending' if profile.env == 'dev' else 'delivered'
     message = get_delivered_notification(client, notification_id, expected_status)
     return message, notification_id
-
-
-def assert_notification_body(client, message, notification_id):
-    assert "The quick brown fox jumped over the lazy dog" in message
-    resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['id'] == notification_id

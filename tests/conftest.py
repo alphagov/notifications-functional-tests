@@ -8,6 +8,8 @@ from tests.utils import (
     generate_unique_email
 )
 
+from notifications_python_client import NotificationsAPIClient
+
 from tests.pages.rollups import sign_in
 
 from config import Config
@@ -120,3 +122,9 @@ def base_url():
 @pytest.fixture(scope="module")
 def login_user(driver, profile):
     sign_in(driver, profile)
+
+
+@pytest.fixture(scope="module")
+def client(profile):
+    client = NotificationsAPIClient(profile.notify_api_url, profile.service_id, profile.api_key)
+    return client
