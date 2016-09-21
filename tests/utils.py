@@ -95,6 +95,12 @@ def assert_no_email_present(profile, email_folder):
             gimap.logout()
 
 
+def assert_notification_body(client, message, notification_id):
+    assert "The quick brown fox jumped over the lazy dog" in message["body"]
+    resp_json = client.get_notification_by_id(notification_id)
+    assert resp_json['data']['notification']['id'] == notification_id
+
+
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
 def get_delivered_notification(client, notification_id, expected_status):
     """
@@ -117,7 +123,7 @@ def get_delivered_notification(client, notification_id, expected_status):
     if status != expected_status:
         raise RetryException('Notification still in {}'.format(status))
     assert status == expected_status
-    return resp_json['data']['notification']['body']
+    return resp_json['data']['notification']
 
 
 def generate_unique_email(email, uuid):
