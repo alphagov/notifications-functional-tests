@@ -107,10 +107,17 @@ def do_send_email_from_csv(driver, profile, test_ids):
 
     upload_csv_page = UploadCsvPage(driver)
     upload_csv_page.upload_csv(directory, filename)
-    email_body = get_notification_via_api(test_ids['service_id'], test_ids['email_template_id'],
-                                          profile.env, test_ids['api_key'], profile.email)
+    notification_id = upload_csv_page.get_notification_id_after_upload()
 
-    assert "The quick brown fox jumped over the lazy dog" in email_body
+    notification = get_notification_by_id_via_api(notification_id,
+                                                  test_ids['service_id'],
+                                                  test_ids['email_template_id'],
+                                                  test_ids['api_key'],
+                                                  profile.email)
+
+    assert notification['id'] == notification_id
+    assert 'The quick brown fox jumped over the lazy dog' in notification['body']
+
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
@@ -131,12 +138,16 @@ def do_send_sms_from_csv(driver, profile, test_ids):
 
     upload_csv_page.upload_csv(directory, filename)
 
-    # we could check the current page and wait for the status
-    # of sending to go to 1, but for the moment get notifications
-    # via api
-    message = get_notification_via_api(service_id, template_id, profile.env, test_ids['api_key'], profile.mobile)
+    notification_id = upload_csv_page.get_notification_id_after_upload()
+    notification = get_notification_by_id_via_api(notification_id,
+                                                  service_id,
+                                                  template_id,
+                                                  test_ids['api_key'],
+                                                  profile.mobile)
 
-    assert "The quick brown fox jumped over the lazy dog" in message
+    assert notification['id'] == notification_id
+    assert 'The quick brown fox jumped over the lazy dog' in notification['body']
+
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 

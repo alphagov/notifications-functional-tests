@@ -184,6 +184,23 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
         raise RetryException(message)
 
 
+@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
+def get_notification_by_id_via_api(notification_id, service_id, template_id, api_key, sent_to):
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
+                                    service_id,
+                                    api_key)
+    try:
+        resp = client.get_notification_by_id(notification_id)
+        return resp["data"]["notification"]
+    except HTTPError as e:
+        if e.status_code == 404:
+            message = 'Could not find notification with template {} to {}' \
+                .format(template_id, sent_to)
+            raise RetryException(message)
+        else:
+            raise
+
+
 def get_email_message(profile, email_label):
     try:
         return get_email_body(profile, email_label)
