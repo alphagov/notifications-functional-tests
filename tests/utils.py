@@ -96,6 +96,12 @@ def assert_no_email_present(profile, email_folder):
             gimap.logout()
 
 
+def assert_notification_body(client, message, notification_id):
+    assert "The quick brown fox jumped over the lazy dog" in message["body"]
+    resp_json = client.get_notification_by_id(notification_id)
+    assert resp_json['data']['notification']['id'] == notification_id
+
+
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
 def get_delivered_notification(client, notification_id, expected_status):
     """
@@ -118,7 +124,7 @@ def get_delivered_notification(client, notification_id, expected_status):
     if status != expected_status:
         raise RetryException('Notification still in {}'.format(status))
     assert status == expected_status
-    return resp_json['data']['notification']['body']
+    return resp_json['data']['notification']
 
 
 def generate_unique_email(email, uuid):
@@ -164,18 +170,15 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to, exp
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
-    expected_status = 'sending'if env == 'dev' else 'delivered'
-    resp = client.get('notifications?limit_days=1')
+    resp = client.get('notifications?limit_days=1', params={'include_jobs': True})
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['to']
-        status = notification['status']
         created_at = datetime.strptime(notification['created_at'], "%Y-%m-%dT%H:%M:%S.%f+00:00")
         if t_id == template_id and to == sent_to and created_at > expected_created_at:
             return notification['body']
     else:
-        message = 'Could not find notification with template {} to {} with a status of {}' \
+        message = 'Could not find notification with template {} to {}' \
             .format(template_id,
-                    sent_to,
-                    expected_status)
+                    sent_to)
         raise RetryException(message)

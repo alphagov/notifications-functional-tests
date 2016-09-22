@@ -39,6 +39,10 @@ build: dependencies ## Build project
 test: venv ## Run tests
 	sh -e /etc/init.d/xvfb start && ./scripts/run_functional_tests.sh
 
+.PHONY: test-providers
+test-providers: venv ## Run tests
+	sh -e /etc/init.d/xvfb start && ./scripts/run_provider_delivery_tests.sh
+
 .PHONY: generate-env-file
 generate-env-file: ## Generate the environment file for running the tests inside a Docker container
 	scripts/generate_docker_env.sh
@@ -67,6 +71,17 @@ test-with-docker: prepare-docker-runner-image generate-env-file ## Run tests ins
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make test
+
+.PHONY: test-providers-with-docker
+test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run tests inside a Docker container
+	docker run -i --rm \
+		--name "${DOCKER_CONTAINER_PREFIX}-test" \
+		-v `pwd`:/var/project \
+		-e ENVIRONMENT=${ENVIRONMENT} \
+		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
+		--env-file docker.env \
+		${DOCKER_BUILDER_IMAGE_NAME} \
+		make test-providers
 
 .PHONY: clean-docker-containers
 clean-docker-containers: ## Clean up any remaining docker containers
