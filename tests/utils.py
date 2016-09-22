@@ -162,7 +162,7 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
-    expected_status = 'sending'if env == 'dev' else 'delivered'
+    expected_status = 'sending' if env == 'dev' else 'delivered'
     resp = client.get('notifications')
     for notification in resp['notifications']:
         t_id = notification['template']['id']
@@ -176,6 +176,23 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
                     sent_to,
                     expected_status)
         raise RetryException(message)
+
+
+@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
+def get_notification_by_id_via_api(notification_id, service_id, template_id, api_key, sent_to):
+    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
+                                    service_id,
+                                    api_key)
+    try:
+        resp = client.get_notification_by_id(notification_id)
+        return resp["data"]["notification"]
+    except HTTPError as e:
+        if e.status_code == 404:
+            message = 'Could not find notification with template {} to {}' \
+                .format(template_id, sent_to)
+            raise RetryException(message)
+        else:
+            raise
 
 
 def get_email_message(profile, email_label):

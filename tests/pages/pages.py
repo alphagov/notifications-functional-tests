@@ -4,8 +4,9 @@ import shutil
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 
+from retry import retry
 from config import Config
 
 from tests.pages.element import (
@@ -36,6 +37,10 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     VerifyPageLocators
 )
+
+
+class RetryException(Exception):
+    pass
 
 
 class BasePage(object):
@@ -306,6 +311,7 @@ class UploadCsvPage(BasePage):
 
     file_input_element = FileInputElement()
     send_button = UploadCsvLocators.SEND_BUTTON
+    first_notification = UploadCsvLocators.FIRST_NOTIFICATION_AFTER_UPLOAD
 
     def click_send(self):
         element = self.wait_for_element(UploadCsvPage.send_button)
@@ -316,6 +322,18 @@ class UploadCsvPage(BasePage):
         self.file_input_element = file_path
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
+
+    @retry(RetryException, tries=5, delay=2)
+    def get_notification_id_after_upload(self):
+        try:
+            element = self.wait_for_element(UploadCsvPage.first_notification)
+            notification_id = element.get_attribute('id')
+            if not notification_id:
+                raise RetryException('No notification id yet {}'.format(notification_id))
+            else:
+                return notification_id
+        except StaleElementReferenceException:
+            raise RetryException('Could not find element...')
 
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
