@@ -68,6 +68,5 @@ def send_email_via_api(client, profile):
 
 def _assert_notification_status(client, profile, resp_json):
     notification_id = resp_json['data']['notification']['id']
-    expected_status = 'sending'
-    message = get_delivered_notification(client, notification_id, expected_status)
+    message = get_delivered_notification(client, notification_id, expected_status=None)
     return message, notification_id

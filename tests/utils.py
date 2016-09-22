@@ -121,9 +121,10 @@ def get_delivered_notification(client, notification_id, expected_status):
             raise
 
     status = resp_json['data']['notification']['status']
-    if status != expected_status:
-        raise RetryException('Notification still in {}'.format(status))
-    assert status == expected_status
+    if expected_status:
+        if status != expected_status:
+            raise RetryException('Notification still in {}'.format(status))
+        assert status == expected_status
     return resp_json['data']['notification']
 
 
