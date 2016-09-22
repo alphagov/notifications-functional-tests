@@ -1,4 +1,5 @@
-import pytest
+from datetime import datetime
+
 import uuid
 
 from tests.pages.rollups import get_service_templates_and_api_key_for_tests
@@ -10,7 +11,6 @@ from config import Config
 from tests.utils import (
     get_link,
     create_temp_csv,
-    get_email_body,
     remove_all_emails,
     generate_unique_email,
     do_verify,
@@ -32,14 +32,6 @@ from tests.pages import (
     EditEmailTemplatePage,
     ApiKeyPage
 )
-
-
-def _get_email_message(profile):
-    try:
-        return get_email_body(profile, profile.email_notification_label)
-
-    finally:
-        remove_all_emails(email_folder=profile.email_notification_label)
 
 
 # Note registration *must* run before any other tests as it registers the user for use
@@ -73,16 +65,17 @@ def do_user_registration(driver, base_url, profile):
     registration_page = RegistrationPage(driver)
     assert registration_page.is_current()
 
+    expected_created_at = datetime.utcnow()
     registration_page.register(profile)
 
     assert driver.current_url == base_url + '/registration-continue'
 
     registration_link = get_link(profile, profile.registration_email_label,
-                                 profile.registration_template_id, profile.email)
-
+                                 profile.registration_template_id, profile.email, expected_created_at)
+    expected_create_at_for_verify_code = datetime.utcnow()
     driver.get(registration_link)
 
-    do_verify(driver, profile)
+    do_verify(driver, profile, expected_create_at_for_verify_code)
 
     add_service_page = AddServicePage(driver)
     assert add_service_page.is_current()
@@ -106,9 +99,10 @@ def do_send_email_from_csv(driver, profile, test_ids):
     directory, filename = create_temp_csv(profile.email, 'email address')
 
     upload_csv_page = UploadCsvPage(driver)
+    expected_created_at = datetime.utcnow()
     upload_csv_page.upload_csv(directory, filename)
-    email_body = get_notification_via_api(test_ids['service_id'], test_ids['email_template_id'],
-                                          profile.env, test_ids['api_key'], profile.email)
+    email_body = get_notification_via_api(test_ids['service_id'], test_ids['email_template_id'], profile.env,
+                                          test_ids['api_key'], profile.email, expected_created_at)
 
     assert "The quick brown fox jumped over the lazy dog" in email_body
     dashboard_page = DashboardPage(driver)
@@ -128,13 +122,14 @@ def do_send_sms_from_csv(driver, profile, test_ids):
 
     upload_csv_page = UploadCsvPage(driver)
     template_id = upload_csv_page.get_template_id()
-
+    expected_created_at = datetime.utcnow()
     upload_csv_page.upload_csv(directory, filename)
 
     # we could check the current page and wait for the status
     # of sending to go to 1, but for the moment get notifications
     # via api
-    message = get_notification_via_api(service_id, template_id, profile.env, test_ids['api_key'], profile.mobile)
+    message = get_notification_via_api(service_id, template_id, profile.env, test_ids['api_key'], profile.mobile,
+                                       expected_created_at)
 
     assert "The quick brown fox jumped over the lazy dog" in message
     dashboard_page = DashboardPage(driver)
@@ -179,9 +174,11 @@ def do_user_can_invite_someone_to_notify(driver, profile):
     invite_email = generate_unique_email(profile.email, invited_user_randomness)
 
     invite_user_page.fill_invitation_form(invite_email, send_messages=True)
+    expected_created_at = datetime.utcnow()
     invite_user_page.send_invitation()
 
-    invite_link = get_link(profile, profile.invitation_email_label, profile.invitation_template_id, invite_email)
+    invite_link = get_link(profile, profile.invitation_email_label, profile.invitation_template_id, invite_email,
+                           expected_created_at)
 
     invite_user_page.sign_out()
 
@@ -192,9 +189,10 @@ def do_user_can_invite_someone_to_notify(driver, profile):
     driver.get(invite_link)
     register_from_invite_page = RegisterFromInvite(driver)
     register_from_invite_page.fill_registration_form(invited_user_name, profile)
+    expected_created_at_for_verify_code = datetime.utcnow()
     register_from_invite_page.click_continue()
 
-    do_verify(driver, profile)
+    do_verify(driver, profile, expected_created_at_for_verify_code)
 
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
@@ -217,7 +215,7 @@ def do_test_python_client_sms(profile, test_ids):
 
     notification_id = resp_json['data']['notification']['id']
 
-    expected_status = 'sending' if profile.env == 'dev' else 'delivered'
+    expected_status = 'sending'
     message = get_delivered_notification(client, notification_id, expected_status)
 
     assert "The quick brown fox jumped over the lazy dog" in message['body']
@@ -237,7 +235,7 @@ def do_test_python_client_email(profile, test_ids):
             test_ids['email_template_id'])
         assert 'result' not in resp_json['data']
         notification_id = resp_json['data']['notification']['id']
-        expected_status = 'sending' if profile.env == 'dev' else 'delivered'
+        expected_status = 'sending'
         message = get_delivered_notification(client, notification_id, expected_status)
         assert "The quick brown fox jumped over the lazy dog" in message['body']
     finally:

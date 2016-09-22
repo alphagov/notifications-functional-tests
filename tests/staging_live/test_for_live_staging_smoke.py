@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from tests.utils import (
     create_temp_csv,
     get_notification_via_api,
@@ -31,9 +33,10 @@ def sms_via_csv(profile, upload_csv_page):
                                                               profile.sms_template_id)
     # create csv file to use for sms notification
     directory, filename = create_temp_csv(profile.mobile, 'phone number')
+    expected_created_at = datetime.utcnow()
     upload_csv_page.upload_csv(directory, filename)
-    message = get_notification_via_api(profile.service_id, profile.sms_template_id,
-                                       profile.env, profile.api_key, profile.mobile)
+    message = get_notification_via_api(profile.service_id, profile.sms_template_id, profile.env, profile.api_key,
+                                       profile.mobile, expected_created_at)
     assert "The quick brown fox jumped over the lazy dog" in message
 
 
@@ -42,9 +45,10 @@ def email_via_csv(profile, upload_csv_page):
                                                               profile.email_template_id)
     # create csv file to use for email notification
     directory, filename = create_temp_csv(profile.email, 'email address')
+    expected_created_at = datetime.utcnow()
     upload_csv_page.upload_csv(directory, filename)
-    email_body = get_notification_via_api(profile.service_id, profile.email_template_id,
-                                          profile.env, profile.api_key, profile.email)
+    email_body = get_notification_via_api(profile.service_id, profile.email_template_id, profile.env, profile.api_key,
+                                          profile.email, expected_created_at)
     assert "The quick brown fox jumped over the lazy dog" in email_body
 
 
@@ -64,6 +68,5 @@ def send_email_via_api(client, profile):
 
 def _assert_notification_status(client, profile, resp_json):
     notification_id = resp_json['data']['notification']['id']
-    expected_status = 'sending' if profile.env == 'dev' else 'delivered'
-    message = get_delivered_notification(client, notification_id, expected_status)
+    message = get_delivered_notification(client, notification_id, expected_status=None)
     return message, notification_id
