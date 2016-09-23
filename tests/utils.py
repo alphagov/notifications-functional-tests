@@ -95,35 +95,9 @@ def assert_no_email_present(profile, email_folder):
             gimap.logout()
 
 
-def assert_notification_body(client, message, notification_id):
-    assert "The quick brown fox jumped over the lazy dog" in message["body"]
-    resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['id'] == notification_id
-
-
-@retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
-def get_delivered_notification(client, notification_id, expected_status):
-    """
-    Waits until a notification is the expected, and then returns its response json.
-
-    Warning! Will fail after waiting ~3 minutes if:
-    * the notification doesn't get sent (eg celery not running)
-    * you run with a regular (non research-mode or test api key) client!
-
-    """
-    try:
-        resp_json = client.get_notification_by_id(notification_id)
-    except HTTPError as e:
-        if e.status_code == 404:
-            raise RetryException('Notification not created yet')
-        else:
-            raise
-
-    status = resp_json['data']['notification']['status']
-    if status != expected_status:
-        raise RetryException('Notification still in {}'.format(status))
-    assert status == expected_status
-    return resp_json['data']['notification']
+def assert_notification_body(notification_id, notification):
+    assert notification['id'] == notification_id
+    assert 'The quick brown fox jumped over the lazy dog' in notification['body']
 
 
 def generate_unique_email(email, uuid):
@@ -182,23 +156,6 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
                     sent_to,
                     expected_status)
         raise RetryException(message)
-
-
-@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
-def get_notification_by_id_via_api(notification_id, service_id, template_id, api_key, sent_to):
-    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
-                                    service_id,
-                                    api_key)
-    try:
-        resp = client.get_notification_by_id(notification_id)
-        return resp["data"]["notification"]
-    except HTTPError as e:
-        if e.status_code == 404:
-            message = 'Could not find notification with template {} to {}' \
-                .format(template_id, sent_to)
-            raise RetryException(message)
-        else:
-            raise
 
 
 def get_email_message(profile, email_label):
