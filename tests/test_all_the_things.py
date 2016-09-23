@@ -16,7 +16,9 @@ from tests.utils import (
     do_verify,
     assert_no_email_present,
     get_delivered_notification,
-    get_notification_via_api)
+    get_notification_via_api,
+    get_notification_by_id_via_api
+)
 
 from tests.pages import (
     MainPage,
