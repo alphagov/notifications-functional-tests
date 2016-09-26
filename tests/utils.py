@@ -2,18 +2,13 @@ import csv
 import email as email_lib
 import imaplib
 import re
-
 import pytest
+
+from retry import retry
 from notifications_python_client.errors import HTTPError
 from notifications_python_client.notifications import NotificationsAPIClient
-from retry import retry
-
 from config import Config
 from tests.pages import VerifyPage
-
-
-class RetryException(Exception):
-    pass
 
 
 def remove_all_emails(email=None, pwd=None, email_folder=None):
@@ -49,6 +44,10 @@ def create_temp_csv(number, field_name):
         csv_writer.writeheader()
         csv_writer.writerow({field_name: number})
     return directory_name, 'sample.csv'
+
+
+class RetryException(Exception):
+    pass
 
 
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)

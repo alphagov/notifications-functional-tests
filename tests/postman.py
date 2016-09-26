@@ -4,10 +4,6 @@ from tests.utils import create_temp_csv, RetryException
 from notifications_python_client.errors import HTTPError
 
 
-class RetryException(Exception):
-    pass
-
-
 def send_notification_via_api(client, template_id, to, message_type):
     if message_type == 'sms':
         # resp_json = client.send_sms_notification(profile.mobile, profile.sms_template_id)
