@@ -1,4 +1,3 @@
-import pytest
 import uuid
 
 from tests.pages.rollups import get_service_templates_and_api_key_for_tests
@@ -7,7 +6,9 @@ from notifications_python_client.notifications import NotificationsAPIClient
 
 from config import Config
 
-from tests.postman import send_notification_via_api, get_notification_by_id_via_api
+from tests.postman import (
+    send_notification_via_api,
+    get_notification_by_id_via_api)
 
 from tests.utils import (
     get_link,
@@ -16,7 +17,6 @@ from tests.utils import (
     remove_all_emails,
     generate_unique_email,
     do_verify,
-    assert_no_email_present,
     assert_notification_body,
     )
 
@@ -80,7 +80,8 @@ def do_user_registration(driver, base_url, profile):
     assert driver.current_url == base_url + '/registration-continue'
 
     registration_link = get_link(profile, profile.registration_email_label,
-                                 profile.registration_template_id, profile.email)
+                                 profile.registration_template_id,
+                                 profile.email)
 
     driver.get(registration_link)
 
@@ -114,7 +115,11 @@ def do_send_email_from_csv(driver, profile, test_ids):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     test_ids['service_id'],
                                     test_ids['api_key'])
-    notification = get_notification_by_id_via_api(client, notification_id, ['sending', 'delivered'])
+
+    notification = get_notification_by_id_via_api(client,
+                                                  notification_id,
+                                                  ['sending', 'delivered'])
+
     assert_notification_body(notification_id, notification)
 
     dashboard_page = DashboardPage(driver)
@@ -124,7 +129,6 @@ def do_send_email_from_csv(driver, profile, test_ids):
 def do_send_sms_from_csv(driver, profile, test_ids):
 
     dashboard_page = DashboardPage(driver)
-    service_id = dashboard_page.get_service_id()
     dashboard_page.click_sms_templates()
 
     send_sms_page = SendSmsTemplatePage(driver)
@@ -133,7 +137,6 @@ def do_send_sms_from_csv(driver, profile, test_ids):
     directory, filename = create_temp_csv(profile.mobile, 'phone number')
 
     upload_csv_page = UploadCsvPage(driver)
-    template_id = upload_csv_page.get_template_id()
 
     upload_csv_page.upload_csv(directory, filename)
 
@@ -141,7 +144,9 @@ def do_send_sms_from_csv(driver, profile, test_ids):
                                     test_ids['service_id'],
                                     test_ids['api_key'])
     notification_id = upload_csv_page.get_notification_id_after_upload()
-    notification = get_notification_by_id_via_api(client, notification_id, ['sending', 'delivered'])
+    notification = get_notification_by_id_via_api(client,
+                                                  notification_id,
+                                                  ['sending', 'delivered'])
 
     assert_notification_body(notification_id, notification)
 

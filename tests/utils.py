@@ -5,9 +5,9 @@ import re
 import pytest
 
 from retry import retry
-from notifications_python_client.errors import HTTPError
 from notifications_python_client.notifications import NotificationsAPIClient
 from config import Config
+
 from tests.pages import VerifyPage
 
 
