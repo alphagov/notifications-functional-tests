@@ -318,8 +318,6 @@ class UploadCsvPage(BasePage):
         element.click()
 
     def upload_csv(self, directory, path):
-        import pdb
-        pdb.set_trace()
         file_path = os.path.join(directory, 'sample.csv')
         self.file_input_element = file_path
         self.click_send()
