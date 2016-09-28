@@ -1,20 +1,18 @@
 import pytest
 
-from tests.utils import assert_notification_body, get_delivered_notification
+from tests.postman import (
+    send_notification_via_api,
+    get_notification_by_id_via_api
+)
+
+from tests.utils import assert_notification_body
 
 
 @pytest.mark.parametrize("message_type, billable_units", [('sms', 1), ('email', 0)])
 def test_send_sms_and_email_via_api(driver, profile, client, message_type, billable_units):
-    notification_id = send_message_via_api(message_type, client, profile)
-    message = get_delivered_notification(client, notification_id, 'delivered')
-    assert_notification_body(client, message, notification_id)
-    assert message["billable_units"] == billable_units
-
-
-def send_message_via_api(message_type, client, profile):
-    if message_type == 'sms':
-        resp_json = client.send_sms_notification(profile.mobile, profile.sms_template_id)
-    elif message_type == 'email':
-        resp_json = client.send_email_notification(profile.email, profile.email_template_id)
-
-    return resp_json['data']['notification']['id']
+    template_id = profile.sms_template_id if message_type == 'sms' else profile.email_template_id
+    to = profile.mobile if message_type == 'sms' else profile.email
+    notification_id = send_notification_via_api(client, template_id, to, message_type)
+    notification = get_notification_by_id_via_api(client, notification_id, ['delivered'])
+    assert_notification_body(notification_id, notification)
+    assert notification["billable_units"] == billable_units

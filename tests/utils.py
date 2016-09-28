@@ -2,18 +2,13 @@ import csv
 import email as email_lib
 import imaplib
 import re
-
 import pytest
-from notifications_python_client.errors import HTTPError
-from notifications_python_client.notifications import NotificationsAPIClient
+
 from retry import retry
-
+from notifications_python_client.notifications import NotificationsAPIClient
 from config import Config
+
 from tests.pages import VerifyPage
-
-
-class RetryException(Exception):
-    pass
 
 
 def remove_all_emails(email=None, pwd=None, email_folder=None):
@@ -49,6 +44,10 @@ def create_temp_csv(number, field_name):
         csv_writer.writeheader()
         csv_writer.writerow({field_name: number})
     return directory_name, 'sample.csv'
+
+
+class RetryException(Exception):
+    pass
 
 
 @retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
@@ -95,35 +94,9 @@ def assert_no_email_present(profile, email_folder):
             gimap.logout()
 
 
-def assert_notification_body(client, message, notification_id):
-    assert "The quick brown fox jumped over the lazy dog" in message["body"]
-    resp_json = client.get_notification_by_id(notification_id)
-    assert resp_json['data']['notification']['id'] == notification_id
-
-
-@retry(RetryException, tries=Config.EMAIL_TRIES, delay=Config.EMAIL_DELAY)
-def get_delivered_notification(client, notification_id, expected_status):
-    """
-    Waits until a notification is the expected, and then returns its response json.
-
-    Warning! Will fail after waiting ~3 minutes if:
-    * the notification doesn't get sent (eg celery not running)
-    * you run with a regular (non research-mode or test api key) client!
-
-    """
-    try:
-        resp_json = client.get_notification_by_id(notification_id)
-    except HTTPError as e:
-        if e.status_code == 404:
-            raise RetryException('Notification not created yet')
-        else:
-            raise
-
-    status = resp_json['data']['notification']['status']
-    if status != expected_status:
-        raise RetryException('Notification still in {}'.format(status))
-    assert status == expected_status
-    return resp_json['data']['notification']
+def assert_notification_body(notification_id, notification):
+    assert notification['id'] == notification_id
+    assert 'The quick brown fox jumped over the lazy dog' in notification['body']
 
 
 def generate_unique_email(email, uuid):

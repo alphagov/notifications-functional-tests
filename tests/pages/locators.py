@@ -58,6 +58,7 @@ class EditTemplatePageLocators(object):
 class UploadCsvLocators(object):
     FILE_INPUT = (By.ID, 'file')
     SEND_BUTTON = (By.CLASS_NAME, 'button')
+    FIRST_NOTIFICATION_AFTER_UPLOAD = (By.CLASS_NAME, 'table-row')
 
 
 class TeamMembersPageLocators(object):
