@@ -141,19 +141,17 @@ def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
                                     api_key)
-    expected_status = 'sending'if env == 'dev' else 'delivered'
     resp = client.get('notifications', params={'include_jobs': True})
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['to']
         status = notification['status']
-        if t_id == template_id and to == sent_to and status == expected_status:
+        if t_id == template_id and to == sent_to and status in ['sending', 'delivered']:
             return notification['body']
     else:
-        message = 'Could not find notification with template {} to {} with a status of {}' \
+        message = 'Could not find notification with template {} to {} with a status of sending or delivered' \
             .format(template_id,
-                    sent_to,
-                    expected_status)
+                    sent_to)
         raise RetryException(message)
 
 
