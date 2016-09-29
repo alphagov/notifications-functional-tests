@@ -7,4 +7,4 @@ help:
 
 .PHONY: build
 build:
-	docker build -t govuk/notify-func-tests-runner .
+	docker build --pull -t govuk/notify-func-tests-runner .
