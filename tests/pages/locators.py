@@ -75,6 +75,7 @@ class InviteUserPageLocators(object):
 
 class ApiKeysPageLocators(object):
     KEY_NAME_INPUT = (By.NAME, 'key_name')
+    KEYS_PAGE_LINK = (By.LINK_TEXT, 'API keys')
     CREATE_KEY_LINK = (By.LINK_TEXT, 'Create an API key')
     API_KEY_ELEMENT = (By.CLASS_NAME, 'api-key-key')
     NORMAL_KEY_RADIO = (By.XPATH, "//input[@value='normal']")

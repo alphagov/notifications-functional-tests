@@ -411,6 +411,7 @@ class ProfilePage(BasePage):
 class ApiKeyPage(BasePage):
 
     key_name_input = KeyNameInputElement()
+    keys_link = ApiKeysPageLocators.KEYS_PAGE_LINK
     create_key_link = ApiKeysPageLocators.CREATE_KEY_LINK
     continue_button = CommonPageLocators.CONTINUE_BUTTON
     api_key_element = ApiKeysPageLocators.API_KEY_ELEMENT
@@ -422,6 +423,10 @@ class ApiKeyPage(BasePage):
 
     def enter_key_name(self, key_type='normal'):
         self.key_name_input = 'Test ' + key_type
+
+    def click_keys_link(self):
+        element = self.wait_for_element(ApiKeyPage.keys_link)
+        element.click()
 
     def click_create_key(self):
         element = self.wait_for_element(ApiKeyPage.create_key_link)

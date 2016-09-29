@@ -264,6 +264,7 @@ def create_api_key(driver, key_type):
     dashboard_page.click_api_keys_link()
 
     api_key_page = ApiKeyPage(driver)
+    api_key_page.click_keys_link()
     api_key_page.click_create_key()
 
     api_key_page.click_key_type_radio(key_type)
