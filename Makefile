@@ -94,37 +94,37 @@ run-docker-image: prepare-docker-runner-image generate-env-file ## Run tests ins
 		${DOCKER_BUILDER_IMAGE_NAME} \
 
 .PHONY: test-with-docker
-test-with-docker: run-docker-image ## Run tests inside a Docker container
+test-with-docker: run-docker-image ## Run all tests inside a Docker container
 		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test
 		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
 
 .PHONY: test-admin-with-docker
-test-admin-with-docker: run-docker-image ## Run tests inside a Docker container
+test-admin-with-docker: run-docker-image ## Run admin tests inside a Docker container
 		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-admin
 		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
 
 .PHONY: test-notify-api-email-with-docker
-test-notify-api-email-with-docker: run-docker-image ## Run tests inside a Docker container
+test-notify-api-email-with-docker: run-docker-image ## Run notify-api email tests inside a Docker container
 		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-notify-api-email
 		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
 
 .PHONY: test-notify-api-sms-with-docker
-test-notify-api-sms-with-docker: run-docker-image ## Run tests inside a Docker container
+test-notify-api-sms-with-docker: run-docker-image ## Run notify-api sms tests inside a Docker container
 		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-notify-api-sms
 		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
 
 .PHONY: test-provider-email-delivery-with-docker
-test-provider-email-delivery-with-docker: run-docker-image ## Run tests inside a Docker container
+test-provider-email-delivery-with-docker: run-docker-image ## Run provider delivery email tests inside a Docker container
 		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-provider-email-delivery
 		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
 
 .PHONY: test-provider-sms-delivery-with-docker
-test-provider-sms-delivery-with-docker: run-docker-image ## Run tests inside a Docker container
+test-provider-sms-delivery-with-docker: run-docker-image ## Run provider delivery sms tests inside a Docker container
 		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-provider-sms-delivery
 		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
 
 .PHONY: test-providers-with-docker
-test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run tests inside a Docker container
+test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run all provider tests inside a Docker container
 	docker run -i --rm \
 		--name "${DOCKER_CONTAINER_PREFIX}-test" \
 		-v `pwd`:/var/project \
