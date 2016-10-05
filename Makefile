@@ -36,12 +36,34 @@ dependencies: venv ## Install build dependencies
 build: dependencies ## Build project
 
 .PHONY: test
-test: venv ## Run tests
+test: venv ## Run functional tests
 	sh -e /etc/init.d/xvfb start && ./scripts/run_functional_tests.sh
+
+.PHONY: test-admin
+test-admin: venv ## Run admin tests
+	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/admin/test_admin.py
+
+.PHONY: test-notify-api-email
+test-notify-api-email: venv ## Run notify-api email tests
+	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/notify_api/test_notify_api_email.py
+
+.PHONY: test-notify-api-sms
+test-notify-api-sms: venv ## Run notify-api sms tests
+	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/notify_api/test_notify_api_sms.py
+
+.PHONY: test-provider-email-delivery
+test-provider-email-delivery: venv ## Run provider delivery email tests
+	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_email.py
+
+.PHONY: test-provider-sms-delivery
+test-provider-sms-delivery: venv ## Run provider delivery sms tests
+	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_sms.py
 
 .PHONY: test-providers
 test-providers: venv ## Run tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_provider_delivery_tests.sh
+	sh -e /etc/init.d/xvfb start && \
+	./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_email.py && \
+	./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_sms.py
 
 .PHONY: generate-env-file
 generate-env-file: ## Generate the environment file for running the tests inside a Docker container
@@ -61,16 +83,45 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make build
 
-.PHONY: test-with-docker
-test-with-docker: prepare-docker-runner-image generate-env-file ## Run tests inside a Docker container
-	docker run -i --rm \
+.PHONY: run-docker-image
+run-docker-image: prepare-docker-runner-image generate-env-file ## Run tests inside a Docker container
+	docker run -i -d=True --network=host \
 		--name "${DOCKER_CONTAINER_PREFIX}-test" \
 		-v `pwd`:/var/project \
 		-e ENVIRONMENT=${ENVIRONMENT} \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME} \
-		make test
+
+.PHONY: test-with-docker
+test-with-docker: run-docker-image ## Run tests inside a Docker container
+		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test
+		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+
+.PHONY: test-admin-with-docker
+test-admin-with-docker: run-docker-image ## Run tests inside a Docker container
+		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-admin
+		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+
+.PHONY: test-notify-api-email-with-docker
+test-notify-api-email-with-docker: run-docker-image ## Run tests inside a Docker container
+		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-notify-api-email
+		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+
+.PHONY: test-notify-api-sms-with-docker
+test-notify-api-sms-with-docker: run-docker-image ## Run tests inside a Docker container
+		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-notify-api-sms
+		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+
+.PHONY: test-provider-email-delivery-with-docker
+test-provider-email-delivery-with-docker: run-docker-image ## Run tests inside a Docker container
+		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-provider-email-delivery
+		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+
+.PHONY: test-provider-sms-delivery-with-docker
+test-provider-sms-delivery-with-docker: run-docker-image ## Run tests inside a Docker container
+		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-provider-sms-delivery
+		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
 
 .PHONY: test-providers-with-docker
 test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run tests inside a Docker container

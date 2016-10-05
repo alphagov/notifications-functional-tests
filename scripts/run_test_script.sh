@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Run project tests
+# Run a specific test script passed in by the first argument
 #
 # NOTE: This script expects to be run from the project root with
-# ./scripts/run_provider_delivery_tests.sh
+# ./scripts/run_test_script.sh
 
 # Use default environment vars for localhost if not already set
 
@@ -43,10 +43,13 @@ function display_status {
   echo
 }
 
-
-echo Running $ENVIRONMENT tests
-     display_status $ENVIRONMENT
-     py.test -x tests/provider_delivery/test_provider_delivery.py
-
+script=$1
+if [[ -n "$script" ]]; then
+  echo Running $ENVIRONMENT tests
+       display_status $ENVIRONMENT
+       py.test -x $script
+else
+    echo "No test script provided"
+fi
 
 display_result $? 3 "Unit tests"

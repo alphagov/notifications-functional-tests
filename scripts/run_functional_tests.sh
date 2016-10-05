@@ -47,7 +47,9 @@ case $ENVIRONMENT in
     staging|live)
       echo Running $ENVIRONMENT tests
       display_status $ENVIRONMENT
-      py.test -x tests/staging_live/test_for_live_staging_smoke.py
+      py.test -x tests/admin/test_admin.py
+      py.test -x tests/notify_api/test_notify_api_email.py
+      py.test -x tests/notify_api/test_notify_api_sms.py
       ;;
     master|*)
       echo 'Default test run - for' $ENVIRONMENT
