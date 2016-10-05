@@ -98,9 +98,13 @@ def driver(request):
         driver_name = 'firefox'
 
     if driver_name == 'firefox':
-        driver = webdriver.Firefox()
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("general.useragent.override", "Selenium")
+        driver = webdriver.Firefox(profile)
     elif driver_name == 'chrome':
-        driver = webdriver.Chrome()
+        options = webdriver.chrome.options.Options()
+        options.add_argument("user-agent=Selenium")
+        driver = webdriver.Chrome(chrome_options=opts)
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 
