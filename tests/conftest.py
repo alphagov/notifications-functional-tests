@@ -104,7 +104,7 @@ def driver(request):
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
         options.add_argument("user-agent=Selenium")
-        driver = webdriver.Chrome(chrome_options=opts)
+        driver = webdriver.Chrome(chrome_options=options)
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 

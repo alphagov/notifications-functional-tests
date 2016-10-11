@@ -1,15 +1,14 @@
 import uuid
 
-from tests.pages.rollups import get_service_templates_and_api_key_for_tests
-
 from notifications_python_client.notifications import NotificationsAPIClient
 
 from config import Config
 
+from tests.pages.rollups import get_service_templates_and_api_key_for_tests
 from tests.postman import (
     send_notification_via_api,
-    get_notification_by_id_via_api)
-
+    get_notification_by_id_via_api
+)
 from tests.utils import (
     get_link,
     create_temp_csv,
@@ -18,8 +17,7 @@ from tests.utils import (
     generate_unique_email,
     do_verify,
     assert_notification_body,
-    )
-
+)
 from tests.pages import (
     MainPage,
     RegistrationPage,
@@ -58,9 +56,6 @@ def test_everything(driver, base_url, profile):
     do_edit_and_delete_email_template(driver, profile)
 
     do_test_python_client_test_api_key(driver, profile, test_ids)
-
-    do_test_python_client_sms(profile, test_ids)
-    do_test_python_client_email(profile, test_ids)
 
     # must be last, as it signs out the user
     do_user_can_invite_someone_to_notify(driver, profile)
@@ -216,32 +211,6 @@ def do_user_can_invite_someone_to_notify(driver, profile):
     assert dashboard_page.h2_is_service_name(profile.service_name)
 
     dashboard_page.sign_out()
-
-
-def do_test_python_client_sms(profile, test_ids):
-
-    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
-                                    test_ids['service_id'],
-                                    test_ids['api_key'])
-
-    notification_id = send_notification_via_api(client, test_ids['sms_template_id'], profile.mobile, 'sms')
-    notification = get_notification_by_id_via_api(client, notification_id, ['sending', 'delivered'])
-    assert_notification_body(notification_id, notification)
-
-
-def do_test_python_client_email(profile, test_ids):
-
-    remove_all_emails(email_folder=profile.email_notification_label)
-
-    client = NotificationsAPIClient(Config.NOTIFY_API_URL,
-                                    test_ids['service_id'],
-                                    test_ids['api_key'])
-
-    notification_id = send_notification_via_api(client, test_ids['email_template_id'], profile.email, 'email')
-    notification = get_notification_by_id_via_api(client, notification_id, ['sending', 'delivered'])
-    assert_notification_body(notification_id, notification)
-
-    remove_all_emails(email_folder=profile.email_notification_label)
 
 
 def do_test_python_client_test_api_key(driver, profile, test_ids):
