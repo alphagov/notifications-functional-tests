@@ -61,8 +61,8 @@ def get_service_templates_and_api_key_for_tests(driver, test_profile):
     api_key_page.click_keys_link()
     api_key_page.click_create_key()
 
-    api_key_page.click_key_type_radio(key_type='normal')
-    api_key_page.enter_key_name(key_type='normal')
+    api_key_page.click_key_type_radio(key_type='team')
+    api_key_page.enter_key_name(key_type='team')
 
     api_key_page.click_continue()
     api_key = api_key_page.get_api_key()
