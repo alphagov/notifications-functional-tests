@@ -57,8 +57,8 @@ class BasePage(object):
         )
 
     def sign_out(self):
-        # getting and clicking on sign out link not working on travis
-        self.driver.get(self.base_url+'/sign-out')
+        element = self.wait_for_element(BasePage.sign_out_link)
+        element.click()
 
 
 class MainPage(BasePage):
@@ -128,16 +128,20 @@ class SignInPage(BasePage):
     def is_currect(self):
         return self.driver.current_url == self.base_url+'/sign-in'
 
-    def fill_login_form(self, profile):
-        self.email_input = profile.email
-        self.password_input = profile.password
+    def fill_login_form(self, profile, seeded=False):
+        if not seeded:
+            self.email_input = profile.email
+            self.password_input = profile.password
+        else:
+            self.email_input = profile.notify_research_service_email
+            self.password_input = profile.notify_research_service_password
 
     def click_continue_button(self):
         element = self.wait_for_element(SignInPage.continue_button)
         element.click()
 
-    def login(self, profile):
-        self.fill_login_form(profile)
+    def login(self, profile, seeded=False):
+        self.fill_login_form(profile, seeded)
         self.click_continue_button()
 
 
@@ -171,6 +175,13 @@ class DashboardPage(BasePage):
     email_templates_link = DashboardPageLocators.EMAIL_TEMPLATES_LINK
     team_members_link = DashboardPageLocators.TEAM_MEMBERS_LINK
     api_keys_link = DashboardPageLocators.API_KEYS_LINK
+    total_email_div = DashboardPageLocators.TOTAL_EMAIL_NUMBER
+    total_sms_div = DashboardPageLocators.TOTAL_SMS_NUMBER
+    sent_email_status_div = DashboardPageLocators.SENT_EMAIL_FAILURE_STATUS
+    sent_sms_status_div = DashboardPageLocators.SENT_SMS_FAILURE_STATUS
+
+    def _message_count_for_template_div(self, template_id):
+        return DashboardPageLocators.messages_sent_count_for_template(template_id)
 
     def is_current(self, service_id):
         expected = '{}/services/{}/dashboard'.format(self.base_url, service_id)
@@ -208,6 +219,26 @@ class DashboardPage(BasePage):
             service_id = self.get_service_id()
         url = "{}/services/{}/dashboard".format(self.base_url, service_id)
         self.driver.get(url)
+
+    def get_total_message_count(self, message_type):
+        target_div = DashboardPage.total_email_div if message_type == 'email' else DashboardPage.total_sms_div
+        element = self.wait_for_element(target_div)
+
+        return int(element.text)
+
+    def get_template_message_count(self, template_id):
+        messages_sent_count_for_template_div = self._message_count_for_template_div(template_id)
+        element = self.wait_for_element(messages_sent_count_for_template_div)
+
+        return int(element.text)
+
+    def get_status(self, message_type):
+        target_div = (DashboardPage.sent_email_status_div
+                      if message_type == 'email'
+                      else DashboardPage.sent_sms_status_div)
+        element = self.wait_for_element(target_div)
+
+        return element.text
 
 
 class SendSmsTemplatePage(BasePage):

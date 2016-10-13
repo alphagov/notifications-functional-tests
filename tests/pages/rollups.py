@@ -11,12 +11,12 @@ from tests.pages import (
 from tests.utils import do_verify
 
 
-def sign_in(driver, test_profile):
+def sign_in(driver, test_profile, seeded=False):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    sign_in_page.login(test_profile)
-    do_verify(driver, test_profile),
+    sign_in_page.login(test_profile, seeded)
+    do_verify(driver, test_profile)
 
 
 def get_service_templates_and_api_key_for_tests(driver, test_profile):
@@ -66,5 +66,10 @@ def get_service_templates_and_api_key_for_tests(driver, test_profile):
 
     api_key_page.click_continue()
     api_key = api_key_page.get_api_key()
+
+    test_profile.service_id = service_id
+    test_profile.email_template_id = email_template_id
+    test_profile.sms_template_id = sms_template_id
+    test_profile.api_key = api_key
 
     return {'service_id': service_id, 'email_template_id': email_template_id, 'sms_template_id': sms_template_id, 'api_key': api_key}  # noqa
