@@ -31,7 +31,7 @@ def profile():
 
     if env == 'preview':
         from config import PreviewConfig
-        uuid_for_test_run = str(uuid.uuid1())
+        uuid_for_test_run = str(uuid.uuid4())
         functional_test_name = PreviewConfig.FUNCTIONAL_TEST_NAME + uuid_for_test_run
         functional_test_email = generate_unique_email(PreviewConfig.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
         functional_test_service_name = PreviewConfig.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
@@ -99,7 +99,7 @@ def profile():
                           'invitation_template_id': LiveConfig.INVITATION_TEMPLATE_ID})
     else:
         from config import Config
-        uuid_for_test_run = str(uuid.uuid1())
+        uuid_for_test_run = str(uuid.uuid4())
         functional_test_name = Config.FUNCTIONAL_TEST_NAME + uuid_for_test_run
         functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
         functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
