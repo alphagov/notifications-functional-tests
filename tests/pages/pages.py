@@ -177,8 +177,6 @@ class DashboardPage(BasePage):
     api_keys_link = DashboardPageLocators.API_KEYS_LINK
     total_email_div = DashboardPageLocators.TOTAL_EMAIL_NUMBER
     total_sms_div = DashboardPageLocators.TOTAL_SMS_NUMBER
-    sent_email_status_div = DashboardPageLocators.SENT_EMAIL_FAILURE_STATUS
-    sent_sms_status_div = DashboardPageLocators.SENT_SMS_FAILURE_STATUS
 
     def _message_count_for_template_div(self, template_id):
         return DashboardPageLocators.messages_sent_count_for_template(template_id)
@@ -231,14 +229,6 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(messages_sent_count_for_template_div)
 
         return int(element.text)
-
-    def get_status(self, message_type):
-        target_div = (DashboardPage.sent_email_status_div
-                      if message_type == 'email'
-                      else DashboardPage.sent_sms_status_div)
-        element = self.wait_for_element(target_div)
-
-        return element.text
 
 
 class SendSmsTemplatePage(BasePage):

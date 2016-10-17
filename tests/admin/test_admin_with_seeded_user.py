@@ -43,9 +43,8 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
     dashboard_page.go_to_dashboard_for_service()
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
-    status = dashboard_page.get_status(message_type)
 
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after, status)
+    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
 def get_dashboard_stats(dashboard_page, message_type, template_id):
@@ -55,10 +54,9 @@ def get_dashboard_stats(dashboard_page, message_type, template_id):
     }
 
 
-def assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after, status):
+def assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after):
     for k in dashboard_stats_before.keys():
         assert dashboard_stats_after[k] == dashboard_stats_before[k] + 1
-    assert status == 'No failures'
 
 
 def _get_template_count(dashboard_page, template_id):
