@@ -51,7 +51,12 @@ case $ENVIRONMENT in
       py.test -x tests/notify_api/test_notify_api_email.py
       py.test -x tests/notify_api/test_notify_api_sms.py
       ;;
-    master|*)
+    preview)
+      echo Running $ENVIRONMENT tests
+      display_status $ENVIRONMENT
+      py.test -x tests/admin/test_admin_with_seeded_user.py
+      ;;
+    *)
       echo 'Default test run - for' $ENVIRONMENT
       display_status $ENVIRONMENT
       py.test -x tests/test_all_the_things.py

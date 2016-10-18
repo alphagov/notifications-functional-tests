@@ -13,15 +13,18 @@ def send_notification_via_api(client, template_id, to, message_type):
     return resp_json['data']['notification']['id']
 
 
-def send_notification_via_csv(profile, upload_csv_page, message_type):
+def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=False):
+    service_id = profile.notify_research_service_id if seeded else profile.service_id
+    email = profile.notify_research_service_email if seeded else profile.email
+
     if message_type == 'sms':
         template_id = profile.sms_template_id
         directory, filename = create_temp_csv(profile.mobile, 'phone number')
     elif message_type == 'email':
         template_id = profile.email_template_id
-        directory, filename = create_temp_csv(profile.email, 'email address')
+        directory, filename = create_temp_csv(email, 'email address')
 
-    upload_csv_page.go_to_upload_csv_for_service_and_template(profile.service_id,
+    upload_csv_page.go_to_upload_csv_for_service_and_template(service_id,
                                                               template_id)
     upload_csv_page.upload_csv(directory, filename)
     notification_id = upload_csv_page.get_notification_id_after_upload()

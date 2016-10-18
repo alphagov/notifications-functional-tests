@@ -28,7 +28,38 @@ class Profile(object):
 @pytest.fixture(scope="session")
 def profile():
     env = os.environ['ENVIRONMENT'].lower()
-    if env == 'staging':
+
+    if env == 'preview':
+        from config import PreviewConfig
+        uuid_for_test_run = str(uuid.uuid4())
+        functional_test_name = PreviewConfig.FUNCTIONAL_TEST_NAME + uuid_for_test_run
+        functional_test_email = generate_unique_email(PreviewConfig.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
+        functional_test_service_name = PreviewConfig.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
+        functional_test_password = PreviewConfig.FUNCTIONAL_TEST_PASSWORD
+        functional_test_email_password = PreviewConfig.FUNCTIONAL_TEST_EMAIL_PASSWORD
+        functional_test_mobile = PreviewConfig.TEST_NUMBER
+        return Profile(**{'env': PreviewConfig.ENVIRONMENT,
+                          'name': functional_test_name,
+                          'email': functional_test_email,
+                          'service_name': functional_test_service_name,
+                          'password': functional_test_password,
+                          'email_password': functional_test_email_password,
+                          'mobile': functional_test_mobile,
+                          'email_notification_label': PreviewConfig.EMAIL_NOTIFICATION_LABEL,
+                          'registration_email_label': PreviewConfig.REGISTRATION_EMAIL_LABEL,
+                          'invitation_email_label': PreviewConfig.INVITATION_EMAIL_LABEL,
+                          'email_template_id': PreviewConfig.EMAIL_TEMPLATE_ID,
+                          'sms_template_id': PreviewConfig.SMS_TEMPLATE_ID,
+                          'notify_service_id': PreviewConfig.NOTIFY_SERVICE_ID,
+                          'notify_api_url': PreviewConfig.NOTIFY_API_URL,
+                          'notify_service_api_key': PreviewConfig.NOTIFY_SERVICE_API_KEY,
+                          'notify_research_service_email': PreviewConfig.NOTIFY_RESEARCH_MODE_EMAIL,
+                          'notify_research_service_password': PreviewConfig.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
+                          'notify_research_service_id': PreviewConfig.NOTIFY_RESEARCH_SERVICE_ID,
+                          'notify_research_service_api_key': PreviewConfig.NOTIFY_RESEARCH_SERVICE_API_KEY,
+                          'registration_template_id': PreviewConfig.REGISTRATION_TEMPLATE_ID,
+                          'invitation_template_id': PreviewConfig.INVITATION_TEMPLATE_ID})
+    elif env == 'staging':
         from config import StagingConfig
         return Profile(**{'env': StagingConfig.ENVIRONMENT,
                           'name': StagingConfig.FUNCTIONAL_TEST_NAME,
@@ -68,7 +99,7 @@ def profile():
                           'invitation_template_id': LiveConfig.INVITATION_TEMPLATE_ID})
     else:
         from config import Config
-        uuid_for_test_run = str(uuid.uuid1())
+        uuid_for_test_run = str(uuid.uuid4())
         functional_test_name = Config.FUNCTIONAL_TEST_NAME + uuid_for_test_run
         functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
         functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
@@ -86,6 +117,7 @@ def profile():
                           'registration_email_label': Config.REGISTRATION_EMAIL_LABEL,
                           'invitation_email_label': Config.INVITATION_EMAIL_LABEL,
                           'notify_service_id': Config.NOTIFY_SERVICE_ID,
+                          'notify_api_url': Config.NOTIFY_API_URL,
                           'notify_service_api_key': Config.NOTIFY_SERVICE_API_KEY,
                           'registration_template_id': Config.REGISTRATION_TEMPLATE_ID,
                           'invitation_template_id': Config.INVITATION_TEMPLATE_ID})
@@ -104,7 +136,7 @@ def driver(request):
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
         options.add_argument("user-agent=Selenium")
-        driver = webdriver.Chrome(chrome_options=opts)
+        driver = webdriver.Chrome(chrome_options=options)
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 
@@ -123,12 +155,32 @@ def base_url():
     return Config.NOTIFY_ADMIN_URL
 
 
+@pytest.fixture(scope="session")
+def base_api_url():
+    return Config.NOTIFY_API_URL
+
+
 @pytest.fixture(scope="module")
 def login_user(driver, profile):
     sign_in(driver, profile)
 
 
 @pytest.fixture(scope="module")
+def login_seeded_user(driver, profile):
+    sign_in(driver, profile, True)
+
+
+@pytest.fixture(scope="module")
 def client(profile):
     client = NotificationsAPIClient(profile.notify_api_url, profile.service_id, profile.api_key)
+    return client
+
+
+@pytest.fixture(scope="module")
+def seeded_client(profile):
+    client = NotificationsAPIClient(
+        profile.notify_api_url,
+        profile.notify_research_service_id,
+        profile.notify_research_service_api_key
+    )
     return client
