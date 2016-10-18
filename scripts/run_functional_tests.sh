@@ -56,7 +56,7 @@ case $ENVIRONMENT in
       display_status $ENVIRONMENT
       py.test -x tests/admin/test_admin_with_seeded_user.py
       ;;
-    master|*)
+    *)
       echo 'Default test run - for' $ENVIRONMENT
       display_status $ENVIRONMENT
       py.test -x tests/test_all_the_things.py
