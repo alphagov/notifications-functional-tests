@@ -16,8 +16,6 @@ class Config(object):
     EMAIL_TRIES = 36
     EMAIL_DELAY = 5
     RETRY_DELAY = 5
-    SMS_TEMPLATE_ID = os.environ[os.environ['ENVIRONMENT'] + '_SMS_TEMPLATE_ID']
-    EMAIL_TEMPLATE_ID = os.environ[os.environ['ENVIRONMENT'] + '_EMAIL_TEMPLATE_ID']
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ['ENVIRONMENT'] + '_Functional Test Service_'
     NOTIFY_SERVICE_ID = os.environ[os.environ['ENVIRONMENT'] + '_NOTIFY_SERVICE_ID']
     NOTIFY_SERVICE_API_KEY = os.environ[os.environ['ENVIRONMENT'] + '_NOTIFY_SERVICE_API_KEY']

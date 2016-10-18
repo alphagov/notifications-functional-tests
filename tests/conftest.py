@@ -116,8 +116,6 @@ def profile():
                           'email_notification_label': Config.EMAIL_NOTIFICATION_LABEL,
                           'registration_email_label': Config.REGISTRATION_EMAIL_LABEL,
                           'invitation_email_label': Config.INVITATION_EMAIL_LABEL,
-                          'email_template_id': Config.EMAIL_TEMPLATE_ID,
-                          'sms_template_id': Config.SMS_TEMPLATE_ID,
                           'notify_service_id': Config.NOTIFY_SERVICE_ID,
                           'notify_api_url': Config.NOTIFY_API_URL,
                           'notify_service_api_key': Config.NOTIFY_SERVICE_API_KEY,
