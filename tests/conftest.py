@@ -169,13 +169,13 @@ def base_api_url():
 
 
 @pytest.fixture(scope="module")
-def login_user(driver, profile):
-    sign_in(driver, profile)
+def login_user(_driver, profile):
+    sign_in(_driver, profile)
 
 
 @pytest.fixture(scope="module")
-def login_seeded_user(driver, profile):
-    sign_in(driver, profile, True)
+def login_seeded_user(_driver, profile):
+    sign_in(_driver, profile, True)
 
 
 @pytest.fixture(scope="module")
