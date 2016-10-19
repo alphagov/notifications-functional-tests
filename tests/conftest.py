@@ -142,8 +142,8 @@ def _driver():
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 
+    driver.delete_all_cookies()
     yield driver
-
     driver.delete_all_cookies()
     driver.close()
 
@@ -152,11 +152,8 @@ def _driver():
 def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
     yield _driver
-
     if prev_failed_tests != request.session.testsfailed:
-        screenshots_folder = Path.cwd() / 'screenshots'
-        screenshots_folder.mkdir(exist_ok=True)
-        filename = str(screenshots_folder / '{}_{}.png'.format(datetime.utcnow(), request.function.__name__))
+        filename = str(Path.cwd() / 'screenshots' / '{}_{}.png'.format(datetime.utcnow(), request.function.__name__))
         _driver.save_screenshot(str(filename))
         print('Error screenshot saved to ' + filename)
 

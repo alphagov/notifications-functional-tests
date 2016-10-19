@@ -45,7 +45,11 @@ function display_status {
 
 
 # remove any previous screenshots
-rm -v ./screenshots/*
+if [ -d screenshots ]; then
+  echo 'Removing old test screenshots'
+  rm -rfv screenshots
+fi
+mkdir screenshots
 
 case $ENVIRONMENT in
     staging|live)
