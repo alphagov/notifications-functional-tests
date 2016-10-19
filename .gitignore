@@ -64,3 +64,5 @@ environment.sh
 /cache
 /venv
 docker.env
+
+screenshots

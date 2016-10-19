@@ -43,6 +43,10 @@ function display_status {
   echo
 }
 
+
+# remove any previous screenshots
+rm -v ./screenshots/*
+
 case $ENVIRONMENT in
     staging|live)
       echo Running $ENVIRONMENT tests

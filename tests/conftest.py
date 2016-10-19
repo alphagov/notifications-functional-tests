@@ -1,6 +1,8 @@
 import os
 import uuid
 import pytest
+from datetime import datetime
+from pathlib import Path
 
 from selenium import webdriver
 
@@ -124,7 +126,7 @@ def profile():
 
 
 @pytest.fixture(scope="module")
-def driver(request):
+def _driver():
     driver_name = os.getenv('SELENIUM_DRIVER', 'chrome').lower()
     if os.environ.get('TRAVIS'):
         driver_name = 'firefox'
@@ -140,14 +142,23 @@ def driver(request):
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 
+    yield driver
+
     driver.delete_all_cookies()
+    driver.close()
 
-    def clear_up():
-        driver.delete_all_cookies()
-        driver.close()
 
-    request.addfinalizer(clear_up)
-    return driver
+@pytest.fixture(scope='function')
+def driver(_driver, request):
+    prev_failed_tests = request.session.testsfailed
+    yield _driver
+
+    if prev_failed_tests != request.session.testsfailed:
+        screenshots_folder = Path.cwd() / 'screenshots'
+        screenshots_folder.mkdir(exist_ok=True)
+        filename = str(screenshots_folder / '{}_{}.png'.format(datetime.utcnow(), request.function.__name__))
+        _driver.save_screenshot(str(filename))
+        print('Error screenshot saved to ' + filename)
 
 
 @pytest.fixture(scope="session")
