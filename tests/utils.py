@@ -171,7 +171,7 @@ def do_user_registration(driver, profile, base_url):
     assert dashboard_page.h2_is_service_name(profile.service_name)
 
 
-def do_user_can_invite_someone_to_notify(driver, profile):
+def do_user_can_invite_someone_to_notify(driver, profile, base_url):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
@@ -188,15 +188,14 @@ def do_user_can_invite_someone_to_notify(driver, profile):
 
     invite_user_page.fill_invitation_form(invite_email, send_messages=True)
     invite_user_page.send_invitation()
-
-    invite_link = get_link(profile, profile.invitation_email_label, profile.invitation_template_id, invite_email)
-
     invite_user_page.sign_out()
+    invite_user_page.wait_until_url_is(base_url)
 
     # next part of interaction is from point of view of invitee
     # i.e. after visting invite_link we'll be registering using invite_email
     # but use same mobile number and password as profile
 
+    invite_link = get_link(profile, profile.invitation_email_label, profile.invitation_template_id, invite_email)
     driver.get(invite_link)
     register_from_invite_page = RegisterFromInvite(driver)
     register_from_invite_page.fill_registration_form(invited_user_name, profile)
@@ -243,7 +242,7 @@ def get_verify_code_from_api(profile):
     return m.group(0)
 
 
-@retry(RetryException, tries=15, delay=Config.RETRY_DELAY)
+@retry(RetryException, tries=2, delay=1)
 def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
