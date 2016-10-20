@@ -21,7 +21,7 @@ from tests.pages import (
 
 def test_registration_and_invite_flow(driver, profile, base_url):
     do_user_registration(driver, profile, base_url)
-    do_user_can_invite_someone_to_notify(driver, profile)
+    do_user_can_invite_someone_to_notify(driver, profile, base_url)
 
 
 @pytest.mark.parametrize('message_type', ['sms', 'email'])

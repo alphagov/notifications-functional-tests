@@ -60,6 +60,16 @@ class BasePage(object):
         element = self.wait_for_element(BasePage.sign_out_link)
         element.click()
 
+    def wait_until_url_is(self, url):
+        return WebDriverWait(self.driver, 10).until(
+            self.url_contains(url)
+        )
+
+    def url_contains(self, url):
+        def check_contains_url(driver):
+            return url in self.driver.current_url
+        return check_contains_url
+
 
 class MainPage(BasePage):
 
