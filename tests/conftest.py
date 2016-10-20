@@ -14,7 +14,7 @@ from notifications_python_client import NotificationsAPIClient
 
 from tests.pages.rollups import sign_in
 
-from config import Config
+from config import Config, PreviewConfig, StagingConfig, LiveConfig
 
 
 class Profile(object):
@@ -32,24 +32,18 @@ def profile():
     env = os.environ['ENVIRONMENT'].lower()
 
     if env == 'preview':
-        from config import PreviewConfig
         uuid_for_test_run = str(uuid.uuid4())
         functional_test_name = PreviewConfig.FUNCTIONAL_TEST_NAME + uuid_for_test_run
         functional_test_email = generate_unique_email(PreviewConfig.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
         functional_test_service_name = PreviewConfig.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
         functional_test_password = PreviewConfig.FUNCTIONAL_TEST_PASSWORD
-        functional_test_email_password = PreviewConfig.FUNCTIONAL_TEST_EMAIL_PASSWORD
         functional_test_mobile = PreviewConfig.TEST_NUMBER
         return Profile(**{'env': PreviewConfig.ENVIRONMENT,
                           'name': functional_test_name,
                           'email': functional_test_email,
                           'service_name': functional_test_service_name,
                           'password': functional_test_password,
-                          'email_password': functional_test_email_password,
                           'mobile': functional_test_mobile,
-                          'email_notification_label': PreviewConfig.EMAIL_NOTIFICATION_LABEL,
-                          'registration_email_label': PreviewConfig.REGISTRATION_EMAIL_LABEL,
-                          'invitation_email_label': PreviewConfig.INVITATION_EMAIL_LABEL,
                           'email_template_id': PreviewConfig.EMAIL_TEMPLATE_ID,
                           'sms_template_id': PreviewConfig.SMS_TEMPLATE_ID,
                           'notify_service_id': PreviewConfig.NOTIFY_SERVICE_ID,
@@ -62,45 +56,34 @@ def profile():
                           'registration_template_id': PreviewConfig.REGISTRATION_TEMPLATE_ID,
                           'invitation_template_id': PreviewConfig.INVITATION_TEMPLATE_ID})
     elif env == 'staging':
-        from config import StagingConfig
         return Profile(**{'env': StagingConfig.ENVIRONMENT,
                           'name': StagingConfig.FUNCTIONAL_TEST_NAME,
                           'email': StagingConfig.FUNCTIONAL_TEST_EMAIL,
                           'service_name': StagingConfig.FUNCTIONAL_TEST_SERVICE_NAME,
                           'password': StagingConfig.FUNCTIONAL_TEST_PASSWORD,
-                          'email_password': StagingConfig.FUNCTIONAL_TEST_EMAIL_PASSWORD,
                           'mobile': StagingConfig.TEST_NUMBER,
                           'service_id': StagingConfig.SERVICE_ID,
                           'email_template_id': StagingConfig.EMAIL_TEMPLATE_ID,
                           'sms_template_id': StagingConfig.SMS_TEMPLATE_ID,
-                          'email_notification_label': StagingConfig.EMAIL_NOTIFICATION_LABEL,
-                          'registration_email_label': StagingConfig.REGISTRATION_EMAIL_LABEL,
-                          'invitation_email_label': StagingConfig.INVITATION_EMAIL_LABEL,
                           'api_key': StagingConfig.SERVICE_API_KEY,
                           'notify_api_url': StagingConfig.NOTIFY_API_URL,
                           'registration_template_id': StagingConfig.REGISTRATION_TEMPLATE_ID,
                           'invitation_template_id': StagingConfig.INVITATION_TEMPLATE_ID})
     elif env == 'live':
-        from config import LiveConfig
         return Profile(**{'env': LiveConfig.ENVIRONMENT,
                           'name': LiveConfig.FUNCTIONAL_TEST_NAME,
                           'email': LiveConfig.FUNCTIONAL_TEST_EMAIL,
                           'service_name': LiveConfig.FUNCTIONAL_TEST_SERVICE_NAME,
                           'password': LiveConfig.FUNCTIONAL_TEST_PASSWORD,
-                          'email_password': LiveConfig.FUNCTIONAL_TEST_EMAIL_PASSWORD,
                           'mobile': LiveConfig.TEST_NUMBER,
                           'service_id': LiveConfig.SERVICE_ID,
                           'email_template_id': LiveConfig.EMAIL_TEMPLATE_ID,
                           'sms_template_id': LiveConfig.SMS_TEMPLATE_ID,
-                          'email_notification_label': LiveConfig.EMAIL_NOTIFICATION_LABEL,
-                          'registration_email_label': LiveConfig.REGISTRATION_EMAIL_LABEL,
-                          'invitation_email_label': LiveConfig.INVITATION_EMAIL_LABEL,
                           'api_key': LiveConfig.SERVICE_API_KEY,
                           'notify_api_url': LiveConfig.NOTIFY_API_URL,
                           'registration_template_id': LiveConfig.REGISTRATION_TEMPLATE_ID,
                           'invitation_template_id': LiveConfig.INVITATION_TEMPLATE_ID})
     else:
-        from config import Config
         uuid_for_test_run = str(uuid.uuid4())
         functional_test_name = Config.FUNCTIONAL_TEST_NAME + uuid_for_test_run
         functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
@@ -113,11 +96,7 @@ def profile():
                           'email': functional_test_email,
                           'service_name': functional_test_service_name,
                           'password': functional_test_password,
-                          'email_password': functional_test_email_password,
                           'mobile': functional_test_mobile,
-                          'email_notification_label': Config.EMAIL_NOTIFICATION_LABEL,
-                          'registration_email_label': Config.REGISTRATION_EMAIL_LABEL,
-                          'invitation_email_label': Config.INVITATION_EMAIL_LABEL,
                           'notify_service_id': Config.NOTIFY_SERVICE_ID,
                           'notify_api_url': Config.NOTIFY_API_URL,
                           'notify_service_api_key': Config.NOTIFY_SERVICE_API_KEY,

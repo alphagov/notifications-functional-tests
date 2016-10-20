@@ -55,9 +55,7 @@ case $ENVIRONMENT in
     staging|live)
       echo Running $ENVIRONMENT tests
       display_status $ENVIRONMENT
-      py.test -x -v tests/admin/test_admin.py
-      py.test -x -v tests/notify_api/test_notify_api_email.py
-      py.test -x -v tests/notify_api/test_notify_api_sms.py
+      py.test -x -v tests/admin/test_admin.py tests/notify_api/
       ;;
     preview)
       echo Running $ENVIRONMENT tests
