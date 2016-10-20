@@ -242,7 +242,7 @@ def get_verify_code_from_api(profile):
     return m.group(0)
 
 
-@retry(RetryException, tries=2, delay=1)
+@retry(RetryException, tries=15, delay=Config.RETRY_DELAY)
 def get_notification_via_api(service_id, template_id, env, api_key, sent_to):
     client = NotificationsAPIClient(Config.NOTIFY_API_URL,
                                     service_id,
