@@ -324,10 +324,8 @@ class EditEmailTemplatePage(BasePage):
         element.click()
 
     def create_template(self, name='Test email template'):
-        # TODO remove the uuid mularkey once uniqueness of email subject no longer a thing
-        import uuid
         self.name_input = name
-        self.subject_input = 'Test email from functional tests ' + str(uuid.uuid1())
+        self.subject_input = 'Test email from functional tests'
         self.template_content_input = 'The quick brown fox jumped over the lazy dog'
         self.click_save()
 
@@ -354,7 +352,7 @@ class UploadCsvPage(BasePage):
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
 
-    @retry(RetryException, tries=5, delay=2)
+    @retry(RetryException, tries=5, delay=4)
     def get_notification_id_after_upload(self):
         try:
             element = self.wait_for_element(UploadCsvPage.first_notification)

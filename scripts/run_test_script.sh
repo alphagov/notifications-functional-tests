@@ -43,6 +43,13 @@ function display_status {
   echo
 }
 
+# remove any previous screenshots
+if [ -d screenshots ]; then
+  echo 'Removing old test screenshots'
+  rm -rfv screenshots
+fi
+mkdir screenshots
+
 script=$1
 if [[ -n "$script" ]]; then
   echo Running $ENVIRONMENT tests

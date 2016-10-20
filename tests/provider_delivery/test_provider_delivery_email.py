@@ -8,7 +8,7 @@ from tests.postman import (
 from tests.utils import assert_notification_body
 
 
-def test_send_sms_and_email_via_api(driver, profile, client):
+def test_send_sms_and_email_via_api(profile, client):
     notification_id = send_notification_via_api(client, profile.email_template_id, profile.email, 'email')
     notification = retry_call(
         get_notification_by_id_via_api,
