@@ -41,4 +41,4 @@ def test_everything(driver, profile, base_url, base_api_url):
     assert_notification_body(sms_notification_id, sms_notification)
 
     do_edit_and_delete_email_template(driver)
-    do_user_can_invite_someone_to_notify(driver, profile)
+    do_user_can_invite_someone_to_notify(driver, profile, base_url)
