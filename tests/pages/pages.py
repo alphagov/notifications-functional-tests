@@ -342,7 +342,7 @@ class UploadCsvPage(BasePage):
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
 
-    @retry(RetryException, tries=5, delay=2)
+    @retry(RetryException, tries=5, delay=4)
     def get_notification_id_after_upload(self):
         try:
             element = self.wait_for_element(UploadCsvPage.first_notification)
