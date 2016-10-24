@@ -112,12 +112,12 @@ def _driver():
     if driver_name == 'firefox':
         profile = webdriver.FirefoxProfile()
         profile.set_preference("general.useragent.override", "Selenium")
-        profile.set_preference('webdriver.firefox.logfile', './browser_log')
+        profile.set_preference('webdriver.firefox.logfile', './browser.log')
         driver = webdriver.Firefox(profile)
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
         options.add_argument("user-agent=Selenium")
-        driver = webdriver.Chrome(service_log_path='./browser_log', chrome_options=options)
+        driver = webdriver.Chrome(service_log_path='./browser.log', chrome_options=options)
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 

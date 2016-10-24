@@ -50,6 +50,8 @@ if [ -d screenshots ]; then
   rm -rfv screenshots
 fi
 mkdir screenshots
+# remove any previous errors
+rm -f browser.log
 
 case $ENVIRONMENT in
     staging|live)
