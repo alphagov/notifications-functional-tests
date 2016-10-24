@@ -89,7 +89,6 @@ def profile():
         functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
         functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
         functional_test_password = Config.FUNCTIONAL_TEST_PASSWORD
-        functional_test_email_password = Config.FUNCTIONAL_TEST_EMAIL_PASSWORD
         functional_test_mobile = Config.TEST_NUMBER
         return Profile(**{'env': Config.ENVIRONMENT,
                           'name': functional_test_name,

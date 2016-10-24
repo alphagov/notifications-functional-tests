@@ -30,7 +30,6 @@ export ENVIRONMENT=dev  # for local environments use dev
 export dev_TEST_NUMBER= [use your own number]
 export dev_FUNCTIONAL_TEST_EMAIL=[some gmail account @digital.cabinet-office.gov.uk]
 export dev_FUNCTIONAL_TEST_PASSWORD=xxx # password for gmail account and user account created in test
-export dev_FUNCTIONAL_TEST_EMAIL_PASSWORD=xxx  # set up in gmail
 export dev_NOTIFY_ADMIN_URL=http://localhost:6012
 export dev_NOTIFY_API_URL=http://localhost:6011
 export dev_NOTIFY_SERVICE_ID=d6aa2c68-a2d9-4437-ab19-3ae8eb202553
