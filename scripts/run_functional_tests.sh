@@ -51,6 +51,9 @@ if [ -d screenshots ]; then
 fi
 mkdir screenshots
 
+# remove any previous browser log
++rm -f chromedriver.log
+
 case $ENVIRONMENT in
     staging|live)
       echo Running $ENVIRONMENT tests
