@@ -52,7 +52,7 @@ fi
 mkdir screenshots
 
 # remove any previous browser log
-+rm -f chromedriver.log
+rm -f chromedriver.log
 
 case $ENVIRONMENT in
     staging|live)

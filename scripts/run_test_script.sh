@@ -51,7 +51,7 @@ fi
 mkdir screenshots
 
 # remove any previous browser log
-+rm -f chromedriver.log
+rm -f chromedriver.log
 
 script=$1
 if [[ -n "$script" ]]; then

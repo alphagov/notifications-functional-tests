@@ -19,8 +19,8 @@ help:
 venv: venv/bin/activate ## Create virtualenv if it does not exist
 
 venv/bin/activate:
-	test -d venv || virtualenv venv
-	./venv/bin/pip install pip-accel
+	test -d /var/project/venv || virtualenv /var/project/venv
+	/var/project/venv/bin/pip install pip-accel
 
 .PHONY: check-env-vars
 check-env-vars: ## Check mandatory environment variables
@@ -37,33 +37,43 @@ build: dependencies ## Build project
 
 .PHONY: test
 test: venv ## Run functional tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_functional_tests.sh
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_functional_tests.sh' testuser
 
 .PHONY: test-admin
 test-admin: venv ## Run admin tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/admin/test_admin.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh
+	/var/project/tests/admin/test_admin.py' testuser
 
 .PHONY: test-notify-api-email
 test-notify-api-email: venv ## Run notify-api email tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/notify_api/test_notify_api_email.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh
+	/var/project/tests/notify_api/test_notify_api_email.py' testuser
 
 .PHONY: test-notify-api-sms
 test-notify-api-sms: venv ## Run notify-api sms tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/notify_api/test_notify_api_sms.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh
+	/var/project/tests/notify_api/test_notify_api_sms.py' testuser
 
 .PHONY: test-provider-email-delivery
 test-provider-email-delivery: venv ## Run provider delivery email tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_email.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh
+	/var/project/tests/provider_delivery/test_provider_delivery_email.py' testuser
 
 .PHONY: test-provider-sms-delivery
 test-provider-sms-delivery: venv ## Run provider delivery sms tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_sms.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh
+	/var/project/tests/provider_delivery/test_provider_delivery_sms.py' testuser
 
 .PHONY: test-providers
 test-providers: venv ## Run tests
 	sh -e /etc/init.d/xvfb start && \
-	./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_email.py && \
-	./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_sms.py
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/' testuser
 
 .PHONY: generate-env-file
 generate-env-file: ## Generate the environment file for running the tests inside a Docker container
@@ -90,7 +100,6 @@ run-docker-image: prepare-docker-runner-image generate-env-file ## Run tests ins
 		-v `pwd`:/var/project \
 		-e ENVIRONMENT=${ENVIRONMENT} \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
-		--security-opt seccomp:./docker/chrome.json \
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME}
 
@@ -131,7 +140,6 @@ test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run
 		-v `pwd`:/var/project \
 		-e ENVIRONMENT=${ENVIRONMENT} \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
-		--security-opt seccomp:./docker/chrome.json \
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make test-providers

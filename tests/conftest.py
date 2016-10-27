@@ -115,10 +115,11 @@ def _driver():
         profile.set_preference("general.useragent.override", "Selenium")
         driver = webdriver.Firefox(profile)
     elif driver_name == 'chrome':
-        service_log_path = "./chromedriver.log"
+        service_log_path = '/var/project/chromedriver.log'
         service_args = ['--verbose']
         options = webdriver.chrome.options.Options()
-        options.add_argument("user-agent=Selenium")
+        options.add_argument('user-agent=Selenium')
+        options.add_argument('--no-sandbox')
         driver = webdriver.Chrome(
             chrome_options=options,
             service_args=service_args,
