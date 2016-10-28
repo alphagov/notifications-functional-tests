@@ -11,7 +11,7 @@ from tests.utils import (
     do_user_registration,
     do_user_can_invite_someone_to_notify,
     assert_notification_body
-    )
+)
 
 from tests.pages import (
     DashboardPage,

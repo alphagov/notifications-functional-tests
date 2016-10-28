@@ -50,6 +50,9 @@ if [ -d screenshots ]; then
 fi
 mkdir screenshots
 
+# remove any previous browser log
+rm -f chromedriver.log
+
 script=$1
 if [[ -n "$script" ]]; then
   echo Running $ENVIRONMENT tests
