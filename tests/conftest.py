@@ -114,6 +114,8 @@ def _driver():
         profile = webdriver.FirefoxProfile()
         profile.set_preference("general.useragent.override", "Selenium")
         driver = webdriver.Firefox(profile)
+        driver.set_window_position(0, 0)
+        driver.set_window_size(1280, 720)
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
         options.add_argument("user-agent=Selenium")
