@@ -18,7 +18,7 @@ RUN \
 		build-essential \
 		xvfb \
 	&& apt-get install -y --no-install-recommends -t jessie-backports \
-		firefox \
+		firefox-esr \
 
 	&& echo "Clean up" \
 	&& rm -rf /var/lib/apt/lists/* /tmp/*

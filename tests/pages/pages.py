@@ -92,7 +92,7 @@ class RegistrationPage(BasePage):
     continue_button = CommonPageLocators.CONTINUE_BUTTON
 
     def is_current(self):
-        return self.driver.current_url == self.base_url + '/register'
+        return self.wait_until_url_is(self.base_url + '/register')
 
     def register(self, profile):
         self.name_input = profile.name
@@ -130,13 +130,10 @@ class SignInPage(BasePage):
     continue_button = CommonPageLocators.CONTINUE_BUTTON
 
     def get(self):
-        self.driver.get(self.base_url+'/sign-in')
+        self.driver.get(self.base_url + '/sign-in')
 
     def is_current(self):
-        return self.driver.current_url == self.base_url+'/sign-in'
-
-    def is_currect(self):
-        return self.driver.current_url == self.base_url+'/sign-in'
+        return self.wait_until_url_is(self.base_url + '/sign-in')
 
     def fill_login_form(self, profile, seeded=False):
         if not seeded:
