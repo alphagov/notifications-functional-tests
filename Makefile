@@ -85,7 +85,7 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 
 .PHONY: run-docker-image
 run-docker-image: prepare-docker-runner-image generate-env-file ## Run tests inside a Docker container
-	docker run -i -d \
+	docker run --add-host=api.local:192.168.65.1 -i -d \
 		--name "${DOCKER_CONTAINER_PREFIX}-test" \
 		-v `pwd`:/var/project \
 		-e ENVIRONMENT=${ENVIRONMENT} \
