@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 ADD mozilla.gpg /tmp/mozilla.gpg
 ADD chrome.pub /tmp/chrome.pub
-RUN adduser --disabled-password --gecos '' testuser
+RUN useradd -ms /bin/bash testuser
 
 RUN \
 	echo "Install Debian packages" \
