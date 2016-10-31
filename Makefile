@@ -83,56 +83,45 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make build
 
-.PHONY: run-docker-image
-run-docker-image: prepare-docker-runner-image generate-env-file ## Run tests inside a Docker container
-	docker run --add-host=api.local:192.168.65.1 -i -d \
+define run_test_container
+	docker run -i --rm \
 		--name "${DOCKER_CONTAINER_PREFIX}-test" \
+		--add-host=api.local:192.168.65.1 \
 		-v `pwd`:/var/project \
 		-e ENVIRONMENT=${ENVIRONMENT} \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME} \
+		${1}
+endef
 
 .PHONY: test-with-docker
-test-with-docker: run-docker-image ## Run all tests inside a Docker container
-		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test
-		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+test-with-docker: ## Run all tests inside a Docker container
+	$(call run_test_container,make test)
 
 .PHONY: test-admin-with-docker
-test-admin-with-docker: run-docker-image ## Run admin tests inside a Docker container
-		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-admin
-		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+test-admin-with-docker: ## Run admin tests inside a Docker container
+	$(call run_test_container,make test-admin)
 
 .PHONY: test-notify-api-email-with-docker
-test-notify-api-email-with-docker: run-docker-image ## Run notify-api email tests inside a Docker container
-		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-notify-api-email
-		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+test-notify-api-email-with-docker: ## Run notify-api email tests inside a Docker container
+	$(call run_test_container,make test-notify-api-email)
 
 .PHONY: test-notify-api-sms-with-docker
-test-notify-api-sms-with-docker: run-docker-image ## Run notify-api sms tests inside a Docker container
-		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-notify-api-sms
-		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+test-notify-api-sms-with-docker: ## Run notify-api sms tests inside a Docker container
+	$(call run_test_container,make test-notify-api-sms)
 
 .PHONY: test-provider-email-delivery-with-docker
-test-provider-email-delivery-with-docker: run-docker-image ## Run provider delivery email tests inside a Docker container
-		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-provider-email-delivery
-		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+test-provider-email-delivery-with-docker: ## Run provider delivery email tests inside a Docker container
+	$(call run_test_container,make test-provider-email-delivery)
 
 .PHONY: test-provider-sms-delivery-with-docker
-test-provider-sms-delivery-with-docker: run-docker-image ## Run provider delivery sms tests inside a Docker container
-		docker exec ${DOCKER_CONTAINER_PREFIX}-test make test-provider-sms-delivery
-		docker rm -f ${DOCKER_CONTAINER_PREFIX}-test
+test-provider-sms-delivery-with-docker: ## Run provider delivery sms tests inside a Docker container
+	$(call run_test_container,make test-provider-sms-delivery)
 
 .PHONY: test-providers-with-docker
 test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run all provider tests inside a Docker container
-	docker run -i --rm \
-		--name "${DOCKER_CONTAINER_PREFIX}-test" \
-		-v `pwd`:/var/project \
-		-e ENVIRONMENT=${ENVIRONMENT} \
-		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
-		--env-file docker.env \
-		${DOCKER_BUILDER_IMAGE_NAME} \
-		make test-providers
+	$(call run_test_container,make test-providers)
 
 .PHONY: clean-docker-containers
 clean-docker-containers: ## Clean up any remaining docker containers
