@@ -49,6 +49,8 @@ if [ -d screenshots ]; then
   rm -rfv screenshots
 fi
 mkdir screenshots
+# remove any previous errors
+rm -f browser.log
 
 script=$1
 if [[ -n "$script" ]]; then

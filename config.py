@@ -9,7 +9,6 @@ class Config(object):
     FUNCTIONAL_TEST_NAME = os.environ.get('ENVIRONMENT') + '_Functional Test_'
     FUNCTIONAL_TEST_EMAIL = os.environ.get(os.environ.get('ENVIRONMENT')+'_FUNCTIONAL_TEST_EMAIL')
     FUNCTIONAL_TEST_PASSWORD = os.environ.get(os.environ.get('ENVIRONMENT') + '_FUNCTIONAL_TEST_PASSWORD')
-    FUNCTIONAL_TEST_EMAIL_PASSWORD = os.environ.get(os.environ.get('ENVIRONMENT') + '_FUNCTIONAL_TEST_EMAIL_PASSWORD')
     EMAIL_TRIES = 36
     EMAIL_DELAY = 5
     RETRY_DELAY = 5
