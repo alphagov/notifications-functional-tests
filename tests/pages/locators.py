@@ -63,7 +63,7 @@ class EditTemplatePageLocators(object):
 
 class UploadCsvLocators(object):
     FILE_INPUT = (By.ID, 'file')
-    SEND_BUTTON = (By.CLASS_NAME, 'button')
+    SEND_BUTTON = (By.CSS_SELECTOR, 'input[type=submit]')
     FIRST_NOTIFICATION_AFTER_UPLOAD = (By.CLASS_NAME, 'table-row')
 
 
