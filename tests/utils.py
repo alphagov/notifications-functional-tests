@@ -1,3 +1,4 @@
+import functools
 import os
 import tempfile
 import csv
@@ -5,6 +6,7 @@ import re
 import uuid
 
 import pytest
+from datetime import datetime
 from retry import retry
 from notifications_python_client.notifications import NotificationsAPIClient
 
@@ -187,3 +189,15 @@ def get_notification_via_api(service_id, template_id, api_key, sent_to):
         .format(template_id,
                 sent_to)
     raise RetryException(message)
+
+
+def recordtime(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        print('Start Time: {}'.format(str(datetime.utcnow())))
+        result = func(*args, **kwargs)
+        print('End Time: {}'.format(str(datetime.utcnow())))
+
+        return result
+
+    return wrapper
