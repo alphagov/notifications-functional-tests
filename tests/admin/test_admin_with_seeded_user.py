@@ -10,8 +10,9 @@ from tests.postman import (
 from tests.utils import (
     do_user_registration,
     do_user_can_invite_someone_to_notify,
-    assert_notification_body
-    )
+    assert_notification_body,
+    recordtime
+)
 
 from tests.pages import (
     DashboardPage,
@@ -19,11 +20,13 @@ from tests.pages import (
 )
 
 
+@recordtime
 def test_registration_and_invite_flow(driver, profile, base_url):
     do_user_registration(driver, profile, base_url)
     do_user_can_invite_someone_to_notify(driver, profile, base_url)
 
 
+@recordtime
 @pytest.mark.parametrize('message_type', ['sms', 'email'])
 def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_type):
     dashboard_page = DashboardPage(driver)

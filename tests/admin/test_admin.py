@@ -5,9 +5,10 @@ from tests.postman import (
     get_notification_by_id_via_api
 )
 
-from tests.utils import assert_notification_body
+from tests.utils import assert_notification_body, recordtime
 
 
+@recordtime
 def test_admin(driver, base_url, client, profile, login_user):
     upload_csv_page = UploadCsvPage(driver)
     csv_sms_notification_id = send_notification_via_csv(profile, upload_csv_page, 'sms')
