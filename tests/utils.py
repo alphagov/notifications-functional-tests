@@ -137,6 +137,7 @@ def do_user_can_invite_someone_to_notify(driver, profile, base_url):
     assert dashboard_page.h2_is_service_name(profile.service_name)
 
     dashboard_page.sign_out()
+    dashboard_page.wait_until_url_is(base_url)
 
 
 def do_edit_and_delete_email_template(driver):
