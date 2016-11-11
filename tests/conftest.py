@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 from tests.utils import (
     generate_unique_email
@@ -112,14 +113,14 @@ def _driver():
     if driver_name == 'firefox':
         profile = webdriver.FirefoxProfile()
         profile.set_preference("general.useragent.override", "Selenium")
-        profile.set_preference('webdriver.firefox.logfile', './browser.log')
-        driver = webdriver.Firefox(profile)
+        binary = FirefoxBinary(log_file=open("./logs/browser.log", "wb"))
+        driver = webdriver.Firefox(profile, firefox_binary=binary)
         driver.set_window_position(0, 0)
         driver.set_window_size(1280, 720)
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
         options.add_argument("user-agent=Selenium")
-        driver = webdriver.Chrome(service_log_path='./browser.log', chrome_options=options)
+        driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log', chrome_options=options)
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 
