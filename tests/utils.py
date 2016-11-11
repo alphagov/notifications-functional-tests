@@ -3,9 +3,10 @@ import os
 import tempfile
 import csv
 import re
+import logging
 import uuid
-
 import pytest
+
 from datetime import datetime
 from retry import retry
 from notifications_python_client.notifications import NotificationsAPIClient
@@ -23,6 +24,9 @@ from tests.pages import (
     EditEmailTemplatePage,
     VerifyPage
 )
+
+logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
+                    level=logging.INFO)
 
 
 def create_temp_csv(number, field_name):
@@ -194,10 +198,12 @@ def get_notification_via_api(service_id, template_id, api_key, sent_to):
 def recordtime(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        print('Start Time: {}'.format(str(datetime.utcnow())))
-        result = func(*args, **kwargs)
-        print('End Time: {}'.format(str(datetime.utcnow())))
-
-        return result
+        try:
+            logging.info('Starting Test: {}'.format(func.__name__))
+            logging.info('Start Time: {}'.format(str(datetime.utcnow())))
+            result = func(*args, **kwargs)
+            return result
+        finally:
+            logging.info('End Time: {}'.format(str(datetime.utcnow())))
 
     return wrapper
