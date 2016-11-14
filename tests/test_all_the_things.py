@@ -20,7 +20,11 @@ def test_everything(driver, profile, base_url, base_api_url):
     do_user_registration(driver, profile, base_url)
     test_ids = get_service_templates_and_api_key_for_tests(driver, profile)
 
-    client = NotificationsAPIClient(base_api_url, test_ids['service_id'], test_ids['api_key'])
+    client = NotificationsAPIClient(
+        base_url=base_api_url,
+        service_id=test_ids['service_id'],
+        api_key=test_ids['api_key']
+    )
 
     upload_csv_page = UploadCsvPage(driver)
 
