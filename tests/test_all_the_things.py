@@ -7,7 +7,7 @@ from tests.utils import (
     do_user_can_invite_someone_to_notify,
     do_edit_and_delete_email_template,
     assert_notification_body
-    )
+)
 
 from tests.pages import UploadCsvPage
 

@@ -50,8 +50,13 @@ if [ -d screenshots ]; then
   rm -rfv screenshots
 fi
 mkdir screenshots
+
 # remove any previous errors
-rm -f browser.log
+if [ -d logs ]; then
+  echo 'Removing old test logs'
+  rm -rfv logs
+fi
+mkdir logs
 
 case $ENVIRONMENT in
     staging|live)
