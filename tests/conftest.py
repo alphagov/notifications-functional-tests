@@ -162,15 +162,19 @@ def login_seeded_user(_driver, profile):
 
 @pytest.fixture(scope="module")
 def client(profile):
-    client = NotificationsAPIClient(profile.notify_api_url, profile.service_id, profile.api_key)
+    client = NotificationsAPIClient(
+        base_url=profile.notify_api_url,
+        service_id=profile.service_id,
+        api_key=profile.api_key
+    )
     return client
 
 
 @pytest.fixture(scope="module")
 def seeded_client(profile):
     client = NotificationsAPIClient(
-        profile.notify_api_url,
-        profile.notify_research_service_id,
-        profile.notify_research_service_api_key
+        base_url=profile.notify_api_url,
+        service_id=profile.notify_research_service_id,
+        api_key=profile.notify_research_service_api_key
     )
     return client
