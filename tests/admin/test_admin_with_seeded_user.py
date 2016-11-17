@@ -1,5 +1,7 @@
 import pytest
 
+from retry.api import retry_call
+from config import Config
 from selenium.common.exceptions import TimeoutException
 
 from tests.postman import (
@@ -37,10 +39,12 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
 
     upload_csv_page = UploadCsvPage(driver)
     notification_id = send_notification_via_csv(profile, upload_csv_page, message_type, seeded=True)
-    notification = get_notification_by_id_via_api(
-        seeded_client,
-        notification_id,
-        ['sending', 'delivered']
+
+    notification = retry_call(
+        get_notification_by_id_via_api,
+        fargs=[seeded_client, notification_id, ['sending', 'delivered']],
+        tries=Config.NOTIFICATION_RETRY_TIMES,
+        delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
     assert_notification_body(notification_id, notification)
     dashboard_page.go_to_dashboard_for_service()
