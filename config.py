@@ -12,8 +12,8 @@ class Config(object):
     EMAIL_TRIES = 36
     EMAIL_DELAY = 5
     RETRY_DELAY = 5
-    PROVIDER_RETRY_TIMES = 12
-    PROVIDER_RETRY_INTERVAL = 20
+    PROVIDER_RETRY_TIMES = 3
+    PROVIDER_RETRY_INTERVAL = 0
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ.get('ENVIRONMENT') + '_Functional Test Service_'
     NOTIFY_SERVICE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_ID')
     NOTIFY_SERVICE_API_KEY = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_API_KEY')
