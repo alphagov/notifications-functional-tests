@@ -32,7 +32,6 @@ def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=Fal
     return notification_id
 
 
-@retry(RetryException, tries=15, delay=Config.EMAIL_DELAY)
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):
     try:
         resp = client.get_notification_by_id(notification_id)
