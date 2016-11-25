@@ -110,9 +110,24 @@ def _driver():
     if os.environ.get('TRAVIS'):
         driver_name = 'firefox'
 
+    http_proxy = os.getenv('HTTP_PROXY')
+
     if driver_name == 'firefox':
         profile = webdriver.FirefoxProfile()
         profile.set_preference("general.useragent.override", "Selenium")
+
+        if http_proxy is not None and http_proxy != "":
+            http_proxy_url = http_proxy.split(':')[0] + ':' + http_proxy.split(':')[1]
+            http_proxy_port = int(http_proxy.split(':')[2])
+            profile.set_preference("network.proxy.type", 5)
+            profile.set_preference("network.proxy.http", http_proxy_url)
+            profile.set_preference("network.proxy.http_port", http_proxy_port)
+            profile.set_preference("network.proxy.https", http_proxy_url)
+            profile.set_preference("network.proxy.https_port", http_proxy_port)
+            profile.set_preference("network.proxy.ssl", http_proxy_url)
+            profile.set_preference("network.proxy.ssl_port", http_proxy_port)
+            profile.update_preferences()
+
         binary = FirefoxBinary(log_file=open("./logs/browser.log", "wb"))
         driver = webdriver.Firefox(profile, firefox_binary=binary)
         driver.set_window_position(0, 0)
@@ -122,6 +137,10 @@ def _driver():
         service_args = ['--verbose']
         options.add_argument("--no-sandbox")
         options.add_argument("user-agent=Selenium")
+
+        if http_proxy is not None and http_proxy != "":
+            options.add_argument('--proxy-server={}'.format(http_proxy))
+
         driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
                                   service_args=service_args,
                                   chrome_options=options)

@@ -37,37 +37,30 @@ build: dependencies ## Build project
 
 .PHONY: test
 test: venv ## Run functional tests
-	sh -e /etc/init.d/xvfb start && \
 	su -c '/var/project/scripts/run_functional_tests.sh' hostuser
 
 .PHONY: test-admin
 test-admin: venv ## Run admin tests
-	sh -e /etc/init.d/xvfb start && \
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/admin/test_admin.py' hostuser
 
 .PHONY: test-notify-api-email
 test-notify-api-email: venv ## Run notify-api email tests
-	sh -e /etc/init.d/xvfb start && \
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/notify_api/test_notify_api_email.py' hostuser
 
 .PHONY: test-notify-api-sms
 test-notify-api-sms: venv ## Run notify-api sms tests
-	sh -e /etc/init.d/xvfb start && \
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/notify_api/test_notify_api_sms.py' hostuser
 
 .PHONY: test-provider-email-delivery
 test-provider-email-delivery: venv ## Run provider delivery email tests
-	sh -e /etc/init.d/xvfb start && \
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/test_provider_delivery_email.py' hostuser
 
 .PHONY: test-provider-sms-delivery
 test-provider-sms-delivery: venv ## Run provider delivery sms tests
-	sh -e /etc/init.d/xvfb start && \
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/test_provider_delivery_sms.py' hostuser
 
 .PHONY: test-providers
 test-providers: venv ## Run tests
-	sh -e /etc/init.d/xvfb start && \
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/' hostuser
 
 .PHONY: generate-env-file
@@ -87,6 +80,11 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 		-v ${PIP_ACCEL_CACHE}:/var/project/cache/pip-accel \
 		-e UID=$(shell id -u) \
 		-e GID=$(shell id -g) \
+		-e http_proxy="${HTTP_PROXY}" \
+		-e HTTP_PROXY="${HTTP_PROXY}" \
+		-e https_proxy="${HTTPS_PROXY}" \
+		-e HTTPS_PROXY="${HTTPS_PROXY}" \
+		-e NO_PROXY="${NO_PROXY}" \
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make build
 
@@ -99,6 +97,11 @@ define run_test_container
 		-e UID=$(shell id -u) \
 		-e GID=$(shell id -g) \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
+		-e http_proxy="${HTTP_PROXY}" \
+		-e HTTP_PROXY="${HTTP_PROXY}" \
+		-e https_proxy="${HTTPS_PROXY}" \
+		-e HTTPS_PROXY="${HTTPS_PROXY}" \
+		-e NO_PROXY="${NO_PROXY}" \
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make ${1}

@@ -7,4 +7,4 @@ help:
 
 .PHONY: build
 build:
-	docker build --pull -t govuk/notify-func-tests-runner .
+	docker build --pull -t govuk/notify-func-tests-runner --build-arg APT_HTTP_PROXY="${HTTP_PROXY}" .
