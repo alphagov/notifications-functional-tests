@@ -100,7 +100,6 @@ define run_test_container
 		-e GID=$(shell id -g) \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
 		--env-file docker.env \
-		--security-opt seccomp:docker/chrome.json \
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make ${1}
 endef

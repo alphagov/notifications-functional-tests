@@ -120,6 +120,7 @@ def _driver():
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
         service_args = ['--verbose']
+        options.add_argument("--no-sandbox")
         options.add_argument("user-agent=Selenium")
         driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
                                   service_args=service_args,
