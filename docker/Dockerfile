@@ -23,12 +23,13 @@ RUN \
         wget \
         unzip \
     && apt-get install -y --no-install-recommends -t jessie-backports \
-        firefox \
+        firefox-esr \
         google-chrome-stable \
     && echo "Downloading latest chromedriver" \
     && LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE) \
     && wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip \
-    && unzip chromedriver_linux64.zip -d /usr/local/bin/ \
+    && unzip chromedriver_linux64.zip -d /opt/ \
+    && ln -fs /opt/chromedriver /usr/local/bin/chromedriver \
     && rm chromedriver_linux64.zip \
     && echo "Clean up" \
     && rm -rf /var/lib/apt/lists/* /tmp/*
