@@ -80,6 +80,8 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 		--name "${DOCKER_CONTAINER_PREFIX}-build" \
 		-v `pwd`:/var/project \
 		-v ${PIP_ACCEL_CACHE}:/var/project/cache/pip-accel \
+		-e UID=$(shell id -u) \
+		-e GID=$(shell id -g) \
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make build
 
@@ -89,39 +91,41 @@ define run_test_container
 		--add-host=api.local:192.168.65.1 \
 		-v `pwd`:/var/project \
 		-e ENVIRONMENT=${ENVIRONMENT} \
+		-e UID=$(shell id -u) \
+		-e GID=$(shell id -g) \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME} \
-		${1}
+		su -c "make ${1}" hostuser
 endef
 
 .PHONY: test-with-docker
 test-with-docker: ## Run all tests inside a Docker container
-	$(call run_test_container,make test)
+	$(call run_test_container, test)
 
 .PHONY: test-admin-with-docker
 test-admin-with-docker: ## Run admin tests inside a Docker container
-	$(call run_test_container,make test-admin)
+	$(call run_test_container, test-admin)
 
 .PHONY: test-notify-api-email-with-docker
 test-notify-api-email-with-docker: ## Run notify-api email tests inside a Docker container
-	$(call run_test_container,make test-notify-api-email)
+	$(call run_test_container, test-notify-api-email)
 
 .PHONY: test-notify-api-sms-with-docker
 test-notify-api-sms-with-docker: ## Run notify-api sms tests inside a Docker container
-	$(call run_test_container,make test-notify-api-sms)
+	$(call run_test_container, test-notify-api-sms)
 
 .PHONY: test-provider-email-delivery-with-docker
 test-provider-email-delivery-with-docker: ## Run provider delivery email tests inside a Docker container
-	$(call run_test_container,make test-provider-email-delivery)
+	$(call run_test_container, test-provider-email-delivery)
 
 .PHONY: test-provider-sms-delivery-with-docker
 test-provider-sms-delivery-with-docker: ## Run provider delivery sms tests inside a Docker container
-	$(call run_test_container,make test-provider-sms-delivery)
+	$(call run_test_container, test-provider-sms-delivery)
 
 .PHONY: test-providers-with-docker
 test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run all provider tests inside a Docker container
-	$(call run_test_container,make test-providers)
+	$(call run_test_container, test-providers)
 
 .PHONY: clean-docker-containers
 clean-docker-containers: ## Clean up any remaining docker containers
