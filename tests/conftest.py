@@ -119,8 +119,12 @@ def _driver():
         driver.set_window_size(1280, 720)
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
+        service_args = ['--verbose']
+        options.add_argument("--no-sandbox")
         options.add_argument("user-agent=Selenium")
-        driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log', chrome_options=options)
+        driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
+                                  service_args=service_args,
+                                  chrome_options=options)
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 

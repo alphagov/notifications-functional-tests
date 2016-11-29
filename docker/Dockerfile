@@ -5,11 +5,14 @@ ENV PYTHONUNBUFFERED=1 \
 	DISPLAY=:99.0
 
 ADD mozilla.gpg /tmp/mozilla.gpg
+ADD chrome.pub /tmp/chrome.pub
 
 RUN \
 	echo "Install Debian packages" \
 	&& echo "deb http://mozilla.debian.net/ jessie-backports firefox-release" >> /etc/apt/sources.list \
+	&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list \
 	&& apt-key add /tmp/mozilla.gpg \
+    && apt-key add /tmp/chrome.pub \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		make \
@@ -17,11 +20,19 @@ RUN \
 		curl \
 		build-essential \
 		xvfb \
-	&& apt-get install -y --no-install-recommends -t jessie-backports \
-		firefox-esr \
-
-	&& echo "Clean up" \
-	&& rm -rf /var/lib/apt/lists/* /tmp/*
+        wget \
+        unzip \
+    && apt-get install -y --no-install-recommends -t jessie-backports \
+        firefox-esr \
+        google-chrome-stable \
+    && echo "Downloading latest chromedriver" \
+    && LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE) \
+    && wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip \
+    && unzip chromedriver_linux64.zip -d /opt/ \
+    && ln -fs /opt/chromedriver /usr/local/bin/chromedriver \
+    && rm chromedriver_linux64.zip \
+    && echo "Clean up" \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
 
 RUN \
 	echo "Install pip packages" \
@@ -31,3 +42,7 @@ RUN \
 ADD xvfb/xvfb-init /etc/init.d/xvfb
 
 WORKDIR /var/project
+
+COPY entrypoint.sh /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]

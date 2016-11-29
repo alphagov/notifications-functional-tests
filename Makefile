@@ -37,33 +37,38 @@ build: dependencies ## Build project
 
 .PHONY: test
 test: venv ## Run functional tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_functional_tests.sh
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_functional_tests.sh' hostuser
 
 .PHONY: test-admin
 test-admin: venv ## Run admin tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/admin/test_admin.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/admin/test_admin.py' hostuser
 
 .PHONY: test-notify-api-email
 test-notify-api-email: venv ## Run notify-api email tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/notify_api/test_notify_api_email.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/notify_api/test_notify_api_email.py' hostuser
 
 .PHONY: test-notify-api-sms
 test-notify-api-sms: venv ## Run notify-api sms tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/notify_api/test_notify_api_sms.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/notify_api/test_notify_api_sms.py' hostuser
 
 .PHONY: test-provider-email-delivery
 test-provider-email-delivery: venv ## Run provider delivery email tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_email.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/test_provider_delivery_email.py' hostuser
 
 .PHONY: test-provider-sms-delivery
 test-provider-sms-delivery: venv ## Run provider delivery sms tests
-	sh -e /etc/init.d/xvfb start && ./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_sms.py
+	sh -e /etc/init.d/xvfb start && \
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/test_provider_delivery_sms.py' hostuser
 
 .PHONY: test-providers
 test-providers: venv ## Run tests
 	sh -e /etc/init.d/xvfb start && \
-	./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_email.py && \
-	./scripts/run_test_script.sh tests/provider_delivery/test_provider_delivery_sms.py
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/' hostuser
 
 .PHONY: generate-env-file
 generate-env-file: ## Generate the environment file for running the tests inside a Docker container
@@ -80,6 +85,8 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 		--name "${DOCKER_CONTAINER_PREFIX}-build" \
 		-v `pwd`:/var/project \
 		-v ${PIP_ACCEL_CACHE}:/var/project/cache/pip-accel \
+		-e UID=$(shell id -u) \
+		-e GID=$(shell id -g) \
 		${DOCKER_BUILDER_IMAGE_NAME} \
 		make build
 
@@ -89,39 +96,41 @@ define run_test_container
 		--add-host=api.local:192.168.65.1 \
 		-v `pwd`:/var/project \
 		-e ENVIRONMENT=${ENVIRONMENT} \
+		-e UID=$(shell id -u) \
+		-e GID=$(shell id -g) \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \
 		--env-file docker.env \
 		${DOCKER_BUILDER_IMAGE_NAME} \
-		${1}
+		make ${1}
 endef
 
 .PHONY: test-with-docker
 test-with-docker: ## Run all tests inside a Docker container
-	$(call run_test_container,make test)
+	$(call run_test_container, test)
 
 .PHONY: test-admin-with-docker
 test-admin-with-docker: ## Run admin tests inside a Docker container
-	$(call run_test_container,make test-admin)
+	$(call run_test_container, test-admin)
 
 .PHONY: test-notify-api-email-with-docker
 test-notify-api-email-with-docker: ## Run notify-api email tests inside a Docker container
-	$(call run_test_container,make test-notify-api-email)
+	$(call run_test_container, test-notify-api-email)
 
 .PHONY: test-notify-api-sms-with-docker
 test-notify-api-sms-with-docker: ## Run notify-api sms tests inside a Docker container
-	$(call run_test_container,make test-notify-api-sms)
+	$(call run_test_container, test-notify-api-sms)
 
 .PHONY: test-provider-email-delivery-with-docker
 test-provider-email-delivery-with-docker: ## Run provider delivery email tests inside a Docker container
-	$(call run_test_container,make test-provider-email-delivery)
+	$(call run_test_container, test-provider-email-delivery)
 
 .PHONY: test-provider-sms-delivery-with-docker
 test-provider-sms-delivery-with-docker: ## Run provider delivery sms tests inside a Docker container
-	$(call run_test_container,make test-provider-sms-delivery)
+	$(call run_test_container, test-provider-sms-delivery)
 
 .PHONY: test-providers-with-docker
 test-providers-with-docker: prepare-docker-runner-image generate-env-file ## Run all provider tests inside a Docker container
-	$(call run_test_container,make test-providers)
+	$(call run_test_container, test-providers)
 
 .PHONY: clean-docker-containers
 clean-docker-containers: ## Clean up any remaining docker containers
