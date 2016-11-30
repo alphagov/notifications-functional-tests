@@ -26,9 +26,13 @@ RUN \
 		xvfb \
 		unzip \
 		x11-utils \
+		nodejs \
+		npm \
 	&& apt-get install -y --no-install-recommends -t jessie-backports \
 		firefox-esr \
 		google-chrome-stable \
+	&& ln -s /usr/bin/nodejs /usr/bin/node \
+	&& npm -g install phantomjs-prebuilt \
 	&& echo "Downloading latest chromedriver" \
 	&& LATEST=$(curl -sSL http://chromedriver.storage.googleapis.com/LATEST_RELEASE) \
 	&& curl -sSLO http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip \

@@ -113,7 +113,7 @@ class AddServicePage(BasePage):
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def is_current(self):
-        return self.driver.current_url == self.base_url + '/add-service?first=first'
+        return self.wait_until_url_is(self.base_url + '/add-service?first=first')
 
     def add_service(self, name):
         self.service_input = name
