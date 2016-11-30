@@ -53,6 +53,7 @@ class BasePage(object):
 
     def wait_for_element(self, locator):
         return WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(locator),
             EC.presence_of_element_located(locator)
         )
 
