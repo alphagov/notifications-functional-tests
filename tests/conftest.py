@@ -155,7 +155,8 @@ def _driver():
                 '--proxy={}'.format(http_proxy)
             ]
 
-        driver = webdriver.PhantomJS(service_args=service_args)
+        driver = webdriver.PhantomJS(service_args=service_args,
+                                     service_log_path='./logs/phantomjs.log')
         driver.maximize_window()
 
     else:
