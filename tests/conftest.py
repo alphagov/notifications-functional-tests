@@ -132,6 +132,7 @@ def _driver():
         driver = webdriver.Firefox(profile, firefox_binary=binary)
         driver.set_window_position(0, 0)
         driver.set_window_size(1280, 720)
+
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
         service_args = ['--verbose']
@@ -144,6 +145,19 @@ def _driver():
         driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
                                   service_args=service_args,
                                   chrome_options=options)
+
+    elif driver_name == 'phantomjs':
+
+        service_args = None
+
+        if http_proxy is not None and http_proxy != "":
+            service_args = [
+                '--proxy={}'.format(http_proxy)
+            ]
+
+        driver = webdriver.PhantomJS(service_args=service_args)
+        driver.maximize_window()
+
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 
