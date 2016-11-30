@@ -77,6 +77,7 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 	docker run -i --rm \
 		--name "${DOCKER_CONTAINER_PREFIX}-build" \
 		-v `pwd`:/var/project \
+		-v /dev/urandom:/dev/random \
 		-v ${PIP_ACCEL_CACHE}:/var/project/cache/pip-accel \
 		-e UID=$(shell id -u) \
 		-e GID=$(shell id -g) \
@@ -93,6 +94,7 @@ define run_test_container
 		--name "${DOCKER_CONTAINER_PREFIX}-test" \
 		--add-host=api.local:192.168.65.1 \
 		-v `pwd`:/var/project \
+		-v /dev/urandom:/dev/random \
 		-e ENVIRONMENT=${ENVIRONMENT} \
 		-e UID=$(shell id -u) \
 		-e GID=$(shell id -g) \
