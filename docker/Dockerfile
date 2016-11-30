@@ -4,7 +4,8 @@ ARG APT_HTTP_PROXY
 
 ENV PYTHONUNBUFFERED=1 \
 	DEBIAN_FRONTEND=noninteractive \
-	DISPLAY=:99.0
+	DISPLAY=:99.0 \
+	DBUS_SESSION_BUS_ADDRESS=/dev/null
 
 ADD mozilla.gpg /tmp/mozilla.gpg
 ADD chrome.pub /tmp/chrome.pub
