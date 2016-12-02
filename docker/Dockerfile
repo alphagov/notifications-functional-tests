@@ -1,6 +1,8 @@
 FROM python:3.4-slim
 
-ARG APT_HTTP_PROXY
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
 
 ENV PYTHONUNBUFFERED=1 \
 	DEBIAN_FRONTEND=noninteractive \
@@ -12,7 +14,7 @@ ADD chrome.pub /tmp/chrome.pub
 
 RUN \
 	echo "Install Debian packages" \
-	&& ([ -z "$APT_HTTP_PROXY" ] || echo "Acquire::http::Proxy \"${APT_HTTP_PROXY}\";\n" > /etc/apt/apt.conf.d/99HttpProxy) \
+	&& ([ -z "$HTTP_PROXY" ] || echo "Acquire::http::Proxy \"${HTTP_PROXY}\";\n" > /etc/apt/apt.conf.d/99HttpProxy) \
 	&& echo "deb http://mozilla.debian.net/ jessie-backports firefox-release" >> /etc/apt/sources.list \
 	&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list \
 	&& apt-key add /tmp/mozilla.gpg \
