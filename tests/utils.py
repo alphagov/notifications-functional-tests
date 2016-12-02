@@ -64,7 +64,7 @@ def get_link(profile, template_id, email):
         pytest.fail("Couldn't get the registraion link from the email")
 
 
-@retry(RetryException, tries=15, delay=Config.RETRY_DELAY)
+@retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
 def do_verify(driver, profile):
     verify_code = get_verify_code_from_api(profile)
     verify_page = VerifyPage(driver)
@@ -177,7 +177,7 @@ def get_verify_code_from_api(profile):
     return m.group(0)
 
 
-@retry(RetryException, tries=15, delay=Config.RETRY_DELAY)
+@retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
 def get_notification_via_api(service_id, template_id, api_key, sent_to):
     client = NotificationsAPIClient(
         base_url=Config.NOTIFY_API_URL,

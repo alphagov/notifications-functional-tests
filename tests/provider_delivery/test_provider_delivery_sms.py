@@ -14,6 +14,6 @@ def test_send_sms_and_email_via_api(profile, client):
         get_notification_by_id_via_api,
         fargs=[client, notification_id, 'delivered'],
         tries=Config.PROVIDER_RETRY_TIMES,
-        jitter=Config.PROVIDER_RETRY_INTERVAL
+        delay=Config.PROVIDER_RETRY_INTERVAL
     )
     assert_notification_body(notification_id, notification)
