@@ -60,6 +60,7 @@ class BasePage(object):
     def sign_out(self):
         element = self.wait_for_element(BasePage.sign_out_link)
         element.click()
+        self.driver.delete_all_cookies()
 
     def wait_until_url_is(self, url):
         return WebDriverWait(self.driver, 10).until(

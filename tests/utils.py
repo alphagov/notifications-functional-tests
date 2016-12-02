@@ -144,8 +144,6 @@ def do_user_can_invite_someone_to_notify(driver, profile, base_url):
 
     dashboard_page.sign_out()
     dashboard_page.wait_until_url_is(base_url)
-    # Clear user cookies before next test executes
-    driver.delete_all_cookies()
 
 
 def do_edit_and_delete_email_template(driver):
