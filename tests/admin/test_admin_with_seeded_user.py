@@ -4,10 +4,11 @@ from retry.api import retry_call
 from config import Config
 from selenium.common.exceptions import TimeoutException
 
+from tests.decorators import retry_on_stale_element_exception
+
 from tests.postman import (
     send_notification_via_csv,
     get_notification_by_id_via_api)
-
 
 from tests.utils import (
     do_user_registration,
@@ -54,6 +55,7 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
+@retry_on_stale_element_exception
 def get_dashboard_stats(dashboard_page, message_type, template_id):
     return {
         'total_messages_sent': dashboard_page.get_total_message_count(message_type),
