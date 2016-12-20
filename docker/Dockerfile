@@ -14,7 +14,7 @@ ADD chrome.pub /tmp/chrome.pub
 
 RUN \
 	echo "Install Debian packages" \
-	&& ([ -z "$HTTP_PROXY" ] || echo "Acquire::http::Proxy \"${HTTP_PROXY}\";\n" > /etc/apt/apt.conf.d/99HttpProxy) \
+	&& ([ -z "$HTTP_PROXY" ] || echo "Acquire::http::Proxy \"${HTTP_PROXY}\";" > /etc/apt/apt.conf.d/99HttpProxy) \
 	&& echo "deb http://mozilla.debian.net/ jessie-backports firefox-release" >> /etc/apt/sources.list \
 	&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list \
 	&& apt-key add /tmp/mozilla.gpg \
@@ -36,8 +36,8 @@ RUN \
 	&& ln -s /usr/bin/nodejs /usr/bin/node \
 	&& npm -g install phantomjs-prebuilt \
 	&& echo "Downloading latest chromedriver" \
-	&& LATEST=$(curl -sSL http://chromedriver.storage.googleapis.com/LATEST_RELEASE) \
-	&& curl -sSLO http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip \
+	&& LATEST=$(curl -x "$HTTP_PROXY" -sSL http://chromedriver.storage.googleapis.com/LATEST_RELEASE) \
+	&& curl -x "$HTTP_PROXY" -sSLO http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip \
 	&& unzip chromedriver_linux64.zip -d /opt/ \
 	&& ln -fs /opt/chromedriver /usr/local/bin/chromedriver \
 	&& rm chromedriver_linux64.zip \
