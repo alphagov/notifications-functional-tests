@@ -8,7 +8,7 @@ from tests.pages import (
     ApiKeyPage
 )
 
-from tests.utils import do_verify
+from tests.test_utils import do_verify
 
 
 def sign_in(driver, test_profile, seeded=False):

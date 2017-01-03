@@ -10,7 +10,7 @@ from tests.postman import (
     send_notification_via_csv,
     get_notification_by_id_via_api)
 
-from tests.utils import (
+from tests.test_utils import (
     do_user_registration,
     do_user_can_invite_someone_to_notify,
     assert_notification_body,
