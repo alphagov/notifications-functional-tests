@@ -1,6 +1,6 @@
 from retry import retry
 from config import Config
-from tests.utils import create_temp_csv, RetryException
+from tests.test_utils import create_temp_csv, RetryException
 from notifications_python_client.errors import HTTPError
 
 

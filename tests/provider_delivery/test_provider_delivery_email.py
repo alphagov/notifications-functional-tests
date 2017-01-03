@@ -5,7 +5,7 @@ from tests.postman import (
     get_notification_by_id_via_api
 )
 
-from tests.utils import assert_notification_body
+from tests.test_utils import assert_notification_body
 
 
 def test_send_sms_and_email_via_api(profile, client):

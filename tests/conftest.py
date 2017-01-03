@@ -7,7 +7,7 @@ from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
-from tests.utils import (
+from tests.test_utils import (
     generate_unique_email
 )
 
