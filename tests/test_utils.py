@@ -10,6 +10,8 @@ import pytest
 from datetime import datetime
 from retry import retry
 from notifications_python_client.notifications import NotificationsAPIClient
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
 
 from config import Config
 from tests.pages import (
@@ -66,10 +68,24 @@ def get_link(profile, template_id, email):
 
 @retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
 def do_verify(driver, profile):
-    verify_code = get_verify_code_from_api(profile)
-    verify_page = VerifyPage(driver)
-    verify_page.verify(verify_code)
-    if verify_page.has_code_error():
+
+    class wait_until_verification_successful(object):
+        def __call__(self, driver):
+            try:
+                verify_code = get_verify_code_from_api(profile)
+                verify_page = VerifyPage(driver)
+                verify_page.verify(verify_code)
+                driver.find_element_by_class_name('error-message')
+            except NoSuchElementException:
+                #  We were able to verify as there was no error message
+                return True
+            else:
+                #  There was an error message so let's retry
+                return False
+
+    try:
+        WebDriverWait(driver, 10).until(wait_until_verification_successful())
+    except Exception as e:
         raise RetryException
 
 
