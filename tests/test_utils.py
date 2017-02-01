@@ -79,8 +79,7 @@ def do_verify(driver, profile):
             except (NoSuchElementException, TimeoutException) as e:
                 #  In some cases a TimeoutException is raised even if we have managed to verify.
                 #  For now, check explicitly if we 'have verified' and if so move on.
-                if 'two-factor' not in driver.current_url:
-                    return True
+                return True
             else:
                 #  There was an error message so let's retry
                 return False
