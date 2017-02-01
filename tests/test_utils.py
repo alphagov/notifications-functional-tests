@@ -10,7 +10,7 @@ import pytest
 from datetime import datetime
 from retry import retry
 from notifications_python_client.notifications import NotificationsAPIClient
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 
 from config import Config
@@ -76,9 +76,11 @@ def do_verify(driver, profile):
                 verify_page = VerifyPage(driver)
                 verify_page.verify(verify_code)
                 driver.find_element_by_class_name('error-message')
-            except NoSuchElementException:
-                #  We were able to verify as there was no error message
-                return True
+            except (NoSuchElementException, TimeoutException) as e:
+                #  In some cases a TimeoutException is raised even if we have managed to verify.
+                #  For now, check explicitly if we 'have verified' and if so move on.
+                if 'two-factor' not in driver.current_url:
+                    return True
             else:
                 #  There was an error message so let's retry
                 return False
