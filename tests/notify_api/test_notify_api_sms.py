@@ -10,8 +10,11 @@ from tests.test_utils import assert_notification_body, recordtime
 
 
 @recordtime
-def test_send_sms_and_email_via_api(profile, client):
-    notification_id = send_notification_via_api(client, profile.sms_template_id, profile.mobile, 'sms')
+def test_send_sms_notification_via_api(profile, client):
+    notification_id = send_notification_via_api(
+        client, profile.jenkins_build_sms_template_id,
+        profile.mobile, 'sms'
+    )
 
     notification = retry_call(
         get_notification_by_id_via_api,
