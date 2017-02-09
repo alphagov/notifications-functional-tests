@@ -34,7 +34,12 @@ def test_registration_and_invite_flow(driver, profile, base_url):
 def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
-    template_id = profile.email_template_id if message_type == 'email' else profile.sms_template_id
+
+    template_id = None
+    if message_type == 'email':
+        template_id = profile.jenkins_build_email_template_id
+    elif message_type == 'sms':
+        template_id = profile.jenkins_build_sms_template_id
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
 
