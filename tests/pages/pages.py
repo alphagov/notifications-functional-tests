@@ -270,7 +270,7 @@ class EditSmsTemplatePage(BasePage):
 
     def create_template(self, name='Test email template'):
         self.name_input = name
-        self.template_content_input = 'The quick brown fox jumped over the lazy dog'
+        self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
 
     def get_id(self):
@@ -325,7 +325,7 @@ class EditEmailTemplatePage(BasePage):
     def create_template(self, name='Test email template'):
         self.name_input = name
         self.subject_input = 'Test email from functional tests'
-        self.template_content_input = 'The quick brown fox jumped over the lazy dog'
+        self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
 
     def get_id(self):
