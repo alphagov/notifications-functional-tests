@@ -35,11 +35,10 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
-    template_id = None
-    if message_type == 'email':
-        template_id = profile.jenkins_build_email_template_id
-    elif message_type == 'sms':
-        template_id = profile.jenkins_build_sms_template_id
+    template_id = {
+        'email': profile.jenkins_build_email_template_id,
+        'sms': profile.jenkins_build_sms_template_id,
+    }.get(message_type)
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
 
