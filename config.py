@@ -24,6 +24,8 @@ class Config(object):
 class PreviewConfig(Config):
     SMS_TEMPLATE_ID = os.environ.get('preview_SMS_TEMPLATE_ID')
     EMAIL_TEMPLATE_ID = os.environ.get('preview_EMAIL_TEMPLATE_ID')
+    JENKINS_BUILD_SMS_TEMPLATE_ID = os.environ.get('preview_JENKINS_BUILD_SMS_TEMPLATE_ID')
+    JENKINS_BUILD_EMAIL_TEMPLATE_ID = os.environ.get('preview_JENKINS_BUILD_EMAIL_TEMPLATE_ID')
     NOTIFY_RESEARCH_MODE_EMAIL = os.environ.get('preview_NOTIFY_RESEARCH_MODE_EMAIL')
     NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD = os.environ.get('preview_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD')
     NOTIFY_RESEARCH_SERVICE_ID = os.environ.get('preview_NOTIFY_RESEARCH_SERVICE_ID')
@@ -34,6 +36,8 @@ class StagingConfig(Config):
     FUNCTIONAL_TEST_SERVICE_NAME = 'Staging FunctionalTest'
     SMS_TEMPLATE_ID = os.environ.get('staging_SMS_TEMPLATE_ID')
     EMAIL_TEMPLATE_ID = os.environ.get('staging_EMAIL_TEMPLATE_ID')
+    JENKINS_BUILD_SMS_TEMPLATE_ID = os.environ.get('staging_JENKINS_BUILD_SMS_TEMPLATE_ID')
+    JENKINS_BUILD_EMAIL_TEMPLATE_ID = os.environ.get('staging_JENKINS_BUILD_EMAIL_TEMPLATE_ID')
     SERVICE_ID = os.environ.get('staging_SERVICE_ID')
     SERVICE_API_KEY = os.environ.get('staging_API_KEY')
 
@@ -42,5 +46,7 @@ class LiveConfig(Config):
     FUNCTIONAL_TEST_SERVICE_NAME = 'Live FunctionalTest'
     SMS_TEMPLATE_ID = os.environ.get('live_SMS_TEMPLATE_ID')
     EMAIL_TEMPLATE_ID = os.environ.get('live_EMAIL_TEMPLATE_ID')
+    JENKINS_BUILD_SMS_TEMPLATE_ID = os.environ.get('live_JENKINS_BUILD_SMS_TEMPLATE_ID')
+    JENKINS_BUILD_EMAIL_TEMPLATE_ID = os.environ.get('live_JENKINS_BUILD_EMAIL_TEMPLATE_ID')
     SERVICE_ID = os.environ.get('live_SERVICE_ID')
     SERVICE_API_KEY = os.environ.get('live_API_KEY')

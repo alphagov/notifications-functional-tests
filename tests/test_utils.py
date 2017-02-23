@@ -30,15 +30,19 @@ from tests.pages import (
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
                     level=logging.INFO)
 
+jenkins_build_id = os.getenv('BUILD_ID', 'No build id')
 
-def create_temp_csv(number, field_name):
+
+def create_temp_csv(number, fieldnames):
     directory_name = tempfile.mkdtemp()
     csv_file_path = os.path.join(directory_name, 'sample.csv')
     with open(csv_file_path, 'w') as csv_file:
-        fieldnames = [field_name]
         csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         csv_writer.writeheader()
-        csv_writer.writerow({field_name: number})
+        csv_writer.writerow({
+            fieldnames[0]: number,
+            fieldnames[1]: jenkins_build_id
+        })
     return directory_name, 'sample.csv'
 
 

@@ -68,8 +68,8 @@ def get_service_templates_and_api_key_for_tests(driver, test_profile):
     api_key = api_key_page.get_api_key()
 
     test_profile.service_id = service_id
-    test_profile.email_template_id = email_template_id
-    test_profile.sms_template_id = sms_template_id
+    test_profile.jenkins_build_email_template_id = email_template_id
+    test_profile.jenkins_build_sms_template_id = sms_template_id
     test_profile.api_key = api_key
 
-    return {'service_id': service_id, 'email_template_id': email_template_id, 'sms_template_id': sms_template_id, 'api_key': api_key}  # noqa
+    return {'service_id': service_id, 'api_key': api_key}
