@@ -40,3 +40,5 @@ env_vars=(
 for env_var in "${env_vars[@]}"; do
     echo "${ENVIRONMENT}_${env_var}=${!env_var}" >> docker.env
 done
+
+echo "BUILD_ID=$BUILD_ID" >> docker.env
