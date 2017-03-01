@@ -13,6 +13,8 @@ class Config(object):
     NOTIFICATION_RETRY_INTERVAL = 5
     PROVIDER_RETRY_TIMES = 12
     PROVIDER_RETRY_INTERVAL = 20
+    VERIFY_CODE_RETRY_TIMES = 8
+    VERIFY_CODE_RETRY_INTERVAL = 9
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ.get('ENVIRONMENT') + '_Functional Test Service_'
     NOTIFY_SERVICE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_ID')
     NOTIFY_SERVICE_API_KEY = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_API_KEY')
