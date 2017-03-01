@@ -70,27 +70,19 @@ def get_link(profile, template_id, email):
         pytest.fail("Couldn't get the registraion link from the email")
 
 
-@retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
+@retry(RetryException, tries=Config.VERIFY_CODE_RETRY_TIMES, delay=Config.VERIFY_CODE_RETRY_INTERVAL)
 def do_verify(driver, profile):
-
-    class wait_until_verification_successful(object):
-        def __call__(self, driver):
-            try:
-                verify_code = get_verify_code_from_api(profile)
-                verify_page = VerifyPage(driver)
-                verify_page.verify(verify_code)
-                driver.find_element_by_class_name('error-message')
-            except (NoSuchElementException, TimeoutException) as e:
-                #  In some cases a TimeoutException is raised even if we have managed to verify.
-                #  For now, check explicitly if we 'have verified' and if so move on.
-                return True
-            else:
-                #  There was an error message so let's retry
-                return False
-
     try:
-        WebDriverWait(driver, 10).until(wait_until_verification_successful())
-    except Exception as e:
+        verify_code = get_verify_code_from_api(profile)
+        verify_page = VerifyPage(driver)
+        verify_page.verify(verify_code)
+        driver.find_element_by_class_name('error-message')
+    except (NoSuchElementException, TimeoutException) as e:
+        #  In some cases a TimeoutException is raised even if we have managed to verify.
+        #  For now, check explicitly if we 'have verified' and if so move on.
+        return True
+    else:
+        #  There was an error message so let's retry
         raise RetryException
 
 
@@ -191,7 +183,8 @@ def do_edit_and_delete_email_template(driver):
 
 def get_verify_code_from_api(profile):
     verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
-                                                   Config.NOTIFY_SERVICE_API_KEY, profile.mobile)
+                                                   Config.NOTIFY_SERVICE_API_KEY, profile.mobile,
+                                                   attempt_retry=False)
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
@@ -199,7 +192,7 @@ def get_verify_code_from_api(profile):
 
 
 @retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
-def get_notification_via_api(service_id, template_id, api_key, sent_to):
+def get_notification_via_api(service_id, template_id, api_key, sent_to, attempt_retry=True):
     client = NotificationsAPIClient(
         base_url=Config.NOTIFY_API_URL,
         service_id=service_id,
@@ -215,7 +208,8 @@ def get_notification_via_api(service_id, template_id, api_key, sent_to):
     message = 'Could not find notification with template {} to {} with a status of sending or delivered' \
         .format(template_id,
                 sent_to)
-    raise RetryException(message)
+    if attempt_retry:
+        raise RetryException(message)
 
 
 def recordtime(func):
