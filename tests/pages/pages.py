@@ -51,6 +51,11 @@ class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
 
+    def wait_for_invisible_element(self, locator):
+        return WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(locator)
+        )
+
     def wait_for_element(self, locator):
         return WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(locator),
@@ -73,7 +78,7 @@ class BasePage(object):
         return check_contains_url
 
     def select_checkbox_or_radio(self, element):
-        self.execute_script("arguments[0].setAttribute('checked', 'checked')", element)
+        self.driver.execute_script("arguments[0].setAttribute('checked', 'checked')", element)
 
 
 class MainPage(BasePage):
@@ -399,13 +404,13 @@ class InviteUserPage(BasePage):
     def fill_invitation_form(self, email, send_messages=False, manage_services=False, manage_api_keys=False):
         self.email_input = email
         if send_messages:
-            element = self.wait_for_element(InviteUserPage.send_messages_checkbox)
+            element = self.wait_for_invisible_element(InviteUserPage.send_messages_checkbox)
             self.select_checkbox_or_radio(element)
         if manage_services:
-            element = self.wait_for_element(InviteUserPage.manage_services_checkbox)
+            element = self.wait_for_invisible_element(InviteUserPage.manage_services_checkbox)
             self.select_checkbox_or_radio(element)
         if manage_api_keys:
-            element = self.wait_for_element(InviteUserPage.manage_api_keys_checkbox)
+            element = self.wait_for_invisible_element(InviteUserPage.manage_api_keys_checkbox)
             self.select_checkbox_or_radio(element)
 
     def send_invitation(self):
@@ -472,5 +477,5 @@ class ApiKeyPage(BasePage):
         return element.text
 
     def click_key_type_radio(self, key_type='normal'):
-        element = self.wait_for_element(ApiKeyPage.key_types[key_type])
+        element = self.wait_for_invisible_element(ApiKeyPage.key_types[key_type])
         self.select_checkbox_or_radio(element)
