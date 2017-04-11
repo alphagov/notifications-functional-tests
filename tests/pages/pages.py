@@ -72,6 +72,9 @@ class BasePage(object):
             return url in self.driver.current_url
         return check_contains_url
 
+    def select_checkbox_or_radio(self, element):
+        self.execute_script("arguments[0].setAttribute('checked', 'checked')", element)
+
 
 class MainPage(BasePage):
 
@@ -397,13 +400,13 @@ class InviteUserPage(BasePage):
         self.email_input = email
         if send_messages:
             element = self.wait_for_element(InviteUserPage.send_messages_checkbox)
-            element.click()
+            self.select_checkbox_or_radio(element)
         if manage_services:
             element = self.wait_for_element(InviteUserPage.manage_services_checkbox)
-            element.click()
+            self.select_checkbox_or_radio(element)
         if manage_api_keys:
             element = self.wait_for_element(InviteUserPage.manage_api_keys_checkbox)
-            element.click()
+            self.select_checkbox_or_radio(element)
 
     def send_invitation(self):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
@@ -470,4 +473,4 @@ class ApiKeyPage(BasePage):
 
     def click_key_type_radio(self, key_type='normal'):
         element = self.wait_for_element(ApiKeyPage.key_types[key_type])
-        element.click()
+        self.select_checkbox_or_radio(element)
