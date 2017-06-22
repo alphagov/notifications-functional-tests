@@ -9,16 +9,10 @@ ENV PYTHONUNBUFFERED=1 \
 	DISPLAY=:99.0 \
 	DBUS_SESSION_BUS_ADDRESS=/dev/null
 
-ADD mozilla.gpg /tmp/mozilla.gpg
-ADD chrome.pub /tmp/chrome.pub
 
 RUN \
 	echo "Install Debian packages" \
 	&& ([ -z "$HTTP_PROXY" ] || echo "Acquire::http::Proxy \"${HTTP_PROXY}\";" > /etc/apt/apt.conf.d/99HttpProxy) \
-	&& echo "deb http://mozilla.debian.net/ jessie-backports firefox-release" >> /etc/apt/sources.list \
-	&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list \
-	&& apt-key add /tmp/mozilla.gpg \
-	&& apt-key add /tmp/chrome.pub \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		make \
@@ -30,12 +24,24 @@ RUN \
 		x11-utils \
 		nodejs \
 		npm \
-	&& apt-get install -y --no-install-recommends -t jessie-backports \
-		firefox-esr \
-		google-chrome-stable \
 	&& ln -s /usr/bin/nodejs /usr/bin/node \
-	&& npm -g install phantomjs-prebuilt \
-	&& echo "Downloading latest chromedriver" \
+	&& npm -g install phantomjs-prebuilt
+
+ADD mozilla.gpg /tmp/mozilla.gpg
+RUN \
+	echo "Installing firefox" \
+	&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list \
+	&& apt-key add /tmp/mozilla.gpg \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		firefox-esr
+
+ADD chrome.pub /tmp/chrome.pub
+RUN echo "Installing chromedriver" \
+	&& apt-key add /tmp/chrome.pub \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		google-chrome-stable \
 	&& LATEST=$(curl -x "$HTTP_PROXY" -sSL http://chromedriver.storage.googleapis.com/LATEST_RELEASE) \
 	&& curl -x "$HTTP_PROXY" -sSLO http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip \
 	&& unzip chromedriver_linux64.zip -d /opt/ \
