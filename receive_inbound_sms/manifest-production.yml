@@ -1,0 +1,6 @@
+---
+
+inherit: manifest-base.yml
+
+routes:
+  - route: notify-receive-inbound-production.cloudapps.digital
