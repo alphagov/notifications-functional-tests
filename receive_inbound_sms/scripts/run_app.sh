@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 app.py runserver
+pip3 install -r requirements.txt
+python3 application.py runserver

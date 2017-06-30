@@ -6,6 +6,7 @@ from flask import request
 app = Flask(__name__)
 
 bearer_token = os.environ['BEARER_TOKEN']
+port = int(os.environ.get('PORT', 6014))
 
 
 @app.route('/inbound-sms/from-notify', methods=['POST'])
@@ -23,5 +24,5 @@ def inbound_sms_exception():
     return jsonify(error="Didn't get it"), 400
 
 
-if __name__ == "__main__":
-    app.run(ssl_context='adhoc')
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=port, ssl_context='adhoc')
