@@ -5,7 +5,9 @@ from tests.pages import (
     EditEmailTemplatePage,
     SendSmsTemplatePage,
     EditSmsTemplatePage,
-    ApiKeyPage
+    ApiKeyPage,
+    ShowTemplatesPage,
+    SelectTemplatePage
 )
 
 from tests.test_utils import do_verify
@@ -22,11 +24,15 @@ def sign_in(driver, test_profile, seeded=False):
 def get_service_templates_and_api_key_for_tests(driver, test_profile):
 
     dashboard_page = DashboardPage(driver)
-    dashboard_page.click_email_templates()
+    dashboard_page.click_templates()
     service_id = dashboard_page.get_service_id()
 
-    email_template_page = SendEmailTemplatePage(driver)
-    email_template_page.click_add_a_new_template()
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    select_template_page = SelectTemplatePage(driver)
+    select_template_page.select_email()
+    select_template_page.click_continue()
 
     new_email_template_page = EditEmailTemplatePage(driver)
     new_email_template_page.create_template()
@@ -39,10 +45,14 @@ def get_service_templates_and_api_key_for_tests(driver, test_profile):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
-    dashboard_page.click_sms_templates()
+    dashboard_page.click_templates()
 
-    sms_template_page = SendSmsTemplatePage(driver)
-    sms_template_page.click_add_new_template()
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    select_template_page = SelectTemplatePage(driver)
+    select_template_page.select_text_message()
+    select_template_page.click_continue()
 
     new_sms_template = EditSmsTemplatePage(driver)
     new_sms_template.create_template()

@@ -24,7 +24,9 @@ from tests.pages import (
     RegisterFromInvite,
     SendEmailTemplatePage,
     EditEmailTemplatePage,
-    VerifyPage
+    VerifyPage,
+    ShowTemplatesPage,
+    SelectTemplatePage
 )
 
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
@@ -163,20 +165,32 @@ def do_edit_and_delete_email_template(driver):
     test_name = 'edit/delete test'
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
-    dashboard_page.click_email_templates()
+    dashboard_page.click_templates()
+
+    show_template_page = ShowTemplatesPage(driver)
+    show_template_page.click_email_filter_link()
 
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    all_templates_page = SendEmailTemplatePage(driver)
-    all_templates_page.click_add_new_template()
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    select_template_page = SelectTemplatePage(driver)
+    select_template_page.select_email()
+    select_template_page.click_continue()
 
     template_page = EditEmailTemplatePage(driver)
     template_page.create_template(name=test_name)
+    template_page.click_templates()
+
+    show_template_page.click_email_filter_link()
 
     assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    all_templates_page.click_edit_template()
+    show_template_page.click_template_by_link_text(test_name)
     template_page.click_delete()
+
+    show_template_page.click_email_filter_link()
 
     assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
