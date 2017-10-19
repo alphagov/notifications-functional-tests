@@ -199,7 +199,10 @@ def get_verify_code_from_api(profile):
     verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
                                                    Config.NOTIFY_SERVICE_API_KEY, profile.mobile,
                                                    attempt_retry=False)
-    m = re.search(r'\d{5}', verify_code_message)
+    if verify_code_message:
+        m = re.search(r'\d{5}', verify_code_message)
+    else:
+        pytest.fail("Could not find get the verify code message")
     if not m:
         pytest.fail("Could not find the verify code in notification body")
     return m.group(0)
