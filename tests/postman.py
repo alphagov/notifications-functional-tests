@@ -39,7 +39,16 @@ def get_notification_by_id_via_api(client, notification_id, expected_statuses):
         resp = client.get_notification_by_id(notification_id)
         notification_status = resp['data']['notification']['status']
         if notification_status not in expected_statuses:
-            raise RetryException('Notification still in {}'.format(notification_status))
+            raise RetryException(
+                (
+                    'Notification in wrong status '
+                    'id: {id} '
+                    'status: {status} '
+                    'created_at: {created_at} '
+                    'sent_at: {sent_at} '
+                    'updated_at: {updated_at}'
+                ).format(**resp['data']['notification'])
+            )
         return resp["data"]["notification"]
     except HTTPError as e:
         if e.status_code == 404:
