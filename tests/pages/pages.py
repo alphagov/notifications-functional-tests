@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException
 
 from retry import retry
 from config import Config
@@ -16,6 +17,7 @@ from tests.pages.element import (
     NameInputElement,
     MobileInputElement,
     ServiceInputElement,
+    ServiceOrgTypeElement,
     TemplateContentElement,
     FileInputElement,
     SubjectInputElement,
@@ -119,6 +121,7 @@ class RegistrationPage(BasePage):
 class AddServicePage(BasePage):
 
     service_input = ServiceInputElement()
+    org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def is_current(self):
@@ -126,11 +129,19 @@ class AddServicePage(BasePage):
 
     def add_service(self, name):
         self.service_input = name
+        self.click_org_type_input()
         self.click_add_service_button()
 
     def click_add_service_button(self):
         element = self.wait_for_element(AddServicePage.add_service_button)
         element.click()
+
+    def click_org_type_input(self):
+        try:
+            element = self.wait_for_invisible_element(AddServicePage.org_type_input)
+            element.click()
+        except TimeoutException:
+            pass
 
 
 class SignInPage(BasePage):
