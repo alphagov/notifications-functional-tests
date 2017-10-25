@@ -11,6 +11,7 @@ from tests.postman import (
     get_notification_by_id_via_api)
 
 from tests.test_utils import (
+    do_edit_and_delete_email_template,
     do_user_registration,
     do_user_can_invite_someone_to_notify,
     assert_notification_body,
@@ -19,7 +20,8 @@ from tests.test_utils import (
 
 from tests.pages import (
     DashboardPage,
-    UploadCsvPage
+    UploadCsvPage,
+    ShowSmsTemplatePage
 )
 
 
@@ -57,6 +59,12 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
 
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+
+@recordtime
+@pytest.mark.parametrize('message_type', ['sms', 'email'])
+def test_edit_and_delete_template(driver, profile, login_seeded_user, seeded_client, message_type):
+    do_edit_and_delete_email_template(driver)
 
 
 @retry_on_stale_element_exception
