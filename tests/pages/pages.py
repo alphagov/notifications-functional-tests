@@ -17,7 +17,6 @@ from tests.pages.element import (
     NameInputElement,
     MobileInputElement,
     ServiceInputElement,
-    ServiceOrgTypeElement,
     TemplateContentElement,
     FileInputElement,
     SubjectInputElement,

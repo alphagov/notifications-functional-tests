@@ -11,7 +11,6 @@ from datetime import datetime
 from retry import retry
 from notifications_python_client.notifications import NotificationsAPIClient
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
 
 from config import Config
 from tests.pages import (
