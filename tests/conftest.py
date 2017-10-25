@@ -97,9 +97,15 @@ def profile():
                           'service_name': functional_test_service_name,
                           'password': functional_test_password,
                           'mobile': functional_test_mobile,
+                          'jenkins_build_email_template_id': Config.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
+                          'jenkins_build_sms_template_id': Config.JENKINS_BUILD_SMS_TEMPLATE_ID,
                           'notify_service_id': Config.NOTIFY_SERVICE_ID,
                           'notify_api_url': Config.NOTIFY_API_URL,
                           'notify_service_api_key': Config.NOTIFY_SERVICE_API_KEY,
+                          'notify_research_service_email': Config.NOTIFY_RESEARCH_MODE_EMAIL,
+                          'notify_research_service_password': Config.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
+                          'notify_research_service_id': Config.NOTIFY_RESEARCH_SERVICE_ID,
+                          'notify_research_service_api_key': Config.NOTIFY_RESEARCH_SERVICE_API_KEY,
                           'registration_template_id': Config.REGISTRATION_TEMPLATE_ID,
                           'invitation_template_id': Config.INVITATION_TEMPLATE_ID})
 

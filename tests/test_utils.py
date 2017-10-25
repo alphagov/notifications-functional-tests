@@ -167,9 +167,6 @@ def do_edit_and_delete_email_template(driver):
     dashboard_page.go_to_dashboard_for_service()
     dashboard_page.click_templates()
 
-    show_template_page = ShowTemplatesPage(driver)
-    show_template_page.click_email_filter_link()
-
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     show_templates_page = ShowTemplatesPage(driver)
@@ -183,33 +180,26 @@ def do_edit_and_delete_email_template(driver):
     template_page.create_template(name=test_name)
     template_page.click_templates()
 
-    show_template_page.click_email_filter_link()
-
     assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    show_template_page.click_template_by_link_text(test_name)
+    show_templates_page.click_template_by_link_text(test_name)
     template_page.click_delete()
-
-    show_template_page.click_email_filter_link()
 
     assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
 def get_verify_code_from_api(profile):
     verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
-                                                   Config.NOTIFY_SERVICE_API_KEY, profile.mobile,
-                                                   attempt_retry=False)
-    if verify_code_message:
-        m = re.search(r'\d{5}', verify_code_message)
-    else:
-        pytest.fail("Could not find get the verify code message")
+                                                   Config.NOTIFY_SERVICE_API_KEY, profile.mobile)
+    m = re.search(r'\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
+    print('Trying to use 2fa code:', m.group(0))
     return m.group(0)
 
 
 @retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
-def get_notification_via_api(service_id, template_id, api_key, sent_to, attempt_retry=True):
+def get_notification_via_api(service_id, template_id, api_key, sent_to):
     client = NotificationsAPIClient(
         base_url=Config.NOTIFY_API_URL,
         service_id=service_id,
@@ -221,12 +211,12 @@ def get_notification_via_api(service_id, template_id, api_key, sent_to, attempt_
         to = notification['to']
         status = notification['status']
         if t_id == template_id and to == sent_to and status in ['sending', 'delivered']:
+            print('matching notification', notification)
             return notification['body']
     message = 'Could not find notification with template {} to {} with a status of sending or delivered' \
         .format(template_id,
                 sent_to)
-    if attempt_retry:
-        raise RetryException(message)
+    raise RetryException(message)
 
 
 def recordtime(func):
