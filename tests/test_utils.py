@@ -211,7 +211,6 @@ def get_notification_via_api(service_id, template_id, api_key, sent_to):
         to = notification['to']
         status = notification['status']
         if t_id == template_id and to == sent_to and status in ['sending', 'delivered']:
-            print('matching notification', notification)
             return notification['body']
     message = 'Could not find notification with template {} to {} with a status of sending or delivered' \
         .format(template_id,
