@@ -36,11 +36,11 @@ dependencies: venv ## Install build dependencies
 build: dependencies ## Build project
 
 .PHONY: test
-test: venv ## Run functional tests
+test: venv ## Run functional tests - preview, staging, post deploy and local dev
 	su -c '/var/project/scripts/run_functional_tests.sh' hostuser
 
 .PHONY: test-admin
-test-admin: venv ## Run admin tests
+test-admin: venv ## Run admin tests - live smoke tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/admin/test_admin.py' hostuser
 
 .PHONY: test-notify-api-email

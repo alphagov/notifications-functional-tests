@@ -23,7 +23,9 @@ from tests.pages import (
     RegisterFromInvite,
     SendEmailTemplatePage,
     EditEmailTemplatePage,
-    VerifyPage
+    VerifyPage,
+    ShowTemplatesPage,
+    SelectTemplatePage
 )
 
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
@@ -162,19 +164,24 @@ def do_edit_and_delete_email_template(driver):
     test_name = 'edit/delete test'
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
-    dashboard_page.click_email_templates()
+    dashboard_page.click_templates()
 
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    all_templates_page = SendEmailTemplatePage(driver)
-    all_templates_page.click_add_new_template()
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    select_template_page = SelectTemplatePage(driver)
+    select_template_page.select_email()
+    select_template_page.click_continue()
 
     template_page = EditEmailTemplatePage(driver)
     template_page.create_template(name=test_name)
+    template_page.click_templates()
 
     assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    all_templates_page.click_edit_template()
+    show_templates_page.click_template_by_link_text(test_name)
     template_page.click_delete()
 
     assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
@@ -182,16 +189,16 @@ def do_edit_and_delete_email_template(driver):
 
 def get_verify_code_from_api(profile):
     verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
-                                                   Config.NOTIFY_SERVICE_API_KEY, profile.mobile,
-                                                   attempt_retry=False)
+                                                   Config.NOTIFY_SERVICE_API_KEY, profile.mobile)
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
+    print('Trying to use 2fa code:', m.group(0))
     return m.group(0)
 
 
 @retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
-def get_notification_via_api(service_id, template_id, api_key, sent_to, attempt_retry=True):
+def get_notification_via_api(service_id, template_id, api_key, sent_to):
     client = NotificationsAPIClient(
         base_url=Config.NOTIFY_API_URL,
         service_id=service_id,
@@ -207,8 +214,7 @@ def get_notification_via_api(service_id, template_id, api_key, sent_to, attempt_
     message = 'Could not find notification with template {} to {} with a status of sending or delivered' \
         .format(template_id,
                 sent_to)
-    if attempt_retry:
-        raise RetryException(message)
+    raise RetryException(message)
 
 
 def recordtime(func):

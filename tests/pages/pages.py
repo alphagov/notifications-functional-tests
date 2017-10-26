@@ -36,7 +36,9 @@ from tests.pages.locators import (
     TeamMembersPageLocators,
     InviteUserPageLocators,
     ApiKeysPageLocators,
-    VerifyPageLocators
+    VerifyPageLocators,
+    SelectTemplatePageLocators,
+    ShowTemplatesPageLocators
 )
 
 
@@ -80,6 +82,10 @@ class BasePage(object):
 
     def select_checkbox_or_radio(self, element):
         self.driver.execute_script("arguments[0].setAttribute('checked', 'checked')", element)
+
+    def click_templates(self):
+        element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
+        element.click()
 
 
 class MainPage(BasePage):
@@ -224,6 +230,10 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(DashboardPage.email_templates_link)
         element.click()
 
+    def click_email_header(self):
+        element = self.wait_for_element(DashboardPage.email_filter_link)
+        element.click()
+
     def click_team_members_link(self):
         element = self.wait_for_element(DashboardPage.team_members_link)
         element.click()
@@ -258,6 +268,40 @@ class DashboardPage(BasePage):
         return int(element.text)
 
 
+class ShowTemplatesPage(BasePage):
+
+    def click_add_new_template(self):
+        element = self.wait_for_element(ShowTemplatesPageLocators.ADD_NEW_TEMPLATE_LINK)
+        element.click()
+
+    def click_email_filter_link(self):
+        element = self.wait_for_element(ShowTemplatesPageLocators.EMAIL_FILTER_LINK)
+        element.click()
+
+    def click_template_by_link_text(self, link_text):
+        element = self.wait_for_element(ShowTemplatesPageLocators.TEMPLATE_LINK_TEXT(link_text))
+        element.click()
+
+
+class SelectTemplatePage(BasePage):
+
+    def select_email(self):
+        element = self.wait_for_invisible_element(SelectTemplatePageLocators.EMAIL_RADIO)
+        self.select_checkbox_or_radio(element)
+
+    def select_text_message(self):
+        element = self.wait_for_invisible_element(SelectTemplatePageLocators.TEXT_MESSAGE_RADIO)
+        self.select_checkbox_or_radio(element)
+
+    def select_letter(self):
+        element = self.wait_for_invisible_element(SelectTemplatePageLocators.LETTER_RADIO)
+        self.select_checkbox_or_radio(element)
+
+    def click_continue(self):
+        element = self.wait_for_element(SelectTemplatePageLocators.CONTINUE_BUTTON)
+        element.click()
+
+
 class SendSmsTemplatePage(BasePage):
 
     new_sms_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
@@ -286,7 +330,7 @@ class EditSmsTemplatePage(BasePage):
         element = self.wait_for_element(EditSmsTemplatePage.save_button)
         element.click()
 
-    def create_template(self, name='Test email template'):
+    def create_template(self, name='Test sms template'):
         self.name_input = name
         self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
