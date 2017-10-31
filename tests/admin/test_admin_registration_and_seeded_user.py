@@ -1,3 +1,5 @@
+from time import sleep
+
 import pytest
 
 from retry.api import retry_call
@@ -15,13 +17,12 @@ from tests.test_utils import (
     do_user_registration,
     do_user_can_invite_someone_to_notify,
     assert_notification_body,
-    recordtime
-)
+    recordtime)
 
 from tests.pages import (
     DashboardPage,
-    UploadCsvPage
-)
+    UploadCsvPage,
+    SendEmailTemplatePage, SendOneRecipient, os)
 
 
 @recordtime
@@ -64,6 +65,53 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
 @pytest.mark.parametrize('message_type', ['sms', 'email'])
 def test_edit_and_delete_template(driver, profile, login_seeded_user, seeded_client, message_type):
     do_edit_and_delete_email_template(driver)
+
+
+@recordtime
+@pytest.mark.parametrize('message_type', ['email'])
+def test_send_email_to_one_recipient(driver, profile, base_url, message_type, seeded_client, login_seeded_user):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+
+    template_id = {
+        'email': profile.jenkins_build_email_template_id,
+        'sms': profile.jenkins_build_sms_template_id,
+    }.get(message_type)
+
+    dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
+
+    send = SendOneRecipient(driver)
+
+    send.go_to_send_one_recipient(
+        profile.notify_research_service_id,
+        profile.jenkins_build_email_template_id
+    )
+
+    send.choose_alternative_reply_to_email()
+    send.click_continue()
+    send.click_use_my_email()
+    send.update_build_id()
+    send.click_continue()
+
+    # assert the reply to address etc is correct
+    preview_rows = send.get_preview_contents()
+
+    assert "From" in str(preview_rows[0].text)
+    assert "Research" in str(preview_rows[0].text)
+    assert "Reply to" in str(preview_rows[1].text)
+    assert os.getenv('dev_EMAIL_REPLY_TO_ADDRESS', 'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[1].text)
+    assert "To" in str(preview_rows[2].text)
+    assert os.getenv('dev_NOTIFY_RESEARCH_MODE_EMAIL', 'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[2].text)
+    assert "Subject" in str(preview_rows[3].text)
+    assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
+
+    send.click_continue()
+
+    dashboard_page.go_to_dashboard_for_service()
+
+    dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
+
+    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
 @retry_on_stale_element_exception

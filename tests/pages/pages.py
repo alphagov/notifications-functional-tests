@@ -38,8 +38,8 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     VerifyPageLocators,
     SelectTemplatePageLocators,
-    ShowTemplatesPageLocators
-)
+    ShowTemplatesPageLocators,
+    SingleRecipientLocators)
 
 
 class RetryException(Exception):
@@ -533,3 +533,32 @@ class ApiKeyPage(BasePage):
     def click_key_type_radio(self, key_type='normal'):
         element = self.wait_for_invisible_element(ApiKeyPage.key_types[key_type])
         self.select_checkbox_or_radio(element)
+
+
+class SendOneRecipient(BasePage):
+
+    def go_to_send_one_recipient(self, service_id, template_id):
+        url = "{}/services/{}/send/{}/set-sender".format(self.base_url, service_id, template_id)
+        self.driver.get(url)
+
+    def click_continue(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
+        element.click()
+
+    def choose_alternative_reply_to_email(self):
+        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_EMAIL)
+        radio.click()
+
+    def click_use_my_email(self):
+        element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
+        element.click()
+
+    def update_build_id(self):
+        jenkins_build_id = os.getenv('BUILD_ID', 'No build id')
+        element = self.wait_for_element(SingleRecipientLocators.BUILD_ID_INPUT)
+        element.send_keys(jenkins_build_id)
+
+    def get_preview_contents(self):
+        table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
+        rows = table.find_elements(By.TAG_NAME, "tr")  # get all of the rows in the table
+        return rows

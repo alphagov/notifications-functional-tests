@@ -21,11 +21,10 @@ from tests.pages import (
     TeamMembersPage,
     InviteUserPage,
     RegisterFromInvite,
-    SendEmailTemplatePage,
     EditEmailTemplatePage,
     VerifyPage,
     ShowTemplatesPage,
-    SelectTemplatePage
+    SelectTemplatePage,
 )
 
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
@@ -88,7 +87,6 @@ def do_verify(driver, profile):
 
 
 def do_user_registration(driver, profile, base_url):
-
     main_page = MainPage(driver)
     main_page.get()
     main_page.click_set_up_account()
