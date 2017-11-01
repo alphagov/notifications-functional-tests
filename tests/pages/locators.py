@@ -117,3 +117,10 @@ class SingleRecipientLocators(object):
     TABLE_ROWS = (By.TAG_NAME, 'tr')
     ALTERNATIVE_EMAIL_REPLY_TO = (By.ID, "sender-1")
     ALTERNATIVE_EMAIL = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
+
+
+class EmailReplyToLocators(object):
+    ADD_EMAIL_REPLY_TO_BUTTON = (By.CLASS_NAME, 'button')
+    EMAIL_ADDRESS_FIELD = (By.ID, 'email_address')
+    REPLY_TO_ADDRESSES = (By.TAG_NAME, "body")
+    IS_DEFAULT_CHECKBOX = (By.ID, "is_default")

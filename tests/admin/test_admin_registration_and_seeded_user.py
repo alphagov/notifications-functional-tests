@@ -10,24 +10,30 @@ from tests.decorators import retry_on_stale_element_exception
 
 from tests.postman import (
     send_notification_via_csv,
-    get_notification_by_id_via_api)
+    get_notification_by_id_via_api
+)
 
 from tests.test_utils import (
-    do_edit_and_delete_email_template,
-    do_user_registration,
-    do_user_can_invite_someone_to_notify,
     assert_notification_body,
-    recordtime)
+    do_edit_and_delete_email_template,
+    do_user_can_add_reply_to_email_to_service,
+    do_user_can_invite_someone_to_notify,
+    do_user_registration,
+    recordtime
+)
 
 from tests.pages import (
     DashboardPage,
-    UploadCsvPage,
-    SendEmailTemplatePage, SendOneRecipient, os)
+    SendOneRecipient,
+    os,
+    UploadCsvPage
+)
 
 
 @recordtime
 def test_registration_and_invite_flow(driver, profile, base_url):
     do_user_registration(driver, profile, base_url)
+    do_user_can_add_reply_to_email_to_service(driver)
     do_user_can_invite_someone_to_notify(driver, profile, base_url)
 
 
@@ -99,9 +105,11 @@ def test_send_email_to_one_recipient(driver, profile, base_url, message_type, se
     assert "From" in str(preview_rows[0].text)
     assert "Research" in str(preview_rows[0].text)
     assert "Reply to" in str(preview_rows[1].text)
-    assert os.getenv('dev_EMAIL_REPLY_TO_ADDRESS', 'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[1].text)
+    assert os.getenv('dev_EMAIL_REPLY_TO_ADDRESS',
+                     'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[1].text)
     assert "To" in str(preview_rows[2].text)
-    assert os.getenv('dev_NOTIFY_RESEARCH_MODE_EMAIL', 'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[2].text)
+    assert os.getenv('dev_NOTIFY_RESEARCH_MODE_EMAIL',
+                     'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)
     assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
 

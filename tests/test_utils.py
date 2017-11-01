@@ -14,17 +14,18 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from config import Config
 from tests.pages import (
-    MainPage,
-    RegistrationPage,
-    DashboardPage,
     AddServicePage,
-    TeamMembersPage,
-    InviteUserPage,
-    RegisterFromInvite,
+    DashboardPage,
     EditEmailTemplatePage,
-    VerifyPage,
-    ShowTemplatesPage,
+    EmailReplyTo,
+    InviteUserPage,
+    MainPage,
+    RegisterFromInvite,
+    RegistrationPage,
     SelectTemplatePage,
+    ShowTemplatesPage,
+    TeamMembersPage,
+    VerifyPage
 )
 
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
@@ -226,3 +227,53 @@ def recordtime(func):
             logging.info('End Time: {}'.format(str(datetime.utcnow())))
 
     return wrapper
+
+
+def do_user_can_add_reply_to_email_to_service(driver):
+    email_address = "notify@digitial.cabinet-office.gov.uk"
+    email_address2 = "notify+1@digitial.cabinet-office.gov.uk"
+    email_address3 = "notify+2@digitial.cabinet-office.gov.uk"
+    default = " (default)"
+
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+
+    service_id = dashboard_page.get_service_id()
+
+    email = EmailReplyTo(driver)
+
+    email.go_to_add_email_reply_to_address(service_id)
+    email.insert_email_reply_to_address(email_address)
+    email.click_add_email_reply_to()
+
+    body = email.get_reply_to_email_addresses()
+
+    assert email_address + default in body.text
+    assert email_address2 not in body.text
+    assert email_address3 not in body.text
+
+    email.go_to_add_email_reply_to_address(service_id)
+    email.insert_email_reply_to_address(email_address2)
+    email.click_add_email_reply_to()
+
+    body = email.get_reply_to_email_addresses()
+
+    assert email_address + default in body.text
+    assert email_address2 in body.text
+
+    sub_body = body.text[body.text.index(email_address2):]  # find the index of the email address
+    email_reply_to_id = sub_body.split('\n')[2]  # the id is the third entry [ 'email address, 'Change', id' ]
+
+    email.go_to_edit_email_reply_to_address(service_id, email_reply_to_id)
+    email.clear_email_reply_to()
+    email.insert_email_reply_to_address(email_address3)
+    email.check_is_default_check_box()
+    email.click_add_email_reply_to()
+
+    body = email.get_reply_to_email_addresses()
+
+    assert email_address in body.text
+    assert email_address2 not in body.text
+    assert email_address3 + default in body.text
+
+    dashboard_page.go_to_dashboard_for_service(service_id)
