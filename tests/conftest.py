@@ -208,6 +208,7 @@ def login_seeded_user(_driver, profile):
 def client(profile):
     client = NotificationsAPIClient(
         base_url=profile.notify_api_url,
+        service_id=profile.service_id,
         api_key=profile.api_key
     )
     return client
@@ -217,6 +218,7 @@ def client(profile):
 def seeded_client(profile):
     client = NotificationsAPIClient(
         base_url=profile.notify_api_url,
+        service_id=profile.notify_research_service_id,
         api_key=profile.notify_research_service_api_key
     )
     return client

@@ -201,6 +201,7 @@ def get_verify_code_from_api(profile):
 def get_notification_via_api(service_id, template_id, api_key, sent_to):
     client = NotificationsAPIClient(
         base_url=Config.NOTIFY_API_URL,
+        service_id=service_id,
         api_key=api_key
     )
     resp = client.get('notifications', params={'include_jobs': True})

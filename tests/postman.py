@@ -13,7 +13,7 @@ def send_notification_via_api(client, template_id, to, message_type):
     elif message_type == 'email':
         resp_json = client.send_email_notification(to, template_id, personalisation)
 
-    return resp_json['id']
+    return resp_json['data']['notification']['id']
 
 
 def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=False):
@@ -37,7 +37,7 @@ def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=Fal
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):
     try:
         resp = client.get_notification_by_id(notification_id)
-        notification_status = resp['status']
+        notification_status = resp['data']['notification']['status']
         if notification_status not in expected_statuses:
             raise RetryException(
                 (
@@ -46,10 +46,10 @@ def get_notification_by_id_via_api(client, notification_id, expected_statuses):
                     'status: {status} '
                     'created_at: {created_at} '
                     'sent_at: {sent_at} '
-                    'completed_at: {completed_at}'
-                ).format(**resp)
+                    'updated_at: {updated_at}'
+                ).format(**resp['data']['notification'])
             )
-        return resp
+        return resp["data"]["notification"]
     except HTTPError as e:
         if e.status_code == 404:
             message = 'Notification not created yet for id: {}'.format(notification_id)
