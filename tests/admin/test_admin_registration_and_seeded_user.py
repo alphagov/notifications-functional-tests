@@ -1,5 +1,3 @@
-from time import sleep
-
 import pytest
 
 from retry.api import retry_call
@@ -25,9 +23,7 @@ from tests.test_utils import (
 from tests.pages import (
     DashboardPage,
     SendOneRecipient,
-    os,
-    UploadCsvPage
-)
+    UploadCsvPage)
 
 
 @recordtime
@@ -74,10 +70,11 @@ def test_edit_and_delete_template(driver, profile, login_seeded_user, seeded_cli
 
 
 @recordtime
-@pytest.mark.parametrize('message_type', ['email'])
-def test_send_email_to_one_recipient(driver, profile, base_url, message_type, seeded_client, login_seeded_user):
+def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, login_seeded_user):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
+
+    message_type = 'email'
 
     template_id = {
         'email': profile.jenkins_build_email_template_id,
@@ -103,13 +100,11 @@ def test_send_email_to_one_recipient(driver, profile, base_url, message_type, se
     preview_rows = send.get_preview_contents()
 
     assert "From" in str(preview_rows[0].text)
-    assert "Research" in str(preview_rows[0].text)
+    assert profile.notify_research_service_name in str(preview_rows[0].text)
     assert "Reply to" in str(preview_rows[1].text)
-    assert os.getenv('dev_EMAIL_REPLY_TO_ADDRESS',
-                     'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[1].text)
+    assert profile.notify_research_email_reply_to in str(preview_rows[1].text)
     assert "To" in str(preview_rows[2].text)
-    assert os.getenv('dev_NOTIFY_RESEARCH_MODE_EMAIL',
-                     'notify+1@digital.cabinet-office.gov.uk') in str(preview_rows[2].text)
+    assert profile.notify_research_service_email in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)
     assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
 

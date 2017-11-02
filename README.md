@@ -33,6 +33,7 @@ export dev_NOTIFY_SERVICE_ID=d6aa2c68-a2d9-4437-ab19-3ae8eb202553
 export dev_NOTIFY_SERVICE_API_KEY=xxx  # create an api key for the GOV.UK Notify service via the admin app
 export dev_NOTIFY_RESEARCH_SERVICE_ID=xxx # create a service in research mode via the admin app and copy the service id here
 export dev_NOTIFY_RESEARCH_SERVICE_API_KEY=xxx # create an api key for the Research service via the admin app
+export dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO=[an email @digital.cabinet-office.gov.uk] # this is the second email in the list when the you go to the send email to one recipient screen i.e. not teh default but teh second one added
 export dev_NOTIFY_RESEARCH_MODE_EMAIL=[some other gmail account @digital.cabinet-office.gov.uk]
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for gmail account and user account created in test
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below

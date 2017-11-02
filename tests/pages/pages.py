@@ -556,9 +556,8 @@ class SendOneRecipient(BasePage):
         element.click()
 
     def update_build_id(self):
-        jenkins_build_id = os.getenv('BUILD_ID', 'No build id')
         element = self.wait_for_element(SingleRecipientLocators.BUILD_ID_INPUT)
-        element.send_keys(jenkins_build_id)
+        element.send_keys("test_1234")
 
     def get_preview_contents(self):
         table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
