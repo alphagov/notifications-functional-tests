@@ -25,7 +25,7 @@ RUN \
 		nodejs \
 		npm \
 	&& ln -s /usr/bin/nodejs /usr/bin/node \
-	&& npm -g install phantomjs-prebuilt
+	&& npm -g install phantomjs-prebuilt@2.1.15
 
 ADD mozilla.gpg /tmp/mozilla.gpg
 RUN \
