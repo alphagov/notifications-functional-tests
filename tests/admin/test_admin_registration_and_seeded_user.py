@@ -8,25 +8,31 @@ from tests.decorators import retry_on_stale_element_exception
 
 from tests.postman import (
     send_notification_via_csv,
-    get_notification_by_id_via_api)
+    get_notification_by_id_via_api
+)
 
 from tests.test_utils import (
-    do_edit_and_delete_email_template,
-    do_user_registration,
-    do_user_can_invite_someone_to_notify,
     assert_notification_body,
+    do_edit_and_delete_email_template,
+    do_user_can_add_reply_to_email_to_service,
+    do_user_can_invite_someone_to_notify,
+    do_user_can_update_reply_to_email_to_service,
+    do_user_registration,
     recordtime
 )
 
+
 from tests.pages import (
     DashboardPage,
-    UploadCsvPage
-)
+    SendOneRecipient,
+    UploadCsvPage)
 
 
 @recordtime
 def test_registration_and_invite_flow(driver, profile, base_url):
     do_user_registration(driver, profile, base_url)
+    do_user_can_add_reply_to_email_to_service(driver)
+    do_user_can_update_reply_to_email_to_service(driver)
     do_user_can_invite_someone_to_notify(driver, profile, base_url)
 
 
@@ -64,6 +70,54 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
 @pytest.mark.parametrize('message_type', ['sms', 'email'])
 def test_edit_and_delete_template(driver, profile, login_seeded_user, seeded_client, message_type):
     do_edit_and_delete_email_template(driver)
+
+
+@recordtime
+def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, login_seeded_user):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+
+    message_type = 'email'
+
+    template_id = {
+        'email': profile.jenkins_build_email_template_id,
+        'sms': profile.jenkins_build_sms_template_id,
+    }.get(message_type)
+
+    dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
+
+    send_to_one_recipient_page = SendOneRecipient(driver)
+
+    send_to_one_recipient_page.go_to_send_one_recipient(
+        profile.notify_research_service_id,
+        profile.jenkins_build_email_template_id
+    )
+
+    send_to_one_recipient_page.choose_alternative_reply_to_email()
+    send_to_one_recipient_page.click_continue()
+    send_to_one_recipient_page.click_use_my_email()
+    send_to_one_recipient_page.update_build_id()
+    send_to_one_recipient_page.click_continue()
+
+    # assert the reply to address etc is correct
+    preview_rows = send_to_one_recipient_page.get_preview_contents()
+
+    assert "From" in str(preview_rows[0].text)
+    assert profile.notify_research_service_name in str(preview_rows[0].text)
+    assert "Reply to" in str(preview_rows[1].text)
+    assert profile.notify_research_email_reply_to in str(preview_rows[1].text)
+    assert "To" in str(preview_rows[2].text)
+    assert profile.notify_research_service_email in str(preview_rows[2].text)
+    assert "Subject" in str(preview_rows[3].text)
+    assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
+
+    send_to_one_recipient_page.click_continue()
+
+    dashboard_page.go_to_dashboard_for_service()
+
+    dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
+
+    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
 @retry_on_stale_element_exception

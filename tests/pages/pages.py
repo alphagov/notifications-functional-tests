@@ -12,33 +12,35 @@ from config import Config
 
 from tests.pages.element import (
     EmailInputElement,
-    PasswordInputElement,
-    SmsInputElement,
-    NameInputElement,
-    MobileInputElement,
-    ServiceInputElement,
-    TemplateContentElement,
     FileInputElement,
+    KeyNameInputElement,
+    MobileInputElement,
+    NameInputElement,
+    PasswordInputElement,
+    ServiceInputElement,
     SubjectInputElement,
-    KeyNameInputElement
+    SmsInputElement,
+    TemplateContentElement
 )
 
 
 from tests.pages.locators import (
-    CommonPageLocators,
-    MainPageLocators,
     AddServicePageLocators,
-    DashboardPageLocators,
-    NavigationLocators,
-    TemplatePageLocators,
-    EditTemplatePageLocators,
-    UploadCsvLocators,
-    TeamMembersPageLocators,
-    InviteUserPageLocators,
     ApiKeysPageLocators,
-    VerifyPageLocators,
+    CommonPageLocators,
+    DashboardPageLocators,
+    EditTemplatePageLocators,
+    EmailReplyToLocators,
+    InviteUserPageLocators,
+    MainPageLocators,
+    NavigationLocators,
     SelectTemplatePageLocators,
-    ShowTemplatesPageLocators
+    ShowTemplatesPageLocators,
+    SingleRecipientLocators,
+    TemplatePageLocators,
+    TeamMembersPageLocators,
+    UploadCsvLocators,
+    VerifyPageLocators
 )
 
 
@@ -533,3 +535,66 @@ class ApiKeyPage(BasePage):
     def click_key_type_radio(self, key_type='normal'):
         element = self.wait_for_invisible_element(ApiKeyPage.key_types[key_type])
         self.select_checkbox_or_radio(element)
+
+
+class SendOneRecipient(BasePage):
+
+    def go_to_send_one_recipient(self, service_id, template_id):
+        url = "{}/services/{}/send/{}/set-sender".format(self.base_url, service_id, template_id)
+        self.driver.get(url)
+
+    def click_continue(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
+        element.click()
+
+    def choose_alternative_reply_to_email(self):
+        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_EMAIL)
+        radio.click()
+
+    def click_use_my_email(self):
+        element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
+        element.click()
+
+    def update_build_id(self):
+        element = self.wait_for_element(SingleRecipientLocators.BUILD_ID_INPUT)
+        element.send_keys("test_1234")
+
+    def get_preview_contents(self):
+        table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
+        rows = table.find_elements(By.TAG_NAME, "tr")  # get all of the rows in the table
+        return rows
+
+
+class EmailReplyTo(BasePage):
+
+    def go_to_add_email_reply_to_address(self, service_id):
+        url = "{}/services/{}/service-settings/email-reply-to/add".format(self.base_url, service_id)
+        self.driver.get(url)
+
+    def click_add_email_reply_to(self):
+        element = self.wait_for_element(EmailReplyToLocators.ADD_EMAIL_REPLY_TO_BUTTON)
+        element.click()
+
+    def insert_email_reply_to_address(self, email_address):
+        element = self.wait_for_element(EmailReplyToLocators.EMAIL_ADDRESS_FIELD)
+        element.send_keys(email_address)
+
+    def get_reply_to_email_addresses(self):
+        elements = self.wait_for_element(EmailReplyToLocators.REPLY_TO_ADDRESSES)
+        return elements
+
+    def go_to_edit_email_reply_to_address(self, service_id, email_reply_to_id):
+        url = "{}/services/{}/service-settings/email-reply-to/{}/edit".format(
+            self.base_url,
+            service_id,
+            email_reply_to_id
+        )
+        self.driver.get(url)
+
+    def check_is_default_check_box(self):
+        radio = self.wait_for_invisible_element(EmailReplyToLocators.IS_DEFAULT_CHECKBOX)
+        radio.click()
+
+    def clear_email_reply_to(self):
+        element = self.wait_for_element(EmailReplyToLocators.EMAIL_ADDRESS_FIELD)
+        element.clear()
