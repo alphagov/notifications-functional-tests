@@ -240,13 +240,13 @@ def do_user_can_add_reply_to_email_to_service(driver):
 
     service_id = dashboard_page.get_service_id()
 
-    email = EmailReplyTo(driver)
+    email_reply_to_page = EmailReplyTo(driver)
 
-    email.go_to_add_email_reply_to_address(service_id)
-    email.insert_email_reply_to_address(email_address)
-    email.click_add_email_reply_to()
+    email_reply_to_page.go_to_add_email_reply_to_address(service_id)
+    email_reply_to_page.insert_email_reply_to_address(email_address)
+    email_reply_to_page.click_add_email_reply_to()
 
-    body = email.get_reply_to_email_addresses()
+    body = email_reply_to_page.get_reply_to_email_addresses()
 
     assert email_address + default in body.text
     assert email_address2 not in body.text
@@ -261,13 +261,13 @@ def do_user_can_update_reply_to_email_to_service(driver):
 
     service_id = dashboard_page.get_service_id()
 
-    email = EmailReplyTo(driver)
+    email_reply_to_page = EmailReplyTo(driver)
 
-    email.go_to_add_email_reply_to_address(service_id)
-    email.insert_email_reply_to_address(email_address2)
-    email.click_add_email_reply_to()
+    email_reply_to_page.go_to_add_email_reply_to_address(service_id)
+    email_reply_to_page.insert_email_reply_to_address(email_address2)
+    email_reply_to_page.click_add_email_reply_to()
 
-    body = email.get_reply_to_email_addresses()
+    body = email_reply_to_page.get_reply_to_email_addresses()
 
     assert email_address + default in body.text
     assert email_address2 in body.text
@@ -275,13 +275,13 @@ def do_user_can_update_reply_to_email_to_service(driver):
     sub_body = body.text[body.text.index(email_address2):]  # find the index of the email address
     email_reply_to_id = sub_body.split('\n')[2]  # the id is the third entry [ 'email address, 'Change', id' ]
 
-    email.go_to_edit_email_reply_to_address(service_id, email_reply_to_id)
-    email.clear_email_reply_to()
-    email.insert_email_reply_to_address(email_address3)
-    email.check_is_default_check_box()
-    email.click_add_email_reply_to()
+    email_reply_to_page.go_to_edit_email_reply_to_address(service_id, email_reply_to_id)
+    email_reply_to_page.clear_email_reply_to()
+    email_reply_to_page.insert_email_reply_to_address(email_address3)
+    email_reply_to_page.check_is_default_check_box()
+    email_reply_to_page.click_add_email_reply_to()
 
-    body = email.get_reply_to_email_addresses()
+    body = email_reply_to_page.get_reply_to_email_addresses()
 
     assert email_address in body.text
     assert email_address2 not in body.text

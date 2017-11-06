@@ -86,21 +86,21 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
 
-    send = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipient(driver)
 
-    send.go_to_send_one_recipient(
+    send_to_one_recipient_page.go_to_send_one_recipient(
         profile.notify_research_service_id,
         profile.jenkins_build_email_template_id
     )
 
-    send.choose_alternative_reply_to_email()
-    send.click_continue()
-    send.click_use_my_email()
-    send.update_build_id()
-    send.click_continue()
+    send_to_one_recipient_page.choose_alternative_reply_to_email()
+    send_to_one_recipient_page.click_continue()
+    send_to_one_recipient_page.click_use_my_email()
+    send_to_one_recipient_page.update_build_id()
+    send_to_one_recipient_page.click_continue()
 
     # assert the reply to address etc is correct
-    preview_rows = send.get_preview_contents()
+    preview_rows = send_to_one_recipient_page.get_preview_contents()
 
     assert "From" in str(preview_rows[0].text)
     assert profile.notify_research_service_name in str(preview_rows[0].text)
@@ -111,7 +111,7 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
     assert "Subject" in str(preview_rows[3].text)
     assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
 
-    send.click_continue()
+    send_to_one_recipient_page.click_continue()
 
     dashboard_page.go_to_dashboard_for_service()
 
