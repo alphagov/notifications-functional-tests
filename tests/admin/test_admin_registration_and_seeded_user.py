@@ -16,9 +16,11 @@ from tests.test_utils import (
     do_edit_and_delete_email_template,
     do_user_can_add_reply_to_email_to_service,
     do_user_can_invite_someone_to_notify,
+    do_user_can_update_reply_to_email_to_service,
     do_user_registration,
     recordtime
 )
+
 
 from tests.pages import (
     DashboardPage,
@@ -30,6 +32,7 @@ from tests.pages import (
 def test_registration_and_invite_flow(driver, profile, base_url):
     do_user_registration(driver, profile, base_url)
     do_user_can_add_reply_to_email_to_service(driver)
+    do_user_can_update_reply_to_email_to_service(driver)
     do_user_can_invite_someone_to_notify(driver, profile, base_url)
 
 

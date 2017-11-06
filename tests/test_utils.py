@@ -33,6 +33,11 @@ logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
 
 jenkins_build_id = os.getenv('BUILD_ID', 'No build id')
 
+email_address = "notify@digitial.cabinet-office.gov.uk"
+email_address2 = "notify+1@digitial.cabinet-office.gov.uk"
+email_address3 = "notify+2@digitial.cabinet-office.gov.uk"
+default = " (default)"
+
 
 def create_temp_csv(number, fieldnames):
     directory_name = tempfile.mkdtemp()
@@ -230,11 +235,6 @@ def recordtime(func):
 
 
 def do_user_can_add_reply_to_email_to_service(driver):
-    email_address = "notify@digitial.cabinet-office.gov.uk"
-    email_address2 = "notify+1@digitial.cabinet-office.gov.uk"
-    email_address3 = "notify+2@digitial.cabinet-office.gov.uk"
-    default = " (default)"
-
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
@@ -251,6 +251,17 @@ def do_user_can_add_reply_to_email_to_service(driver):
     assert email_address + default in body.text
     assert email_address2 not in body.text
     assert email_address3 not in body.text
+
+    dashboard_page.go_to_dashboard_for_service(service_id)
+
+
+def do_user_can_update_reply_to_email_to_service(driver):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+
+    service_id = dashboard_page.get_service_id()
+
+    email = EmailReplyTo(driver)
 
     email.go_to_add_email_reply_to_address(service_id)
     email.insert_email_reply_to_address(email_address2)
