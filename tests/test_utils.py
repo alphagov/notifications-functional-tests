@@ -207,10 +207,10 @@ def get_notification_via_api(service_id, template_id, api_key, sent_to):
         base_url=Config.NOTIFY_API_URL,
         api_key=api_key
     )
-    resp = client.get('notifications', params={'include_jobs': True})
+    resp = client.get('v2/notifications', params={'include_jobs': True})
     for notification in resp['notifications']:
         t_id = notification['template']['id']
-        to = notification['to']
+        to = notification['email_address'] or notification['phone_number']
         status = notification['status']
         if t_id == template_id and to == sent_to and status in ['sending', 'delivered']:
             return notification['body']
