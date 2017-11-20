@@ -162,6 +162,13 @@ def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
+@recordtime
+def test_email_auth(driver, profile, base_url):
+    # login email auth user
+    # assert url is research mode service's dashboard
+    pass
+
+
 @retry_on_stale_element_exception
 def get_dashboard_stats(dashboard_page, message_type, template_id):
     return {

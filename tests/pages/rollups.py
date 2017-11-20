@@ -14,11 +14,31 @@ from tests.test_utils import do_verify
 
 
 def sign_in(driver, test_profile, seeded=False):
+    email, password = _get_email_and_password(test_profile, 'seeded' if seeded else 'normal')
+    _sign_in_email_and_password(driver, email, password)
+    do_verify(driver, test_profile)
+
+
+def sign_in_email_auth(driver, test_profile):
+    email, password = _get_email_and_password(test_profile, 'email_auth')
+    _sign_in_email_and_password
+
+
+def _sign_in_email_and_password(driver, email, password):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    sign_in_page.login(test_profile, seeded)
-    do_verify(driver, test_profile)
+    sign_in_page.login(email, password)
+
+
+def _get_email_and_password(profile, account_type):
+    if account_type == 'normal':
+        return profile.email, profile.password
+    elif account_type == 'seeded':
+        return profile.notify_research_service_email, profile.notify_research_service_password
+    elif account_type == 'email_auth':
+        return profile.notify_research_service_email_auth_account, profile.notify_research_service_password
+    raise Exception('unknown account_type {}'.format(account_type))
 
 
 def get_service_templates_and_api_key_for_tests(driver, test_profile):

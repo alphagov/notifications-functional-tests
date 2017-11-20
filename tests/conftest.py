@@ -60,7 +60,8 @@ def profile():
             'notify_research_sms_sender': conf.NOTIFY_RESEARCH_SMS_SENDER,
             'notify_research_email_reply_to': conf.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
             'registration_template_id': conf.REGISTRATION_TEMPLATE_ID,
-            'invitation_template_id': conf.INVITATION_TEMPLATE_ID
+            'invitation_template_id': conf.INVITATION_TEMPLATE_ID,
+            'notify_research_service_email_auth_account': conf.NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT
         })
     else:
         # staging and live run the same simple smoke tests
