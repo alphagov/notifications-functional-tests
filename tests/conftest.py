@@ -118,7 +118,7 @@ def profile():
 
 @pytest.fixture(scope="module")
 def _driver():
-    driver_name = os.getenv('SELENIUM_DRIVER', 'chrome').lower()
+    driver_name = (os.getenv('SELENIUM_DRIVER') or 'chrome').lower()
     if os.environ.get('TRAVIS'):
         driver_name = 'firefox'
 
