@@ -55,6 +55,7 @@ def profile():
                           'notify_research_service_id': PreviewConfig.NOTIFY_RESEARCH_SERVICE_ID,
                           'notify_research_service_name': PreviewConfig.NOTIFY_RESEARCH_SERVICE_NAME,
                           'notify_research_email_reply_to': PreviewConfig.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
+                          'notify_research_sms_sender': PreviewConfig.NOTIFY_RESEARCH_SMS_SENDER,
                           'notify_research_service_api_key': PreviewConfig.NOTIFY_RESEARCH_SERVICE_API_KEY,
                           'registration_template_id': PreviewConfig.REGISTRATION_TEMPLATE_ID,
                           'invitation_template_id': PreviewConfig.INVITATION_TEMPLATE_ID})
@@ -110,6 +111,7 @@ def profile():
                           'notify_research_service_api_key': Config.NOTIFY_RESEARCH_SERVICE_API_KEY,
                           'notify_research_service_name': Config.NOTIFY_RESEARCH_SERVICE_NAME,
                           'notify_research_email_reply_to': Config.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
+                          'notify_research_sms_sender': Config.NOTIFY_RESEARCH_SMS_SENDER,
                           'registration_template_id': Config.REGISTRATION_TEMPLATE_ID,
                           'invitation_template_id': Config.INVITATION_TEMPLATE_ID})
 

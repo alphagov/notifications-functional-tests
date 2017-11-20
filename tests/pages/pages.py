@@ -37,6 +37,7 @@ from tests.pages.locators import (
     SelectTemplatePageLocators,
     ShowTemplatesPageLocators,
     SingleRecipientLocators,
+    SmsSenderLocators,
     TemplatePageLocators,
     TeamMembersPageLocators,
     UploadCsvLocators,
@@ -565,6 +566,14 @@ class SendOneRecipient(BasePage):
         rows = table.find_elements(By.TAG_NAME, "tr")  # get all of the rows in the table
         return rows
 
+    def choose_alternative_sms_sender(self):
+        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_SMS_SENDER)
+        radio.click()
+
+    def click_use_my_phone_number(self):
+        element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
+        element.click()
+
 
 class EmailReplyTo(BasePage):
 
@@ -599,3 +608,39 @@ class EmailReplyTo(BasePage):
     def clear_email_reply_to(self):
         element = self.wait_for_element(EmailReplyToLocators.EMAIL_ADDRESS_FIELD)
         element.clear()
+
+
+class SmsSenderPage(BasePage):
+    def go_to_text_message_senders(self, service_id):
+        url = "{}/services/{}/service-settings/sms-sender".format(self.base_url, service_id)
+        self.driver.get(url)
+
+    def go_to_add_text_message_sender(self, service_id):
+        url = "{}/services/{}/service-settings/sms-sender/add".format(self.base_url, service_id)
+        self.driver.get(url)
+
+    def insert_sms_sender(self, sender):
+        element = self.wait_for_element(SmsSenderLocators.SMS_SENDER_FIELD)
+        element.clear()
+        element.send_keys(sender)
+
+    def click_save_sms_sender(self):
+        element = self.wait_for_element(SmsSenderLocators.SAVE_SMS_SENDER_BUTTON)
+        element.click()
+
+    def get_sms_senders(self):
+        elements = self.wait_for_element(SmsSenderLocators.ALL_SMS_SENDERS)
+        return elements
+
+    def click_change_link_for_first_sms_sender(self):
+        change_link = self.wait_for_element(SmsSenderLocators.FIRST_CHANGE_LINK)
+        change_link.click()
+
+    def get_sms_sender(self):
+        return self.wait_for_element(SmsSenderLocators.SMS_SENDER)
+
+    def get_sms_recipient(self):
+        return self.wait_for_element(SmsSenderLocators.SMS_RECIPIENT)
+
+    def get_sms_content(self):
+        return self.wait_for_element(SmsSenderLocators.SMS_CONTENT)
