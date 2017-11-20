@@ -1,3 +1,4 @@
+from config import Config
 from tests.pages import (
     SignInPage,
     DashboardPage,
@@ -10,24 +11,25 @@ from tests.pages import (
     SelectTemplatePage
 )
 
-from tests.test_utils import do_verify
+from tests.test_utils import do_verify, do_email_auth_verify
 
 
 def sign_in(driver, test_profile, seeded=False):
-    email, password = _get_email_and_password(test_profile, 'seeded' if seeded else 'normal')
-    _sign_in_email_and_password(driver, email, password)
+    _sign_in(driver, test_profile, 'seeded' if seeded else 'normal')
     do_verify(driver, test_profile)
 
 
 def sign_in_email_auth(driver, test_profile):
-    email, password = _get_email_and_password(test_profile, 'email_auth')
-    _sign_in_email_and_password
+    _sign_in(driver, test_profile, 'email_auth')
+    assert driver.current_url == Config.NOTIFY_ADMIN_URL + '/two-factor-email-sent'
+    do_email_auth_verify(driver, test_profile)
 
 
-def _sign_in_email_and_password(driver, email, password):
+def _sign_in(driver, test_profile, account_type):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
+    email, password = _get_email_and_password(test_profile, account_type=account_type)
     sign_in_page.login(email, password)
 
 

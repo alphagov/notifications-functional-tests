@@ -76,7 +76,7 @@ def get_link(profile, template_id, email):
     if match:
         return match.group(0)
     else:
-        pytest.fail("Couldn't get the registraion link from the email")
+        pytest.fail("Couldn't get the link from the email")
 
 
 @retry(RetryException, tries=Config.VERIFY_CODE_RETRY_TIMES, delay=Config.VERIFY_CODE_RETRY_INTERVAL)
@@ -92,6 +92,24 @@ def do_verify(driver, profile):
         return True
     else:
         #  There was an error message so let's retry
+        raise RetryException
+
+
+@retry(RetryException, tries=Config.VERIFY_CODE_RETRY_TIMES, delay=Config.VERIFY_CODE_RETRY_INTERVAL)
+def do_email_auth_verify(driver, profile):
+    try:
+        login_link = get_link(
+            profile,
+            profile.email_auth_template_id,
+            profile.notify_research_service_email_auth_account
+        )
+        driver.get(login_link)
+        driver.find_element_by_class_name('error-message')
+    except (NoSuchElementException, TimeoutException):
+        # no error - that means we're logged in! hurray.
+        return True
+    else:
+        #  There was an error message (presumably we tried to enter an old invite code that was already used/expired)
         raise RetryException
 
 

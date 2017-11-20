@@ -49,7 +49,6 @@ def profile():
             'mobile': conf.TEST_NUMBER,
             'jenkins_build_email_template_id': conf.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
             'jenkins_build_sms_template_id': conf.JENKINS_BUILD_SMS_TEMPLATE_ID,
-            'notify_service_id': conf.NOTIFY_SERVICE_ID,
             'notify_api_url': conf.NOTIFY_API_URL,
             'notify_service_api_key': conf.NOTIFY_SERVICE_API_KEY,
             'notify_research_service_email': conf.NOTIFY_RESEARCH_MODE_EMAIL,
@@ -61,6 +60,7 @@ def profile():
             'notify_research_email_reply_to': conf.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
             'registration_template_id': conf.REGISTRATION_TEMPLATE_ID,
             'invitation_template_id': conf.INVITATION_TEMPLATE_ID,
+            'email_auth_template_id': conf.EMAIL_AUTH_TEMPLATE_ID,
             'notify_research_service_email_auth_account': conf.NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT
         })
     else:
@@ -81,8 +81,6 @@ def profile():
             'jenkins_build_sms_template_id': conf.JENKINS_BUILD_SMS_TEMPLATE_ID,
             'api_key': conf.SERVICE_API_KEY,
             'notify_api_url': conf.NOTIFY_API_URL,
-            'registration_template_id': conf.REGISTRATION_TEMPLATE_ID,
-            'invitation_template_id': conf.INVITATION_TEMPLATE_ID
         })
 
 
