@@ -31,9 +31,10 @@ export dev_NOTIFY_ADMIN_URL=http://localhost:6012
 export dev_NOTIFY_API_URL=http://localhost:6011
 export dev_NOTIFY_SERVICE_ID=d6aa2c68-a2d9-4437-ab19-3ae8eb202553
 export dev_NOTIFY_SERVICE_API_KEY=xxx  # create an api key for the GOV.UK Notify service via the admin app
+export dev_NOTIFY_RESEARCH_SERVICE_NAME=xxx # See seeded service section below for details of the seeded research service.
 export dev_NOTIFY_RESEARCH_SERVICE_ID=xxx # create a service in research mode via the admin app and copy the service id here
 export dev_NOTIFY_RESEARCH_SERVICE_API_KEY=xxx # create an api key for the Research service via the admin app
-export dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO=[a gov email] # this is the second email in the list when the you go to the send email to one recipient screen i.e. not teh default but teh second one added
+export dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO=[a gov email] # this is the second email in the list when the you go to the send email to one recipient screen i.e. not the default but the second one added
 export dev_NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
@@ -43,10 +44,11 @@ export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in re
 </details>
 
 <details>
-    <summary>The seeded service will need to be created as follows: </summary>
+    <summary>The seeded research mode service will need to be created as follows: </summary>
 
-
-* Created and set to research mode
+* Create a service and set to research mode.
+  - Store its name in `dev_NOTIFY_RESEARCH_SERVICE_NAME` and its id in `dev_NOTIFY_RESEARCH_SERVICE_ID`
+* create a test mode API key for it, store that in `dev_NOTIFY_RESEARCH_SERVICE_API_KEY`
 * Two email reply-to addresses will have to be added. One default email, the name of which doesn't matter, and a second non-default email, the name of which you should save in `dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO`.
 * A seeded user will have to be created and invited to it with the following details:
   - email_address: `dev_NOTIFY_RESEARCH_MODE_EMAIL`
