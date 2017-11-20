@@ -18,7 +18,6 @@ class Config(object):
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ.get('ENVIRONMENT') + '_Functional Test Service_'
     JENKINS_BUILD_SMS_TEMPLATE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_JENKINS_BUILD_SMS_TEMPLATE_ID')
     JENKINS_BUILD_EMAIL_TEMPLATE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_JENKINS_BUILD_EMAIL_TEMPLATE_ID')
-    NOTIFY_SERVICE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_ID')
     NOTIFY_SERVICE_API_KEY = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_API_KEY')
     NOTIFY_RESEARCH_MODE_EMAIL = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_RESEARCH_MODE_EMAIL')
     NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD = os.environ.get(

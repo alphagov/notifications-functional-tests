@@ -32,88 +32,57 @@ class Profile(object):
 def profile():
     env = os.environ['ENVIRONMENT'].lower()
 
-    if env == 'preview':
+    if env not in ('staging', 'live'):
+        # we're running the normal functional tests (whether locally or on preview)
+        conf = PreviewConfig if env == 'preview' else Config
+
         uuid_for_test_run = str(uuid.uuid4())
-        functional_test_name = PreviewConfig.FUNCTIONAL_TEST_NAME + uuid_for_test_run
-        functional_test_email = generate_unique_email(PreviewConfig.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
-        functional_test_service_name = PreviewConfig.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
-        functional_test_password = PreviewConfig.FUNCTIONAL_TEST_PASSWORD
-        functional_test_mobile = PreviewConfig.TEST_NUMBER
-        return Profile(**{'env': PreviewConfig.ENVIRONMENT,
-                          'name': functional_test_name,
-                          'email': functional_test_email,
-                          'service_name': functional_test_service_name,
-                          'password': functional_test_password,
-                          'mobile': functional_test_mobile,
-                          'jenkins_build_email_template_id': PreviewConfig.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
-                          'jenkins_build_sms_template_id': PreviewConfig.JENKINS_BUILD_SMS_TEMPLATE_ID,
-                          'notify_service_id': PreviewConfig.NOTIFY_SERVICE_ID,
-                          'notify_api_url': PreviewConfig.NOTIFY_API_URL,
-                          'notify_service_api_key': PreviewConfig.NOTIFY_SERVICE_API_KEY,
-                          'notify_research_service_email': PreviewConfig.NOTIFY_RESEARCH_MODE_EMAIL,
-                          'notify_research_service_password': PreviewConfig.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
-                          'notify_research_service_id': PreviewConfig.NOTIFY_RESEARCH_SERVICE_ID,
-                          'notify_research_service_name': PreviewConfig.NOTIFY_RESEARCH_SERVICE_NAME,
-                          'notify_research_email_reply_to': PreviewConfig.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
-                          'notify_research_sms_sender': PreviewConfig.NOTIFY_RESEARCH_SMS_SENDER,
-                          'notify_research_service_api_key': PreviewConfig.NOTIFY_RESEARCH_SERVICE_API_KEY,
-                          'registration_template_id': PreviewConfig.REGISTRATION_TEMPLATE_ID,
-                          'invitation_template_id': PreviewConfig.INVITATION_TEMPLATE_ID})
-    elif env == 'staging':
-        return Profile(**{'env': StagingConfig.ENVIRONMENT,
-                          'name': StagingConfig.FUNCTIONAL_TEST_NAME,
-                          'email': StagingConfig.FUNCTIONAL_TEST_EMAIL,
-                          'service_name': StagingConfig.FUNCTIONAL_TEST_SERVICE_NAME,
-                          'password': StagingConfig.FUNCTIONAL_TEST_PASSWORD,
-                          'mobile': StagingConfig.TEST_NUMBER,
-                          'service_id': StagingConfig.SERVICE_ID,
-                          'jenkins_build_email_template_id': StagingConfig.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
-                          'jenkins_build_sms_template_id': StagingConfig.JENKINS_BUILD_SMS_TEMPLATE_ID,
-                          'api_key': StagingConfig.SERVICE_API_KEY,
-                          'notify_api_url': StagingConfig.NOTIFY_API_URL,
-                          'registration_template_id': StagingConfig.REGISTRATION_TEMPLATE_ID,
-                          'invitation_template_id': StagingConfig.INVITATION_TEMPLATE_ID})
-    elif env == 'live':
-        return Profile(**{'env': LiveConfig.ENVIRONMENT,
-                          'name': LiveConfig.FUNCTIONAL_TEST_NAME,
-                          'email': LiveConfig.FUNCTIONAL_TEST_EMAIL,
-                          'service_name': LiveConfig.FUNCTIONAL_TEST_SERVICE_NAME,
-                          'password': LiveConfig.FUNCTIONAL_TEST_PASSWORD,
-                          'mobile': LiveConfig.TEST_NUMBER,
-                          'service_id': LiveConfig.SERVICE_ID,
-                          'jenkins_build_email_template_id': LiveConfig.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
-                          'jenkins_build_sms_template_id': LiveConfig.JENKINS_BUILD_SMS_TEMPLATE_ID,
-                          'api_key': LiveConfig.SERVICE_API_KEY,
-                          'notify_api_url': LiveConfig.NOTIFY_API_URL,
-                          'registration_template_id': LiveConfig.REGISTRATION_TEMPLATE_ID,
-                          'invitation_template_id': LiveConfig.INVITATION_TEMPLATE_ID})
+        functional_test_name = conf.FUNCTIONAL_TEST_NAME + uuid_for_test_run
+        functional_test_email = generate_unique_email(conf.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
+        functional_test_service_name = conf.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
+        return Profile(**{
+            'env': conf.ENVIRONMENT,
+            'name': functional_test_name,
+            'email': functional_test_email,
+            'service_name': functional_test_service_name,
+            'password': conf.FUNCTIONAL_TEST_PASSWORD,
+            'mobile': conf.TEST_NUMBER,
+            'jenkins_build_email_template_id': conf.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
+            'jenkins_build_sms_template_id': conf.JENKINS_BUILD_SMS_TEMPLATE_ID,
+            'notify_service_id': conf.NOTIFY_SERVICE_ID,
+            'notify_api_url': conf.NOTIFY_API_URL,
+            'notify_service_api_key': conf.NOTIFY_SERVICE_API_KEY,
+            'notify_research_service_email': conf.NOTIFY_RESEARCH_MODE_EMAIL,
+            'notify_research_service_password': conf.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
+            'notify_research_service_id': conf.NOTIFY_RESEARCH_SERVICE_ID,
+            'notify_research_service_api_key': conf.NOTIFY_RESEARCH_SERVICE_API_KEY,
+            'notify_research_service_name': conf.NOTIFY_RESEARCH_SERVICE_NAME,
+            'notify_research_sms_sender': conf.NOTIFY_RESEARCH_SMS_SENDER,
+            'notify_research_email_reply_to': conf.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
+            'registration_template_id': conf.REGISTRATION_TEMPLATE_ID,
+            'invitation_template_id': conf.INVITATION_TEMPLATE_ID
+        })
     else:
-        uuid_for_test_run = str(uuid.uuid4())
-        functional_test_name = Config.FUNCTIONAL_TEST_NAME + uuid_for_test_run
-        functional_test_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
-        functional_test_service_name = Config.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
-        functional_test_password = Config.FUNCTIONAL_TEST_PASSWORD
-        functional_test_mobile = Config.TEST_NUMBER
-        return Profile(**{'env': Config.ENVIRONMENT,
-                          'name': functional_test_name,
-                          'email': functional_test_email,
-                          'service_name': functional_test_service_name,
-                          'password': functional_test_password,
-                          'mobile': functional_test_mobile,
-                          'jenkins_build_email_template_id': Config.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
-                          'jenkins_build_sms_template_id': Config.JENKINS_BUILD_SMS_TEMPLATE_ID,
-                          'notify_service_id': Config.NOTIFY_SERVICE_ID,
-                          'notify_api_url': Config.NOTIFY_API_URL,
-                          'notify_service_api_key': Config.NOTIFY_SERVICE_API_KEY,
-                          'notify_research_service_email': Config.NOTIFY_RESEARCH_MODE_EMAIL,
-                          'notify_research_service_password': Config.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
-                          'notify_research_service_id': Config.NOTIFY_RESEARCH_SERVICE_ID,
-                          'notify_research_service_api_key': Config.NOTIFY_RESEARCH_SERVICE_API_KEY,
-                          'notify_research_service_name': Config.NOTIFY_RESEARCH_SERVICE_NAME,
-                          'notify_research_email_reply_to': Config.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
-                          'notify_research_sms_sender': Config.NOTIFY_RESEARCH_SMS_SENDER,
-                          'registration_template_id': Config.REGISTRATION_TEMPLATE_ID,
-                          'invitation_template_id': Config.INVITATION_TEMPLATE_ID})
+        # staging and live run the same simple smoke tests
+        if env == 'staging':
+            conf = StagingConfig
+        if env == 'live':
+            conf = LiveConfig
+        return Profile(**{
+            'env': conf.ENVIRONMENT,
+            'name': conf.FUNCTIONAL_TEST_NAME,
+            'email': conf.FUNCTIONAL_TEST_EMAIL,
+            'service_name': conf.FUNCTIONAL_TEST_SERVICE_NAME,
+            'password': conf.FUNCTIONAL_TEST_PASSWORD,
+            'mobile': conf.TEST_NUMBER,
+            'service_id': conf.SERVICE_ID,
+            'jenkins_build_email_template_id': conf.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
+            'jenkins_build_sms_template_id': conf.JENKINS_BUILD_SMS_TEMPLATE_ID,
+            'api_key': conf.SERVICE_API_KEY,
+            'notify_api_url': conf.NOTIFY_API_URL,
+            'registration_template_id': conf.REGISTRATION_TEMPLATE_ID,
+            'invitation_template_id': conf.INVITATION_TEMPLATE_ID
+        })
 
 
 @pytest.fixture(scope="module")

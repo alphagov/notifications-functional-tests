@@ -29,7 +29,6 @@ export dev_FUNCTIONAL_TEST_EMAIL= # the account to create new users for in test_
 export dev_FUNCTIONAL_TEST_PASSWORD=xxx # password for user account above (created automatically in test)
 export dev_NOTIFY_ADMIN_URL=http://localhost:6012
 export dev_NOTIFY_API_URL=http://localhost:6011
-export dev_NOTIFY_SERVICE_ID=d6aa2c68-a2d9-4437-ab19-3ae8eb202553
 export dev_NOTIFY_SERVICE_API_KEY=xxx  # create an api key for the GOV.UK Notify service via the admin app
 export dev_NOTIFY_RESEARCH_SERVICE_NAME=xxx # See seeded service section below for details of the seeded research service.
 export dev_NOTIFY_RESEARCH_SERVICE_ID=xxx # create a service in research mode via the admin app and copy the service id here
@@ -39,7 +38,7 @@ export dev_NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that 
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
 export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in research service, contents detailed below
-    
+
 ```
 </details>
 
