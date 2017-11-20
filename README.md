@@ -35,7 +35,6 @@ export dev_NOTIFY_RESEARCH_SERVICE_NAME=xxx # See seeded service section below f
 export dev_NOTIFY_RESEARCH_SERVICE_ID=xxx # create a service in research mode via the admin app and copy the service id here
 export dev_NOTIFY_RESEARCH_SERVICE_API_KEY=xxx # create an api key for the Research service via the admin app
 export dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO=[a gov email] # this is the second email in the list when the you go to the send email to one recipient screen i.e. not the default but the second one added
-export dev_NOTIFY_RESEARCH_SMS_SENDER='func tests' # this is the second sms sender in the list when you go to the send sms to one recipient screen i.e. not the default but the second sms sender added
 export dev_NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
@@ -51,6 +50,7 @@ export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in re
   - Store its name in `dev_NOTIFY_RESEARCH_SERVICE_NAME` and its id in `dev_NOTIFY_RESEARCH_SERVICE_ID`
 * create a test mode API key for it, store that in `dev_NOTIFY_RESEARCH_SERVICE_API_KEY`
 * Two email reply-to addresses will have to be added. One default email, the name of which doesn't matter, and a second non-default email, the name of which you should save in `dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO`.
+* You will need two Text message senders, one that is the default and another that has a value of "func tests'.
 * A seeded user will have to be created and invited to it with the following details:
   - email_address: `dev_NOTIFY_RESEARCH_MODE_EMAIL`
   - phone_number: `dev_TEST_NUMBER`
