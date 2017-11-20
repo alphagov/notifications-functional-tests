@@ -112,11 +112,11 @@ class ApiKeysPageLocators(object):
 
 class SingleRecipientLocators(object):
     USE_MY_EMAIL = (By.LINK_TEXT, 'Use my email address')
+    USE_MY_NUMBER = (By.LINK_TEXT, 'Use my phone number')
     BUILD_ID_INPUT = (By.NAME, 'placeholder_value')
     PREVIEW_TABLE = (By.CLASS_NAME, 'email-message-meta')
-    TABLE_ROWS = (By.TAG_NAME, 'tr')
-    ALTERNATIVE_EMAIL_REPLY_TO = (By.ID, "sender-1")
     ALTERNATIVE_EMAIL = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
+    ALTERNATIVE_SMS_SENDER = (By.ID, 'sender-1')
 
 
 class EmailReplyToLocators(object):
@@ -124,3 +124,13 @@ class EmailReplyToLocators(object):
     EMAIL_ADDRESS_FIELD = (By.ID, 'email_address')
     REPLY_TO_ADDRESSES = (By.TAG_NAME, "body")
     IS_DEFAULT_CHECKBOX = (By.ID, "is_default")
+
+
+class SmsSenderLocators(object):
+    SMS_SENDER_FIELD = (By.ID, 'sms_sender')
+    SAVE_SMS_SENDER_BUTTON = (By.CLASS_NAME, 'button')
+    ALL_SMS_SENDERS = (By.TAG_NAME, 'main')
+    FIRST_CHANGE_LINK = (By.LINK_TEXT, 'Change')
+    SMS_SENDER = (By.CLASS_NAME, 'sms-message-sender')
+    SMS_RECIPIENT = (By.CLASS_NAME, 'sms-message-recipient')
+    SMS_CONTENT = (By.CLASS_NAME, 'sms-message-wrapper')

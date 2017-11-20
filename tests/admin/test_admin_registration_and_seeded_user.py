@@ -25,6 +25,7 @@ from tests.test_utils import (
 from tests.pages import (
     DashboardPage,
     SendOneRecipient,
+    SmsSenderPage,
     UploadCsvPage)
 
 
@@ -33,6 +34,8 @@ def test_registration_and_invite_flow(driver, profile, base_url):
     do_user_registration(driver, profile, base_url)
     do_user_can_add_reply_to_email_to_service(driver)
     do_user_can_update_reply_to_email_to_service(driver)
+    do_user_can_update_sms_sender_of_service(driver)
+    do_user_can_add_sms_sender_to_service(driver)
     do_user_can_invite_someone_to_notify(driver, profile, base_url)
 
 
@@ -120,6 +123,45 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
+@recordtime
+def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+
+    template_id = profile.jenkins_build_sms_template_id
+
+    dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
+
+    send_to_one_recipient_page = SendOneRecipient(driver)
+    sms_sender_page = SmsSenderPage(driver)
+
+    send_to_one_recipient_page.go_to_send_one_recipient(profile.notify_research_service_id, template_id)
+
+    send_to_one_recipient_page.choose_alternative_sms_sender()
+    send_to_one_recipient_page.click_continue()
+    send_to_one_recipient_page.click_use_my_phone_number()
+    # updates the personalisation field with 'test_1234'
+    send_to_one_recipient_page.update_build_id()
+    send_to_one_recipient_page.click_continue()
+
+    sms_sender = sms_sender_page.get_sms_sender()
+    sms_recipient = sms_sender_page.get_sms_recipient()
+    sms_content = sms_sender_page.get_sms_content()
+
+    assert sms_sender.text == 'From: {}'.format(profile.notify_research_sms_sender)
+    assert sms_recipient.text == 'To: {}'.format(profile.mobile)
+    assert 'The quick brown fox jumped over the lazy dog. Jenkins build id: {}.'.format('test_1234') \
+        in sms_content.text
+
+    send_to_one_recipient_page.click_continue()
+
+    dashboard_page.go_to_dashboard_for_service()
+
+    dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
+
+    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+
 @retry_on_stale_element_exception
 def get_dashboard_stats(dashboard_page, message_type, template_id):
     return {
@@ -140,3 +182,44 @@ def _get_template_count(dashboard_page, template_id):
         return 0  # template count may not exist yet if no messages sent
     else:
         return template_messages_count
+
+
+def do_user_can_update_sms_sender_of_service(driver):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+
+    service_id = dashboard_page.get_service_id()
+
+    sms_sender_page = SmsSenderPage(driver)
+
+    sms_sender_page.go_to_text_message_senders(service_id)
+    sms_sender_page.click_change_link_for_first_sms_sender()
+    sms_sender_page.insert_sms_sender('first')
+    sms_sender_page.click_save_sms_sender()
+
+    main_content = sms_sender_page.get_sms_senders()
+
+    assert 'first \u2002 (default)' in main_content.text
+
+    dashboard_page.go_to_dashboard_for_service(service_id)
+
+
+def do_user_can_add_sms_sender_to_service(driver):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service()
+
+    service_id = dashboard_page.get_service_id()
+
+    sms_sender_page = SmsSenderPage(driver)
+
+    sms_sender_page.go_to_add_text_message_sender(service_id)
+    sms_sender_page.insert_sms_sender('second')
+    sms_sender_page.click_save_sms_sender()
+
+    main_content = sms_sender_page.get_sms_senders()
+
+    assert 'first \u2002 (default)' in main_content.text
+    assert 'second' in main_content.text
+    assert 'second \u2002 (default)' not in main_content.text
+
+    dashboard_page.go_to_dashboard_for_service(service_id)

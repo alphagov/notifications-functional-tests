@@ -50,6 +50,7 @@ export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in re
   - Store its name in `dev_NOTIFY_RESEARCH_SERVICE_NAME` and its id in `dev_NOTIFY_RESEARCH_SERVICE_ID`
 * create a test mode API key for it, store that in `dev_NOTIFY_RESEARCH_SERVICE_API_KEY`
 * Two email reply-to addresses will have to be added. One default email, the name of which doesn't matter, and a second non-default email, the name of which you should save in `dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO`.
+* You will need two Text message senders, one that is the default and another that has a value of "func tests'.
 * A seeded user will have to be created and invited to it with the following details:
   - email_address: `dev_NOTIFY_RESEARCH_MODE_EMAIL`
   - phone_number: `dev_TEST_NUMBER`
