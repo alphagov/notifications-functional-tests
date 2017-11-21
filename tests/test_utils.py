@@ -104,7 +104,7 @@ def do_email_auth_verify(driver, profile):
             profile.notify_research_service_email_auth_account
         )
         driver.get(login_link)
-        driver.find_element_by_class_name('error-message')
+        driver.find_element_by_class_name('banner-dangerous')
     except (NoSuchElementException, TimeoutException):
         # no error - that means we're logged in! hurray.
         return True
