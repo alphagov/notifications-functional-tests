@@ -164,20 +164,16 @@ class SignInPage(BasePage):
     def is_current(self):
         return self.wait_until_url_is(self.base_url + '/sign-in')
 
-    def fill_login_form(self, profile, seeded=False):
-        if not seeded:
-            self.email_input = profile.email
-            self.password_input = profile.password
-        else:
-            self.email_input = profile.notify_research_service_email
-            self.password_input = profile.notify_research_service_password
+    def fill_login_form(self, email, password):
+        self.email_input = email
+        self.password_input = password
 
     def click_continue_button(self):
         element = self.wait_for_element(SignInPage.continue_button)
         element.click()
 
-    def login(self, profile, seeded=False):
-        self.fill_login_form(profile, seeded)
+    def login(self, email, password):
+        self.fill_login_form(email, password)
         self.click_continue_button()
 
 

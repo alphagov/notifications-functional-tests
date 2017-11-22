@@ -36,20 +36,20 @@ dependencies: venv ## Install build dependencies
 build: dependencies ## Build project
 
 .PHONY: test
-test: venv ## Run functional tests - preview, staging, post deploy and local dev
+test: venv ## Run functional tests - preview, staging, func test repo PRs and merges post deploy and local dev
 	su -c '/var/project/scripts/run_functional_tests.sh' hostuser
 
 .PHONY: test-admin
 test-admin: venv ## Run admin tests - live smoke tests
-	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/admin/test_admin.py' hostuser
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/functional/staging_and_prod/test_admin.py' hostuser
 
 .PHONY: test-notify-api-email
 test-notify-api-email: venv ## Run notify-api email tests
-	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/notify_api/test_notify_api_email.py' hostuser
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/functional/staging_and_prod/notify_api/test_notify_api_email.py' hostuser
 
 .PHONY: test-notify-api-sms
 test-notify-api-sms: venv ## Run notify-api sms tests
-	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/notify_api/test_notify_api_sms.py' hostuser
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/functional/staging_and_prod/notify_api/test_notify_api_sms.py' hostuser
 
 .PHONY: test-provider-email-delivery
 test-provider-email-delivery: venv ## Run provider delivery email tests

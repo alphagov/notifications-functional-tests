@@ -67,13 +67,16 @@ def generate_unique_email(email, uuid):
 
 
 def get_link(profile, template_id, email):
-    email_body = get_notification_via_api(profile.notify_service_id, template_id,
-                                          profile.notify_service_api_key, email)
+    email_body = get_notification_via_api(
+        template_id,
+        profile.notify_service_api_key,
+        email
+    )
     match = re.search(r'http[s]?://\S+', email_body, re.MULTILINE)
     if match:
         return match.group(0)
     else:
-        pytest.fail("Couldn't get the registraion link from the email")
+        pytest.fail("Couldn't get the link from the email")
 
 
 @retry(RetryException, tries=Config.VERIFY_CODE_RETRY_TIMES, delay=Config.VERIFY_CODE_RETRY_INTERVAL)
@@ -89,6 +92,24 @@ def do_verify(driver, profile):
         return True
     else:
         #  There was an error message so let's retry
+        raise RetryException
+
+
+@retry(RetryException, tries=Config.VERIFY_CODE_RETRY_TIMES, delay=Config.VERIFY_CODE_RETRY_INTERVAL)
+def do_email_auth_verify(driver, profile):
+    try:
+        login_link = get_link(
+            profile,
+            profile.email_auth_template_id,
+            profile.notify_research_service_email_auth_account
+        )
+        driver.get(login_link)
+        driver.find_element_by_class_name('banner-dangerous')
+    except (NoSuchElementException, TimeoutException):
+        # no error - that means we're logged in! hurray.
+        return True
+    else:
+        #  There was an error message (presumably we tried to enter an old invite code that was already used/expired)
         raise RetryException
 
 
@@ -192,8 +213,11 @@ def do_edit_and_delete_email_template(driver):
 
 
 def get_verify_code_from_api(profile):
-    verify_code_message = get_notification_via_api(Config.NOTIFY_SERVICE_ID, Config.VERIFY_CODE_TEMPLATE_ID,
-                                                   Config.NOTIFY_SERVICE_API_KEY, profile.mobile)
+    verify_code_message = get_notification_via_api(
+        Config.VERIFY_CODE_TEMPLATE_ID,
+        Config.NOTIFY_SERVICE_API_KEY,
+        profile.mobile
+    )
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
@@ -202,7 +226,7 @@ def get_verify_code_from_api(profile):
 
 
 @retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
-def get_notification_via_api(service_id, template_id, api_key, sent_to):
+def get_notification_via_api(template_id, api_key, sent_to):
     client = NotificationsAPIClient(
         base_url=Config.NOTIFY_API_URL,
         api_key=api_key

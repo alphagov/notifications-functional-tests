@@ -29,7 +29,6 @@ export dev_FUNCTIONAL_TEST_EMAIL= # the account to create new users for in test_
 export dev_FUNCTIONAL_TEST_PASSWORD=xxx # password for user account above (created automatically in test)
 export dev_NOTIFY_ADMIN_URL=http://localhost:6012
 export dev_NOTIFY_API_URL=http://localhost:6011
-export dev_NOTIFY_SERVICE_ID=d6aa2c68-a2d9-4437-ab19-3ae8eb202553
 export dev_NOTIFY_SERVICE_API_KEY=xxx  # create an api key for the GOV.UK Notify service via the admin app
 export dev_NOTIFY_RESEARCH_SERVICE_NAME=xxx # See seeded service section below for details of the seeded research service.
 export dev_NOTIFY_RESEARCH_SERVICE_ID=xxx # create a service in research mode via the admin app and copy the service id here
@@ -39,15 +38,17 @@ export dev_NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that 
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
 export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in research service, contents detailed below
-    
+
 ```
 </details>
 
 <details>
     <summary>The seeded research mode service will need to be created as follows: </summary>
 
-* Create a service and set to research mode.
+* Create a service.
   - Store its name in `dev_NOTIFY_RESEARCH_SERVICE_NAME` and its id in `dev_NOTIFY_RESEARCH_SERVICE_ID`
+  - set it into research mode
+  - grant it the email auth permission ("Allow editing user auth")
 * create a test mode API key for it, store that in `dev_NOTIFY_RESEARCH_SERVICE_API_KEY`
 * Two email reply-to addresses will have to be added. One default email, the name of which doesn't matter, and a second non-default email, the name of which you should save in `dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO`.
 * You will need two Text message senders, one that is the default and another that has a value of "func tests'.
@@ -56,6 +57,13 @@ export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in re
   - phone_number: `dev_TEST_NUMBER`
   - password: `dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD`
   - all permissions for the seeded service.
+  - sms auth
+* A second seeded user will have to be invited with the following details
+  - email_address: `notify-tests-preview+email-auth@digital.cabinet-office.gov.uk` (see NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT in config.py)
+    note: it may be easier to set up with your own email and then manually edit the value in the database.
+  - no permissions required
+  - email auth
+  - The password should be set the same as above - see `dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD`.
 
 </details>
 

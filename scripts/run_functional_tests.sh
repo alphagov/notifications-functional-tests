@@ -62,17 +62,17 @@ case $ENVIRONMENT in
     staging|live)
       echo Running $ENVIRONMENT tests
       display_status $ENVIRONMENT
-      py.test -x -v tests/admin/test_admin.py tests/notify_api/
+      py.test -x -v tests/functional/staging_and_prod/
       ;;
     preview)
       echo Running $ENVIRONMENT tests
       display_status $ENVIRONMENT
-      py.test -x -v tests/admin/test_admin_registration_and_seeded_user.py
+      py.test -x -v tests/functional/preview_and_dev/
       ;;
     *)
       echo 'Default test run - for' $ENVIRONMENT
       display_status $ENVIRONMENT
-      py.test -x -v tests/admin/test_admin_registration_and_seeded_user.py
+      py.test -x -v tests/functional/preview_and_dev/
       ;;
 esac
 

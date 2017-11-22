@@ -18,7 +18,6 @@ class Config(object):
     FUNCTIONAL_TEST_SERVICE_NAME = os.environ.get('ENVIRONMENT') + '_Functional Test Service_'
     JENKINS_BUILD_SMS_TEMPLATE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_JENKINS_BUILD_SMS_TEMPLATE_ID')
     JENKINS_BUILD_EMAIL_TEMPLATE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_JENKINS_BUILD_EMAIL_TEMPLATE_ID')
-    NOTIFY_SERVICE_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_ID')
     NOTIFY_SERVICE_API_KEY = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_SERVICE_API_KEY')
     NOTIFY_RESEARCH_MODE_EMAIL = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_RESEARCH_MODE_EMAIL')
     NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD = os.environ.get(
@@ -31,6 +30,9 @@ class Config(object):
     REGISTRATION_TEMPLATE_ID = 'ece42649-22a8-4d06-b87f-d52d5d3f0a27'
     INVITATION_TEMPLATE_ID = '4f46df42-f795-4cc4-83bb-65ca312f49cc'
     VERIFY_CODE_TEMPLATE_ID = '36fb0730-6259-4da1-8a80-c8de22ad4246'
+    EMAIL_AUTH_TEMPLATE_ID = '299726d2-dba6-42b8-8209-30e1d66ea164'
+
+    NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT = 'notify-tests-preview+email-auth@digital.cabinet-office.gov.uk'
 
 
 class PreviewConfig(Config):
