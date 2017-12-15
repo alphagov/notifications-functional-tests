@@ -8,7 +8,8 @@ from tests.decorators import retry_on_stale_element_exception
 
 from tests.postman import (
     send_notification_via_csv,
-    get_notification_by_id_via_api
+    get_notification_by_id_via_api,
+    NotificationStatuses
 )
 
 from tests.test_utils import (
@@ -42,7 +43,7 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[seeded_client, notification_id, ['sending', 'delivered']],
+        fargs=[seeded_client, notification_id, NotificationStatuses.SENT],
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )

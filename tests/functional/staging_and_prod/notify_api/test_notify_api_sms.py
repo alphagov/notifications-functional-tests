@@ -3,7 +3,8 @@ from config import Config
 
 from tests.postman import (
     send_notification_via_api,
-    get_notification_by_id_via_api
+    get_notification_by_id_via_api,
+    NotificationStatuses
 )
 
 from tests.test_utils import assert_notification_body, recordtime
@@ -18,7 +19,7 @@ def test_send_sms_notification_via_api(profile, client):
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[client, notification_id, ['sending', 'delivered']],
+        fargs=[client, notification_id, NotificationStatuses.SENT],
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )

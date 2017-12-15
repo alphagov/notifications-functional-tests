@@ -5,7 +5,8 @@ from tests.pages import UploadCsvPage
 
 from tests.postman import (
     send_notification_via_csv,
-    get_notification_by_id_via_api
+    get_notification_by_id_via_api,
+    NotificationStatuses
 )
 
 from tests.test_utils import assert_notification_body, recordtime
@@ -17,7 +18,7 @@ def test_admin(driver, base_url, client, profile, login_user):
     csv_sms_notification_id = send_notification_via_csv(profile, upload_csv_page, 'sms')
     csv_sms_notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[client, csv_sms_notification_id, ['sending', 'delivered']],
+        fargs=[client, csv_sms_notification_id, NotificationStatuses.SENT],
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
@@ -26,7 +27,7 @@ def test_admin(driver, base_url, client, profile, login_user):
     csv_email_notification_id = send_notification_via_csv(profile, upload_csv_page, 'email')
     csv_email_notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[client, csv_email_notification_id, ['sending', 'delivered']],
+        fargs=[client, csv_email_notification_id, NotificationStatuses.SENT],
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
