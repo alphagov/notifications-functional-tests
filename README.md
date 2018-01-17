@@ -36,6 +36,7 @@ export dev_NOTIFY_RESEARCH_SERVICE_API_KEY=xxx # create an api key for the Resea
 export dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO=[a gov email] # this is the second email in the list when the you go to the send email to one recipient screen i.e. not the default but the second one added
 export dev_NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
+export dev_NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID, doesn't need any permissions and must use email auth
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
 export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in research service, contents detailed below
 
@@ -59,8 +60,7 @@ export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in re
   - all permissions for the seeded service.
   - sms auth
 * A second seeded user will have to be invited with the following details
-  - email_address: `notify-tests-preview+email-auth@digital.cabinet-office.gov.uk` (see NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT in config.py)
-    note: it may be easier to set up with your own email and then manually edit the value in the database.
+  - email_address: `dev_NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT`
   - no permissions required
   - email auth
   - The password should be set the same as above - see `dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD`.
