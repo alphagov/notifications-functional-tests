@@ -26,7 +26,7 @@ from tests.pages import (
 
 
 @recordtime
-@pytest.mark.parametrize('message_type', ['sms', 'email'])
+@pytest.mark.parametrize('message_type', ['sms', 'email', 'letter'])
 def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
@@ -34,6 +34,7 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
     template_id = {
         'email': profile.jenkins_build_email_template_id,
         'sms': profile.jenkins_build_sms_template_id,
+        'letter': profile.jenkins_build_letter_template_id,
     }.get(message_type)
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
