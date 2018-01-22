@@ -17,7 +17,7 @@ To run locally you need to populate a `.gitignore` and `environment.sh` file wit
 
 - Create a local `environment.sh` file in the root directory of the project.
 This file is included in the `.gitignore` to prevent the environment file from being accidentally committed
-- Make sure all the `Notifications Admin`, `Notifications API` and `Notifications celery` are running locally.
+- Make sure `Notifications Admin`, `Notifications Template Preview`, `Notifications API` and `Notifications API celery` are running locally.
 
 <details>
     <summary>Contents of the environment.sh file</summary>
@@ -39,6 +39,7 @@ export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above acco
 export dev_NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID, doesn't need any permissions and must use email auth
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
 export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in research service, contents detailed below
+export dev_JENKINS_BUILD_LETTER_TEMPLATE_ID=xxx # Letter template id created in research service, contents detailed below
 
 ```
 </details>
@@ -60,7 +61,7 @@ export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in re
   - all permissions for the seeded service.
   - sms auth
 * A second seeded user will have to be invited with the following details
-  - email_address: `dev_NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT`
+  - email_address: `dev_NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT`, this can be set to `notify-tests-preview+email-auth@digital.cabinet-office.gov.uk` to send auth emails to a test email account.
   - no permissions required
   - email auth
   - The password should be set the same as above - see `dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD`.
@@ -84,6 +85,18 @@ Message = `The quick brown fox jumped over the lazy dog. Jenkins build id: ((bui
 
 
 Template name = `Functional Tests - CSV SMS Template with Jenkins Build ID`
+
+Message = `The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).`
+
+</details>
+
+<details>
+    <summary>The Letter template will need to be created with the following content</summary>
+
+
+Template name = `Functional Tests - CSV Letter Template with Jenkins Build ID`
+
+Main heading = `Functional Tests - CSV Letter`
 
 Message = `The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).`
 
