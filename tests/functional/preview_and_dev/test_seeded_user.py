@@ -27,7 +27,7 @@ from tests.pages import (
 
 @recordtime
 @pytest.mark.parametrize('message_type', ['sms', 'email', 'letter'])
-def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_type):
+def test_send_csv(driver, profile, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
@@ -44,7 +44,9 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[seeded_client, notification_id, NotificationStatuses.SENT],
+        fargs=[seeded_client_using_test_key if message_type == 'letter' else seeded_client,
+               notification_id,
+               NotificationStatuses.RECEIVED if message_type == 'letter' else NotificationStatuses.SENT],
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )

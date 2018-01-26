@@ -42,8 +42,9 @@ def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=Fal
 
 
 class NotificationStatuses:
-    DELIVERED = {'delivered', 'temporary-failure', 'permanent-failure', 'accepted'}
-    SENT = DELIVERED | {'sending'}
+    RECEIVED = {'received'}
+    DELIVERED = {'delivered', 'temporary-failure', 'permanent-failure'}
+    SENT = RECEIVED | DELIVERED | {'sending'}
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):

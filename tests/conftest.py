@@ -55,6 +55,7 @@ def profile():
             'notify_research_service_email': conf.NOTIFY_RESEARCH_MODE_EMAIL,
             'notify_research_service_password': conf.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
             'notify_research_service_id': conf.NOTIFY_RESEARCH_SERVICE_ID,
+            'notify_research_service_api_test_key': conf.NOTIFY_RESEARCH_SERVICE_API_TEST_KEY,
             'notify_research_service_api_key': conf.NOTIFY_RESEARCH_SERVICE_API_KEY,
             'notify_research_service_name': conf.NOTIFY_RESEARCH_SERVICE_NAME,
             'notify_research_sms_sender': conf.NOTIFY_RESEARCH_SMS_SENDER,
@@ -194,5 +195,14 @@ def seeded_client(profile):
     client = NotificationsAPIClient(
         base_url=profile.notify_api_url,
         api_key=profile.notify_research_service_api_key
+    )
+    return client
+
+
+@pytest.fixture(scope="module")
+def seeded_client_using_test_key(profile):
+    client = NotificationsAPIClient(
+        base_url=profile.notify_api_url,
+        api_key=profile.notify_research_service_api_test_key
     )
     return client
