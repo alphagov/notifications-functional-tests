@@ -209,6 +209,7 @@ class DashboardPage(BasePage):
     api_keys_link = DashboardPageLocators.API_KEYS_LINK
     total_email_div = DashboardPageLocators.TOTAL_EMAIL_NUMBER
     total_sms_div = DashboardPageLocators.TOTAL_SMS_NUMBER
+    total_letter_div = DashboardPageLocators.TOTAL_LETTER_NUMBER
 
     def _message_count_for_template_div(self, template_id):
         return DashboardPageLocators.messages_sent_count_for_template(template_id)
@@ -255,7 +256,12 @@ class DashboardPage(BasePage):
         self.driver.get(url)
 
     def get_total_message_count(self, message_type):
-        target_div = DashboardPage.total_email_div if message_type == 'email' else DashboardPage.total_sms_div
+        if message_type == 'email':
+            target_div = DashboardPage.total_email_div
+        elif message_type == 'letter':
+            target_div = DashboardPage.total_letter_div
+        else:
+            target_div = DashboardPage.total_sms_div
         element = self.wait_for_element(target_div)
 
         return int(element.text)

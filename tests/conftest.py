@@ -49,15 +49,18 @@ def profile():
             'mobile': conf.TEST_NUMBER,
             'jenkins_build_email_template_id': conf.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
             'jenkins_build_sms_template_id': conf.JENKINS_BUILD_SMS_TEMPLATE_ID,
+            'jenkins_build_letter_template_id': conf.JENKINS_BUILD_LETTER_TEMPLATE_ID,
             'notify_api_url': conf.NOTIFY_API_URL,
             'notify_service_api_key': conf.NOTIFY_SERVICE_API_KEY,
             'notify_research_service_email': conf.NOTIFY_RESEARCH_MODE_EMAIL,
             'notify_research_service_password': conf.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
             'notify_research_service_id': conf.NOTIFY_RESEARCH_SERVICE_ID,
+            'notify_research_service_api_test_key': conf.NOTIFY_RESEARCH_SERVICE_API_TEST_KEY,
             'notify_research_service_api_key': conf.NOTIFY_RESEARCH_SERVICE_API_KEY,
             'notify_research_service_name': conf.NOTIFY_RESEARCH_SERVICE_NAME,
             'notify_research_sms_sender': conf.NOTIFY_RESEARCH_SMS_SENDER,
             'notify_research_email_reply_to': conf.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
+            'notify_research_letter_contact': conf.NOTIFY_RESEARCH_LETTER_CONTACT,
             'registration_template_id': conf.REGISTRATION_TEMPLATE_ID,
             'invitation_template_id': conf.INVITATION_TEMPLATE_ID,
             'email_auth_template_id': conf.EMAIL_AUTH_TEMPLATE_ID,
@@ -192,5 +195,14 @@ def seeded_client(profile):
     client = NotificationsAPIClient(
         base_url=profile.notify_api_url,
         api_key=profile.notify_research_service_api_key
+    )
+    return client
+
+
+@pytest.fixture(scope="module")
+def seeded_client_using_test_key(profile):
+    client = NotificationsAPIClient(
+        base_url=profile.notify_api_url,
+        api_key=profile.notify_research_service_api_test_key
     )
     return client

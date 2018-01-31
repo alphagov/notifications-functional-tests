@@ -35,6 +35,7 @@ class DashboardPageLocators(object):
     API_KEYS_LINK = (By.LINK_TEXT, 'API integration')
     TOTAL_EMAIL_NUMBER = (By.CSS_SELECTOR, '#total-email .big-number-number')
     TOTAL_SMS_NUMBER = (By.CSS_SELECTOR, '#total-sms .big-number-number')
+    TOTAL_LETTER_NUMBER = (By.CSS_SELECTOR, '#total-letters .big-number-number')
 
     @classmethod
     def messages_sent_count_for_template(self, template_id):

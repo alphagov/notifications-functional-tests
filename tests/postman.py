@@ -12,6 +12,9 @@ def send_notification_via_api(client, template_id, to, message_type):
         resp_json = client.send_sms_notification(to, template_id, personalisation)
     elif message_type == 'email':
         resp_json = client.send_email_notification(to, template_id, personalisation)
+    elif message_type == 'letter':
+        to.update(personalisation)
+        resp_json = client.send_letter_notification(template_id, to)
 
     return resp_json['id']
 
@@ -19,13 +22,17 @@ def send_notification_via_api(client, template_id, to, message_type):
 def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=False):
     service_id = profile.notify_research_service_id if seeded else profile.service_id
     email = profile.notify_research_service_email if seeded else profile.email
+    letter_contact = profile.notify_research_letter_contact if seeded else None
 
     if message_type == 'sms':
         template_id = profile.jenkins_build_sms_template_id
-        directory, filename = create_temp_csv(profile.mobile, ['phone number', 'build_id'])
+        directory, filename = create_temp_csv({'phone number': profile.mobile})
     elif message_type == 'email':
         template_id = profile.jenkins_build_email_template_id
-        directory, filename = create_temp_csv(email, ['email address', 'build_id'])
+        directory, filename = create_temp_csv({'email address': email})
+    elif message_type == 'letter':
+        template_id = profile.jenkins_build_letter_template_id
+        directory, filename = create_temp_csv(letter_contact)
 
     upload_csv_page.go_to_upload_csv_for_service_and_template(service_id, template_id)
     upload_csv_page.upload_csv(directory, filename)
@@ -35,8 +42,9 @@ def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=Fal
 
 
 class NotificationStatuses:
+    RECEIVED = {'received'}
     DELIVERED = {'delivered', 'temporary-failure', 'permanent-failure'}
-    SENT = DELIVERED | {'sending'}
+    SENT = RECEIVED | DELIVERED | {'sending'}
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):

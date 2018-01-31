@@ -39,16 +39,14 @@ email_address3 = "notify+2@digitial.cabinet-office.gov.uk"
 default = " (default)"
 
 
-def create_temp_csv(number, fieldnames):
+def create_temp_csv(fields):
     directory_name = tempfile.mkdtemp()
     csv_file_path = os.path.join(directory_name, 'sample.csv')
+    fields.update({'build_id': jenkins_build_id})
     with open(csv_file_path, 'w') as csv_file:
-        csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        csv_writer = csv.DictWriter(csv_file, fieldnames=fields.keys())
         csv_writer.writeheader()
-        csv_writer.writerow({
-            fieldnames[0]: number,
-            fieldnames[1]: jenkins_build_id
-        })
+        csv_writer.writerow(fields)
     return directory_name, 'sample.csv'
 
 

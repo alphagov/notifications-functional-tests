@@ -26,14 +26,15 @@ from tests.pages import (
 
 
 @recordtime
-@pytest.mark.parametrize('message_type', ['sms', 'email'])
-def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_type):
+@pytest.mark.parametrize('message_type', ['sms', 'email', 'letter'])
+def test_send_csv(driver, profile, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
     template_id = {
         'email': profile.jenkins_build_email_template_id,
         'sms': profile.jenkins_build_sms_template_id,
+        'letter': profile.jenkins_build_letter_template_id,
     }.get(message_type)
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
@@ -43,7 +44,9 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, message_typ
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[seeded_client, notification_id, NotificationStatuses.SENT],
+        fargs=[seeded_client_using_test_key if message_type == 'letter' else seeded_client,
+               notification_id,
+               NotificationStatuses.RECEIVED if message_type == 'letter' else NotificationStatuses.SENT],
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
