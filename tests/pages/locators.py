@@ -63,7 +63,7 @@ class SelectTemplatePageLocators(object):
     EMAIL_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
     TEXT_MESSAGE_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='sms']")
     LETTER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
-    CONTINUE_BUTTON = (By.CSS_SELECTOR, 'input[type=submit]')
+    CONTINUE_BUTTON = (By.CSS_SELECTOR, '[type=submit]')
 
 
 class TemplatePageLocators(object):
@@ -85,7 +85,7 @@ class EditTemplatePageLocators(object):
 
 class UploadCsvLocators(object):
     FILE_INPUT = (By.ID, 'file')
-    SEND_BUTTON = (By.CSS_SELECTOR, 'input[type=submit]')
+    SEND_BUTTON = (By.CSS_SELECTOR, '[type=submit]')
     FIRST_NOTIFICATION_AFTER_UPLOAD = (By.CLASS_NAME, 'table-row')
 
 
