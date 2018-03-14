@@ -23,7 +23,7 @@ function display_result {
   fi
 }
 
-if [ -d venv ]; then
+if [ ! $VIRTUAL_ENV ]; then
   source ./venv/bin/activate
 fi
 
