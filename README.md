@@ -33,6 +33,7 @@ export dev_NOTIFY_SERVICE_API_KEY=xxx  # create an api key for the GOV.UK Notify
 export dev_NOTIFY_RESEARCH_SERVICE_NAME=xxx # See seeded service section below for details of the seeded research service.
 export dev_NOTIFY_RESEARCH_SERVICE_ID=xxx # create a service in research mode via the admin app and copy the service id here
 export dev_NOTIFY_RESEARCH_SERVICE_API_KEY=xxx # create an api key for the Research service via the admin app
+export dev_NOTIFY_RESEARCH_SERVICE_API_TEST_KEY=xxx # create a test api key for the Research service via the admin app
 export dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO=[a gov email] # this is the second email in the list when the you go to the send email to one recipient screen i.e. not the default but the second one added
 export dev_NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
