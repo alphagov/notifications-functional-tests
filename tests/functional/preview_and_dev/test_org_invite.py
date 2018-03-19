@@ -1,0 +1,54 @@
+import uuid
+
+from config import Config
+from tests.pages import (
+    DashboardPage,
+    InviteUserToOrgPage,
+    OrganisationDashboardPage,
+    RegisterFromInvite,
+    TeamMembersPage,
+)
+from tests.test_utils import (
+    recordtime,
+    generate_unique_email,
+    do_verify,
+    get_link,
+)
+
+
+@recordtime
+def test_org_invite(driver, profile, login_seeded_user, base_url):
+    org_dashboard_page = OrganisationDashboardPage(driver)
+    org_dashboard_page.go_to_dashboard_for_org(profile.seeded_organisation_id)
+    assert org_dashboard_page.is_current(profile.seeded_organisation_id)
+    org_dashboard_page.click_team_members_link()
+
+    team_members_page = TeamMembersPage(driver)
+    team_members_page.click_invite_user()
+
+    # create a new user to log in to
+    invited_user_email = generate_unique_email(Config.FUNCTIONAL_TEST_EMAIL, uuid.uuid4())
+
+    invitation = InviteUserToOrgPage(driver)
+    invitation.fill_invitation_form(email=invited_user_email)
+    invitation.send_invitation()
+
+    # now log out and create account as invited user
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.sign_out()
+    dashboard_page.wait_until_url_is(base_url)
+
+    invite_link = get_link(profile, profile.org_invitation_template_id, invited_user_email)
+    driver.get(invite_link)
+
+    register_from_invite_page = RegisterFromInvite(driver)
+    register_from_invite_page.fill_registration_form(invited_user_email.split('@')[0], profile)
+    register_from_invite_page.click_continue()
+
+    do_verify(driver, profile)
+
+    org_dashboard_page = OrganisationDashboardPage(driver)
+
+    # make sure we got to the dashboard page. It's their only account, so they'll be insta-redirected there.
+    # They won't be able to see anything here tho since they're not a member of the service
+    assert org_dashboard_page.is_current(profile.seeded_organisation_id)

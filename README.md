@@ -38,6 +38,7 @@ export dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO=[a gov email] # this is the second ema
 export dev_NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID
 export dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
 export dev_NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID, doesn't need any permissions and must use email auth
+export dev_NOTIFY_RESEARCH_ORGANISATION_ID=xxx # id of organisation that seeded service belongs to
 export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
 export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in research service, contents detailed below
 export dev_JENKINS_BUILD_LETTER_TEMPLATE_ID=xxx # Letter template id created in research service, contents detailed below
@@ -52,6 +53,10 @@ export dev_JENKINS_BUILD_LETTER_TEMPLATE_ID=xxx # Letter template id created in 
   - Store its name in `dev_NOTIFY_RESEARCH_SERVICE_NAME` and its id in `dev_NOTIFY_RESEARCH_SERVICE_ID`
   - set it into research mode
   - grant it the email auth permission ("Allow editing user auth")
+* Create an organisation
+  - Assign the research mode functional test service to this organisation
+  - store the organisation's id in `dev_NOTIFY_RESEARCH_ORGANISATION_ID`
+  - invite the seeded user (`dev_NOTIFY_RESEARCH_MODE_EMAIL`) to the organisation
 * create a test mode API key for it, store that in `dev_NOTIFY_RESEARCH_SERVICE_API_KEY`
 * Two email reply-to addresses will have to be added. One default email, the name of which doesn't matter, and a second non-default email, the name of which you should save in `dev_NOTIFY_RESEARCH_EMAIL_REPLY_TO`.
 * You will need two Text message senders, one that is the default and another that has a value of "func tests'.
@@ -60,6 +65,7 @@ export dev_JENKINS_BUILD_LETTER_TEMPLATE_ID=xxx # Letter template id created in 
   - phone_number: `dev_TEST_NUMBER`
   - password: `dev_NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD`
   - all permissions for the seeded service.
+  - the user should also accept the invite from the seeded organisation
   - sms auth
 * A second seeded user will have to be invited with the following details
   - email_address: `dev_NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT`, this can be set to `notify-tests-preview+email-auth@digital.cabinet-office.gov.uk` to send auth emails to a test email account.
