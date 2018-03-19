@@ -29,7 +29,7 @@ from tests.pages import (
 @pytest.mark.parametrize('message_type', ['sms', 'email', 'letter'])
 def test_send_csv(driver, profile, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
 
     template_id = {
         'email': profile.jenkins_build_email_template_id,
@@ -51,7 +51,7 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, seeded_clie
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
     assert_notification_body(notification_id, notification)
-    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
 
@@ -67,7 +67,7 @@ def test_edit_and_delete_template(driver, profile, login_seeded_user, seeded_cli
 @recordtime
 def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, login_seeded_user):
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
 
     message_type = 'email'
 
@@ -105,7 +105,7 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
 
     send_to_one_recipient_page.click_continue()
 
-    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
 
@@ -115,7 +115,7 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
 @recordtime
 def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
 
     template_id = profile.jenkins_build_sms_template_id
 
@@ -144,7 +144,7 @@ def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
 
     send_to_one_recipient_page.click_continue()
 
-    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
