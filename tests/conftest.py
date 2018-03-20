@@ -160,6 +160,7 @@ def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
+        print('URL at time of failure:', _driver.current_url)
         filename = str(Path.cwd() / 'screenshots' / '{}_{}.png'.format(datetime.utcnow(), request.function.__name__))
         _driver.save_screenshot(str(filename))
         print('Error screenshot saved to ' + filename)
