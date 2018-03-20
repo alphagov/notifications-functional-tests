@@ -30,8 +30,7 @@ fi
 flake8 .
 display_result $? 1 "Code style check"
 
-# default env to master (i.e. preview)
-environment=${ENVIRONMENT:=master}
+environment=${ENVIRONMENT:=preview}
 export ENVIRONMENT=$environment
 
 

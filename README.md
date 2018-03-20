@@ -124,14 +124,14 @@ Running the tests
 ## Tests running on Jenkins docker containers
 
 
-### Preview - tests against master
+### Preview
 
-The same suite as local development runs master code deployed on preview environment env [https://www.notify.works](https://www.notify.works)
+The same suite as local development runs on PRs against preview environment env [https://www.notify.works](https://www.notify.works)
 
 All the relevant environment variables are setup in the build settings on Jenkins for this repo.
 
 
-### Staging and Live builds - test against staging and live branches respectively
+### Staging and Live builds
 
 To run against staging and live environments a seeded user account on each of those environments has been created. In addition a service for the user has been created as well as an email and sms template created.
 
@@ -140,7 +140,7 @@ To run against those instances of Notify, additional environment variables for a
 The [notifications-api](https://github.com/alphagov/notifications-api) and [notifications-admin](https://github.com/alphagov/notifications-admin) merge into master
 will trigger the [notifications-functional-test](https://github.com/alphagov/notifications-functional-tests) build.
 
-Note on Jenkins environment variables are prefixed 'master', 'preview', 'staging' and 'live'
+Note on Jenkins environment variables are prefixed 'preview', 'staging' and 'live'
 
 ## What we want to test here and what we do not want to test here
 We do not want to test contents of the page beyond a simple check that would prove we are on the page we expect to be for example check the page title or a heading in the page.
