@@ -53,6 +53,8 @@ class PreviewConfig(Config):
     NOTIFY_RESEARCH_SERVICE_API_KEY = os.environ.get('preview_NOTIFY_RESEARCH_SERVICE_API_KEY')
     NOTIFY_RESEARCH_SERVICE_NAME = os.environ.get('preview_NOTIFY_RESEARCH_SERVICE_NAME')
     NOTIFY_RESEARCH_EMAIL_REPLY_TO = os.environ.get('preview_NOTIFY_RESEARCH_EMAIL_REPLY_TO')
+    # seeded organisation
+    NOTIFY_RESEARCH_ORGANISATION_ID = '63b9557c-22ea-42ac-bcba-edaa50e3ae51'
 
 
 class StagingConfig(Config):
