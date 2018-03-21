@@ -646,3 +646,39 @@ class SmsSenderPage(BasePage):
 
     def get_sms_content(self):
         return self.wait_for_element(SmsSenderLocators.SMS_CONTENT)
+
+
+class OrganisationDashboardPage(BasePage):
+
+    h1 = (By.CSS_SELECTOR, 'h1')
+    team_members_link = (By.LINK_TEXT, 'Team members')
+    service_list = (By.CSS_SELECTOR, 'main .browse-list-item')
+
+    def is_current(self, org_id):
+        expected = "{}/organisations/{}".format(self.base_url, org_id)
+        return self.driver.current_url == expected
+
+    def get_service_names_and_links(self):
+        items = self.driver.find_elements(*self.service_list)
+        print(type(items), items)
+        return []
+
+    def click_team_members_link(self):
+        element = self.wait_for_element(DashboardPage.team_members_link)
+        element.click()
+
+    def go_to_dashboard_for_org(self, org_id):
+        url = "{}/organisations/{}".format(self.base_url, org_id)
+        self.driver.get(url)
+
+
+class InviteUserToOrgPage(BasePage):
+    email_input = EmailInputElement()
+    send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
+
+    def fill_invitation_form(self, email):
+        self.email_input = email
+
+    def send_invitation(self):
+        element = self.wait_for_element(self.send_invitation_button)
+        element.click()

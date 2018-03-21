@@ -183,10 +183,10 @@ def do_user_can_invite_someone_to_notify(driver, profile, base_url):
     dashboard_page.wait_until_url_is(base_url)
 
 
-def do_edit_and_delete_email_template(driver):
+def do_edit_and_delete_email_template(profile, driver):
     test_name = 'edit/delete test'
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.go_to_dashboard_for_service(profile.notify_research_service_id)
     dashboard_page.click_templates()
 
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]

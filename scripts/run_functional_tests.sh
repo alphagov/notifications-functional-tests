@@ -23,15 +23,14 @@ function display_result {
   fi
 }
 
-if [ -d venv ]; then
+if [ ! $VIRTUAL_ENV ]; then
   source ./venv/bin/activate
 fi
 
 flake8 .
 display_result $? 1 "Code style check"
 
-# default env to master (i.e. preview)
-environment=${ENVIRONMENT:=master}
+environment=${ENVIRONMENT:=preview}
 export ENVIRONMENT=$environment
 
 

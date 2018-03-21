@@ -32,12 +32,14 @@ class Config(object):
     NOTIFY_RESEARCH_SERVICE_API_KEY = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_RESEARCH_SERVICE_API_KEY')
     NOTIFY_RESEARCH_SERVICE_NAME = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_RESEARCH_SERVICE_NAME')
     NOTIFY_RESEARCH_EMAIL_REPLY_TO = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_RESEARCH_EMAIL_REPLY_TO')
+    NOTIFY_RESEARCH_ORGANISATION_ID = os.environ.get(os.environ.get('ENVIRONMENT') + '_NOTIFY_RESEARCH_ORGANISATION_ID')
     NOTIFY_RESEARCH_SMS_SENDER = 'func tests'
     NOTIFY_RESEARCH_LETTER_CONTACT = {"address_line_1": "test", "address_line_2": "London", "postcode": "N1"}
     REGISTRATION_TEMPLATE_ID = 'ece42649-22a8-4d06-b87f-d52d5d3f0a27'
     INVITATION_TEMPLATE_ID = '4f46df42-f795-4cc4-83bb-65ca312f49cc'
     VERIFY_CODE_TEMPLATE_ID = '36fb0730-6259-4da1-8a80-c8de22ad4246'
     EMAIL_AUTH_TEMPLATE_ID = '299726d2-dba6-42b8-8209-30e1d66ea164'
+    ORG_INVITATION_TEMPLATE_ID = '203566f0-d835-47c5-aa06-932439c86573'
 
 
 class PreviewConfig(Config):
@@ -51,6 +53,8 @@ class PreviewConfig(Config):
     NOTIFY_RESEARCH_SERVICE_API_KEY = os.environ.get('preview_NOTIFY_RESEARCH_SERVICE_API_KEY')
     NOTIFY_RESEARCH_SERVICE_NAME = os.environ.get('preview_NOTIFY_RESEARCH_SERVICE_NAME')
     NOTIFY_RESEARCH_EMAIL_REPLY_TO = os.environ.get('preview_NOTIFY_RESEARCH_EMAIL_REPLY_TO')
+    # seeded organisation
+    NOTIFY_RESEARCH_ORGANISATION_ID = '63b9557c-22ea-42ac-bcba-edaa50e3ae51'
 
 
 class StagingConfig(Config):
