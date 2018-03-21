@@ -61,7 +61,7 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, seeded_clie
 @recordtime
 @pytest.mark.parametrize('message_type', ['sms', 'email'])
 def test_edit_and_delete_template(driver, profile, login_seeded_user, seeded_client, message_type):
-    do_edit_and_delete_email_template(driver)
+    do_edit_and_delete_email_template(profile, driver)
 
 
 @recordtime
