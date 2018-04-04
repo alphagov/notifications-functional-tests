@@ -59,6 +59,10 @@ def assert_notification_body(notification_id, notification):
     assert 'The quick brown fox jumped over the lazy dog' in notification['body']
 
 
+def assert_client_reference(reference):
+    assert reference == 'Build: {}'.format(os.getenv('BUILD_ID', 'No build id'))
+
+
 def generate_unique_email(email, uuid):
     parts = email.split('@')
     return "{}+{}@{}".format(parts[0], uuid, parts[1])
