@@ -41,6 +41,9 @@ class Config(object):
     EMAIL_AUTH_TEMPLATE_ID = '299726d2-dba6-42b8-8209-30e1d66ea164'
     ORG_INVITATION_TEMPLATE_ID = '203566f0-d835-47c5-aa06-932439c86573'
 
+    DOCUMENT_DOWNLOAD_API_HOST = os.environ.get(os.environ.get('ENVIRONMENT') + '_DOCUMENT_DOWNLOAD_API_HOST')
+    DOCUMENT_DOWNLOAD_API_KEY = os.environ.get(os.environ.get('ENVIRONMENT') + '_DOCUMENT_DOWNLOAD_API_KEY')
+
 
 class PreviewConfig(Config):
     SMS_TEMPLATE_ID = os.environ.get('preview_SMS_TEMPLATE_ID')

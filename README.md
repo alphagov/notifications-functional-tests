@@ -43,6 +43,9 @@ export dev_JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in resear
 export dev_JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in research service, contents detailed below
 export dev_JENKINS_BUILD_LETTER_TEMPLATE_ID=xxx # Letter template id created in research service, contents detailed below
 
+export dev_DOCUMENT_DOWNLOAD_API_HOST=http://localhost:7000
+export dev_DOCUMENT_DOWNLOAD_API_KEY=auth-token # document-download-api auth token
+
 ```
 </details>
 
