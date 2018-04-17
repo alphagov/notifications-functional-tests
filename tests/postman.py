@@ -19,10 +19,8 @@ def send_notification_via_api(client, template_id, to, message_type):
     return resp_json['id']
 
 
-def send_precompiled_letter_via_api(client, pdf_file):
-    reference = 'Build: {}'.format(os.getenv('BUILD_ID', 'No build id'))
-    resp_json = client.send_precompiled_letter_notification(reference, pdf_file)
-
+def send_precompiled_letter_via_api(profile, client, pdf_file):
+    resp_json = client.send_precompiled_letter_notification(profile.name, pdf_file)
     return resp_json['id']
 
 
