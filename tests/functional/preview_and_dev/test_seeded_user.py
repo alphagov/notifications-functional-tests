@@ -158,7 +158,7 @@ def test_view_precompiled_letter_message_log(driver, profile, login_seeded_user)
     api_integration_page.go_to_api_integration_for_service(service_id=profile.notify_research_service_id)
 
     client_reference = api_integration_page.get_client_reference()
-    assert_client_reference(client_reference)
+    assert_client_reference(profile, client_reference)
 
 
 @retry_on_stale_element_exception

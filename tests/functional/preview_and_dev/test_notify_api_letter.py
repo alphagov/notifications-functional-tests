@@ -33,6 +33,7 @@ def test_send_letter_notification_via_api(profile, seeded_client_using_test_key)
 @recordtime
 def test_send_precompiled_letter_notification_via_api(profile, seeded_client_using_test_key):
     notification_id = send_precompiled_letter_via_api(
+        profile,
         seeded_client_using_test_key,
         BytesIO(base64.b64decode(one_page_pdf))
     )
@@ -43,4 +44,4 @@ def test_send_precompiled_letter_notification_via_api(profile, seeded_client_usi
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
-    assert_client_reference(notification['reference'])
+    assert_client_reference(profile, notification['reference'])
