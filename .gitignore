@@ -60,7 +60,7 @@ target/
 
 .DS_Store
 # environment variable file
-environment.sh
+environment*.sh
 
 /cache
 /venv

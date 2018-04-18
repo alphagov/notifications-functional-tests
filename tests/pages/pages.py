@@ -8,7 +8,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from selenium.common.exceptions import TimeoutException
 
 from retry import retry
-from config import Config
+from config import config
 
 from tests.pages.element import (
     EmailInputElement,
@@ -53,10 +53,10 @@ class RetryException(Exception):
 
 class BasePage(object):
 
-    base_url = Config.NOTIFY_ADMIN_URL
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
 
     def __init__(self, driver):
+        self.base_url = config['notify_admin_url']
         self.driver = driver
 
     def wait_for_invisible_element(self, locator):
@@ -122,11 +122,11 @@ class RegistrationPage(BasePage):
     def is_current(self):
         return self.wait_until_url_is(self.base_url + '/register')
 
-    def register(self, profile):
-        self.name_input = profile.name
-        self.email_input = profile.email
-        self.mobile_input = profile.mobile
-        self.password_input = profile.password
+    def register(self):
+        self.name_input = config['user']['name']
+        self.email_input = config['user']['email']
+        self.mobile_input = config['user']['mobile']
+        self.password_input = config['user']['password']
         self.click_continue_button()
 
     def click_continue_button(self):
@@ -493,10 +493,10 @@ class RegisterFromInvite(BasePage):
     password_input = PasswordInputElement()
     continue_button = CommonPageLocators.CONTINUE_BUTTON
 
-    def fill_registration_form(self, name, profile):
+    def fill_registration_form(self, name):
         self.name_input = name
-        self.mobile_input = profile.mobile
-        self.password_input = profile.password
+        self.mobile_input = config['user']['mobile']
+        self.password_input = config['user']['password']
 
     def click_continue(self):
         element = self.wait_for_element(RegisterFromInvite.continue_button)

@@ -1,5 +1,4 @@
 import os
-import uuid
 import pytest
 from datetime import datetime
 from pathlib import Path
@@ -7,88 +6,16 @@ from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
-from tests.test_utils import (
-    generate_unique_email
-)
-
 from notifications_python_client import NotificationsAPIClient
 
 from tests.pages.rollups import sign_in
-
-from config import Config, PreviewConfig, StagingConfig, LiveConfig
-
-
-class Profile(object):
-
-    def __init__(self, **kwargs):
-        for key, val in kwargs.items():
-            setattr(self, key, val)
-
-    def __repr__(self):
-        return '{} - {}'.format(self.env, self.email)
+from config import config, setup_config
 
 
-@pytest.fixture(scope="session")
-def profile():
-    env = os.environ['ENVIRONMENT'].lower()
-
-    if env not in ('staging', 'live'):
-        # we're running the normal functional tests (whether locally or on preview)
-        conf = PreviewConfig if env == 'preview' else Config
-
-        uuid_for_test_run = str(uuid.uuid4())
-        functional_test_name = conf.FUNCTIONAL_TEST_NAME + uuid_for_test_run
-        functional_test_email = generate_unique_email(conf.FUNCTIONAL_TEST_EMAIL, uuid_for_test_run)
-        functional_test_service_name = conf.FUNCTIONAL_TEST_SERVICE_NAME + uuid_for_test_run
-        return Profile(**{
-            'env': conf.ENVIRONMENT,
-            'name': functional_test_name,
-            'email': functional_test_email,
-            'service_name': functional_test_service_name,
-            'password': conf.FUNCTIONAL_TEST_PASSWORD,
-            'mobile': conf.TEST_NUMBER,
-            'jenkins_build_email_template_id': conf.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
-            'jenkins_build_sms_template_id': conf.JENKINS_BUILD_SMS_TEMPLATE_ID,
-            'jenkins_build_letter_template_id': conf.JENKINS_BUILD_LETTER_TEMPLATE_ID,
-            'notify_api_url': conf.NOTIFY_API_URL,
-            'notify_service_api_key': conf.NOTIFY_SERVICE_API_KEY,
-            'notify_research_service_email': conf.NOTIFY_RESEARCH_MODE_EMAIL,
-            'notify_research_service_password': conf.NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD,
-            'notify_research_service_id': conf.NOTIFY_RESEARCH_SERVICE_ID,
-            'notify_research_service_api_test_key': conf.NOTIFY_RESEARCH_SERVICE_API_TEST_KEY,
-            'notify_research_service_api_key': conf.NOTIFY_RESEARCH_SERVICE_API_KEY,
-            'notify_research_service_name': conf.NOTIFY_RESEARCH_SERVICE_NAME,
-            'notify_research_sms_sender': conf.NOTIFY_RESEARCH_SMS_SENDER,
-            'notify_research_email_reply_to': conf.NOTIFY_RESEARCH_EMAIL_REPLY_TO,
-            'notify_research_letter_contact': conf.NOTIFY_RESEARCH_LETTER_CONTACT,
-            'notify_research_service_email_auth_account': conf.NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT,
-            'seeded_organisation_id': conf.NOTIFY_RESEARCH_ORGANISATION_ID,
-
-            # notify templates
-            'registration_template_id': conf.REGISTRATION_TEMPLATE_ID,
-            'invitation_template_id': conf.INVITATION_TEMPLATE_ID,
-            'org_invitation_template_id': conf.ORG_INVITATION_TEMPLATE_ID,
-            'email_auth_template_id': conf.EMAIL_AUTH_TEMPLATE_ID,
-        })
-    else:
-        # staging and live run the same simple smoke tests
-        if env == 'staging':
-            conf = StagingConfig
-        if env == 'live':
-            conf = LiveConfig
-        return Profile(**{
-            'env': conf.ENVIRONMENT,
-            'name': conf.FUNCTIONAL_TEST_NAME,
-            'email': conf.FUNCTIONAL_TEST_EMAIL,
-            'service_name': conf.FUNCTIONAL_TEST_SERVICE_NAME,
-            'password': conf.FUNCTIONAL_TEST_PASSWORD,
-            'mobile': conf.TEST_NUMBER,
-            'service_id': conf.SERVICE_ID,
-            'jenkins_build_email_template_id': conf.JENKINS_BUILD_EMAIL_TEMPLATE_ID,
-            'jenkins_build_sms_template_id': conf.JENKINS_BUILD_SMS_TEMPLATE_ID,
-            'api_key': conf.SERVICE_API_KEY,
-            'notify_api_url': conf.NOTIFY_API_URL,
-        })
+# this is automatically invoked to set up the config
+@pytest.fixture(scope="session", autouse=True)
+def _profile():
+    setup_config()
 
 
 @pytest.fixture(scope="module")
@@ -166,48 +93,38 @@ def driver(_driver, request):
         print('Error screenshot saved to ' + filename)
 
 
-@pytest.fixture(scope="session")
-def base_url():
-    return Config.NOTIFY_ADMIN_URL
-
-
-@pytest.fixture(scope="session")
-def base_api_url():
-    return Config.NOTIFY_API_URL
+@pytest.fixture(scope="module")
+def login_user(_driver):
+    sign_in(_driver)
 
 
 @pytest.fixture(scope="module")
-def login_user(_driver, profile):
-    sign_in(_driver, profile)
+def login_seeded_user(_driver):
+    sign_in(_driver, True)
 
 
 @pytest.fixture(scope="module")
-def login_seeded_user(_driver, profile):
-    sign_in(_driver, profile, True)
-
-
-@pytest.fixture(scope="module")
-def client(profile):
+def client():
     client = NotificationsAPIClient(
-        base_url=profile.notify_api_url,
-        api_key=profile.api_key
+        base_url=config['notify_api_url'],
+        api_key=config['service']['api_key']
     )
     return client
 
 
 @pytest.fixture(scope="module")
-def seeded_client(profile):
+def seeded_client():
     client = NotificationsAPIClient(
-        base_url=profile.notify_api_url,
-        api_key=profile.notify_research_service_api_key
+        base_url=config['notify_api_url'],
+        api_key=config['service']['api_live_key']
     )
     return client
 
 
 @pytest.fixture(scope="module")
-def seeded_client_using_test_key(profile):
+def seeded_client_using_test_key():
     client = NotificationsAPIClient(
-        base_url=profile.notify_api_url,
-        api_key=profile.notify_research_service_api_test_key
+        base_url=config['notify_api_url'],
+        api_key=config['service']['api_test_key']
     )
     return client

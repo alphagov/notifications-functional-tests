@@ -12,8 +12,8 @@ echo -n "" > docker.env
 [ -n "$ENVIRONMENT" ] || exit_with_msg "ENVIRONMENT is not defined, generating empty docker.env" 0
 
 env_vars=(
+    ENVIRONMENT
     TEST_NUMBER
-    FUNCTIONAL_TEST_NAME
     FUNCTIONAL_TEST_EMAIL
     FUNCTIONAL_TEST_PASSWORD
     NOTIFY_ADMIN_URL
@@ -23,11 +23,7 @@ env_vars=(
     EMAIL_TEMPLATE_ID
     SERVICE_ID
     API_KEY
-    DESKPRO_PERSON_EMAIL
-    DESKPRO_DEPT_ID
-    DESKPRO_ASSIGNED_AGENT_TEAM_ID
-    DESKPRO_API_HOST
-    DESKPRO_API_KEY
+    ZENDESK_API_KEY
     NOTIFY_RESEARCH_MODE_EMAIL
     NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD
     NOTIFY_RESEARCH_SERVICE_ID
@@ -44,7 +40,7 @@ env_vars=(
 )
 
 for env_var in "${env_vars[@]}"; do
-    echo "${ENVIRONMENT}_${env_var}=${!env_var}" >> docker.env
+    echo "${env_var}=${!env_var}" >> docker.env
 done
 
 echo "BUILD_ID=$BUILD_ID" >> docker.env

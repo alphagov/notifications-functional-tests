@@ -6,7 +6,7 @@ from io import BytesIO
 import pytest
 
 from retry.api import retry_call
-from config import Config
+from config import config
 from selenium.common.exceptions import TimeoutException
 
 from tests.decorators import retry_on_stale_element_exception
@@ -35,31 +35,31 @@ from tests.pages import (
 
 @recordtime
 @pytest.mark.parametrize('message_type', ['sms', 'email', 'letter'])
-def test_send_csv(driver, profile, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
+def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     template_id = {
-        'email': profile.jenkins_build_email_template_id,
-        'sms': profile.jenkins_build_sms_template_id,
-        'letter': profile.jenkins_build_letter_template_id,
+        'email': config['service']['templates']['email'],
+        'sms': config['service']['templates']['sms'],
+        'letter': config['service']['templates']['letter'],
     }.get(message_type)
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
 
     upload_csv_page = UploadCsvPage(driver)
-    notification_id = send_notification_via_csv(profile, upload_csv_page, message_type, seeded=True)
+    notification_id = send_notification_via_csv(upload_csv_page, message_type, seeded=True)
 
     notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[seeded_client_using_test_key if message_type == 'letter' else seeded_client,
                notification_id,
                NotificationStatuses.RECEIVED if message_type == 'letter' else NotificationStatuses.SENT],
-        tries=Config.NOTIFICATION_RETRY_TIMES,
-        delay=Config.NOTIFICATION_RETRY_INTERVAL
+        tries=config['notification_retry_times'],
+        delay=config['notification_retry_interval']
     )
     assert_notification_body(notification_id, notification)
-    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
 
@@ -68,20 +68,20 @@ def test_send_csv(driver, profile, login_seeded_user, seeded_client, seeded_clie
 
 @recordtime
 @pytest.mark.parametrize('message_type', ['sms', 'email'])
-def test_edit_and_delete_template(driver, profile, login_seeded_user, seeded_client, message_type):
-    do_edit_and_delete_email_template(profile, driver)
+def test_edit_and_delete_template(driver, login_seeded_user, seeded_client, message_type):
+    do_edit_and_delete_email_template(driver)
 
 
 @recordtime
-def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, login_seeded_user):
+def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     message_type = 'email'
 
     template_id = {
-        'email': profile.jenkins_build_email_template_id,
-        'sms': profile.jenkins_build_sms_template_id,
+        'email': config['service']['templates']['email'],
+        'sms': config['service']['templates']['sms'],
     }.get(message_type)
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
@@ -89,8 +89,8 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
     send_to_one_recipient_page = SendOneRecipient(driver)
 
     send_to_one_recipient_page.go_to_send_one_recipient(
-        profile.notify_research_service_id,
-        profile.jenkins_build_email_template_id
+        config['service']['id'],
+        config['service']['templates']['email']
     )
 
     send_to_one_recipient_page.choose_alternative_reply_to_email()
@@ -103,17 +103,17 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
     preview_rows = send_to_one_recipient_page.get_preview_contents()
 
     assert "From" in str(preview_rows[0].text)
-    assert profile.notify_research_service_name in str(preview_rows[0].text)
+    assert config['service']['name'] in str(preview_rows[0].text)
     assert "Reply to" in str(preview_rows[1].text)
-    assert profile.notify_research_email_reply_to in str(preview_rows[1].text)
+    assert config['service']['email_reply_to'] in str(preview_rows[1].text)
     assert "To" in str(preview_rows[2].text)
-    assert profile.notify_research_service_email in str(preview_rows[2].text)
+    assert config['service']['seeded_user']['email'] in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)
     assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
 
     send_to_one_recipient_page.click_continue()
 
-    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
 
@@ -121,18 +121,18 @@ def test_send_email_to_one_recipient(driver, profile, base_url, seeded_client, l
 
 
 @recordtime
-def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
+def test_send_sms_to_one_recipient(driver, login_seeded_user):
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
-    template_id = profile.jenkins_build_sms_template_id
+    template_id = config['service']['templates']['sms']
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
     send_to_one_recipient_page = SendOneRecipient(driver)
     sms_sender_page = SmsSenderPage(driver)
 
-    send_to_one_recipient_page.go_to_send_one_recipient(profile.notify_research_service_id, template_id)
+    send_to_one_recipient_page.go_to_send_one_recipient(config['service']['id'], template_id)
 
     send_to_one_recipient_page.choose_alternative_sms_sender()
     send_to_one_recipient_page.click_continue()
@@ -145,14 +145,14 @@ def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
     sms_recipient = sms_sender_page.get_sms_recipient()
     sms_content = sms_sender_page.get_sms_content()
 
-    assert sms_sender.text == 'From: {}'.format(profile.notify_research_sms_sender)
-    assert sms_recipient.text == 'To: {}'.format(profile.mobile)
+    assert sms_sender.text == 'From: {}'.format(config['service']['sms_sender_text'])
+    assert sms_recipient.text == 'To: {}'.format(config['user']['mobile'])
     assert 'The quick brown fox jumped over the lazy dog. Jenkins build id: {}.'.format('test_1234') \
         in sms_content.text
 
     send_to_one_recipient_page.click_continue()
 
-    dashboard_page.go_to_dashboard_for_service(service_id=profile.notify_research_service_id)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
@@ -161,7 +161,6 @@ def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
 
 def test_view_precompiled_letter_message_log_delivered(
         driver,
-        profile,
         login_seeded_user,
         seeded_client_using_test_key
 ):
@@ -175,23 +174,22 @@ def test_view_precompiled_letter_message_log_delivered(
     )
 
     api_integration_page = ApiIntegrationPage(driver)
-    api_integration_page.go_to_api_integration_for_service(service_id=profile.notify_research_service_id)
+    api_integration_page.go_to_api_integration_for_service(service_id=config['service']['id'])
 
     retry_call(
         _check_status_of_notification,
-        fargs=[api_integration_page, profile.notify_research_service_id, reference, "delivered"],
-        tries=Config.NOTIFICATION_RETRY_TIMES,
-        delay=Config.NOTIFICATION_RETRY_INTERVAL
+        fargs=[api_integration_page, config['service']['id'], reference, "delivered"],
+        tries=config['notification_retry_times'],
+        delay=config['notification_retry_interval']
     )
 
-    ref_link = profile.notify_research_service_id + "/notification/" + api_integration_page.get_notification_id()
+    ref_link = config['service']['id'] + "/notification/" + api_integration_page.get_notification_id()
     link = api_integration_page.get_view_letter_link()
     assert ref_link in link
 
 
 def test_view_precompiled_letter_preview_delivered(
         driver,
-        profile,
         login_seeded_user,
         seeded_client_using_test_key
 ):
@@ -205,13 +203,13 @@ def test_view_precompiled_letter_preview_delivered(
     )
 
     api_integration_page = ApiIntegrationPage(driver)
-    api_integration_page.go_to_api_integration_for_service(service_id=profile.notify_research_service_id)
+    api_integration_page.go_to_api_integration_for_service(service_id=config['service']['id'])
 
     retry_call(
         _check_status_of_notification,
-        fargs=[api_integration_page, profile.notify_research_service_id, reference, "delivered"],
-        tries=Config.NOTIFICATION_RETRY_TIMES,
-        delay=Config.NOTIFICATION_RETRY_INTERVAL
+        fargs=[api_integration_page, config['service']['id'], reference, "delivered"],
+        tries=config['notification_retry_times'],
+        delay=config['notification_retry_interval']
     )
 
     api_integration_page.go_to_preview_letter()
@@ -222,7 +220,7 @@ def test_view_precompiled_letter_preview_delivered(
     # Check the pdf link looks valid
     pdf_download_link = letter_preview_page.get_download_pdf_link()
 
-    link = profile.notify_research_service_id + "/notification/" + notification_id + ".pdf"
+    link = config['service']['id'] + "/notification/" + notification_id + ".pdf"
 
     assert link in pdf_download_link
 
@@ -242,7 +240,6 @@ def test_view_precompiled_letter_preview_delivered(
 
 def test_view_precompiled_letter_message_log_virus_scan_failed(
         driver,
-        profile,
         login_seeded_user,
         seeded_client_using_test_key
 ):
@@ -259,12 +256,12 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(
 
     retry_call(
         _check_status_of_notification,
-        fargs=[api_integration_page, profile.notify_research_service_id, reference, "virus-scan-failed"],
-        tries=Config.NOTIFICATION_RETRY_TIMES,
-        delay=Config.NOTIFICATION_RETRY_INTERVAL
+        fargs=[api_integration_page, config['service']['id'], reference, "virus-scan-failed"],
+        tries=config['notification_retry_times'],
+        delay=config['notification_retry_interval']
     )
 
-    ref_link = profile.notify_research_service_id + "/notification/" + api_integration_page.get_notification_id()
+    ref_link = config['service']['id'] + "/notification/" + api_integration_page.get_notification_id()
     link = api_integration_page.get_view_letter_link()
     assert ref_link not in link
 

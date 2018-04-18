@@ -8,7 +8,6 @@
 # Use default environment vars for localhost if not already set
 
 set -o pipefail
-[ "$IGNORE_ENVIRONMENT_SH" = "1" ] || source environment.sh 2> /dev/null
 
 function display_result {
   RESULT=$1
@@ -29,10 +28,6 @@ fi
 
 flake8 .
 display_result $? 1 "Code style check"
-
-environment=${ENVIRONMENT:=preview}
-export ENVIRONMENT=$environment
-
 
 # get status page for env under tests and spit out to console
 function display_status {
@@ -57,20 +52,15 @@ if [ -d logs ]; then
 fi
 mkdir logs
 
+echo "Running $ENVIRONMENT tests"
+display_status $ENVIRONMENT
+
 case $ENVIRONMENT in
     staging|live)
-      echo Running $ENVIRONMENT tests
-      display_status $ENVIRONMENT
       py.test -x -v tests/functional/staging_and_prod/
       ;;
-    preview)
-      echo Running $ENVIRONMENT tests
-      display_status $ENVIRONMENT
-      py.test -x -v tests/functional/preview_and_dev/
-      ;;
     *)
-      echo 'Default test run - for' $ENVIRONMENT
-      display_status $ENVIRONMENT
+      # dev, preview
       py.test -x -v tests/functional/preview_and_dev/
       ;;
 esac
