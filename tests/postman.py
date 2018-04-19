@@ -19,6 +19,11 @@ def send_notification_via_api(client, template_id, to, message_type):
     return resp_json['id']
 
 
+def send_precompiled_letter_via_api(profile, client, pdf_file):
+    resp_json = client.send_precompiled_letter_notification(profile.name, pdf_file)
+    return resp_json['id']
+
+
 def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=False):
     service_id = profile.notify_research_service_id if seeded else profile.service_id
     email = profile.notify_research_service_email if seeded else profile.email
@@ -42,6 +47,7 @@ def send_notification_via_csv(profile, upload_csv_page, message_type, seeded=Fal
 
 
 class NotificationStatuses:
+    PENDING_VIRUS_CHECK = 'pending-virus-check'
     RECEIVED = {'received'}
     DELIVERED = {'delivered', 'temporary-failure', 'permanent-failure'}
     SENT = RECEIVED | DELIVERED | {'sending'}

@@ -13,12 +13,14 @@ from tests.postman import (
 )
 
 from tests.test_utils import (
+    assert_client_reference,
     assert_notification_body,
     do_edit_and_delete_email_template,
     recordtime
 )
 
 from tests.pages import (
+    ApiIntegrationPage,
     DashboardPage,
     SendOneRecipient,
     SmsSenderPage,
@@ -149,6 +151,14 @@ def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
     dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+
+def test_view_precompiled_letter_message_log(driver, profile, login_seeded_user):
+    api_integration_page = ApiIntegrationPage(driver)
+    api_integration_page.go_to_api_integration_for_service(service_id=profile.notify_research_service_id)
+
+    client_reference = api_integration_page.get_client_reference()
+    assert_client_reference(profile, client_reference)
 
 
 @retry_on_stale_element_exception

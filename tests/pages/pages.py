@@ -26,6 +26,7 @@ from tests.pages.element import (
 
 from tests.pages.locators import (
     AddServicePageLocators,
+    ApiIntegrationPageLocators,
     ApiKeysPageLocators,
     CommonPageLocators,
     DashboardPageLocators,
@@ -502,6 +503,23 @@ class ProfilePage(BasePage):
     def h1_is_correct(self):
         element = self.wait_for_element(ProfilePage.h1)
         return element.text == 'Your profile'
+
+
+class ApiIntegrationPage(BasePage):
+    message_log = ApiIntegrationPageLocators.MESSAGE_LOG
+    client_reference = ApiIntegrationPageLocators.CLIENT_REFERENCE
+
+    def click_message_log(self):
+        element = self.wait_for_element(ApiIntegrationPage.message_log)
+        element.click()
+
+    def get_client_reference(self):
+        element = self.wait_for_element(ApiIntegrationPage.client_reference)
+        return element.text
+
+    def go_to_api_integration_for_service(self, service_id):
+        url = "{}/services/{}/api".format(self.base_url, service_id)
+        self.driver.get(url)
 
 
 class ApiKeyPage(BasePage):
