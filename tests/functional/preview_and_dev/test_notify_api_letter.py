@@ -10,7 +10,7 @@ from tests.postman import (
     NotificationStatuses
 )
 
-from tests.functional.preview_and_dev.pdf_consts import one_page_pdf
+from tests.functional.preview_and_dev.pdf_consts import one_page_pdf, pdf_with_virus
 from tests.test_utils import assert_client_reference, assert_notification_body, recordtime
 
 
@@ -36,6 +36,27 @@ def test_send_precompiled_letter_notification_via_api(profile, seeded_client_usi
         profile,
         seeded_client_using_test_key,
         BytesIO(base64.b64decode(one_page_pdf))
+    )
+
+    notification = retry_call(
+        get_notification_by_id_via_api,
+        fargs=[seeded_client_using_test_key, notification_id, NotificationStatuses.PENDING_VIRUS_CHECK],
+        tries=Config.NOTIFICATION_RETRY_TIMES,
+        delay=Config.NOTIFICATION_RETRY_INTERVAL
+    )
+    assert_client_reference(profile, notification['reference'])
+
+
+@recordtime
+def test_send_precompiled_letter_with_virus_notification_via_api(profile, seeded_client_using_test_key):
+
+    # This uses a file which drops the eicar test virus into the temp directory
+    # The dropper code _should_ be detected before the eicar virus
+
+    notification_id = send_precompiled_letter_via_api(
+        profile,
+        seeded_client_using_test_key,
+        BytesIO(base64.b64decode(pdf_with_virus))
     )
 
     notification = retry_call(
