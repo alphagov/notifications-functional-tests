@@ -11,7 +11,7 @@ from tests.postman import (
 )
 
 from tests.functional.preview_and_dev.pdf_consts import one_page_pdf, pdf_with_virus
-from tests.test_utils import assert_client_reference, assert_notification_body, recordtime
+from tests.test_utils import assert_notification_body, recordtime
 
 
 @recordtime
@@ -32,8 +32,11 @@ def test_send_letter_notification_via_api(profile, seeded_client_using_test_key)
 
 @recordtime
 def test_send_precompiled_letter_notification_via_api(profile, seeded_client_using_test_key):
+
+    reference = profile.name.replace(" ", "_") + "_delivered"
+
     notification_id = send_precompiled_letter_via_api(
-        profile,
+        reference,
         seeded_client_using_test_key,
         BytesIO(base64.b64decode(one_page_pdf))
     )
@@ -44,17 +47,20 @@ def test_send_precompiled_letter_notification_via_api(profile, seeded_client_usi
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
-    assert_client_reference(profile, notification['reference'])
+
+    assert reference == notification['reference']
 
 
 @recordtime
 def test_send_precompiled_letter_with_virus_notification_via_api(profile, seeded_client_using_test_key):
 
-    # This uses a file which drops the eicar test virus into the temp directory
+    # This uses a file which drops the Eicar test virus into the temp directory
     # The dropper code _should_ be detected before the eicar virus
 
+    reference = profile.name.replace(" ", "_") + "_virus_scan_failed"
+
     notification_id = send_precompiled_letter_via_api(
-        profile,
+        reference,
         seeded_client_using_test_key,
         BytesIO(base64.b64decode(pdf_with_virus))
     )
@@ -65,4 +71,5 @@ def test_send_precompiled_letter_with_virus_notification_via_api(profile, seeded
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
-    assert_client_reference(profile, notification['reference'])
+
+    assert reference == notification['reference']

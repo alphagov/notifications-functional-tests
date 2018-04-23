@@ -104,6 +104,7 @@ class InviteUserPageLocators(object):
 class ApiIntegrationPageLocators(object):
     MESSAGE_LOG = (By.CSS_SELECTOR, 'div.api-notifications > details:nth-child(1)')
     CLIENT_REFERENCE = (By.CSS_SELECTOR, '.api-notifications-item-recipient')
+    MESSAGE_LIST = (By.CSS_SELECTOR, '.api-notifications-item-data-item')
 
 
 class ApiKeysPageLocators(object):

@@ -1,3 +1,7 @@
+import base64
+import uuid
+from io import BytesIO
+
 import pytest
 
 from retry.api import retry_call
@@ -5,15 +9,15 @@ from config import Config
 from selenium.common.exceptions import TimeoutException
 
 from tests.decorators import retry_on_stale_element_exception
+from tests.functional.preview_and_dev.pdf_consts import one_page_pdf, pdf_with_virus
 
 from tests.postman import (
     send_notification_via_csv,
     get_notification_by_id_via_api,
-    NotificationStatuses
-)
+    NotificationStatuses,
+    send_precompiled_letter_via_api)
 
 from tests.test_utils import (
-    assert_client_reference,
     assert_notification_body,
     do_edit_and_delete_email_template,
     recordtime
@@ -153,12 +157,62 @@ def test_send_sms_to_one_recipient(driver, profile, login_seeded_user):
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
-def test_view_precompiled_letter_message_log(driver, profile, login_seeded_user):
+def test_view_precompiled_letter_message_log_delivered(
+        driver,
+        profile,
+        login_seeded_user,
+        seeded_client_using_test_key
+):
+
+    reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_delivered"
+
+    send_precompiled_letter_via_api(
+        reference,
+        seeded_client_using_test_key,
+        BytesIO(base64.b64decode(one_page_pdf))
+    )
+
     api_integration_page = ApiIntegrationPage(driver)
     api_integration_page.go_to_api_integration_for_service(service_id=profile.notify_research_service_id)
 
-    client_reference = api_integration_page.get_client_reference()
-    assert_client_reference(profile, client_reference)
+    retry_call(
+        _check_status_of_notification,
+        fargs=[api_integration_page, profile.notify_research_service_id, reference, "delivered"],
+        tries=Config.NOTIFICATION_RETRY_TIMES,
+        delay=Config.NOTIFICATION_RETRY_INTERVAL
+    )
+
+
+def test_view_precompiled_letter_message_log_virus_scan_failed(
+        driver,
+        profile,
+        login_seeded_user,
+        seeded_client_using_test_key
+):
+
+    reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_delivered"
+
+    send_precompiled_letter_via_api(
+        reference,
+        seeded_client_using_test_key,
+        BytesIO(base64.b64decode(pdf_with_virus))
+    )
+
+    api_integration_page = ApiIntegrationPage(driver)
+
+    retry_call(
+        _check_status_of_notification,
+        fargs=[api_integration_page, profile.notify_research_service_id, reference, "virus-scan-failed"],
+        tries=Config.NOTIFICATION_RETRY_TIMES,
+        delay=Config.NOTIFICATION_RETRY_INTERVAL
+    )
+
+
+def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
+    page.go_to_api_integration_for_service(service_id=notify_research_service_id)
+    client_reference = page.get_client_reference()
+    assert reference_to_check == client_reference
+    assert status_to_check == page.get_status_from_message()
 
 
 @retry_on_stale_element_exception
