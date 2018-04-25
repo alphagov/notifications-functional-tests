@@ -515,6 +515,11 @@ class ApiIntegrationPage(BasePage):
     message_log = ApiIntegrationPageLocators.MESSAGE_LOG
     client_reference = ApiIntegrationPageLocators.CLIENT_REFERENCE
     message_list = ApiIntegrationPageLocators.MESSAGE_LIST
+    view_letter_link = ApiIntegrationPageLocators.VIEW_LETTER_LINK
+
+    def get_notification_id(self):
+        element = self.wait_for_elements(ApiIntegrationPage.message_list)[0]
+        return element.text
 
     def click_message_log(self):
         element = self.wait_for_element(ApiIntegrationPage.message_log)
@@ -531,6 +536,20 @@ class ApiIntegrationPage(BasePage):
     def get_status_from_message(self):
         element = self.wait_for_elements(ApiIntegrationPage.message_list)[5]
         return element.text
+
+    def get_view_letter_link(self):
+        link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
+        return link.get_attribute("href")
+
+    def go_to_preview_letter(self):
+        link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
+        self.driver.get(link.get_attribute("href"))
+
+
+class PreviewLetterPage(BasePage):
+
+    def is_text_present_on_page(self, search_text):
+        return search_text not in self.driver.page_source
 
 
 class ApiKeyPage(BasePage):
