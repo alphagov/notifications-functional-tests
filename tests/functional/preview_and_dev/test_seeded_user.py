@@ -28,7 +28,8 @@ from tests.pages import (
     DashboardPage,
     SendOneRecipient,
     SmsSenderPage,
-    UploadCsvPage)
+    UploadCsvPage,
+    PreviewLetterPage)
 
 
 @recordtime
@@ -182,6 +183,18 @@ def test_view_precompiled_letter_message_log_delivered(
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
 
+    ref_link = "https://www.notify.works/services/" + \
+               profile.notify_research_service_id + \
+               "/notification/" + \
+               api_integration_page.get_notification_id()
+    link = api_integration_page.get_view_letter_link()
+    assert ref_link == link
+
+    api_integration_page.go_to_preview_letter()
+
+    letter_preview_page = PreviewLetterPage(driver)
+    assert letter_preview_page.is_text_present_on_page("Provided as PDF, sent on")
+
 
 def test_view_precompiled_letter_message_log_virus_scan_failed(
         driver,
@@ -206,6 +219,13 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(
         tries=Config.NOTIFICATION_RETRY_TIMES,
         delay=Config.NOTIFICATION_RETRY_INTERVAL
     )
+
+    ref_link = "https://www.notify.works/services/" + \
+               profile.notify_research_service_id + \
+               "/notification/" + \
+               api_integration_page.get_notification_id()
+    link = api_integration_page.get_view_letter_link()
+    assert ref_link != link
 
 
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
