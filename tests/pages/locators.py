@@ -101,6 +101,12 @@ class InviteUserPageLocators(object):
     SEND_INVITATION_BUTTON = (By.CLASS_NAME, 'button')
 
 
+class ApiIntegrationPageLocators(object):
+    MESSAGE_LOG = (By.CSS_SELECTOR, 'div.api-notifications > details:nth-child(1)')
+    CLIENT_REFERENCE = (By.CSS_SELECTOR, '.api-notifications-item-recipient')
+    MESSAGE_LIST = (By.CSS_SELECTOR, '.api-notifications-item-data-item')
+
+
 class ApiKeysPageLocators(object):
     KEY_NAME_INPUT = (By.NAME, 'key_name')
     KEYS_PAGE_LINK = (By.LINK_TEXT, 'API keys')

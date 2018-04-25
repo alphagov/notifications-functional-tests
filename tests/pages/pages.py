@@ -26,6 +26,7 @@ from tests.pages.element import (
 
 from tests.pages.locators import (
     AddServicePageLocators,
+    ApiIntegrationPageLocators,
     ApiKeysPageLocators,
     CommonPageLocators,
     DashboardPageLocators,
@@ -66,6 +67,12 @@ class BasePage(object):
         return WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(locator),
             EC.presence_of_element_located(locator)
+        )
+
+    def wait_for_elements(self, locator):
+        return WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_all_elements_located(locator),
+            EC.presence_of_all_elements_located(locator)
         )
 
     def sign_out(self):
@@ -502,6 +509,28 @@ class ProfilePage(BasePage):
     def h1_is_correct(self):
         element = self.wait_for_element(ProfilePage.h1)
         return element.text == 'Your profile'
+
+
+class ApiIntegrationPage(BasePage):
+    message_log = ApiIntegrationPageLocators.MESSAGE_LOG
+    client_reference = ApiIntegrationPageLocators.CLIENT_REFERENCE
+    message_list = ApiIntegrationPageLocators.MESSAGE_LIST
+
+    def click_message_log(self):
+        element = self.wait_for_element(ApiIntegrationPage.message_log)
+        element.click()
+
+    def get_client_reference(self):
+        element = self.wait_for_element(ApiIntegrationPage.client_reference)
+        return element.text
+
+    def go_to_api_integration_for_service(self, service_id):
+        url = "{}/services/{}/api".format(self.base_url, service_id)
+        self.driver.get(url)
+
+    def get_status_from_message(self):
+        element = self.wait_for_elements(ApiIntegrationPage.message_list)[5]
+        return element.text
 
 
 class ApiKeyPage(BasePage):
