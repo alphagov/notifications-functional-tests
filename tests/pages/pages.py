@@ -42,7 +42,8 @@ from tests.pages.locators import (
     TemplatePageLocators,
     TeamMembersPageLocators,
     UploadCsvLocators,
-    VerifyPageLocators
+    VerifyPageLocators,
+    LetterPreviewPageLocators
 )
 
 
@@ -547,9 +548,19 @@ class ApiIntegrationPage(BasePage):
 
 
 class PreviewLetterPage(BasePage):
+    download_pdf_link = LetterPreviewPageLocators.DOWNLOAD_PDF_LINK
+    pdf_image = LetterPreviewPageLocators.PDF_IMAGE
 
     def is_text_present_on_page(self, search_text):
         return search_text not in self.driver.page_source
+
+    def get_download_pdf_link(self):
+        link = self.wait_for_element(PreviewLetterPage.download_pdf_link)
+        return link.get_attribute("href")
+
+    def get_image_src(self):
+        link = self.wait_for_element(PreviewLetterPage.pdf_image)
+        return link.get_attribute("src")
 
 
 class ApiKeyPage(BasePage):

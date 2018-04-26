@@ -10,7 +10,7 @@ from tests.postman import (
     NotificationStatuses
 )
 
-from tests.functional.preview_and_dev.pdf_consts import one_page_pdf, pdf_with_virus
+from tests.functional.preview_and_dev.consts import one_page_pdf, pdf_with_virus
 from tests.test_utils import assert_notification_body, recordtime
 
 

@@ -108,6 +108,11 @@ class ApiIntegrationPageLocators(object):
     VIEW_LETTER_LINK = (By.LINK_TEXT, 'View letter')
 
 
+class LetterPreviewPageLocators(object):
+    DOWNLOAD_PDF_LINK = (By.LINK_TEXT, 'Download as a PDF')
+    PDF_IMAGE = (By.XPATH, '//*[@id="content"]/div[2]/main/div/img')
+
+
 class ApiKeysPageLocators(object):
     KEY_NAME_INPUT = (By.NAME, 'key_name')
     KEYS_PAGE_LINK = (By.LINK_TEXT, 'API keys')

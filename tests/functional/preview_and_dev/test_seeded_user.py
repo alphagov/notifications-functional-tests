@@ -1,4 +1,5 @@
 import base64
+import urllib
 import uuid
 from io import BytesIO
 
@@ -9,7 +10,7 @@ from config import Config
 from selenium.common.exceptions import TimeoutException
 
 from tests.decorators import retry_on_stale_element_exception
-from tests.functional.preview_and_dev.pdf_consts import one_page_pdf, pdf_with_virus
+from tests.functional.preview_and_dev.consts import one_page_pdf, pdf_with_virus, preview_error
 
 from tests.postman import (
     send_notification_via_csv,
@@ -190,10 +191,60 @@ def test_view_precompiled_letter_message_log_delivered(
     link = api_integration_page.get_view_letter_link()
     assert ref_link == link
 
+
+def test_view_precompiled_letter_preview_delivered(
+        driver,
+        profile,
+        login_seeded_user,
+        seeded_client_using_test_key
+):
+
+    reference = "functional_tests_precompiled_letter_preview_" + str(uuid.uuid1()) + "_delivered"
+
+    notification_id = send_precompiled_letter_via_api(
+        reference,
+        seeded_client_using_test_key,
+        BytesIO(base64.b64decode(one_page_pdf))
+    )
+
+    api_integration_page = ApiIntegrationPage(driver)
+    api_integration_page.go_to_api_integration_for_service(service_id=profile.notify_research_service_id)
+
+    retry_call(
+        _check_status_of_notification,
+        fargs=[api_integration_page, profile.notify_research_service_id, reference, "delivered"],
+        tries=Config.NOTIFICATION_RETRY_TIMES,
+        delay=Config.NOTIFICATION_RETRY_INTERVAL
+    )
+
     api_integration_page.go_to_preview_letter()
 
     letter_preview_page = PreviewLetterPage(driver)
     assert letter_preview_page.is_text_present_on_page("Provided as PDF, sent on")
+
+    # Check the pdf link looks valid
+    pdf_download_link = letter_preview_page.get_download_pdf_link()
+
+    link = "https://www.notify.works/services/" + \
+           profile.notify_research_service_id + \
+           "/notification/" + \
+           notification_id + \
+           ".pdf"
+
+    assert pdf_download_link == link
+
+    # Check the link has a file at the end of it
+    with urllib.request.urlopen(pdf_download_link) as url:
+        pdf_file_data = url.read()
+
+    assert pdf_file_data
+
+    # check the image isn't the error page (we can't do much else)
+    image_src = letter_preview_page.get_image_src()
+    with urllib.request.urlopen(image_src) as url:
+        image_data = url.read()
+
+    assert base64.b64encode(image_data) != preview_error
 
 
 def test_view_precompiled_letter_message_log_virus_scan_failed(
