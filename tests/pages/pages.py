@@ -552,7 +552,7 @@ class PreviewLetterPage(BasePage):
     pdf_image = LetterPreviewPageLocators.PDF_IMAGE
 
     def is_text_present_on_page(self, search_text):
-        return search_text not in self.driver.page_source
+        return search_text in self.driver.page_source
 
     def get_download_pdf_link(self):
         link = self.wait_for_element(PreviewLetterPage.download_pdf_link)
