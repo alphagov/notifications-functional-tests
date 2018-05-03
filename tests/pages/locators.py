@@ -105,6 +105,12 @@ class ApiIntegrationPageLocators(object):
     MESSAGE_LOG = (By.CSS_SELECTOR, 'div.api-notifications > details:nth-child(1)')
     CLIENT_REFERENCE = (By.CSS_SELECTOR, '.api-notifications-item-recipient')
     MESSAGE_LIST = (By.CSS_SELECTOR, '.api-notifications-item-data-item')
+    VIEW_LETTER_LINK = (By.LINK_TEXT, 'View letter')
+
+
+class LetterPreviewPageLocators(object):
+    DOWNLOAD_PDF_LINK = (By.LINK_TEXT, 'Download as a PDF')
+    PDF_IMAGE = (By.XPATH, '//*[@id="content"]/div[2]/main/div/img')
 
 
 class ApiKeysPageLocators(object):
