@@ -56,11 +56,6 @@ urls = {
 def setup_config():
     env = os.environ['ENVIRONMENT'].lower()
 
-    config.update({
-        'notify_api_url': urls[env]['api'],
-        'notify_admin_url': urls[env]['admin'],
-    })
-
     # (dev, preview)
     if env in {'dev', 'preview'}:
         uuid_for_test_run = str(uuid.uuid4())
@@ -138,3 +133,8 @@ def setup_config():
         })
     else:
         pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
+
+    config.update({
+        'notify_api_url': urls[env]['api'],
+        'notify_admin_url': urls[env]['admin'],
+    })
