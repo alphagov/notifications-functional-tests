@@ -217,9 +217,6 @@ def get_verify_code_from_api():
 
 @retry(RetryException, tries=config['notification_retry_times'], delay=config['notification_retry_interval'])
 def get_notification_via_api(template_id, api_key, sent_to):
-    from pprint import pprint
-    print('get_notification_via_api')
-    pprint(config)
     client = NotificationsAPIClient(
         base_url=config['notify_api_url'],
         api_key=api_key

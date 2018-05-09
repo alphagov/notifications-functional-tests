@@ -64,7 +64,7 @@ test-providers: venv ## Run tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/' hostuser
 
 .PHONY: test-document-download
-test-document-download: venv ## Run documnet-download-api tests
+test-document-download: venv ## Run document-download-api tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/document_download/' hostuser
 
 .PHONY: generate-env-file
@@ -94,13 +94,12 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 		make build
 
 define run_test_container
+	[ ${ENVIRONMENT} != "dev" ] # Cannot run in docker against development
 	make prepare-docker-runner-image generate-env-file
 	docker run -i --rm \
 		--name "${DOCKER_CONTAINER_PREFIX}-test" \
-		--add-host=api.local:192.168.65.1 \
 		-v "`pwd`:/var/project" \
 		-v /dev/urandom:/dev/random \
-		-e ENVIRONMENT=${ENVIRONMENT} \
 		-e UID=$(shell id -u) \
 		-e GID=$(shell id -g) \
 		-e SELENIUM_DRIVER=${SELENIUM_DRIVER} \

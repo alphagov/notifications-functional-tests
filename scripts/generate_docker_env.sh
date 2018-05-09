@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-[ -n "$ENVIRONMENT" ] || echo "ENVIRONMENT is not defined, generating empty docker.env" && exit 1
+[ -n "$ENVIRONMENT" ] || (echo "ENVIRONMENT is not defined" && exit 1)
 
 echo -n "" > docker.env
 

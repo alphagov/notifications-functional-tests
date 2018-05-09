@@ -31,10 +31,13 @@ display_result $? 1 "Code style check"
 
 # get status page for env under tests and spit out to console
 function display_status {
-  url=$ENVIRONMENT'_NOTIFY_ADMIN_URL'
-  echo 'Build info:'
-  curl -sSL ${!url}/'_status'
-  echo
+  python -c "
+import requests
+from config import config, setup_config
+setup_config()
+print('Build info:')
+print(requests.get(config['notify_admin_url'] + '/_status').json())
+"
 }
 
 

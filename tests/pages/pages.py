@@ -717,11 +717,6 @@ class OrganisationDashboardPage(BasePage):
         expected = "{}/organisations/{}".format(self.base_url, org_id)
         return self.driver.current_url == expected
 
-    def get_service_names_and_links(self):
-        items = self.driver.find_elements(*self.service_list)
-        print(type(items), items)
-        return []
-
     def click_team_members_link(self):
         element = self.wait_for_element(DashboardPage.team_members_link)
         element.click()
