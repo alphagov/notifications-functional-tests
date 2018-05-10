@@ -53,88 +53,96 @@ urls = {
 }
 
 
-def setup_config():
+def setup_shared_config():
+    """
+    Used by all tests
+    """
     env = os.environ['ENVIRONMENT'].lower()
 
-    # (dev, preview)
-    if env in {'dev', 'preview'}:
-        uuid_for_test_run = str(uuid.uuid4())
-
-        config.update({
-            'env': env,
-
-            'service_name': 'Functional Test_{}'.format(uuid_for_test_run),
-
-            'user': {
-                'name': '{}_Functional Test_{}'.format(env, uuid_for_test_run),
-                'email': generate_unique_email(os.environ['FUNCTIONAL_TEST_EMAIL'], uuid_for_test_run),
-                'password': os.environ['FUNCTIONAL_TEST_PASSWORD'],
-                'mobile': os.environ['TEST_NUMBER'],
-            },
-
-            'notify_service_api_key': os.environ['NOTIFY_SERVICE_API_KEY'],
-
-            'service': {
-                'id': os.environ['NOTIFY_RESEARCH_SERVICE_ID'],
-                'name': os.environ['NOTIFY_RESEARCH_SERVICE_NAME'],
-
-                'seeded_user': {
-                    'email': os.environ['NOTIFY_RESEARCH_MODE_EMAIL'],
-                    'password': os.environ['NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD'],
-                },
-                'api_live_key': os.environ['NOTIFY_RESEARCH_SERVICE_API_KEY'],
-                'api_test_key': os.environ['NOTIFY_RESEARCH_SERVICE_API_TEST_KEY'],
-
-                # email address of seeded email auth user
-                'email_auth_account': os.environ['NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT'],
-                'organisation_id': os.environ['NOTIFY_RESEARCH_ORGANISATION_ID'],
-
-                'email_reply_to': os.environ['NOTIFY_RESEARCH_EMAIL_REPLY_TO'],
-
-                'sms_sender_text': 'func tests',
-
-                'templates': {
-                    'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
-                    'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
-                    'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
-                }
-            },
-
-            'document_download': {
-                'api_host': os.environ['DOCUMENT_DOWNLOAD_API_HOST'],
-                'api_key': os.environ['DOCUMENT_DOWNLOAD_API_KEY']
-            }
-        })
-    elif env in {'staging', 'live'}:
-        # staging and live run the same simple smoke tests
-        config.update({
-            'env': os.environ['ENVIRONMENT'],
-            'name': '{} Functional Tests'.format(env),
-            'user': {
-                'email': os.environ['FUNCTIONAL_TEST_EMAIL'],
-                'password': os.environ['FUNCTIONAL_TEST_PASSWORD'],
-                'mobile': os.environ['TEST_NUMBER'],
-            },
-
-            'notify_service_api_key': os.environ['NOTIFY_SERVICE_API_KEY'],
-
-            # this is either a live service or in research mode, depending on what tests are running
-            # (provider vs functional smoke tests)
-            'service': {
-                'id': os.environ['SERVICE_ID'],
-                'api_key': os.environ['API_KEY'],
-
-                'templates': {
-                    'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
-                    'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
-                    'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
-                }
-            }
-        })
-    else:
+    if env not in {'dev', 'preview', 'staging', 'live'}:
         pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
 
     config.update({
+        'env': env,
         'notify_api_url': urls[env]['api'],
         'notify_admin_url': urls[env]['admin'],
+    })
+
+
+def setup_preview_dev_config():
+    uuid_for_test_run = str(uuid.uuid4())
+
+    config.update({
+        'service_name': 'Functional Test_{}'.format(uuid_for_test_run),
+
+        'user': {
+            'name': '{}_Functional Test_{}'.format(config['env'], uuid_for_test_run),
+            'email': generate_unique_email(os.environ['FUNCTIONAL_TEST_EMAIL'], uuid_for_test_run),
+            'password': os.environ['FUNCTIONAL_TEST_PASSWORD'],
+            'mobile': os.environ['TEST_NUMBER'],
+        },
+
+        'notify_service_api_key': os.environ['NOTIFY_SERVICE_API_KEY'],
+
+        'service': {
+            'id': os.environ['NOTIFY_RESEARCH_SERVICE_ID'],
+            'name': os.environ['NOTIFY_RESEARCH_SERVICE_NAME'],
+
+            'seeded_user': {
+                'email': os.environ['NOTIFY_RESEARCH_MODE_EMAIL'],
+                'password': os.environ['NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD'],
+            },
+            'api_live_key': os.environ['NOTIFY_RESEARCH_SERVICE_API_KEY'],
+            'api_test_key': os.environ['NOTIFY_RESEARCH_SERVICE_API_TEST_KEY'],
+
+            # email address of seeded email auth user
+            'email_auth_account': os.environ['NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT'],
+            'organisation_id': os.environ['NOTIFY_RESEARCH_ORGANISATION_ID'],
+
+            'email_reply_to': os.environ['NOTIFY_RESEARCH_EMAIL_REPLY_TO'],
+
+            'sms_sender_text': 'func tests',
+
+            'templates': {
+                'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
+                'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
+                'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
+            }
+        }
+    })
+
+
+def setup_staging_live_config():
+    # staging and live run the same simple smoke tests
+    config.update({
+        'name': '{} Functional Tests'.format(config['env']),
+        'user': {
+            'email': os.environ['FUNCTIONAL_TEST_EMAIL'],
+            'password': os.environ['FUNCTIONAL_TEST_PASSWORD'],
+            'mobile': os.environ['TEST_NUMBER'],
+        },
+
+        'notify_service_api_key': os.environ['NOTIFY_SERVICE_API_KEY'],
+
+        # this is either a live service or in research mode, depending on what tests are running
+        # (provider vs functional smoke tests)
+        'service': {
+            'id': os.environ['SERVICE_ID'],
+            'api_key': os.environ['API_KEY'],
+
+            'templates': {
+                'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
+                'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
+                'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
+            }
+        }
+    })
+
+
+def setup_document_download_config():
+    config.update({
+        'document_download': {
+            'api_host': os.environ['DOCUMENT_DOWNLOAD_API_HOST'],
+            'api_key': os.environ['DOCUMENT_DOWNLOAD_API_KEY']
+        }
     })

@@ -33,8 +33,8 @@ display_result $? 1 "Code style check"
 function display_status {
   python -c "
 import requests
-from config import config, setup_config
-setup_config()
+from config import config, setup_shared_config
+setup_shared_config()
 print('Build info:')
 print(requests.get(config['notify_admin_url'] + '/_status').json())
 "

@@ -55,6 +55,7 @@ export DOCUMENT_DOWNLOAD_API_KEY=auth-token # document-download-api auth token
   - Store its name in `NOTIFY_RESEARCH_SERVICE_NAME` and its id in `NOTIFY_RESEARCH_SERVICE_ID`
   - set it into research mode
   - grant it the email auth permission ("Allow editing user auth")
+  - grant it the precompiled letters permission ("Allow to send precompiled letters")
 * Create an organisation
   - Assign the research mode functional test service to this organisation
   - store the organisation's id in `NOTIFY_RESEARCH_ORGANISATION_ID`
