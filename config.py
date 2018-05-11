@@ -133,7 +133,7 @@ def setup_staging_live_config():
             'templates': {
                 'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
                 'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
-                'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
+                # letter template not set up on staging and live
             }
         }
     })
@@ -141,6 +141,9 @@ def setup_staging_live_config():
 
 def setup_document_download_config():
     config.update({
+        'service': {
+            'id': os.environ['NOTIFY_RESEARCH_SERVICE_ID']
+        },
         'document_download': {
             'api_host': os.environ['DOCUMENT_DOWNLOAD_API_HOST'],
             'api_key': os.environ['DOCUMENT_DOWNLOAD_API_KEY']
