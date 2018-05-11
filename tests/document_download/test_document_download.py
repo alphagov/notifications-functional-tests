@@ -1,14 +1,14 @@
 import requests
 from retry.api import retry_call
 
-from config import Config
+from config import config
 
 
 def upload_document(service_id, file_contents):
     response = requests.post(
-        "{}/services/{}/documents".format(Config.DOCUMENT_DOWNLOAD_API_HOST, service_id),
+        "{}/services/{}/documents".format(config['document_download']['api_host'], service_id),
         headers={
-            'Authorization': "Bearer {}".format(Config.DOCUMENT_DOWNLOAD_API_KEY),
+            'Authorization': "Bearer {}".format(config['document_download']['api_key']),
         },
         files={
             'document': file_contents
@@ -23,7 +23,7 @@ def upload_document(service_id, file_contents):
 def test_document_upload_and_download():
     document_url = retry_call(
         upload_document,
-        fargs=[Config.NOTIFY_RESEARCH_SERVICE_ID, 'functional tests file'],
+        fargs=[config['service']['id'], 'functional tests file'],
         tries=3,
         delay=10
     )

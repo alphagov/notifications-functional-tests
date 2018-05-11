@@ -12,7 +12,7 @@ from retry import retry
 from notifications_python_client.notifications import NotificationsAPIClient
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from config import Config
+from config import config, generate_unique_email
 from tests.pages import (
     AddServicePage,
     DashboardPage,
@@ -59,15 +59,10 @@ def assert_notification_body(notification_id, notification):
     assert 'The quick brown fox jumped over the lazy dog' in notification['body']
 
 
-def generate_unique_email(email, uuid):
-    parts = email.split('@')
-    return "{}+{}@{}".format(parts[0], uuid, parts[1])
-
-
-def get_link(profile, template_id, email):
+def get_link(template_id, email):
     email_body = get_notification_via_api(
         template_id,
-        profile.notify_service_api_key,
+        config['notify_service_api_key'],
         email
     )
     match = re.search(r'http[s]?://\S+', email_body, re.MULTILINE)
@@ -77,10 +72,10 @@ def get_link(profile, template_id, email):
         pytest.fail("Couldn't get the link from the email")
 
 
-@retry(RetryException, tries=Config.VERIFY_CODE_RETRY_TIMES, delay=Config.VERIFY_CODE_RETRY_INTERVAL)
-def do_verify(driver, profile):
+@retry(RetryException, tries=config['verify_code_retry_times'], delay=config['verify_code_retry_interval'])
+def do_verify(driver):
     try:
-        verify_code = get_verify_code_from_api(profile)
+        verify_code = get_verify_code_from_api()
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
         driver.find_element_by_class_name('error-message')
@@ -93,13 +88,12 @@ def do_verify(driver, profile):
         raise RetryException
 
 
-@retry(RetryException, tries=Config.VERIFY_CODE_RETRY_TIMES, delay=Config.VERIFY_CODE_RETRY_INTERVAL)
-def do_email_auth_verify(driver, profile):
+@retry(RetryException, tries=config['verify_code_retry_times'], delay=config['verify_code_retry_interval'])
+def do_email_auth_verify(driver):
     try:
         login_link = get_link(
-            profile,
-            profile.email_auth_template_id,
-            profile.notify_research_service_email_auth_account
+            config['notify_templates']['email_auth_template_id'],
+            config['service']['email_auth_account']
         )
         driver.get(login_link)
         driver.find_element_by_class_name('banner-dangerous')
@@ -111,7 +105,7 @@ def do_email_auth_verify(driver, profile):
         raise RetryException
 
 
-def do_user_registration(driver, profile, base_url):
+def do_user_registration(driver):
     main_page = MainPage(driver)
     main_page.get()
     main_page.click_set_up_account()
@@ -119,30 +113,28 @@ def do_user_registration(driver, profile, base_url):
     registration_page = RegistrationPage(driver)
     assert registration_page.is_current()
 
-    registration_page.register(profile)
+    registration_page.register()
 
-    assert driver.current_url == base_url + '/registration-continue'
+    assert driver.current_url == config['notify_admin_url'] + '/registration-continue'
 
-    registration_link = get_link(profile,
-                                 profile.registration_template_id,
-                                 profile.email)
+    registration_link = get_link(config['notify_templates']['registration_template_id'], config['user']['email'])
 
     driver.get(registration_link)
 
-    do_verify(driver, profile)
+    do_verify(driver)
 
     add_service_page = AddServicePage(driver)
     assert add_service_page.is_current()
-    add_service_page.add_service(profile.service_name)
+    add_service_page.add_service(config['service_name'])
 
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
     dashboard_page.go_to_dashboard_for_service(service_id)
 
-    assert dashboard_page.h2_is_service_name(profile.service_name)
+    assert dashboard_page.h2_is_service_name(config['service_name'])
 
 
-def do_user_can_invite_someone_to_notify(driver, profile, base_url):
+def do_user_can_invite_someone_to_notify(driver):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
@@ -155,38 +147,38 @@ def do_user_can_invite_someone_to_notify(driver, profile, base_url):
 
     invited_user_randomness = str(uuid.uuid1())
     invited_user_name = 'Invited User ' + invited_user_randomness
-    invite_email = generate_unique_email(profile.email, invited_user_randomness)
+    invite_email = generate_unique_email(config['user']['email'], invited_user_randomness)
 
     invite_user_page.fill_invitation_form(invite_email, send_messages=True)
     invite_user_page.send_invitation()
     invite_user_page.sign_out()
-    invite_user_page.wait_until_url_is(base_url)
+    invite_user_page.wait_until_url_is(config['notify_admin_url'])
 
     # next part of interaction is from point of view of invitee
     # i.e. after visting invite_link we'll be registering using invite_email
     # but use same mobile number and password as profile
 
-    invite_link = get_link(profile, profile.invitation_template_id, invite_email)
+    invite_link = get_link(config['notify_templates']['invitation_template_id'], invite_email)
     driver.get(invite_link)
     register_from_invite_page = RegisterFromInvite(driver)
-    register_from_invite_page.fill_registration_form(invited_user_name, profile)
+    register_from_invite_page.fill_registration_form(invited_user_name)
     register_from_invite_page.click_continue()
 
-    do_verify(driver, profile)
+    do_verify(driver)
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
     dashboard_page.go_to_dashboard_for_service(service_id)
 
-    assert dashboard_page.h2_is_service_name(profile.service_name)
+    assert dashboard_page.h2_is_service_name(config['service_name'])
 
     dashboard_page.sign_out()
-    dashboard_page.wait_until_url_is(base_url)
+    dashboard_page.wait_until_url_is(config['notify_admin_url'])
 
 
-def do_edit_and_delete_email_template(profile, driver):
+def do_edit_and_delete_email_template(driver):
     test_name = 'edit/delete test'
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(profile.notify_research_service_id)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_templates()
 
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
@@ -210,11 +202,11 @@ def do_edit_and_delete_email_template(profile, driver):
     assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
-def get_verify_code_from_api(profile):
+def get_verify_code_from_api():
     verify_code_message = get_notification_via_api(
-        Config.VERIFY_CODE_TEMPLATE_ID,
-        Config.NOTIFY_SERVICE_API_KEY,
-        profile.mobile
+        config['notify_templates']['verify_code_template_id'],
+        config['notify_service_api_key'],
+        config['user']['mobile']
     )
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
@@ -223,10 +215,10 @@ def get_verify_code_from_api(profile):
     return m.group(0)
 
 
-@retry(RetryException, tries=Config.NOTIFICATION_RETRY_TIMES, delay=Config.NOTIFICATION_RETRY_INTERVAL)
+@retry(RetryException, tries=config['notification_retry_times'], delay=config['notification_retry_interval'])
 def get_notification_via_api(template_id, api_key, sent_to):
     client = NotificationsAPIClient(
-        base_url=Config.NOTIFY_API_URL,
+        base_url=config['notify_api_url'],
         api_key=api_key
     )
     resp = client.get('v2/notifications', params={'include_jobs': True})
