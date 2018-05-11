@@ -141,6 +141,9 @@ def setup_staging_live_config():
 
 def setup_document_download_config():
     config.update({
+        'service': {
+            'id': os.environ['NOTIFY_RESEARCH_SERVICE_ID']
+        },
         'document_download': {
             'api_host': os.environ['DOCUMENT_DOWNLOAD_API_HOST'],
             'api_key': os.environ['DOCUMENT_DOWNLOAD_API_KEY']
