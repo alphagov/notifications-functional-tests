@@ -133,7 +133,7 @@ def setup_staging_live_config():
             'templates': {
                 'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
                 'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
-                'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
+                # letter template not set up on staging and live
             }
         }
     })
