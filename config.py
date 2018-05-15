@@ -107,7 +107,14 @@ def setup_preview_dev_config():
                 'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
                 'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
                 'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
-            }
+            },
+
+            'inbound_number': os.environ['NOTIFY_RESEARCH_SERVICE_INBOUND_NUMBER'],
+        },
+
+        'mmg_inbound_sms': {
+            'username': os.environ['MMG_INBOUND_SMS_USERNAME'],
+            'password': os.environ['MMG_INBOUND_SMS_AUTH'],
         }
     })
 

@@ -1,0 +1,59 @@
+"""
+
+Fixture:
+    hand-craft a request to POST to the receive messages API (mocking out the provider)
+
+Test:
+    use API to get inbound messages - assert that the new message is in the response
+
+Test:
+    look at inbox page - assert that the new message is in the conversation
+"""
+from datetime import datetime
+from urllib.parse import quote_plus
+
+import requests
+import pytest
+
+from config import config
+
+
+@pytest.fixture(scope='module')
+def inbound_sms():
+    # the message has the func test user's name in it - which has a unique uuid
+    message = 'Inbound message from {}'.format(config['user']['name'])
+
+    # hand-craft a request to receive messages API.
+    mmg_inbound_body = {
+        'MSISDN': config['user']['mobile'],  # from_user number
+        'Number': config['service']['inbound_number'],  # service inbound number
+        'Message': quote_plus(message),
+        'ID': 'SOME-MMG-SPECIFIC-ID',
+        'DateRecieved': quote_plus(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
+    }
+
+    response = requests.post(
+        config['notify_api_url'] + '/notifications/sms/receive/mmg',
+        json=mmg_inbound_body,
+        auth=(config['mmg_inbound_sms']['username'], config['mmg_inbound_sms']['password'])
+    )
+    response.raise_for_status()
+
+    return message
+
+
+def test_inbound_api(inbound_sms, seeded_client):
+    # this'll raise if the message isn't in the list.
+    next(
+        x
+        for x in seeded_client.get_received_texts()['received_text_messages']
+        if x['content'] == inbound_sms
+    )
+
+
+def test_inbox_page(inbound_sms, login_seeded_user, driver):
+    # functional tests look at inbox page - assert that message is there
+    # go to inbox page
+    # select conversation for outbound phone number
+    # assert that message body is there
+    pass
