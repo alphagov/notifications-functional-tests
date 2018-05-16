@@ -16,6 +16,11 @@ import requests
 import pytest
 
 from config import config
+from tests.pages import (
+    DashboardPage,
+    InboxPage,
+    ConversationPage,
+)
 
 
 @pytest.fixture(scope='module')
@@ -51,9 +56,18 @@ def test_inbound_api(inbound_sms, seeded_client):
     )
 
 
-def test_inbox_page(inbound_sms, login_seeded_user, driver):
-    # functional tests look at inbox page - assert that message is there
+def test_inbox_page(inbound_sms, driver, login_seeded_user):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+
     # go to inbox page
+    dashboard_page.click_inbox_link()
+
     # select conversation for outbound phone number
-    # assert that message body is there
-    pass
+    inbox_page = InboxPage(driver)
+    assert inbox_page.is_current(config['service']['id'])
+
+    inbox_page.go_to_conversation(config['user']['mobile'])
+
+    conversation = ConversationPage(driver)
+    assert conversation.get_message(inbound_sms) is not None
