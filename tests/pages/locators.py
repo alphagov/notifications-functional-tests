@@ -129,7 +129,7 @@ class SingleRecipientLocators(object):
     BUILD_ID_INPUT = (By.NAME, 'placeholder_value')
     PREVIEW_TABLE = (By.CLASS_NAME, 'email-message-meta')
     ALTERNATIVE_EMAIL = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
-    ALTERNATIVE_SMS_SENDER = (By.ID, 'sender-1')
+    ALTERNATIVE_SMS_SENDER = (By.ID, 'sender-2')
 
 
 class EmailReplyToLocators(object):
