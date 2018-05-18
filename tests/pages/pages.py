@@ -49,6 +49,43 @@ class RetryException(Exception):
     pass
 
 
+class AntiStale:
+    def __init__(self, locator, webdriverwait_func):
+        """
+        webdriverwait_func is a function that takes in a locator and returns an element. Probably a webdriverwait.
+        """
+        self.webdriverwait_func = webdriverwait_func
+        self.locator = locator
+        # kick it off
+        self.element = self.webdriverwait_func(self.locator)
+
+    def reset_element(self):
+        self.element = self.webdriverwait_func(self.locator)
+
+        raise RetryException('StaleElement {}'.format(self.locator))
+
+
+class AntiStaleElement(AntiStale):
+    @retry(RetryException, tries=5)
+    def __getattr__(self, attr):
+        try:
+            return getattr(self.element, attr)
+        except StaleElementReferenceException:
+            self.reset_element()
+
+
+class AntiStaleElementList(AntiStale):
+    def __getitem__(self, index):
+        class AntiStaleListItem:
+            @retry(RetryException, tries=5)
+            def __getattr__(item_self, attr):
+                try:
+                    return getattr(self.element[index], attr)
+                except StaleElementReferenceException:
+                    self.reset_element()
+        return AntiStaleListItem()
+
+
 class BasePage(object):
 
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
@@ -58,20 +95,29 @@ class BasePage(object):
         self.driver = driver
 
     def wait_for_invisible_element(self, locator):
-        return WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(locator)
+        return AntiStaleElement(
+            locator,
+            lambda locator: WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(locator)
+            )
         )
 
     def wait_for_element(self, locator):
-        return WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(locator),
-            EC.presence_of_element_located(locator)
+        return AntiStaleElement(
+            locator,
+            lambda locator: WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(locator),
+                EC.presence_of_element_located(locator)
+            )
         )
 
     def wait_for_elements(self, locator):
-        return WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_all_elements_located(locator),
-            EC.presence_of_all_elements_located(locator)
+        return AntiStaleElementList(
+            locator,
+            lambda locator: WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_all_elements_located(locator),
+                EC.presence_of_all_elements_located(locator)
+            )
         )
 
     def sign_out(self):
