@@ -59,6 +59,13 @@ class AntiStale:
         # kick it off
         self.element = self.webdriverwait_func(self.locator)
 
+    @retry(RetryException, tries=5)
+    def retry_on_stale(self, callable):
+        try:
+            return callable()
+        except StaleElementReferenceException:
+            self.reset_element()
+
     def reset_element(self):
         self.element = self.webdriverwait_func(self.locator)
 
@@ -66,23 +73,22 @@ class AntiStale:
 
 
 class AntiStaleElement(AntiStale):
-    @retry(RetryException, tries=5)
+    def click(self):
+        return self.retry_on_stale(lambda: self.element.click())
+
     def __getattr__(self, attr):
-        try:
-            return getattr(self.element, attr)
-        except StaleElementReferenceException:
-            self.reset_element()
+        return self.retry_on_stale(lambda: getattr(self.element, attr))
 
 
 class AntiStaleElementList(AntiStale):
     def __getitem__(self, index):
         class AntiStaleListItem:
-            @retry(RetryException, tries=5)
+            def click(item_self):
+                return self.retry_on_stale(lambda: self.element[index].click())
+
             def __getattr__(item_self, attr):
-                try:
-                    return getattr(self.element[index], attr)
-                except StaleElementReferenceException:
-                    self.reset_element()
+                return self.retry_on_stale(lambda: getattr(self.element[index], attr))
+
         return AntiStaleListItem()
 
 
@@ -136,7 +142,8 @@ class BasePage(object):
         return check_contains_url
 
     def select_checkbox_or_radio(self, element):
-        self.driver.execute_script("arguments[0].setAttribute('checked', 'checked')", element)
+        if not element.get_attribute('checked'):
+            element.click()
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
