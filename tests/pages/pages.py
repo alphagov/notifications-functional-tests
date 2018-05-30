@@ -23,13 +23,11 @@ from tests.pages.element import (
     TemplateContentElement
 )
 
-
 from tests.pages.locators import (
     AddServicePageLocators,
     ApiIntegrationPageLocators,
     ApiKeysPageLocators,
     CommonPageLocators,
-    DashboardPageLocators,
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
@@ -51,6 +49,49 @@ class RetryException(Exception):
     pass
 
 
+class AntiStale:
+    def __init__(self, locator, webdriverwait_func):
+        """
+        webdriverwait_func is a function that takes in a locator and returns an element. Probably a webdriverwait.
+        """
+        self.webdriverwait_func = webdriverwait_func
+        self.locator = locator
+        # kick it off
+        self.element = self.webdriverwait_func(self.locator)
+
+    @retry(RetryException, tries=5)
+    def retry_on_stale(self, callable):
+        try:
+            return callable()
+        except StaleElementReferenceException:
+            self.reset_element()
+
+    def reset_element(self):
+        self.element = self.webdriverwait_func(self.locator)
+
+        raise RetryException('StaleElement {}'.format(self.locator))
+
+
+class AntiStaleElement(AntiStale):
+    def click(self):
+        return self.retry_on_stale(lambda: self.element.click())
+
+    def __getattr__(self, attr):
+        return self.retry_on_stale(lambda: getattr(self.element, attr))
+
+
+class AntiStaleElementList(AntiStale):
+    def __getitem__(self, index):
+        class AntiStaleListItem:
+            def click(item_self):
+                return self.retry_on_stale(lambda: self.element[index].click())
+
+            def __getattr__(item_self, attr):
+                return self.retry_on_stale(lambda: getattr(self.element[index], attr))
+
+        return AntiStaleListItem()
+
+
 class BasePage(object):
 
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
@@ -60,20 +101,29 @@ class BasePage(object):
         self.driver = driver
 
     def wait_for_invisible_element(self, locator):
-        return WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(locator)
+        return AntiStaleElement(
+            locator,
+            lambda locator: WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(locator)
+            )
         )
 
     def wait_for_element(self, locator):
-        return WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(locator),
-            EC.presence_of_element_located(locator)
+        return AntiStaleElement(
+            locator,
+            lambda locator: WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(locator),
+                EC.presence_of_element_located(locator)
+            )
         )
 
     def wait_for_elements(self, locator):
-        return WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_all_elements_located(locator),
-            EC.presence_of_all_elements_located(locator)
+        return AntiStaleElementList(
+            locator,
+            lambda locator: WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_all_elements_located(locator),
+                EC.presence_of_all_elements_located(locator)
+            )
         )
 
     def sign_out(self):
@@ -92,7 +142,8 @@ class BasePage(object):
         return check_contains_url
 
     def select_checkbox_or_radio(self, element):
-        self.driver.execute_script("arguments[0].setAttribute('checked', 'checked')", element)
+        if not element.get_attribute('checked'):
+            element.click()
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
@@ -210,17 +261,18 @@ class VerifyPage(BasePage):
 
 class DashboardPage(BasePage):
 
-    h2 = DashboardPageLocators.H2
-    sms_templates_link = DashboardPageLocators.SMS_TEMPLATES_LINK
-    email_templates_link = DashboardPageLocators.EMAIL_TEMPLATES_LINK
-    team_members_link = DashboardPageLocators.TEAM_MEMBERS_LINK
-    api_keys_link = DashboardPageLocators.API_KEYS_LINK
-    total_email_div = DashboardPageLocators.TOTAL_EMAIL_NUMBER
-    total_sms_div = DashboardPageLocators.TOTAL_SMS_NUMBER
-    total_letter_div = DashboardPageLocators.TOTAL_LETTER_NUMBER
+    h2 = (By.CLASS_NAME, 'navigation-service-name')
+    sms_templates_link = (By.LINK_TEXT, 'Text message templates')
+    email_templates_link = (By.LINK_TEXT, 'Email templates')
+    team_members_link = (By.LINK_TEXT, 'Team members')
+    api_keys_link = (By.LINK_TEXT, 'API integration')
+    total_email_div = (By.CSS_SELECTOR, '#total-email .big-number-number')
+    total_sms_div = (By.CSS_SELECTOR, '#total-sms .big-number-number')
+    total_letter_div = (By.CSS_SELECTOR, '#total-letters .big-number-number')
+    inbox_link = (By.CSS_SELECTOR, '#total-received a')
 
     def _message_count_for_template_div(self, template_id):
-        return DashboardPageLocators.messages_sent_count_for_template(template_id)
+        return (By.ID, template_id)
 
     def is_current(self, service_id):
         expected = '{}/services/{}/dashboard'.format(self.base_url, service_id)
@@ -252,6 +304,10 @@ class DashboardPage(BasePage):
 
     def click_api_keys_link(self):
         element = self.wait_for_element(DashboardPage.api_keys_link)
+        element.click()
+
+    def click_inbox_link(self):
+        element = self.wait_for_element(DashboardPage.inbox_link)
         element.click()
 
     def get_service_id(self):
@@ -736,3 +792,25 @@ class InviteUserToOrgPage(BasePage):
     def send_invitation(self):
         element = self.wait_for_element(self.send_invitation_button)
         element.click()
+
+
+class InboxPage(BasePage):
+
+    def is_current(self, service_id):
+        expected = "{}/services/{}/inbox".format(self.base_url, service_id)
+        return self.driver.current_url == expected
+
+    def go_to_conversation(self, user_number):
+        # link looks like "07123 456789". because i don't know if user_number starts with +44, just get the last 10
+        # digits. (so this'll look for partial link text of "123 456789")
+        formatted_phone_number = '{} {}'.format(user_number[-10:-6], user_number[-6:])
+        element = self.wait_for_element((By.PARTIAL_LINK_TEXT, formatted_phone_number))
+        element.click()
+
+
+class ConversationPage(BasePage):
+    sms_message = (By.CSS_SELECTOR, '.sms-message-wrapper')
+
+    def get_message(self, content):
+        elements = self.wait_for_elements(self.sms_message)
+        return next((el for el in elements if content in el.text), None)

@@ -38,9 +38,12 @@ export NOTIFY_RESEARCH_MODE_EMAIL= # a seeded account you have created that can 
 export NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=xxx # password for the above account
 export NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT= # a seeded account you have created that can only access NOTIFY_RESEARCH_SERVICE_ID, doesn't need any permissions and must use email auth
 export NOTIFY_RESEARCH_ORGANISATION_ID=xxx # id of organisation that seeded service belongs to
+export NOTIFY_RESEARCH_SERVICE_INBOUND_NUMBER=07700900500 # dev tests won't actually send any messages to this number
 export JENKINS_BUILD_SMS_TEMPLATE_ID=xxx # SMS template id created in research service, contents detailed below
 export JENKINS_BUILD_EMAIL_TEMPLATE_ID=xxx # Email template id created in research service, contents detailed below
 export JENKINS_BUILD_LETTER_TEMPLATE_ID=xxx # Letter template id created in research service, contents detailed below
+export MMG_INBOUND_SMS_USERNAME=username
+export MMG_INBOUND_SMS_AUTH=testkey
 
 export DOCUMENT_DOWNLOAD_API_HOST=http://localhost:7000
 export DOCUMENT_DOWNLOAD_API_KEY=auth-token # document-download-api auth token
@@ -75,6 +78,8 @@ export DOCUMENT_DOWNLOAD_API_KEY=auth-token # document-download-api auth token
   - no permissions required
   - email auth
   - The password should be set the same as above - see `NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD`.
+* Create a fake inbound number (see notify-api's `flask command insert-inbound-numbers` for more details), and associate it with your seeded service.
+
 
 </details>
 

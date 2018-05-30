@@ -27,21 +27,6 @@ class AddServicePageLocators(object):
     ADD_SERVICE_BUTTON = (By.CLASS_NAME, 'button')
 
 
-class DashboardPageLocators(object):
-    H2 = (By.CLASS_NAME, 'navigation-service-name')
-    SMS_TEMPLATES_LINK = (By.LINK_TEXT, 'Text message templates')
-    EMAIL_TEMPLATES_LINK = (By.LINK_TEXT, 'Email templates')
-    TEAM_MEMBERS_LINK = (By.LINK_TEXT, 'Team members')
-    API_KEYS_LINK = (By.LINK_TEXT, 'API integration')
-    TOTAL_EMAIL_NUMBER = (By.CSS_SELECTOR, '#total-email .big-number-number')
-    TOTAL_SMS_NUMBER = (By.CSS_SELECTOR, '#total-sms .big-number-number')
-    TOTAL_LETTER_NUMBER = (By.CSS_SELECTOR, '#total-letters .big-number-number')
-
-    @classmethod
-    def messages_sent_count_for_template(self, template_id):
-        return (By.ID, template_id)
-
-
 class NavigationLocators(object):
     SIGN_OUT_LINK = (By.LINK_TEXT, 'Sign out')
     TEMPLATES_LINK = (By.LINK_TEXT, 'Templates')
