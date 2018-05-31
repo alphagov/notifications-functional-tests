@@ -141,7 +141,9 @@ def setup_staging_live_config():
                 'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
                 'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],
                 # letter template not set up on staging and live
-            }
+            },
+
+            'inbound_number': os.environ['PROVIDER_TEST_INBOUND_NUMBER'],
         }
     })
 

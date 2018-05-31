@@ -59,6 +59,10 @@ test-provider-email-delivery: venv ## Run provider delivery email tests
 test-provider-sms-delivery: venv ## Run provider delivery sms tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/test_provider_delivery_sms.py' hostuser
 
+.PHONY: test-provider-inbound-sms
+test-provider-inbound-sms: venv ## Run provider delivery sms tests
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/test_provider_inbound_sms.py' hostuser
+
 .PHONY: test-providers
 test-providers: venv ## Run tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/' hostuser
@@ -136,6 +140,10 @@ test-provider-email-delivery-with-docker: ## Run provider delivery email tests i
 .PHONY: test-provider-sms-delivery-with-docker
 test-provider-sms-delivery-with-docker: ## Run provider delivery sms tests inside a Docker container
 	$(call run_test_container, test-provider-sms-delivery)
+
+.PHONY: test-provider-inbound-sms-with-docker
+test-provider-inbound-sms-with-docker: ## Run provider delivery sms tests inside a Docker container
+	$(call run_test_container, test-provider-inbound-sms)
 
 .PHONY: test-providers-with-docker
 test-providers-with-docker: ## Run all provider tests inside a Docker container
