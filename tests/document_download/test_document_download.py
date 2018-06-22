@@ -18,7 +18,7 @@ def upload_document(service_id, file_contents):
     json = response.json()
     assert 'error' not in json, 'Status code {}'.format(response.status_code)
 
-    return json['document']['url']
+    return json['document']['direct_file_url']
 
 
 def test_document_upload_and_download():
