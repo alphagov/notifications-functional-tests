@@ -817,3 +817,25 @@ class ConversationPage(BasePage):
     def get_message(self, content):
         elements = self.wait_for_elements(self.sms_message)
         return next((el for el in elements if content in el.text), None)
+
+
+class DocumentDownloadLandingPage(BasePage):
+    continue_button = (By.CSS_SELECTOR, 'a.button')
+
+    def get_service_name(self):
+        element = self.wait_for_element((By.CSS_SELECTOR, 'h1+p'))
+
+        return element.text.partition(' has sent ')[0]
+
+    def go_to_download_page(self):
+        button = self.wait_for_element(self.continue_button)
+        button.click()
+
+
+class DocumentDownloadPage(BasePage):
+    download_link = (By.LINK_TEXT, "Download to your device")
+
+    def get_download_link(self):
+        link = self.wait_for_element(self.download_link)
+
+        return link.element.get_attribute('href')
