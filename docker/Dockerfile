@@ -1,4 +1,4 @@
-FROM python:3.4-slim
+FROM python:3.4-slim-jessie
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
