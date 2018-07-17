@@ -67,9 +67,9 @@ test-provider-inbound-sms: venv ## Run provider delivery sms tests
 test-providers: venv ## Run tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/' hostuser
 
-# .PHONY: test-document-download
-# test-document-download: venv ## Run document-download-api tests
-# 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/document_download/' hostuser
+.PHONY: test-document-download
+test-document-download: venv ## Run document-download-api tests
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/document_download/' hostuser
 
 .PHONY: generate-env-file
 generate-env-file: ## Generate the environment file for running the tests inside a Docker container
@@ -149,9 +149,9 @@ test-provider-inbound-sms-with-docker: ## Run provider delivery sms tests inside
 test-providers-with-docker: ## Run all provider tests inside a Docker container
 	$(call run_test_container, test-providers)
 
-# .PHONY: test-document-download-with-docker
-# test-document-download-with-docker: ## Run all provider tests inside a Docker container
-# 	$(call run_test_container, test-document-download)
+.PHONY: test-document-download-with-docker
+test-document-download-with-docker: ## Run all provider tests inside a Docker container
+	$(call run_test_container, test-document-download)
 
 .PHONY: clean-docker-containers
 clean-docker-containers: ## Clean up any remaining docker containers
