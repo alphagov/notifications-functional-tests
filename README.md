@@ -17,7 +17,7 @@ To run locally you need to populate a `.gitignore` and `environment.sh` file wit
 
 - Create a local `environment.sh` file in the root directory of the project.
 This file is included in the `.gitignore` to prevent the environment file from being accidentally committed
-- Make sure `Notifications Admin`, `Notifications Template Preview`, `Notifications API` and `Notifications API celery` are running locally.
+- Make sure `Notifications Admin`, `Notifications Template Preview`, `Notifications API`, `Notifications API celery` and `Document Download API` are running locally.
 - To run against preview, staging, or live, grab the environment files found in credentials repo in `credentials/functional-tests/{env_name}`, and save them locally to a separate file that you can source separately. `environment_staging.sh`
 
 <details>

@@ -313,6 +313,9 @@ class DashboardPage(BasePage):
     def get_service_id(self):
         return self.driver.current_url.split('/services/')[1].split('/')[0]
 
+    def get_notification_id(self):
+        return self.driver.current_url.split('notification/')[1].split('?')[0]
+
     def go_to_dashboard_for_service(self, service_id=None):
         if not service_id:
             service_id = self.get_service_id()

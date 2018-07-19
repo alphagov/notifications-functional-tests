@@ -113,6 +113,10 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
 
     send_to_one_recipient_page.click_continue()
 
+    notification_id = dashboard_page.get_notification_id()
+    one_off_email = seeded_client.get_notification_by_id(notification_id)
+    assert one_off_email.get('created_by_name') == 'Preview admin tests user'
+
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
