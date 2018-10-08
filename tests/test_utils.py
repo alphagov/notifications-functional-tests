@@ -238,7 +238,7 @@ def get_notification_via_api(template_id, api_key, sent_to):
         base_url=config['notify_api_url'],
         api_key=api_key
     )
-    resp = client.get('v2/notifications', params={'include_jobs': True})
+    resp = client.get('v2/notifications')
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['email_address'] or notification['phone_number']
