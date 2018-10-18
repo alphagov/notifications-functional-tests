@@ -10,7 +10,7 @@ from tests.postman import (
     NotificationStatuses
 )
 
-from tests.functional.preview_and_dev.consts import one_page_pdf, pdf_with_virus
+from tests.functional.preview_and_dev.consts import multi_page_pdf, pdf_with_virus
 from tests.test_utils import assert_notification_body, recordtime
 
 
@@ -40,7 +40,7 @@ def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_k
     notification_id = send_precompiled_letter_via_api(
         reference,
         seeded_client_using_test_key,
-        BytesIO(base64.b64decode(one_page_pdf))
+        BytesIO(base64.b64decode(multi_page_pdf))
     )
 
     notification = retry_call(
