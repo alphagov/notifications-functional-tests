@@ -40,7 +40,7 @@ class ShowTemplatesPageLocators(object):
     def TEMPLATE_LINK_TEXT(link_text):
         return (
             By.XPATH,
-            "//nav[contains(@id,'template-list')]//a[contains(text(),'{}')]".format(link_text)
+            "//nav[contains(@id,'template-list')]//a//span[contains(text(), '{}')]".format(link_text)
         )
 
 
