@@ -181,6 +181,8 @@ class RegistrationPage(BasePage):
         self.click_continue_button()
 
     def click_continue_button(self):
+        import pdb
+        pdb.set_trace()
         element = self.wait_for_element(RegistrationPage.continue_button)
         element.click()
 
@@ -270,6 +272,7 @@ class DashboardPage(BasePage):
     total_sms_div = (By.CSS_SELECTOR, '#total-sms .big-number-number')
     total_letter_div = (By.CSS_SELECTOR, '#total-letters .big-number-number')
     inbox_link = (By.CSS_SELECTOR, '#total-received a')
+    navigation = (By.CLASS_NAME, 'navigation')
 
     def _message_count_for_template_div(self, template_id):
         return (By.ID, template_id)
@@ -313,6 +316,10 @@ class DashboardPage(BasePage):
     def get_service_id(self):
         return self.driver.current_url.split('/services/')[1].split('/')[0]
 
+    def get_navigation_list(self):
+        element = self.wait_for_element(DashboardPage.navigation)
+        return element.text
+
     def get_notification_id(self):
         return self.driver.current_url.split('notification/')[1].split('?')[0]
 
@@ -338,6 +345,16 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(messages_sent_count_for_template_div)
 
         return int(element.text)
+
+    def is_for_basic_view(self):
+        expected = '{}/services/{}/templates'.format(self.base_url, self.get_service_id())
+        assert self.get_navigation_list() == 'Templates\nSent messages\nTeam members'
+        assert self.driver.current_url == expected
+
+    def is_for_view_with_all_permissions(self):
+        expected = '{}/services/{}'.format(self.base_url, self.get_service_id())
+        assert self.get_navigation_list() == """Dashboard\nTemplates\nTeam members\nUsage\nSettings\nAPI integration"""
+        assert self.driver.current_url == expected
 
 
 class ShowTemplatesPage(BasePage):
@@ -523,20 +540,27 @@ class TeamMembersPage(BasePage):
 class InviteUserPage(BasePage):
 
     email_input = EmailInputElement()
+    see_dashboard_check_box = InviteUserPageLocators.SEE_DASHBOARD_CHECKBOX
     send_messages_checkbox = InviteUserPageLocators.SEND_MESSAGES_CHECKBOX
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
+    manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
 
-    def fill_invitation_form(self, email, send_messages=False, manage_services=False, manage_api_keys=False):
+    def fill_invitation_form(self, email, send_messages_only):
         self.email_input = email
-        if send_messages:
+        if send_messages_only:
             element = self.wait_for_invisible_element(InviteUserPage.send_messages_checkbox)
             self.select_checkbox_or_radio(element)
-        if manage_services:
+        else:
+            element = self.wait_for_invisible_element(InviteUserPage.see_dashboard_check_box)
+            self.select_checkbox_or_radio(element)
+            element = self.wait_for_invisible_element(InviteUserPage.send_messages_checkbox)
+            self.select_checkbox_or_radio(element)
+            element = self.wait_for_invisible_element(InviteUserPage.manage_templates_checkbox)
+            self.select_checkbox_or_radio(element)
             element = self.wait_for_invisible_element(InviteUserPage.manage_services_checkbox)
             self.select_checkbox_or_radio(element)
-        if manage_api_keys:
             element = self.wait_for_invisible_element(InviteUserPage.manage_api_keys_checkbox)
             self.select_checkbox_or_radio(element)
 

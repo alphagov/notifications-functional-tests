@@ -134,7 +134,7 @@ def do_user_registration(driver):
     assert dashboard_page.h2_is_service_name(config['service_name'])
 
 
-def do_user_can_invite_someone_to_notify(driver):
+def do_user_can_invite_someone_to_notify(driver, basic_view):
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
@@ -148,8 +148,11 @@ def do_user_can_invite_someone_to_notify(driver):
     invited_user_randomness = str(uuid.uuid1())
     invited_user_name = 'Invited User ' + invited_user_randomness
     invite_email = generate_unique_email(config['user']['email'], invited_user_randomness)
+    if basic_view:
+        invite_user_page.fill_invitation_form(invite_email, send_messages_only=True)
+    else:
+        invite_user_page.fill_invitation_form(invite_email, send_messages_only=False)
 
-    invite_user_page.fill_invitation_form(invite_email, send_messages=True)
     invite_user_page.send_invitation()
     invite_user_page.sign_out()
     invite_user_page.wait_until_url_is(config['notify_admin_url'])
@@ -170,9 +173,12 @@ def do_user_can_invite_someone_to_notify(driver):
     dashboard_page.go_to_dashboard_for_service(service_id)
 
     assert dashboard_page.h2_is_service_name(config['service_name'])
-
-    dashboard_page.sign_out()
-    dashboard_page.wait_until_url_is(config['notify_admin_url'])
+    if basic_view:
+        dashboard_page.is_for_basic_view()
+        dashboard_page.sign_out()
+        dashboard_page.wait_until_url_is(config['notify_admin_url'])
+    else:
+        dashboard_page.is_for_view_with_all_permissions()
 
 
 def do_edit_and_delete_email_template(driver):

@@ -64,7 +64,7 @@ case $ENVIRONMENT in
       ;;
     *)
       # dev, preview
-      py.test -x -v tests/functional/preview_and_dev/
+      py.test -x -v tests/functional/preview_and_dev/test_registration_and_invite.py
       ;;
 esac
 

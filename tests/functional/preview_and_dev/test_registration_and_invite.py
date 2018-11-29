@@ -19,7 +19,8 @@ def test_registration_and_invite_flow(driver):
     do_user_can_update_reply_to_email_to_service(driver)
     do_user_can_update_sms_sender_of_service(driver)
     do_user_can_add_sms_sender_to_service(driver)
-    do_user_can_invite_someone_to_notify(driver)
+    do_user_can_invite_someone_to_notify(driver, basic_view=False)
+    do_user_can_invite_someone_to_notify(driver, basic_view=True)
 
 
 def do_user_can_update_sms_sender_of_service(driver):
