@@ -181,8 +181,6 @@ class RegistrationPage(BasePage):
         self.click_continue_button()
 
     def click_continue_button(self):
-        import pdb
-        pdb.set_trace()
         element = self.wait_for_element(RegistrationPage.continue_button)
         element.click()
 
