@@ -81,8 +81,10 @@ class TeamMembersPageLocators(object):
 
 class InviteUserPageLocators(object):
     SEND_MESSAGES_CHECKBOX = (By.NAME, 'send_messages')
-    MANAGE_SERVICES_CHECKBOX = (By.NAME, 'manage_services')
+    SEE_DASHBOARD_CHECKBOX = (By.NAME, 'view_activity')
+    MANAGE_SERVICES_CHECKBOX = (By.NAME, 'manage_service')
     MANAGE_API_KEYS_CHECKBOX = (By.NAME, 'manage_api_keys')
+    MANAGE_TEMPLATES_CHECKBOX = (By.NAME, 'manage_templates')
     SEND_INVITATION_BUTTON = (By.CLASS_NAME, 'button')
 
 
