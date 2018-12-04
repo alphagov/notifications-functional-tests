@@ -174,11 +174,23 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
     assert dashboard_page.h2_is_service_name(config['service_name'])
     if basic_view:
-        dashboard_page.is_for_basic_view()
+        is_basic_view(dashboard_page)
         dashboard_page.sign_out()
         dashboard_page.wait_until_url_is(config['notify_admin_url'])
     else:
-        dashboard_page.is_for_view_with_all_permissions()
+        is_view_for_all_permissions(dashboard_page)
+
+
+def is_basic_view(dashboard_page):
+    assert dashboard_page.get_navigation_list() == 'Templates\nSent messages\nTeam members'
+    expected = '{}/services/{}/templates'.format(dashboard_page.base_url, dashboard_page.get_service_id())
+    assert dashboard_page.driver.current_url == expected
+
+
+def is_view_for_all_permissions(page):
+    assert page.get_navigation_list() == """Dashboard\nTemplates\nTeam members\nUsage\nSettings\nAPI integration"""
+    expected = '{}/services/{}'.format(page.base_url, page.get_service_id())
+    assert page.driver.current_url == expected
 
 
 def do_edit_and_delete_email_template(driver):
@@ -217,7 +229,6 @@ def get_verify_code_from_api():
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
         pytest.fail("Could not find the verify code in notification body")
-    print('Trying to use 2fa code:', m.group(0))
     return m.group(0)
 
 

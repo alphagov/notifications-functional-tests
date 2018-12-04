@@ -344,16 +344,6 @@ class DashboardPage(BasePage):
 
         return int(element.text)
 
-    def is_for_basic_view(self):
-        expected = '{}/services/{}/templates'.format(self.base_url, self.get_service_id())
-        assert self.get_navigation_list() == 'Templates\nSent messages\nTeam members'
-        assert self.driver.current_url == expected
-
-    def is_for_view_with_all_permissions(self):
-        expected = '{}/services/{}'.format(self.base_url, self.get_service_id())
-        assert self.get_navigation_list() == """Dashboard\nTemplates\nTeam members\nUsage\nSettings\nAPI integration"""
-        assert self.driver.current_url == expected
-
 
 class ShowTemplatesPage(BasePage):
 
