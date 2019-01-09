@@ -219,7 +219,7 @@ def test_view_precompiled_letter_preview_delivered(
     api_integration_page.go_to_preview_letter()
 
     letter_preview_page = PreviewLetterPage(driver)
-    assert letter_preview_page.is_text_present_on_page("Provided as PDF, sent")
+    assert letter_preview_page.is_text_present_on_page("Provided as PDF")
 
     # Check the pdf link looks valid
     pdf_download_link = letter_preview_page.get_download_pdf_link()
