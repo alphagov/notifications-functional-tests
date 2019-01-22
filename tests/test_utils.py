@@ -96,13 +96,14 @@ def do_email_auth_verify(driver):
             config['service']['email_auth_account']
         )
         driver.get(login_link)
-        driver.find_element_by_class_name('banner-dangerous')
+
+        if driver.find_element_by_class_name('heading-large').text == 'The link has expired':
+            #  There was an error message (presumably we tried to use an email token that was already used/expired)
+            raise RetryException
+
     except (NoSuchElementException, TimeoutException):
         # no error - that means we're logged in! hurray.
         return True
-    else:
-        #  There was an error message (presumably we tried to enter an old invite code that was already used/expired)
-        raise RetryException
 
 
 def do_user_registration(driver):
