@@ -79,7 +79,7 @@ def do_verify(driver):
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
         driver.find_element_by_class_name('error-message')
-    except (NoSuchElementException, TimeoutException) as e:
+    except (NoSuchElementException, TimeoutException):
         #  In some cases a TimeoutException is raised even if we have managed to verify.
         #  For now, check explicitly if we 'have verified' and if so move on.
         return True
