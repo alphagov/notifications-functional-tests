@@ -33,7 +33,7 @@ class NavigationLocators(object):
 
 
 class ShowTemplatesPageLocators(object):
-    ADD_NEW_TEMPLATE_LINK = (By.LINK_TEXT, 'Add new template')
+    ADD_NEW_TEMPLATE_LINK = (By.CSS_SELECTOR, "button[value='add-new-template']")
     EMAIL_FILTER_LINK = (By.LINK_TEXT, 'Email')
 
     EMAIL_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
