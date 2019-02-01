@@ -36,19 +36,17 @@ class ShowTemplatesPageLocators(object):
     ADD_NEW_TEMPLATE_LINK = (By.LINK_TEXT, 'Add new template')
     EMAIL_FILTER_LINK = (By.LINK_TEXT, 'Email')
 
+    EMAIL_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
+    TEXT_MESSAGE_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='sms']")
+    LETTER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
+    CONTINUE_BUTTON = (By.CSS_SELECTOR, '[type=submit]')
+
     @staticmethod
     def TEMPLATE_LINK_TEXT(link_text):
         return (
             By.XPATH,
             "//nav[contains(@id,'template-list')]//a//span[contains(text(), '{}')]".format(link_text)
         )
-
-
-class SelectTemplatePageLocators(object):
-    EMAIL_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
-    TEXT_MESSAGE_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='sms']")
-    LETTER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
-    CONTINUE_BUTTON = (By.CSS_SELECTOR, '[type=submit]')
 
 
 class TemplatePageLocators(object):
