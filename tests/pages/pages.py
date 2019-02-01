@@ -33,7 +33,6 @@ from tests.pages.locators import (
     InviteUserPageLocators,
     MainPageLocators,
     NavigationLocators,
-    SelectTemplatePageLocators,
     ShowTemplatesPageLocators,
     SingleRecipientLocators,
     SmsSenderLocators,
@@ -359,23 +358,20 @@ class ShowTemplatesPage(BasePage):
         element = self.wait_for_element(ShowTemplatesPageLocators.TEMPLATE_LINK_TEXT(link_text))
         element.click()
 
-
-class SelectTemplatePage(BasePage):
-
     def select_email(self):
-        element = self.wait_for_invisible_element(SelectTemplatePageLocators.EMAIL_RADIO)
+        element = self.wait_for_invisible_element(ShowTemplatesPageLocators.EMAIL_RADIO)
         self.select_checkbox_or_radio(element)
 
     def select_text_message(self):
-        element = self.wait_for_invisible_element(SelectTemplatePageLocators.TEXT_MESSAGE_RADIO)
+        element = self.wait_for_invisible_element(ShowTemplatesPageLocators.TEXT_MESSAGE_RADIO)
         self.select_checkbox_or_radio(element)
 
     def select_letter(self):
-        element = self.wait_for_invisible_element(SelectTemplatePageLocators.LETTER_RADIO)
+        element = self.wait_for_invisible_element(ShowTemplatesPageLocators.LETTER_RADIO)
         self.select_checkbox_or_radio(element)
 
     def click_continue(self):
-        element = self.wait_for_element(SelectTemplatePageLocators.CONTINUE_BUTTON)
+        element = self.wait_for_element(ShowTemplatesPageLocators.CONTINUE_BUTTON)
         element.click()
 
 
