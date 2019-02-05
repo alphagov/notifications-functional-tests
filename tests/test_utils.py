@@ -40,13 +40,14 @@ default = " (default)"
 
 def create_temp_csv(fields):
     directory_name = tempfile.mkdtemp()
-    csv_file_path = os.path.join(directory_name, 'sample.csv')
+    csv_filename = '{}-sample.csv'.format(uuid.uuid4())
+    csv_file_path = os.path.join(directory_name, csv_filename)
     fields.update({'build_id': jenkins_build_id})
     with open(csv_file_path, 'w') as csv_file:
         csv_writer = csv.DictWriter(csv_file, fieldnames=fields.keys())
         csv_writer.writeheader()
         csv_writer.writerow(fields)
-    return directory_name, 'sample.csv'
+    return directory_name, csv_filename
 
 
 class RetryException(Exception):
