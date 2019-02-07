@@ -52,7 +52,7 @@ class NotificationStatuses:
     PENDING_VIRUS_CHECK = 'pending-virus-check'
     RECEIVED = {'received'}
     DELIVERED = {'delivered', 'temporary-failure', 'permanent-failure'}
-    SENT = RECEIVED | DELIVERED | {'sending'}
+    SENT = RECEIVED | DELIVERED | {'sending', 'pending'}
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):
