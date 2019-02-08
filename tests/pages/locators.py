@@ -95,7 +95,7 @@ class ApiIntegrationPageLocators(object):
 
 class LetterPreviewPageLocators(object):
     DOWNLOAD_PDF_LINK = (By.LINK_TEXT, 'Download as a PDF')
-    PDF_IMAGE = (By.XPATH, '//*[@id="content"]/div[2]/main/div/img')
+    PDF_IMAGE = (By.CSS_SELECTOR, '.letter img')
 
 
 class ApiKeysPageLocators(object):
