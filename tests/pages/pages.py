@@ -833,7 +833,7 @@ class DocumentDownloadLandingPage(BasePage):
     def get_service_name(self):
         element = self.wait_for_element((By.CSS_SELECTOR, 'h1+p'))
 
-        return element.text.partition(' has sent ')[0]
+        return element.text.partition(' sent you ')[0]
 
     def go_to_download_page(self):
         button = self.wait_for_element(self.continue_button)
@@ -841,7 +841,7 @@ class DocumentDownloadLandingPage(BasePage):
 
 
 class DocumentDownloadPage(BasePage):
-    download_link = (By.LINK_TEXT, "Download to your device")
+    download_link = (By.LINK_TEXT, "Download this file to your device")
 
     def get_download_link(self):
         link = self.wait_for_element(self.download_link)
