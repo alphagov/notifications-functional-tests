@@ -243,9 +243,9 @@ def get_notification_via_api(template_id, api_key, sent_to):
         t_id = notification['template']['id']
         to = notification['email_address'] or notification['phone_number']
         status = notification['status']
-        if t_id == template_id and to == sent_to and status in ['sending', 'delivered']:
+        if t_id == template_id and to == sent_to and status in ['sending', 'pending', 'delivered']:
             return notification['body']
-    message = 'Could not find notification with template {} to {} with a status of sending or delivered' \
+    message = 'Could not find notification with template {} to {} with a status of sending/pending/delivered' \
         .format(template_id,
                 sent_to)
     raise RetryException(message)
