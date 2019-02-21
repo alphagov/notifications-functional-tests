@@ -38,6 +38,13 @@ email_address3 = "notify+2@digitial.cabinet-office.gov.uk"
 default = " (default)"
 
 
+class NotificationStatuses:
+    PENDING_VIRUS_CHECK = 'pending-virus-check'
+    RECEIVED = {'received'}
+    DELIVERED = {'delivered', 'temporary-failure', 'permanent-failure'}
+    SENT = RECEIVED | DELIVERED | {'sending', 'pending'}
+
+
 def create_temp_csv(fields):
     directory_name = tempfile.mkdtemp()
     csv_filename = '{}-sample.csv'.format(uuid.uuid4())
@@ -60,7 +67,7 @@ def assert_notification_body(notification_id, notification):
 
 
 def get_link(template_id, email):
-    email_body = get_notification_via_api(
+    email_body = get_notification_by_to_field(
         template_id,
         config['notify_service_api_key'],
         email
@@ -221,7 +228,7 @@ def do_edit_and_delete_email_template(driver):
 
 
 def get_verify_code_from_api():
-    verify_code_message = get_notification_via_api(
+    verify_code_message = get_notification_by_to_field(
         config['notify_templates']['verify_code_template_id'],
         config['notify_service_api_key'],
         config['user']['mobile']
@@ -233,7 +240,7 @@ def get_verify_code_from_api():
 
 
 @retry(RetryException, tries=config['notification_retry_times'], delay=config['notification_retry_interval'])
-def get_notification_via_api(template_id, api_key, sent_to):
+def get_notification_by_to_field(template_id, api_key, sent_to):
     client = NotificationsAPIClient(
         base_url=config['notify_api_url'],
         api_key=api_key
@@ -243,7 +250,7 @@ def get_notification_via_api(template_id, api_key, sent_to):
         t_id = notification['template']['id']
         to = notification['email_address'] or notification['phone_number']
         status = notification['status']
-        if t_id == template_id and to == sent_to and status in ['sending', 'pending', 'delivered']:
+        if t_id == template_id and to == sent_to and status in NotificationStatuses.SENT:
             return notification['body']
     message = 'Could not find notification with template {} to {} with a status of sending/pending/delivered' \
         .format(template_id,

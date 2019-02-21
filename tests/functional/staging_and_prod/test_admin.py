@@ -6,10 +6,9 @@ from tests.pages import UploadCsvPage
 from tests.postman import (
     send_notification_via_csv,
     get_notification_by_id_via_api,
-    NotificationStatuses
 )
 
-from tests.test_utils import assert_notification_body, recordtime
+from tests.test_utils import assert_notification_body, recordtime, NotificationStatuses
 
 
 @recordtime

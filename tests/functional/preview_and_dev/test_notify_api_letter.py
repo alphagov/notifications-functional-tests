@@ -7,11 +7,10 @@ from tests.postman import (
     get_notification_by_id_via_api,
     send_notification_via_api,
     send_precompiled_letter_via_api,
-    NotificationStatuses
 )
 
 from tests.functional.preview_and_dev.consts import multi_page_pdf, pdf_with_virus
-from tests.test_utils import assert_notification_body, recordtime
+from tests.test_utils import assert_notification_body, recordtime, NotificationStatuses
 
 
 @recordtime

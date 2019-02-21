@@ -15,12 +15,12 @@ from tests.functional.preview_and_dev.consts import multi_page_pdf, pdf_with_vir
 from tests.postman import (
     send_notification_via_csv,
     get_notification_by_id_via_api,
-    NotificationStatuses,
     send_precompiled_letter_via_api)
 
 from tests.test_utils import (
     assert_notification_body,
     do_edit_and_delete_email_template,
+    NotificationStatuses,
     recordtime
 )
 
