@@ -3,10 +3,9 @@ from config import config
 from tests.postman import (
     send_notification_via_api,
     get_notification_by_id_via_api,
-    NotificationStatuses
 )
 
-from tests.test_utils import assert_notification_body
+from tests.test_utils import assert_notification_body, NotificationStatuses
 
 
 def test_provider_sms_delivery_via_api(client):
