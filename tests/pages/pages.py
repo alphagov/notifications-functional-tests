@@ -3,6 +3,7 @@ import shutil
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.common.exceptions import TimeoutException
@@ -142,7 +143,11 @@ class BasePage(object):
 
     def select_checkbox_or_radio(self, element):
         if not element.get_attribute('checked'):
-            element.click()
+            # it's hard to just click the element - some of our checkboxes hide behind sticky footers and such, and
+            # selenium doesn't appear to be very good at scrolling it until it's visible. By sending spacebar to it,
+            # we focus it without worrying about other elements concealing it.
+            element.send_keys(Keys.SPACE)
+            assert element.get_attribute('checked')
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
