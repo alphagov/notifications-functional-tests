@@ -13,6 +13,8 @@ In the main suite there are also tests that that directly use the [python client
 
 To run locally you need to populate a `.gitignore` and `environment.sh` file with the relevant values. On Jenkins the environment variables are set in the build settings page.
 
+Note: Your local celery must be run with `ANTIVIRUS_ENABLED=1` set in the environment for the test_view_precompiled_letter_message_log_virus_scan_failed test to work
+
 ## Local environment file
 
 - Create a local `environment.sh` file in the root directory of the project.
