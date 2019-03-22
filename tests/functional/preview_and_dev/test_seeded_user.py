@@ -32,7 +32,10 @@ from tests.pages import (
     SendOneRecipient,
     SmsSenderPage,
     UploadCsvPage,
-    PreviewLetterPage)
+    PreviewLetterPage,
+    ViewFolderPage,
+    ManageFolderPage,
+)
 
 
 @recordtime
@@ -283,7 +286,6 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
-
     show_templates_page.select_email()
     show_templates_page.click_continue()
 
@@ -297,10 +299,23 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     show_templates_page.add_to_new_folder(folder_name)
 
     # navigate into folder
+    show_templates_page.click_template_by_link_text(folder_name)
+
+    # rename folder step
+    view_folder_page = ViewFolderPage(driver)
+    view_folder_page.click_manage_folder()
+
+    manage_folder_page = ManageFolderPage(driver)
+    new_folder_name = folder_name + '-new'
+    manage_folder_page.set_name(new_folder_name)
+    view_folder_page.assert_name_equals(new_folder_name)
 
     # try to delete folder
+    view_folder_page.click_manage_folder()
+    manage_folder_page.delete_folder()  # fails due to not being empty
 
     # check error message visible
+    assert manage_folder_page.get_errors() == 'You must empty this folder before you can delete it'
 
     # move template out of folder
 

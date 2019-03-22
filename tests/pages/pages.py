@@ -151,6 +151,7 @@ class BasePage(object):
     def select_checkbox_or_radio(self, element):
         if not element.get_attribute('checked'):
             element.click()
+            assert element.get_attribute('checked')
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
@@ -890,3 +891,36 @@ class DocumentDownloadPage(BasePage):
         link = self.wait_for_element(self.download_link)
 
         return link.element.get_attribute('href')
+
+
+class ViewFolderPage(BasePage):
+    manage_link = (By.LINK_TEXT, 'Manage')
+    template_path_and_name = (By.TAG_NAME, 'h1')
+
+    def click_manage_folder(self):
+        link = self.wait_for_element(self.manage_link)
+        link.click()
+
+    def assert_name_equals(self, expected_name):
+        h1 = self.wait_for_element(self.template_path_and_name)
+        assert expected_name in h1.text
+
+
+class ManageFolderPage(BasePage):
+    delete_link = (By.LINK_TEXT, 'Delete this folder')
+    name_input = NameInputElement()
+    save_button = CommonPageLocators.CONTINUE_BUTTON
+    error_message = (By.CSS_SELECTOR, '.banner-dangerous')
+
+    def set_name(self, new_name):
+        self.name_input = new_name
+        button = self.wait_for_element(self.save_button)
+        button.click()
+
+    def delete_folder(self):
+        link = self.wait_for_element(self.delete_link)
+        link.click()
+
+    def get_errors(self):
+        errors = self.wait_for_element(self.error_message)
+        return errors.text.strip()
