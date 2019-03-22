@@ -2,7 +2,6 @@ import os
 import shutil
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
@@ -49,10 +48,11 @@ class RetryException(Exception):
 
 
 class AntiStale:
-    def __init__(self, locator, webdriverwait_func):
+    def __init__(self, driver, locator, webdriverwait_func):
         """
         webdriverwait_func is a function that takes in a locator and returns an element. Probably a webdriverwait.
         """
+        self.driver = driver
         self.webdriverwait_func = webdriverwait_func
         self.locator = locator
         # kick it off
@@ -73,7 +73,12 @@ class AntiStale:
 
 class AntiStaleElement(AntiStale):
     def click(self):
-        return self.retry_on_stale(lambda: self.element.click())
+        def _click():
+            # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
+            # the scrollIntoView function to bring it to the top of the page
+            self.driver.execute_script('arguments[0].scrollIntoView()', self.element)
+            self.element.click()
+        return self.retry_on_stale(_click)
 
     def __getattr__(self, attr):
         return self.retry_on_stale(lambda: getattr(self.element, attr))
@@ -101,6 +106,7 @@ class BasePage(object):
 
     def wait_for_invisible_element(self, locator):
         return AntiStaleElement(
+            self.driver,
             locator,
             lambda locator: WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(locator)
@@ -109,6 +115,7 @@ class BasePage(object):
 
     def wait_for_element(self, locator):
         return AntiStaleElement(
+            self.driver,
             locator,
             lambda locator: WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(locator),
@@ -118,6 +125,7 @@ class BasePage(object):
 
     def wait_for_elements(self, locator):
         return AntiStaleElementList(
+            self.driver,
             locator,
             lambda locator: WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_all_elements_located(locator),
@@ -142,11 +150,7 @@ class BasePage(object):
 
     def select_checkbox_or_radio(self, element):
         if not element.get_attribute('checked'):
-            # it's hard to just click the element - some of our checkboxes hide behind sticky footers and such, and
-            # selenium doesn't appear to be very good at scrolling it until it's visible. By sending spacebar to it,
-            # we focus it without worrying about other elements concealing it.
-            element.send_keys(Keys.SPACE)
-            assert element.get_attribute('checked')
+            element.click()
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
