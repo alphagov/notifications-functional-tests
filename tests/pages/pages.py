@@ -356,6 +356,7 @@ class DashboardPage(BasePage):
 class ShowTemplatesPage(BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
+    move_to_existing_folder_link = (By.CSS_SELECTOR, "button[value='move-to-existing-folder']")
     email_filter_link = (By.LINK_TEXT, 'Email')
 
     email_radio = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
@@ -364,6 +365,8 @@ class ShowTemplatesPage(BasePage):
     continue_button = (By.CSS_SELECTOR, '[type=submit]')
 
     add_to_new_folder_textbox = BasePageElement(name='move_to_new_folder_name')
+
+    root_template_folder_radio = (By.CSS_SELECTOR, "input[type='radio'][value='__NONE__']")
 
     @staticmethod
     def template_link_text(link_text):
@@ -419,6 +422,17 @@ class ShowTemplatesPage(BasePage):
         # green submit button
         element = self.wait_for_element(self.add_to_new_folder_link)
         element.click()
+
+    def move_to_root_template_folder(self):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        # wait for continue button to be displayed - sticky nav has rendered properly
+        # we've seen issues
+        continue_element = self.wait_for_element(self.continue_button)
+        radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
+
+        self.select_checkbox_or_radio(radio_element)
+        continue_element.click()
 
 
 class SendSmsTemplatePage(BasePage):
@@ -895,7 +909,7 @@ class DocumentDownloadPage(BasePage):
         return link.element.get_attribute('href')
 
 
-class ViewFolderPage(BasePage):
+class ViewFolderPage(ShowTemplatesPage):
     manage_link = (By.LINK_TEXT, 'Manage')
     template_path_and_name = (By.TAG_NAME, 'h1')
 
@@ -911,6 +925,7 @@ class ViewFolderPage(BasePage):
 class ManageFolderPage(BasePage):
     delete_link = (By.LINK_TEXT, 'Delete this folder')
     name_input = NameInputElement()
+    delete_button = (By.NAME, 'delete')
     save_button = CommonPageLocators.CONTINUE_BUTTON
     error_message = (By.CSS_SELECTOR, '.banner-dangerous')
 
@@ -921,6 +936,10 @@ class ManageFolderPage(BasePage):
 
     def delete_folder(self):
         link = self.wait_for_element(self.delete_link)
+        link.click()
+
+    def confirm_delete_folder(self):
+        link = self.wait_for_element(self.delete_button)
         link.click()
 
     def get_errors(self):

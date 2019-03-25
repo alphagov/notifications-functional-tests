@@ -317,11 +317,21 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     assert manage_folder_page.get_errors() == 'You must empty this folder before you can delete it'
 
     # move template out of folder
+    view_folder_page.select_template_checkbox(template_id)
+    view_folder_page.move_to_root_template_folder()
 
     # delete folder
+    view_folder_page.click_manage_folder()
+    manage_folder_page.delete_folder()
+    manage_folder_page.confirm_delete_folder()
+    # assert folder not visible
+    assert new_folder_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     # delete template
-    pass
+    show_templates_page.click_template_by_link_text(template_name)
+    edit_template_page.click_delete()
+
+    assert template_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
 
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
