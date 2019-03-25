@@ -388,21 +388,23 @@ class ShowTemplatesPage(BasePage):
         element = self.wait_for_element(self.template_link_text(link_text))
         element.click()
 
+    def _select_template_type(self, type):
+        # wait for continue button to be displayed - sticky nav has rendered properly
+        # we've seen issues
+        continue_element = self.wait_for_element(self.continue_button)
+        radio_element = self.wait_for_invisible_element(type)
+
+        self.select_checkbox_or_radio(radio_element)
+        continue_element.click()
+
     def select_email(self):
-        element = self.wait_for_invisible_element(self.email_radio)
-        self.select_checkbox_or_radio(element)
+        self._select_template_type(self.email_radio)
 
     def select_text_message(self):
-        element = self.wait_for_invisible_element(self.text_message_radio)
-        self.select_checkbox_or_radio(element)
+        self._select_template_type(self.text_message_radio)
 
     def select_letter(self):
-        element = self.wait_for_invisible_element(self.letter_radio)
-        self.select_checkbox_or_radio(element)
-
-    def click_continue(self):
-        element = self.wait_for_element(self.continue_button)
-        element.click()
+        self._select_template_type(self.letter_radio)
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))

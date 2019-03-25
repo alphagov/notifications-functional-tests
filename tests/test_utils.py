@@ -213,7 +213,6 @@ def do_edit_and_delete_email_template(driver):
     show_templates_page.click_add_new_template()
 
     show_templates_page.select_email()
-    show_templates_page.click_continue()
 
     template_page = EditEmailTemplatePage(driver)
     template_page.create_template(name=test_name)

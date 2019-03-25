@@ -60,7 +60,7 @@ def _driver():
 
         driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
                                   service_args=service_args,
-                                  chrome_options=options)
+                                  options=options)
 
     elif driver_name == 'phantomjs':
 
