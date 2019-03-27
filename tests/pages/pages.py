@@ -2,15 +2,17 @@ import os
 import shutil
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import (
+    NoSuchElementException, StaleElementReferenceException, TimeoutException, WebDriverException
+)
 
 from retry import retry
 from config import config
 
 from tests.pages.element import (
+    BasePageElement,
     EmailInputElement,
     FileInputElement,
     KeyNameInputElement,
@@ -33,7 +35,6 @@ from tests.pages.locators import (
     InviteUserPageLocators,
     MainPageLocators,
     NavigationLocators,
-    ShowTemplatesPageLocators,
     SingleRecipientLocators,
     SmsSenderLocators,
     TemplatePageLocators,
@@ -49,10 +50,11 @@ class RetryException(Exception):
 
 
 class AntiStale:
-    def __init__(self, locator, webdriverwait_func):
+    def __init__(self, driver, locator, webdriverwait_func):
         """
         webdriverwait_func is a function that takes in a locator and returns an element. Probably a webdriverwait.
         """
+        self.driver = driver
         self.webdriverwait_func = webdriverwait_func
         self.locator = locator
         # kick it off
@@ -73,7 +75,16 @@ class AntiStale:
 
 class AntiStaleElement(AntiStale):
     def click(self):
-        return self.retry_on_stale(lambda: self.element.click())
+        def _click():
+            # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
+            # the scrollIntoView function to bring it to the top of the page
+            self.driver.execute_script('arguments[0].scrollIntoViewIfNeeded()', self.element)
+            try:
+                self.element.click()
+            except WebDriverException:
+                self.driver.execute_script('arguments[0].scrollIntoView()', self.element)
+                self.element.click()
+        return self.retry_on_stale(_click)
 
     def __getattr__(self, attr):
         return self.retry_on_stale(lambda: getattr(self.element, attr))
@@ -101,6 +112,7 @@ class BasePage(object):
 
     def wait_for_invisible_element(self, locator):
         return AntiStaleElement(
+            self.driver,
             locator,
             lambda locator: WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(locator)
@@ -109,6 +121,7 @@ class BasePage(object):
 
     def wait_for_element(self, locator):
         return AntiStaleElement(
+            self.driver,
             locator,
             lambda locator: WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(locator),
@@ -118,6 +131,7 @@ class BasePage(object):
 
     def wait_for_elements(self, locator):
         return AntiStaleElementList(
+            self.driver,
             locator,
             lambda locator: WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_all_elements_located(locator),
@@ -143,6 +157,7 @@ class BasePage(object):
     def select_checkbox_or_radio(self, element):
         if not element.get_attribute('checked'):
             element.click()
+            assert element.get_attribute('checked')
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
@@ -345,34 +360,85 @@ class DashboardPage(BasePage):
 
 
 class ShowTemplatesPage(BasePage):
+    add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
+    add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
+    move_to_existing_folder_link = (By.CSS_SELECTOR, "button[value='move-to-existing-folder']")
+    email_filter_link = (By.LINK_TEXT, 'Email')
+
+    email_radio = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
+    text_message_radio = (By.CSS_SELECTOR, "input[type='radio'][value='sms']")
+    letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
+    continue_button = (By.CSS_SELECTOR, '[type=submit]')
+
+    add_to_new_folder_textbox = BasePageElement(name='move_to_new_folder_name')
+
+    root_template_folder_radio = (By.CSS_SELECTOR, "input[type='radio'][value='__NONE__']")
+
+    @staticmethod
+    def template_link_text(link_text):
+        return (
+            By.XPATH,
+            "//nav[contains(@id,'template-list')]//a//span[contains(text(), '{}')]".format(link_text)
+        )
+
+    @staticmethod
+    def template_checkbox(template_id):
+        return (By.CSS_SELECTOR, "input[type='checkbox'][value='{}']".format(template_id))
 
     def click_add_new_template(self):
-        element = self.wait_for_element(ShowTemplatesPageLocators.ADD_NEW_TEMPLATE_LINK)
+        element = self.wait_for_element(self.add_new_template_link)
         element.click()
 
     def click_email_filter_link(self):
-        element = self.wait_for_element(ShowTemplatesPageLocators.EMAIL_FILTER_LINK)
+        element = self.wait_for_element(self.email_filter_link)
         element.click()
 
     def click_template_by_link_text(self, link_text):
-        element = self.wait_for_element(ShowTemplatesPageLocators.TEMPLATE_LINK_TEXT(link_text))
+        element = self.wait_for_element(self.template_link_text(link_text))
         element.click()
+
+    def _select_template_type(self, type):
+        # wait for continue button to be displayed - sticky nav has rendered properly
+        # we've seen issues
+        continue_element = self.wait_for_element(self.continue_button)
+        radio_element = self.wait_for_invisible_element(type)
+
+        self.select_checkbox_or_radio(radio_element)
+        continue_element.click()
 
     def select_email(self):
-        element = self.wait_for_invisible_element(ShowTemplatesPageLocators.EMAIL_RADIO)
-        self.select_checkbox_or_radio(element)
+        self._select_template_type(self.email_radio)
 
     def select_text_message(self):
-        element = self.wait_for_invisible_element(ShowTemplatesPageLocators.TEXT_MESSAGE_RADIO)
-        self.select_checkbox_or_radio(element)
+        self._select_template_type(self.text_message_radio)
 
     def select_letter(self):
-        element = self.wait_for_invisible_element(ShowTemplatesPageLocators.LETTER_RADIO)
+        self._select_template_type(self.letter_radio)
+
+    def select_template_checkbox(self, template_id):
+        element = self.wait_for_invisible_element(self.template_checkbox(template_id))
         self.select_checkbox_or_radio(element)
 
-    def click_continue(self):
-        element = self.wait_for_element(ShowTemplatesPageLocators.CONTINUE_BUTTON)
+    def add_to_new_folder(self, folder_name):
+        # grey button to go to the name input box
+        element = self.wait_for_element(self.add_to_new_folder_link)
         element.click()
+        self.add_to_new_folder_textbox = folder_name
+
+        # green submit button
+        element = self.wait_for_element(self.add_to_new_folder_link)
+        element.click()
+
+    def move_to_root_template_folder(self):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        # wait for continue button to be displayed - sticky nav has rendered properly
+        # we've seen issues
+        continue_element = self.wait_for_element(self.continue_button)
+        radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
+
+        self.select_checkbox_or_radio(radio_element)
+        continue_element.click()
 
 
 class SendSmsTemplatePage(BasePage):
@@ -847,3 +913,41 @@ class DocumentDownloadPage(BasePage):
         link = self.wait_for_element(self.download_link)
 
         return link.element.get_attribute('href')
+
+
+class ViewFolderPage(ShowTemplatesPage):
+    manage_link = (By.LINK_TEXT, 'Manage')
+    template_path_and_name = (By.TAG_NAME, 'h1')
+
+    def click_manage_folder(self):
+        link = self.wait_for_element(self.manage_link)
+        link.click()
+
+    def assert_name_equals(self, expected_name):
+        h1 = self.wait_for_element(self.template_path_and_name)
+        assert expected_name in h1.text
+
+
+class ManageFolderPage(BasePage):
+    delete_link = (By.LINK_TEXT, 'Delete this folder')
+    name_input = NameInputElement()
+    delete_button = (By.NAME, 'delete')
+    save_button = CommonPageLocators.CONTINUE_BUTTON
+    error_message = (By.CSS_SELECTOR, '.banner-dangerous')
+
+    def set_name(self, new_name):
+        self.name_input = new_name
+        button = self.wait_for_element(self.save_button)
+        button.click()
+
+    def delete_folder(self):
+        link = self.wait_for_element(self.delete_link)
+        link.click()
+
+    def confirm_delete_folder(self):
+        link = self.wait_for_element(self.delete_button)
+        link.click()
+
+    def get_errors(self):
+        errors = self.wait_for_element(self.error_message)
+        return errors.text.strip()

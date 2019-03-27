@@ -27,10 +27,15 @@ from tests.test_utils import (
 from tests.pages import (
     ApiIntegrationPage,
     DashboardPage,
+    ShowTemplatesPage,
+    EditEmailTemplatePage,
     SendOneRecipient,
     SmsSenderPage,
     UploadCsvPage,
-    PreviewLetterPage)
+    PreviewLetterPage,
+    ViewFolderPage,
+    ManageFolderPage,
+)
 
 
 @recordtime
@@ -268,6 +273,65 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(
     ref_link = config['service']['id'] + "/notification/" + api_integration_page.get_notification_id()
     link = api_integration_page.get_view_letter_link()
     assert ref_link not in link
+
+
+def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user):
+    # create new template
+    template_name = 'template-for-folder-test {}'.format(uuid.uuid4())
+    folder_name = 'test-folder {}'.format(uuid.uuid4())
+
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+    show_templates_page.select_email()
+
+    edit_template_page = EditEmailTemplatePage(driver)
+    edit_template_page.create_template(name=template_name)
+    template_id = edit_template_page.get_id()
+    edit_template_page.click_templates()
+
+    # create folder using add to new folder
+    show_templates_page.select_template_checkbox(template_id)
+    show_templates_page.add_to_new_folder(folder_name)
+
+    # navigate into folder
+    show_templates_page.click_template_by_link_text(folder_name)
+
+    # rename folder step
+    view_folder_page = ViewFolderPage(driver)
+    view_folder_page.click_manage_folder()
+
+    manage_folder_page = ManageFolderPage(driver)
+    new_folder_name = folder_name + '-new'
+    manage_folder_page.set_name(new_folder_name)
+    view_folder_page.assert_name_equals(new_folder_name)
+
+    # try to delete folder
+    view_folder_page.click_manage_folder()
+    manage_folder_page.delete_folder()  # fails due to not being empty
+
+    # check error message visible
+    assert manage_folder_page.get_errors() == 'You must empty this folder before you can delete it'
+
+    # move template out of folder
+    view_folder_page.select_template_checkbox(template_id)
+    view_folder_page.move_to_root_template_folder()
+
+    # delete folder
+    view_folder_page.click_manage_folder()
+    manage_folder_page.delete_folder()
+    manage_folder_page.confirm_delete_folder()
+    # assert folder not visible
+    assert new_folder_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    # delete template
+    show_templates_page.click_template_by_link_text(template_name)
+    edit_template_page.click_delete()
+
+    assert template_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
 
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):

@@ -2,7 +2,6 @@
 SHELL := /bin/bash
 DATE = $(shell date +%Y-%m-%d:%H:%M:%S)
 
-PIP_ACCEL_CACHE ?= ${CURDIR}/cache/pip-accel
 APP_VERSION_FILE = app/version.py
 
 DOCKER_BUILDER_IMAGE_NAME = govuk/notify-func-tests-runner
@@ -20,7 +19,6 @@ venv: venv/bin/activate ## Create virtualenv if it does not exist
 
 venv/bin/activate:
 	test -d venv || virtualenv venv
-	./venv/bin/pip install pip-accel
 
 .PHONY: check-env-vars
 check-env-vars: ## Check mandatory environment variables
@@ -29,8 +27,7 @@ check-env-vars: ## Check mandatory environment variables
 
 .PHONY: dependencies
 dependencies: venv ## Install build dependencies
-	mkdir -p ${PIP_ACCEL_CACHE}
-	PIP_ACCEL_CACHE=${PIP_ACCEL_CACHE} ./venv/bin/pip-accel install -r requirements.txt
+	./venv/bin/pip install -r requirements.txt
 
 .PHONY: build
 build: dependencies ## Build project
@@ -77,7 +74,6 @@ generate-env-file: ## Generate the environment file for running the tests inside
 
 .PHONY: prepare-docker-runner-image
 prepare-docker-runner-image: ## Prepare the Docker builder image
-	mkdir -p ${PIP_ACCEL_CACHE}
 	make -C docker build
 
 .PHONY: build-with-docker
@@ -86,7 +82,6 @@ build-with-docker: prepare-docker-runner-image ## Build inside a Docker containe
 		--name "${DOCKER_CONTAINER_PREFIX}-build" \
 		-v "`pwd`:/var/project" \
 		-v /dev/urandom:/dev/random \
-		-v "${PIP_ACCEL_CACHE}:/var/project/cache/pip-accel" \
 		-e UID=$(shell id -u) \
 		-e GID=$(shell id -g) \
 		-e http_proxy="${HTTP_PROXY}" \
