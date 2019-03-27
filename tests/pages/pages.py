@@ -361,6 +361,7 @@ class DashboardPage(BasePage):
 
 class ShowTemplatesPage(BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
+    add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
     move_to_existing_folder_link = (By.CSS_SELECTOR, "button[value='move-to-existing-folder']")
     email_filter_link = (By.LINK_TEXT, 'Email')
@@ -370,6 +371,7 @@ class ShowTemplatesPage(BasePage):
     letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
     continue_button = (By.CSS_SELECTOR, '[type=submit]')
 
+    add_new_folder_textbox = BasePageElement(name='add_new_folder_name')
     add_to_new_folder_textbox = BasePageElement(name='move_to_new_folder_name')
 
     root_template_folder_radio = (By.CSS_SELECTOR, "input[type='radio'][value='__NONE__']")
@@ -387,6 +389,16 @@ class ShowTemplatesPage(BasePage):
 
     def click_add_new_template(self):
         element = self.wait_for_element(self.add_new_template_link)
+        element.click()
+
+    def click_add_new_folder(self, folder_name):
+        element = self.wait_for_element(self.add_new_folder_link)
+        element.click()
+
+        self.add_new_folder_textbox = folder_name
+
+        # green submit button
+        element = self.wait_for_element(self.add_new_folder_link)
         element.click()
 
     def click_email_filter_link(self):

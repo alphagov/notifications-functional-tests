@@ -334,6 +334,78 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     assert template_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
 
+def test_template_folder_permissions(driver, login_seeded_user):
+    # create parent folder
+    # go to view parent folder page
+    folder_names = [
+        'test-parent-folder {}'.format(uuid.uuid4()),
+        'test-child-folder {}'.format(uuid.uuid4()),
+        'test-grandchild-folder {}'.format(uuid.uuid4()),
+    ]
+    for folder_name in folder_names:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+        dashboard_page.click_templates()
+
+        show_templates_page = ShowTemplatesPage(driver)
+        show_templates_page.click_add_new_folder(folder_name)
+
+        show_templates_page.click_template_by_link_text(folder_name)
+        # create a new template
+        show_templates_page.click_add_new_template()
+        show_templates_page.select_email()
+
+        edit_template_page = EditEmailTemplatePage(driver)
+        edit_template_page.create_template(name=(folder_name + "_template"))
+
+    # create a new template
+
+    # create a child folder
+
+    # go to child folder
+
+    # create a new template
+
+    # create grandchild folder
+
+    # go to grandchild folder
+
+    # create a new template
+
+    # go to Team members page
+
+    # edit colleague's permissions so child folder is invisible
+
+    # log out
+
+    # log in as that colleague
+
+    # go to Templates
+
+    # click through, see that child folder invisible and template in it, too;
+    # but other templates visible and grandchild folder has folder path as a name
+
+    # delete everything
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_template_by_link_text(folder_names[0])
+
+    view_folder_page = ViewFolderPage(driver)
+    view_folder_page.click_template_by_link_text(folder_names[1])
+    view_folder_page.click_template_by_link_text(folder_names[2])
+
+    for folder_name in reversed(folder_names):
+        view_folder_page.click_template_by_link_text(folder_name + "_template")
+        template_page = EditEmailTemplatePage(driver)
+        template_page.click_delete()
+
+        view_folder_page.click_manage_folder()
+        manage_folder_page = ManageFolderPage(driver)
+        manage_folder_page.delete_folder()
+        manage_folder_page.confirm_delete_folder()
+
+
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
     page.go_to_api_integration_for_service(service_id=notify_research_service_id)
     client_reference = page.get_client_reference()
