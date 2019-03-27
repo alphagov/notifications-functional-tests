@@ -342,12 +342,12 @@ def test_template_folder_permissions(driver, login_seeded_user):
         'test-child-folder {}'.format(uuid.uuid4()),
         'test-grandchild-folder {}'.format(uuid.uuid4()),
     ]
-    for folder_name in folder_names:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.go_to_dashboard_for_service(config['service']['id'])
-        dashboard_page.click_templates()
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+    show_templates_page = ShowTemplatesPage(driver)
 
-        show_templates_page = ShowTemplatesPage(driver)
+    for folder_name in folder_names:
         show_templates_page.click_add_new_folder(folder_name)
 
         show_templates_page.click_template_by_link_text(folder_name)
@@ -357,6 +357,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
 
         edit_template_page = EditEmailTemplatePage(driver)
         edit_template_page.create_template(name=(folder_name + "_template"))
+        edit_template_page.click_folder_path(folder_name)
 
     # create a new template
 

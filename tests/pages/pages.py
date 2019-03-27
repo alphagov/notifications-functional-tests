@@ -525,6 +525,13 @@ class EditEmailTemplatePage(BasePage):
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
+    @staticmethod
+    def folder_path_item(folder_name):
+        return (
+            By.XPATH,
+            "//a[contains(@class,'folder-heading-folder') and contains(text(), '{}')]".format(folder_name)
+        )
+
     def click_save(self):
         element = self.wait_for_element(EditEmailTemplatePage.save_button)
         element.click()
@@ -540,6 +547,10 @@ class EditEmailTemplatePage(BasePage):
         self.subject_input = 'Test email from functional tests'
         self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
+
+    def click_folder_path(self, folder_name):
+        element = self.wait_for_element(self.folder_path_item(folder_name))
+        element.click()
 
     def get_id(self):
         # e.g.
