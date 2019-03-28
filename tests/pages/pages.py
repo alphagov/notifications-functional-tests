@@ -600,6 +600,7 @@ class TeamMembersPage(BasePage):
 
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
+    edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
 
     def h1_is_team_members(self):
         element = self.wait_for_element(TeamMembersPage.h1)
@@ -607,6 +608,10 @@ class TeamMembersPage(BasePage):
 
     def click_invite_user(self):
         element = self.wait_for_element(TeamMembersPage.invite_team_member_button)
+        element.click()
+
+    def click_edit_team_member(self):
+        element = self.wait_for_element(TeamMembersPage.edit_team_member_link)
         element.click()
 
 

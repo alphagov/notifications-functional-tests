@@ -337,6 +337,13 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 def test_template_folder_permissions(driver, login_seeded_user):
     # create parent folder
     # go to view parent folder page
+    # create a new template
+    # create a child folder
+    # go to child folder
+    # create a new template
+    # create grandchild folder
+    # go to grandchild folder
+    # create a new template
     folder_names = [
         'test-parent-folder {}'.format(uuid.uuid4()),
         'test-child-folder {}'.format(uuid.uuid4()),
@@ -359,23 +366,11 @@ def test_template_folder_permissions(driver, login_seeded_user):
         edit_template_page.create_template(name=(folder_name + "_template"))
         edit_template_page.click_folder_path(folder_name)
 
-    # create a new template
-
-    # create a child folder
-
-    # go to child folder
-
-    # create a new template
-
-    # create grandchild folder
-
-    # go to grandchild folder
-
-    # create a new template
-
     # go to Team members page
-
+    dashboard_page.click_team_members_link()
+    team_members_page = TeamMembersPage(driver)
     # edit colleague's permissions so child folder is invisible
+    team_members_page.click_edit_team_member()
 
     # log out
 

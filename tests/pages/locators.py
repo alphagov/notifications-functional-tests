@@ -58,6 +58,7 @@ class UploadCsvLocators(object):
 class TeamMembersPageLocators(object):
     H1 = (By.TAG_NAME, 'h1')
     INVITE_TEAM_MEMBER_BUTTON = (By.CLASS_NAME, 'button-secondary')
+    EDIT_TEAM_MEMBER_LINK = (By.LINK_TEXT, 'Edit team member')
 
 
 class InviteUserPageLocators(object):
