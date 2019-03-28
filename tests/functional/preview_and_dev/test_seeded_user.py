@@ -35,6 +35,8 @@ from tests.pages import (
     PreviewLetterPage,
     ViewFolderPage,
     ManageFolderPage,
+    TeamMembersPage,
+    InviteUserPage,
 )
 
 
@@ -371,6 +373,9 @@ def test_template_folder_permissions(driver, login_seeded_user):
     team_members_page = TeamMembersPage(driver)
     # edit colleague's permissions so child folder is invisible
     team_members_page.click_edit_team_member()
+    edit_team_member_page = InviteUserPage(driver)
+    edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
+    edit_team_member_page.click_save()
 
     # log out
 

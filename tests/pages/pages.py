@@ -159,8 +159,17 @@ class BasePage(object):
             element.click()
             assert element.get_attribute('checked')
 
+    def unselect_checkbox(self, element):
+        if element.get_attribute('checked'):
+            element.click()
+            assert not element.get_attribute('checked')
+
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
+        element.click()
+
+    def click_save(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
         element.click()
 
 
@@ -625,6 +634,10 @@ class InviteUserPage(BasePage):
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
 
+    def get_folder_checkbox(self, folder_name):
+        label = self.driver.find_elements_by_xpath("//label[contains(text(), '{}')]".format(folder_name))
+        return (By.ID, label[0].get_attribute("for"))
+
     def fill_invitation_form(self, email, send_messages_only):
         self.email_input = email
         if send_messages_only:
@@ -645,6 +658,10 @@ class InviteUserPage(BasePage):
     def send_invitation(self):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
+
+    def uncheck_folder_permission_checkbox(self, folder_name):
+        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
+        self.unselect_checkbox(checkbox)
 
 
 class RegisterFromInvite(BasePage):
