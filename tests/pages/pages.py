@@ -461,6 +461,12 @@ class ShowTemplatesPage(BasePage):
         self.select_checkbox_or_radio(radio_element)
         continue_element.click()
 
+    def get_folder_by_name(self, folder_name):
+        try:
+            return self.wait_for_invisible_element(self.template_link_text(folder_name))
+        except TimeoutException:
+            return None
+
 
 class SendSmsTemplatePage(BasePage):
 

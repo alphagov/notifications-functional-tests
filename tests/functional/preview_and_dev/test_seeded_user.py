@@ -24,7 +24,7 @@ from tests.test_utils import (
     recordtime
 )
 
-from tests.pages.rollups import sign_in
+from tests.pages.rollups import sign_in, sign_in_email_auth
 
 from tests.pages import (
     ApiIntegrationPage,
@@ -382,12 +382,20 @@ def test_template_folder_permissions(driver, login_seeded_user):
     # log out
     dashboard_page.sign_out()
     # log in as that colleague
-
+    sign_in_email_auth(driver)
     # go to Templates
-
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
     # click through, see that child folder invisible and template in it, too;
+    show_templates_page.click_template_by_link_text(folder_names[0])
+    child_folder = show_templates_page.get_folder_by_name(folder_names[1])
+    name_of_folder_with_invisible_parent = folder_names[1] + " / " + folder_names[2]
+    assert child_folder.text == name_of_folder_with_invisible_parent
     # but other templates visible and grandchild folder has folder path as a name
-
+    show_templates_page.click_template_by_link_text(name_of_folder_with_invisible_parent)
+    # click grandchild folder template to see that it's there
+    show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
+    dashboard_page.sign_out()
     # delete everything
     sign_in(driver, seeded=True)
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
