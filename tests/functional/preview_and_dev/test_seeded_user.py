@@ -339,15 +339,6 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 
 
 def test_template_folder_permissions(driver, login_seeded_user):
-    # create parent folder
-    # go to view parent folder page
-    # create a new template
-    # create a child folder
-    # go to child folder
-    # create a new template
-    # create grandchild folder
-    # go to grandchild folder
-    # create a new template
     folder_names = [
         'test-parent-folder {}'.format(uuid.uuid4()),
         'test-child-folder {}'.format(uuid.uuid4()),
@@ -357,8 +348,10 @@ def test_template_folder_permissions(driver, login_seeded_user):
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_templates()
     show_templates_page = ShowTemplatesPage(driver)
-
+    # a loop to create a folder structure with parent folder, child folder and grandchild folder,
+    # each folder with one template in it
     for folder_name in folder_names:
+        # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
 
         show_templates_page.click_template_by_link_text(folder_name)
@@ -368,6 +361,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
 
         edit_template_page = EditEmailTemplatePage(driver)
         edit_template_page.create_template(name=(folder_name + "_template"))
+        # go back to view folder page
         edit_template_page.click_folder_path(folder_name)
 
     # go to Team members page
@@ -386,12 +380,12 @@ def test_template_folder_permissions(driver, login_seeded_user):
     # go to Templates
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_templates()
-    # click through, see that child folder invisible and template in it, too;
+    # click through, see that child folder invisible
     show_templates_page.click_template_by_link_text(folder_names[0])
     child_folder = show_templates_page.get_folder_by_name(folder_names[1])
     name_of_folder_with_invisible_parent = folder_names[1] + " / " + folder_names[2]
     assert child_folder.text == name_of_folder_with_invisible_parent
-    # but other templates visible and grandchild folder has folder path as a name
+    # grandchild folder has folder path as a name
     show_templates_page.click_template_by_link_text(name_of_folder_with_invisible_parent)
     # click grandchild folder template to see that it's there
     show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
