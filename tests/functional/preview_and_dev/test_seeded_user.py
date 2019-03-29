@@ -24,6 +24,8 @@ from tests.test_utils import (
     recordtime
 )
 
+from tests.pages.rollups import sign_in
+
 from tests.pages import (
     ApiIntegrationPage,
     DashboardPage,
@@ -378,7 +380,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
     edit_team_member_page.click_save()
 
     # log out
-
+    dashboard_page.sign_out()
     # log in as that colleague
 
     # go to Templates
@@ -387,6 +389,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
     # but other templates visible and grandchild folder has folder path as a name
 
     # delete everything
+    sign_in(driver, seeded=True)
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_templates()
     show_templates_page = ShowTemplatesPage(driver)
