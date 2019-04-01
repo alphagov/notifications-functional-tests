@@ -617,6 +617,9 @@ class TeamMembersPage(BasePage):
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
     edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
 
+    def get_edit_link_for_member_name(self, email):
+        return self.wait_for_element((By.XPATH, "//h3[@title='{}']/..//a".format(email)))
+
     def h1_is_team_members(self):
         element = self.wait_for_element(TeamMembersPage.h1)
         return element.text == 'Team members'
@@ -625,8 +628,11 @@ class TeamMembersPage(BasePage):
         element = self.wait_for_element(TeamMembersPage.invite_team_member_button)
         element.click()
 
-    def click_edit_team_member(self):
-        element = self.wait_for_element(TeamMembersPage.edit_team_member_link)
+    def click_edit_team_member(self, email=None):
+        if not email:
+            element = self.wait_for_element(TeamMembersPage.edit_team_member_link)
+        else:
+            element = self.get_edit_link_for_member_name(email)
         element.click()
 
 
