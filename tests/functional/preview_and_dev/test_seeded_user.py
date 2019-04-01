@@ -373,6 +373,11 @@ def test_template_folder_permissions(driver, login_seeded_user):
     edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
     edit_team_member_page.click_save()
 
+    # check if permissions saved correctly
+    dashboard_page.click_team_members_link()
+    team_members_page.click_edit_team_member()
+    assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
+
     # log out
     dashboard_page.sign_out()
     # log in as that colleague

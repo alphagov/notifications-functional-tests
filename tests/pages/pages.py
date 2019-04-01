@@ -669,6 +669,10 @@ class InviteUserPage(BasePage):
         checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
         self.unselect_checkbox(checkbox)
 
+    def is_checkbox_checked(self, folder_name):
+        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
+        return checkbox.get_attribute('checked')
+
 
 class RegisterFromInvite(BasePage):
 
