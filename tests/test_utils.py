@@ -5,7 +5,6 @@ import csv
 import re
 import logging
 import uuid
-import pytest
 
 from datetime import datetime
 from retry import retry
@@ -72,11 +71,13 @@ def get_link(template_id, email):
         config['notify_service_api_key'],
         email
     )
-    match = re.search(r'http[s]?://\S+', email_body, re.MULTILINE)
-    if match:
-        return match.group(0)
-    else:
-        pytest.fail("Couldn't get the link from the email")
+    m = re.search(r'http[s]?://\S+', email_body, re.MULTILINE)
+    if not m:
+        raise RetryException("Could not find a verify email code for template {} sent to {}".format(
+            template_id,
+            email
+        ))
+    return m.group(0)
 
 
 @retry(RetryException, tries=config['verify_code_retry_times'], delay=config['verify_code_retry_interval'])
@@ -234,27 +235,25 @@ def get_verify_code_from_api():
     )
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
-        pytest.fail("Could not find the verify code in notification body")
+        raise RetryException("Could not find a verify code for template {} sent to {}".format(
+            config['notify_templates']['verify_code_template_id'],
+            config['user']['mobile']
+        ))
     return m.group(0)
 
 
-@retry(RetryException, tries=config['notification_retry_times'], delay=config['notification_retry_interval'])
-def get_notification_by_to_field(template_id, api_key, sent_to):
+def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
     client = NotificationsAPIClient(
         base_url=config['notify_api_url'],
         api_key=api_key
     )
-    resp = client.get('v2/notifications', params={'include_jobs': True})
+    resp = client.get('v2/notifications')
     for notification in resp['notifications']:
         t_id = notification['template']['id']
         to = notification['email_address'] or notification['phone_number']
-        status = notification['status']
-        if t_id == template_id and to == sent_to and status in NotificationStatuses.SENT:
+        if t_id == template_id and to == sent_to and (not statuses or notification['status'] in statuses):
             return notification['body']
-    message = 'Could not find notification with template {} to {} with a status of sending/pending/delivered' \
-        .format(template_id,
-                sent_to)
-    raise RetryException(message)
+    return ''
 
 
 def recordtime(func):
