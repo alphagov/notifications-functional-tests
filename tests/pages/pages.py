@@ -159,8 +159,17 @@ class BasePage(object):
             element.click()
             assert element.get_attribute('checked')
 
+    def unselect_checkbox(self, element):
+        if element.get_attribute('checked'):
+            element.click()
+            assert not element.get_attribute('checked')
+
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
+        element.click()
+
+    def click_save(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
         element.click()
 
 
@@ -361,6 +370,7 @@ class DashboardPage(BasePage):
 
 class ShowTemplatesPage(BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
+    add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
     move_to_existing_folder_link = (By.CSS_SELECTOR, "button[value='move-to-existing-folder']")
     email_filter_link = (By.LINK_TEXT, 'Email')
@@ -370,6 +380,7 @@ class ShowTemplatesPage(BasePage):
     letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
     continue_button = (By.CSS_SELECTOR, '[type=submit]')
 
+    add_new_folder_textbox = BasePageElement(name='add_new_folder_name')
     add_to_new_folder_textbox = BasePageElement(name='move_to_new_folder_name')
 
     root_template_folder_radio = (By.CSS_SELECTOR, "input[type='radio'][value='__NONE__']")
@@ -387,6 +398,16 @@ class ShowTemplatesPage(BasePage):
 
     def click_add_new_template(self):
         element = self.wait_for_element(self.add_new_template_link)
+        element.click()
+
+    def click_add_new_folder(self, folder_name):
+        element = self.wait_for_element(self.add_new_folder_link)
+        element.click()
+
+        self.add_new_folder_textbox = folder_name
+
+        # green submit button
+        element = self.wait_for_element(self.add_new_folder_link)
         element.click()
 
     def click_email_filter_link(self):
@@ -439,6 +460,12 @@ class ShowTemplatesPage(BasePage):
 
         self.select_checkbox_or_radio(radio_element)
         continue_element.click()
+
+    def get_folder_by_name(self, folder_name):
+        try:
+            return self.wait_for_invisible_element(self.template_link_text(folder_name))
+        except TimeoutException:
+            return None
 
 
 class SendSmsTemplatePage(BasePage):
@@ -513,6 +540,13 @@ class EditEmailTemplatePage(BasePage):
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
+    @staticmethod
+    def folder_path_item(folder_name):
+        return (
+            By.XPATH,
+            "//a[contains(@class,'folder-heading-folder') and contains(text(), '{}')]".format(folder_name)
+        )
+
     def click_save(self):
         element = self.wait_for_element(EditEmailTemplatePage.save_button)
         element.click()
@@ -528,6 +562,10 @@ class EditEmailTemplatePage(BasePage):
         self.subject_input = 'Test email from functional tests'
         self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
+
+    def click_folder_path(self, folder_name):
+        element = self.wait_for_element(self.folder_path_item(folder_name))
+        element.click()
 
     def get_id(self):
         # e.g.
@@ -577,6 +615,10 @@ class TeamMembersPage(BasePage):
 
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
+    edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
+
+    def get_edit_link_for_member_name(self, email):
+        return self.wait_for_element((By.XPATH, "//h3[@title='{}']/..//a".format(email)))
 
     def h1_is_team_members(self):
         element = self.wait_for_element(TeamMembersPage.h1)
@@ -584,6 +626,10 @@ class TeamMembersPage(BasePage):
 
     def click_invite_user(self):
         element = self.wait_for_element(TeamMembersPage.invite_team_member_button)
+        element.click()
+
+    def click_edit_team_member(self, email):
+        element = self.get_edit_link_for_member_name(email)
         element.click()
 
 
@@ -596,6 +642,10 @@ class InviteUserPage(BasePage):
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
+
+    def get_folder_checkbox(self, folder_name):
+        label = self.driver.find_elements_by_xpath("//label[contains(text(), '{}')]".format(folder_name))
+        return (By.ID, label[0].get_attribute("for"))
 
     def fill_invitation_form(self, email, send_messages_only):
         self.email_input = email
@@ -617,6 +667,14 @@ class InviteUserPage(BasePage):
     def send_invitation(self):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
+
+    def uncheck_folder_permission_checkbox(self, folder_name):
+        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
+        self.unselect_checkbox(checkbox)
+
+    def is_checkbox_checked(self, folder_name):
+        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
+        return checkbox.get_attribute('checked')
 
 
 class RegisterFromInvite(BasePage):

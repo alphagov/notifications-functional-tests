@@ -24,6 +24,8 @@ from tests.test_utils import (
     recordtime
 )
 
+from tests.pages.rollups import sign_in, sign_in_email_auth
+
 from tests.pages import (
     ApiIntegrationPage,
     DashboardPage,
@@ -35,6 +37,8 @@ from tests.pages import (
     PreviewLetterPage,
     ViewFolderPage,
     ManageFolderPage,
+    TeamMembersPage,
+    InviteUserPage,
 )
 
 
@@ -332,6 +336,85 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     edit_template_page.click_delete()
 
     assert template_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+
+def test_template_folder_permissions(driver, login_seeded_user):
+    family_id = uuid.uuid4()
+    folder_names = [
+        'test-parent-folder {}'.format(family_id),
+        'test-child-folder {}'.format(family_id),
+        'test-grandchild-folder {}'.format(family_id),
+    ]
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+    show_templates_page = ShowTemplatesPage(driver)
+    # a loop to create a folder structure with parent folder, child folder and grandchild folder,
+    # each folder with one template in it
+    for folder_name in folder_names:
+        # create a new folder
+        show_templates_page.click_add_new_folder(folder_name)
+
+        show_templates_page.click_template_by_link_text(folder_name)
+        # create a new template
+        show_templates_page.click_add_new_template()
+        show_templates_page.select_email()
+
+        edit_template_page = EditEmailTemplatePage(driver)
+        edit_template_page.create_template(name=(folder_name + "_template"))
+        # go back to view folder page
+        edit_template_page.click_folder_path(folder_name)
+
+    # go to Team members page
+    dashboard_page.click_team_members_link()
+    team_members_page = TeamMembersPage(driver)
+    # edit colleague's permissions so child folder is invisible
+    team_members_page.click_edit_team_member(config['service']['email_auth_account'])
+    edit_team_member_page = InviteUserPage(driver)
+    edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
+    edit_team_member_page.click_save()
+
+    # check if permissions saved correctly
+    dashboard_page.click_team_members_link()
+    team_members_page.click_edit_team_member(config['service']['email_auth_account'])
+    assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
+    # log out
+    dashboard_page.sign_out()
+    # log in as that colleague
+    sign_in_email_auth(driver)
+    # go to Templates
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+    # click through, see that child folder invisible
+    show_templates_page.click_template_by_link_text(folder_names[0])
+    child_folder = show_templates_page.get_folder_by_name(folder_names[1])
+    name_of_folder_with_invisible_parent = folder_names[1] + " / " + folder_names[2]
+    assert child_folder.text == name_of_folder_with_invisible_parent
+    # grandchild folder has folder path as a name
+    show_templates_page.click_template_by_link_text(name_of_folder_with_invisible_parent)
+    # click grandchild folder template to see that it's there
+    show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
+    dashboard_page.sign_out()
+    # delete everything
+    sign_in(driver, seeded=True)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_template_by_link_text(folder_names[0])
+
+    view_folder_page = ViewFolderPage(driver)
+    view_folder_page.click_template_by_link_text(folder_names[1])
+    view_folder_page.click_template_by_link_text(folder_names[2])
+
+    for folder_name in reversed(folder_names):
+        view_folder_page.click_template_by_link_text(folder_name + "_template")
+        template_page = EditEmailTemplatePage(driver)
+        template_page.click_delete()
+
+        view_folder_page.click_manage_folder()
+        manage_folder_page = ManageFolderPage(driver)
+        manage_folder_page.delete_folder()
+        manage_folder_page.confirm_delete_folder()
 
 
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
