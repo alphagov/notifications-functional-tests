@@ -219,11 +219,6 @@ class AddServicePage(BasePage):
 
     def add_service(self, name):
         self.service_input = name
-        try:
-            self.click_org_type_input()
-        except NoSuchElementException:
-            pass
-
         self.click_add_service_button()
 
     def click_add_service_button(self):
