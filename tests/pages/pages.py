@@ -211,7 +211,6 @@ class RegistrationPage(BasePage):
 class AddServicePage(BasePage):
 
     service_input = ServiceInputElement()
-    org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def is_current(self):
@@ -219,23 +218,11 @@ class AddServicePage(BasePage):
 
     def add_service(self, name):
         self.service_input = name
-        try:
-            self.click_org_type_input()
-        except NoSuchElementException:
-            pass
-
         self.click_add_service_button()
 
     def click_add_service_button(self):
         element = self.wait_for_element(AddServicePage.add_service_button)
         element.click()
-
-    def click_org_type_input(self):
-        try:
-            element = self.wait_for_invisible_element(AddServicePage.org_type_input)
-            element.click()
-        except TimeoutException:
-            pass
 
 
 class SignInPage(BasePage):

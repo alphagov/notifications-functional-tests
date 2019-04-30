@@ -23,7 +23,6 @@ class VerifyPageLocators(object):
 
 class AddServicePageLocators(object):
     SERVICE_INPUT = (By.NAME, 'name')
-    ORG_TYPE_INPUT = (By.ID, 'organisation_type-0')
     ADD_SERVICE_BUTTON = (By.CLASS_NAME, 'button')
 
 
