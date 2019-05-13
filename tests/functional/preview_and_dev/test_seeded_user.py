@@ -371,6 +371,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
     # edit colleague's permissions so child folder is invisible
     team_members_page.click_edit_team_member(config['service']['email_auth_account'])
     edit_team_member_page = InviteUserPage(driver)
+    edit_team_member_page.show_folder_permission_checkboxes()
     edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
     edit_team_member_page.click_save()
 

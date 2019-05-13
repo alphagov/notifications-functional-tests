@@ -628,6 +628,7 @@ class InviteUserPage(BasePage):
 
     email_input = EmailInputElement()
     see_dashboard_check_box = InviteUserPageLocators.SEE_DASHBOARD_CHECKBOX
+    choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_messages_checkbox = InviteUserPageLocators.SEND_MESSAGES_CHECKBOX
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
@@ -657,6 +658,10 @@ class InviteUserPage(BasePage):
 
     def send_invitation(self):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
+        element.click()
+
+    def show_folder_permission_checkboxes(self, folder_name):
+        element = self.wait_for_element(InviteUserPage.choose_folders_button)
         element.click()
 
     def uncheck_folder_permission_checkbox(self, folder_name):
