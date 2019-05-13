@@ -981,7 +981,7 @@ class ManageFolderPage(BasePage):
     delete_link = (By.LINK_TEXT, 'Delete this folder')
     name_input = NameInputElement()
     delete_button = (By.NAME, 'delete')
-    save_button = CommonPageLocators.CONTINUE_BUTTON
+    save_button = (By.CSS_SELECTOR, '[type=submit]')
     error_message = (By.CSS_SELECTOR, '.banner-dangerous')
 
     def set_name(self, new_name):
