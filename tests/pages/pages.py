@@ -628,10 +628,12 @@ class InviteUserPage(BasePage):
 
     email_input = EmailInputElement()
     see_dashboard_check_box = InviteUserPageLocators.SEE_DASHBOARD_CHECKBOX
+    choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_messages_checkbox = InviteUserPageLocators.SEND_MESSAGES_CHECKBOX
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
+    choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
 
     def get_folder_checkbox(self, folder_name):
@@ -660,10 +662,22 @@ class InviteUserPage(BasePage):
         element.click()
 
     def uncheck_folder_permission_checkbox(self, folder_name):
+        try:
+            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
+            choose_folders_button.click()
+        except (NoSuchElementException, TimeoutException):
+            pass
+
         checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
         self.unselect_checkbox(checkbox)
 
     def is_checkbox_checked(self, folder_name):
+        try:
+            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
+            choose_folders_button.click()
+        except (NoSuchElementException, TimeoutException):
+            pass
+
         checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
         return checkbox.get_attribute('checked')
 
@@ -981,7 +995,7 @@ class ManageFolderPage(BasePage):
     delete_link = (By.LINK_TEXT, 'Delete this folder')
     name_input = NameInputElement()
     delete_button = (By.NAME, 'delete')
-    save_button = CommonPageLocators.CONTINUE_BUTTON
+    save_button = (By.CSS_SELECTOR, '[type=submit]')
     error_message = (By.CSS_SELECTOR, '.banner-dangerous')
 
     def set_name(self, new_name):

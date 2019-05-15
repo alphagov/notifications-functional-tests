@@ -66,7 +66,8 @@ class InviteUserPageLocators(object):
     MANAGE_SERVICES_CHECKBOX = (By.NAME, 'manage_service')
     MANAGE_API_KEYS_CHECKBOX = (By.NAME, 'manage_api_keys')
     MANAGE_TEMPLATES_CHECKBOX = (By.NAME, 'manage_templates')
-    SEND_INVITATION_BUTTON = (By.CLASS_NAME, 'button')
+    CHOOSE_FOLDERS_BUTTON = (By.CSS_SELECTOR, 'button[aria-controls=folder_permissions]')
+    SEND_INVITATION_BUTTON = (By.CSS_SELECTOR, '[type=submit]')
 
 
 class ApiIntegrationPageLocators(object):
