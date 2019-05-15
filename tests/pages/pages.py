@@ -661,6 +661,10 @@ class InviteUserPage(BasePage):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
 
+    # support variants of this page with a 'Save' button instead of 'Send invitation' (both use the same locator)
+    def click_save(self):
+        self.send_invitation()
+
     def uncheck_folder_permission_checkbox(self, folder_name):
         try:
             choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
