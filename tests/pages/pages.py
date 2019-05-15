@@ -633,6 +633,7 @@ class InviteUserPage(BasePage):
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
+    choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
 
     def get_folder_checkbox(self, folder_name):
@@ -660,15 +661,23 @@ class InviteUserPage(BasePage):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
 
-    def show_folder_permission_checkboxes(self, folder_name):
-        element = self.wait_for_element(InviteUserPage.choose_folders_button)
-        element.click()
-
     def uncheck_folder_permission_checkbox(self, folder_name):
+        try:
+            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
+            choose_folders_button.click()
+        except (NoSuchElementException, TimeoutException):
+            pass
+
         checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
         self.unselect_checkbox(checkbox)
 
     def is_checkbox_checked(self, folder_name):
+        try:
+            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
+            choose_folders_button.click()
+        except (NoSuchElementException, TimeoutException):
+            pass
+
         checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
         return checkbox.get_attribute('checked')
 
