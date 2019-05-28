@@ -282,6 +282,8 @@ def do_user_can_add_reply_to_email_to_service(driver):
     email_reply_to_page.insert_email_reply_to_address(email_address)
     email_reply_to_page.click_add_email_reply_to()
 
+    email_reply_to_page.click_save()
+
     body = email_reply_to_page.get_reply_to_email_addresses()
 
     assert email_address + default in body.text
@@ -302,6 +304,8 @@ def do_user_can_update_reply_to_email_to_service(driver):
     email_reply_to_page.go_to_add_email_reply_to_address(service_id)
     email_reply_to_page.insert_email_reply_to_address(email_address2)
     email_reply_to_page.click_add_email_reply_to()
+
+    email_reply_to_page.click_save()
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
