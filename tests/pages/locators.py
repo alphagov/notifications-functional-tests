@@ -29,6 +29,7 @@ class AddServicePageLocators(object):
 class NavigationLocators(object):
     SIGN_OUT_LINK = (By.LINK_TEXT, 'Sign out')
     TEMPLATES_LINK = (By.LINK_TEXT, 'Templates')
+    SETTINGS_LINK = (By.LINK_TEXT, 'Settings')
 
 
 class TemplatePageLocators(object):
@@ -116,3 +117,12 @@ class SmsSenderLocators(object):
     SMS_SENDER = (By.CLASS_NAME, 'sms-message-sender')
     SMS_RECIPIENT = (By.CLASS_NAME, 'sms-message-recipient')
     SMS_CONTENT = (By.CLASS_NAME, 'sms-message-wrapper')
+
+
+class ServiceSettingsLocators(object):
+    SERVICE_NAME = (By.XPATH, "//div[@class='navigation-service-name']")
+
+
+class ChangeNameLocators(object):
+    CHANGE_NAME_FIELD = (By.ID, 'name')
+    PASSWORD_FIELD = (By.ID, 'password')

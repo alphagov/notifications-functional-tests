@@ -29,19 +29,21 @@ from tests.pages.locators import (
     AddServicePageLocators,
     ApiIntegrationPageLocators,
     ApiKeysPageLocators,
+    ChangeNameLocators,
     CommonPageLocators,
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
+    LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
+    ServiceSettingsLocators,
     SingleRecipientLocators,
     SmsSenderLocators,
     TemplatePageLocators,
     TeamMembersPageLocators,
     UploadCsvLocators,
     VerifyPageLocators,
-    LetterPreviewPageLocators
 )
 
 
@@ -166,6 +168,10 @@ class BasePage(object):
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
+        element.click()
+
+    def click_settings(self):
+        element = self.wait_for_element(NavigationLocators.SETTINGS_LINK)
         element.click()
 
     def click_save(self):
@@ -834,6 +840,32 @@ class SendOneRecipient(BasePage):
     def click_use_my_phone_number(self):
         element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
         element.click()
+
+
+class ServiceSettingsPage(BasePage):
+    def check_service_name(self, expected_name=None):
+        name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
+        if expected_name and name.element.text == expected_name:
+            return True
+        elif expected_name and name.element.text != expected_name:
+            raise ValueError("Service name not changed succesfully")
+        else:
+            return name.element.text
+
+
+class ChangeName(BasePage):
+    def go_to_change_service_name(self, service_id):
+        url = "{}/services/{}/service-settings/name".format(self.base_url, service_id)
+        self.driver.get(url)
+
+    def enter_new_name(self, new_name):
+        element = self.wait_for_element(ChangeNameLocators.CHANGE_NAME_FIELD)
+        element.clear()
+        element.send_keys(new_name)
+
+    def enter_password(self, password):
+        element = self.wait_for_element(ChangeNameLocators.PASSWORD_FIELD)
+        element.send_keys(password)
 
 
 class EmailReplyTo(BasePage):
