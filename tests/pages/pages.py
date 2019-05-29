@@ -121,11 +121,11 @@ class BasePage(object):
             )
         )
 
-    def wait_for_element(self, locator):
+    def wait_for_element(self, locator, time=10):
         return AntiStaleElement(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
+            lambda locator: WebDriverWait(self.driver, time).until(
                 EC.visibility_of_element_located(locator),
                 EC.presence_of_element_located(locator)
             )
@@ -174,8 +174,8 @@ class BasePage(object):
         element = self.wait_for_element(NavigationLocators.SETTINGS_LINK)
         element.click()
 
-    def click_save(self):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
+    def click_save(self, time=10):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON, time=time)
         element.click()
 
 
