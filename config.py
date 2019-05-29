@@ -100,6 +100,8 @@ def setup_preview_dev_config():
             'organisation_id': os.environ['NOTIFY_RESEARCH_ORGANISATION_ID'],
 
             'email_reply_to': os.environ['NOTIFY_RESEARCH_EMAIL_REPLY_TO'],
+            'email_reply_to_2': os.environ.get('NOTIFY_RESEARCH_EMAIL_REPLY_TO_2'),
+            'email_reply_to_3': os.environ.get('NOTIFY_RESEARCH_EMAIL_REPLY_TO_3'),
 
             'sms_sender_text': 'func tests',
 
