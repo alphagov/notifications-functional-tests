@@ -31,9 +31,6 @@ logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
 
 jenkins_build_id = os.getenv('BUILD_ID', 'No build id')
 
-email_address = os.environ['NOTIFY_RESEARCH_EMAIL_REPLY_TO']
-email_address2 = os.environ['NOTIFY_RESEARCH_EMAIL_REPLY_TO_2']
-email_address3 = os.environ['NOTIFY_RESEARCH_EMAIL_REPLY_TO_3']
 default = " (default)"
 
 
@@ -271,8 +268,11 @@ def recordtime(func):
 
 
 def do_user_can_add_reply_to_email_to_service(driver):
-    if not config["env"] == "preview":
+    if config["env"] != "preview":
         return True
+    email_address = config['service']['email_reply_to']
+    email_address2 = config['service']['email_reply_to_2']
+    email_address3 = config['service']['email_reply_to_3']
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
@@ -296,8 +296,11 @@ def do_user_can_add_reply_to_email_to_service(driver):
 
 
 def do_user_can_update_reply_to_email_to_service(driver):
-    if not config["env"] == "preview":
+    if config["env"] != "preview":
         return True
+    email_address = config['service']['email_reply_to']
+    email_address2 = config['service']['email_reply_to_2']
+    email_address3 = config['service']['email_reply_to_3']
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
