@@ -218,10 +218,39 @@ def do_edit_and_delete_email_template(driver):
 
     assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    show_templates_page.click_template_by_link_text(test_name)
-    template_page.click_delete()
+    do_delete_template(driver, test_name)
 
     assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
+
+
+def do_create_email_template_with_placeholders(driver):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    show_templates_page.select_email()
+
+    template_page = EditEmailTemplatePage(driver)
+    name = "template with placeholders" + uuid.uuid4()
+    content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
+    template_page.create_template(name=name, content=content)
+    return name
+
+
+def do_delete_template(driver, template_name):
+    show_templates_page = ShowTemplatesPage(driver)
+    try:
+        show_templates_page.click_template_by_link_text(template_name)
+    except TimeoutException:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+        dashboard_page.click_templates()
+        show_templates_page.click_template_by_link_text(template_name)
+    template_page = EditEmailTemplatePage(driver)
+    template_page.click_delete()
 
 
 def get_verify_code_from_api():

@@ -19,7 +19,10 @@ from tests.postman import (
 
 from tests.test_utils import (
     assert_notification_body,
+    do_create_email_template_with_placeholders,
+    do_delete_template,
     do_edit_and_delete_email_template,
+    do_send_email_to_one_recipient,
     NotificationStatuses,
     recordtime
 )
@@ -133,6 +136,13 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
 
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+
+@recordtime
+def test_send_email_with_placeholders_to_one_recipient(driver, seeded_client, login_seeded_user):
+    template_name = do_create_email_template_with_placeholders(driver)
+    do_send_email_to_one_recipient(driver, template_name=template_name)
+    do_delete_template(driver, template_name)
 
 
 @recordtime
