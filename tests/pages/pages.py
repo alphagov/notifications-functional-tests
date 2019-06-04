@@ -843,17 +843,12 @@ class SendOneRecipient(BasePage):
         url = "{}/services/{}/send/{}/set-sender".format(self.base_url, service_id, template_id)
         self.driver.get(url)
 
-    def choose_alternative_reply_to_email(self):
-        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_EMAIL)
-        radio.click()
-
-    def click_use_my_email(self):
-        element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
-        element.click()
-
-    def is_placeholder_email_address(self):
+    def is_placeholder_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
-        return element.text == 'email address'
+        if message_type == "email":
+            return element.text == 'email address'
+        else:
+            return element.text == 'phone number'
 
     def enter_placeholder_value(self, placeholder_value):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
@@ -864,12 +859,15 @@ class SendOneRecipient(BasePage):
         rows = table.find_elements(By.TAG_NAME, "tr")  # get all of the rows in the table
         return rows
 
-    def choose_alternative_sms_sender(self):
-        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_SMS_SENDER)
+    def choose_alternative_sender(self):
+        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
         radio.click()
 
-    def click_use_my_phone_number(self):
-        element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
+    def send_to_myself(self, message_type):
+        if message_type == "email":
+            element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
+        else:
+            element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
         element.click()
 
 

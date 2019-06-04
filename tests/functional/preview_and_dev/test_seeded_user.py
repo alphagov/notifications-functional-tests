@@ -22,9 +22,9 @@ from tests.test_utils import (
     do_create_email_template_with_placeholders,
     do_delete_template,
     do_edit_and_delete_email_template,
-    do_send_email_to_one_recipient,
     NotificationStatuses,
-    recordtime
+    recordtime,
+    send_notification_to_one_recipient
 )
 
 from tests.pages.rollups import sign_in, sign_in_email_auth
@@ -34,8 +34,6 @@ from tests.pages import (
     DashboardPage,
     ShowTemplatesPage,
     EditEmailTemplatePage,
-    SendOneRecipient,
-    SmsSenderPage,
     UploadCsvPage,
     PreviewLetterPage,
     ViewFolderPage,
@@ -97,7 +95,7 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
 
-    do_send_email_to_one_recipient(driver, template_name, test=True)
+    send_notification_to_one_recipient(driver, template_name, "email", test=True)
     dashboard_page.click_continue()
 
     notification_id = dashboard_page.get_notification_id()
@@ -105,9 +103,7 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
     assert one_off_email.get('created_by_name') == 'Preview admin tests user'
 
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
-
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 
@@ -116,8 +112,10 @@ def test_send_email_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
     template_name = do_create_email_template_with_placeholders(driver)
-    do_send_email_to_one_recipient(driver, test=True, template_name=template_name, placeholders_number=2)
-    do_send_email_to_one_recipient(driver, test=False, template_name=template_name, placeholders_number=2)
+    send_notification_to_one_recipient(driver, template_name, "email", test=True, placeholders_number=2)
+    send_notification_to_one_recipient(
+        driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
+    )
     do_delete_template(driver, template_name)
 
 
@@ -126,37 +124,15 @@ def test_send_sms_to_one_recipient(driver, login_seeded_user):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
+    template_name = 'Functional Tests - CSV SMS Template with Jenkins Build ID'
     template_id = config['service']['templates']['sms']
-
     dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
-    sms_sender_page = SmsSenderPage(driver)
-
-    send_to_one_recipient_page.go_to_send_one_recipient(config['service']['id'], template_id)
-
-    send_to_one_recipient_page.choose_alternative_sms_sender()
-    send_to_one_recipient_page.click_continue()
-    send_to_one_recipient_page.click_use_my_phone_number()
-    # updates the personalisation field with 'test_1234'
-    send_to_one_recipient_page.enter_placeholder_value("test_1234")
-    send_to_one_recipient_page.click_continue()
-
-    sms_sender = sms_sender_page.get_sms_sender()
-    sms_recipient = sms_sender_page.get_sms_recipient()
-    sms_content = sms_sender_page.get_sms_content()
-
-    assert sms_sender.text == 'From: {}'.format(config['service']['sms_sender_text'])
-    assert sms_recipient.text == 'To: {}'.format(config['user']['mobile'])
-    assert 'The quick brown fox jumped over the lazy dog. Jenkins build id: {}.'.format('test_1234') \
-        in sms_content.text
-
-    send_to_one_recipient_page.click_continue()
+    send_notification_to_one_recipient(driver, template_name, "sms", test=True, placeholders_number=1)
+    dashboard_page.click_continue()
 
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-
     dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
-
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
 

@@ -23,6 +23,7 @@ from tests.pages import (
     RegistrationPage,
     SendOneRecipient,
     ShowTemplatesPage,
+    SmsSenderPage,
     TeamMembersPage,
     VerifyPage,
     ViewTemplatePage
@@ -207,6 +208,7 @@ def do_edit_and_delete_email_template(driver):
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     _create_email_template(driver, name=test_name, content=None)
+    _go_to_templates_page(driver)
     assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     do_delete_template(driver, test_name)
@@ -265,8 +267,8 @@ def get_verify_code_from_api():
     return m.group(0)
 
 
-def do_send_email_to_one_recipient(
-    driver, template_name, test=False, recipient_email='anne@example.com', placeholders_number=None
+def send_notification_to_one_recipient(
+    driver, template_name, message_type, test=False, recipient_data=None, placeholders_number=None
 ):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
@@ -278,22 +280,45 @@ def do_send_email_to_one_recipient(
     view_template_page.click_send()
 
     send_to_one_recipient_page = SendOneRecipient(driver)
-    send_to_one_recipient_page.choose_alternative_reply_to_email()
+    send_to_one_recipient_page.choose_alternative_sender()
     send_to_one_recipient_page.click_continue()
     if test is True:
-        send_to_one_recipient_page.click_use_my_email()
+        send_to_one_recipient_page.send_to_myself(message_type)
     else:
-        send_to_one_recipient_page.enter_placeholder_value(recipient_email)
+        send_to_one_recipient_page.enter_placeholder_value(recipient_data)
         send_to_one_recipient_page.click_continue()
     placeholders = []
     while send_to_one_recipient_page.is_page_title("Personalise this message"):
-        if not send_to_one_recipient_page.is_placeholder_email_address():
+        if not send_to_one_recipient_page.is_placeholder_recipient_field(message_type):
             placeholder_value = str(uuid.uuid4())
             send_to_one_recipient_page.enter_placeholder_value(placeholder_value)
             placeholders.append(placeholder_value)
         send_to_one_recipient_page.click_continue()
     if placeholders_number:
         assert len(placeholders) == placeholders_number
+    for placeholder_value in placeholders:
+        assert send_to_one_recipient_page.is_text_present_on_page(placeholder_value)
+    if message_type == "email":
+        _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_data)
+    else:
+        _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_data)
+
+
+def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_number):
+    sms_sender_page = SmsSenderPage(driver)
+    sms_sender = sms_sender_page.get_sms_sender()
+    sms_recipient = sms_sender_page.get_sms_recipient()
+
+    assert sms_sender.text == 'From: {}'.format(config['service']['sms_sender_text'])
+    if test:
+        assert sms_recipient.text == 'To: {}'.format(config['user']['mobile'])
+    else:
+        assert sms_recipient.text == 'To: {}'.format(recipient_number)
+    assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
+
+
+def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_email):
+    send_to_one_recipient_page = SendOneRecipient(driver)
     preview_rows = send_to_one_recipient_page.get_preview_contents()
     assert "From" in str(preview_rows[0].text)
     assert config['service']['name'] in str(preview_rows[0].text)
@@ -306,8 +331,6 @@ def do_send_email_to_one_recipient(
         assert recipient_email in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)
     assert send_to_one_recipient_page.is_page_title("Preview of ‘" + template_name + "’")
-    for placeholder_value in placeholders:
-        assert send_to_one_recipient_page.is_text_present_on_page(placeholder_value)
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):

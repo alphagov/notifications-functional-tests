@@ -100,8 +100,7 @@ class SingleRecipientLocators(object):
     PLACEHOLDER_NAME = (By.XPATH, "(//label[@for='placeholder_value'])")
     PLACEHOLDER_VALUE_INPUT = (By.NAME, 'placeholder_value')
     PREVIEW_TABLE = (By.CLASS_NAME, 'email-message-meta')
-    ALTERNATIVE_EMAIL = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
-    ALTERNATIVE_SMS_SENDER = (By.ID, 'sender-1')
+    ALTERNATIVE_SENDER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
 
 
 class EmailReplyToLocators(object):
