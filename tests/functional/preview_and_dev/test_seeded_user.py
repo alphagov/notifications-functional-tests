@@ -98,6 +98,7 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
 
     do_send_email_to_one_recipient(driver, template_name, test=True)
+    dashboard_page.click_continue()
 
     notification_id = dashboard_page.get_notification_id()
     one_off_email = seeded_client.get_notification_by_id(notification_id)
@@ -111,9 +112,12 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
 
 
 @recordtime
-def test_send_email_with_placeholders_to_one_recipient(driver, seeded_client, login_seeded_user):
+def test_send_email_with_placeholders_to_one_recipient(
+    driver, seeded_client, login_seeded_user
+):
     template_name = do_create_email_template_with_placeholders(driver)
-    do_send_email_to_one_recipient(driver, template_name=template_name, placeholders_number=2)
+    do_send_email_to_one_recipient(driver, test=True, template_name=template_name, placeholders_number=2)
+    do_send_email_to_one_recipient(driver, test=False, template_name=template_name, placeholders_number=2)
     do_delete_template(driver, template_name)
 
 

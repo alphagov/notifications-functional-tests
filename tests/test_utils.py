@@ -203,43 +203,38 @@ def is_view_for_all_permissions(page):
 
 def do_edit_and_delete_email_template(driver):
     test_name = 'edit/delete test'
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
-    dashboard_page.click_templates()
-
+    _go_to_templates_page(driver)
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    show_templates_page = ShowTemplatesPage(driver)
-    show_templates_page.click_add_new_template()
-
-    show_templates_page.select_email()
-
-    template_page = EditEmailTemplatePage(driver)
-    template_page.create_template(name=test_name)
-    template_page.click_templates()
-
+    _create_email_template(driver, name=test_name, content=None)
     assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     do_delete_template(driver, test_name)
-
     assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
 def do_create_email_template_with_placeholders(driver):
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
-    dashboard_page.click_templates()
+    _go_to_templates_page(driver)
+    name = "template with placeholders" + str(uuid.uuid4())
+    content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
+    return _create_email_template(driver, name=name, content=content)
 
+
+def _create_email_template(driver, name="test template", content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
     show_templates_page.select_email()
 
     template_page = EditEmailTemplatePage(driver)
-    name = "template with placeholders" + str(uuid.uuid4())
-    content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
     template_page.create_template(name=name, content=content)
     return name
+
+
+def _go_to_templates_page(driver):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
 
 
 def do_delete_template(driver, template_name):
@@ -311,8 +306,8 @@ def do_send_email_to_one_recipient(
         assert recipient_email in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)
     assert send_to_one_recipient_page.is_page_title("Preview of ‘" + template_name + "’")
-
-    send_to_one_recipient_page.click_continue()
+    for placeholder_value in placeholders:
+        assert send_to_one_recipient_page.is_text_present_on_page(placeholder_value)
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):

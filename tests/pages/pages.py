@@ -179,9 +179,16 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON, time=time)
         element.click()
 
+    def click_continue(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
+        element.click()
+
     def is_page_title(self, expected_page_title):
         element = self.wait_for_element(CommonPageLocators.H1)
         return element.text == expected_page_title
+
+    def is_text_present_on_page(self, search_text):
+        return search_text in self.driver.page_source
 
 
 class MainPage(BasePage):
@@ -784,9 +791,6 @@ class PreviewLetterPage(BasePage):
     download_pdf_link = LetterPreviewPageLocators.DOWNLOAD_PDF_LINK
     pdf_image = LetterPreviewPageLocators.PDF_IMAGE
 
-    def is_text_present_on_page(self, search_text):
-        return search_text in self.driver.page_source
-
     def get_download_pdf_link(self):
         link = self.wait_for_element(PreviewLetterPage.download_pdf_link)
         return link.get_attribute("href")
@@ -838,10 +842,6 @@ class SendOneRecipient(BasePage):
     def go_to_send_one_recipient(self, service_id, template_id):
         url = "{}/services/{}/send/{}/set-sender".format(self.base_url, service_id, template_id)
         self.driver.get(url)
-
-    def click_continue(self):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
-        element.click()
 
     def choose_alternative_reply_to_email(self):
         radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_EMAIL)
