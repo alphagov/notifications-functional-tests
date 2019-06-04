@@ -21,9 +21,11 @@ from tests.pages import (
     MainPage,
     RegisterFromInvite,
     RegistrationPage,
+    SendOneRecipient,
     ShowTemplatesPage,
     TeamMembersPage,
-    VerifyPage
+    VerifyPage,
+    ViewTemplatePage
 )
 
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
@@ -234,7 +236,7 @@ def do_create_email_template_with_placeholders(driver):
     show_templates_page.select_email()
 
     template_page = EditEmailTemplatePage(driver)
-    name = "template with placeholders" + uuid.uuid4()
+    name = "template with placeholders" + str(uuid.uuid4())
     content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
     template_page.create_template(name=name, content=content)
     return name
@@ -266,6 +268,51 @@ def get_verify_code_from_api():
             config['user']['mobile']
         ))
     return m.group(0)
+
+
+def do_send_email_to_one_recipient(
+    driver, template_name, test=False, recipient_email='anne@example.com', placeholders_number=None
+):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_template_by_link_text(template_name)
+    view_template_page = ViewTemplatePage(driver)
+    view_template_page.click_send()
+
+    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page.choose_alternative_reply_to_email()
+    send_to_one_recipient_page.click_continue()
+    if test is True:
+        send_to_one_recipient_page.click_use_my_email()
+    else:
+        send_to_one_recipient_page.enter_placeholder_value(recipient_email)
+        send_to_one_recipient_page.click_continue()
+    placeholders = []
+    while send_to_one_recipient_page.is_page_title("Personalise this message"):
+        if not send_to_one_recipient_page.is_placeholder_email_address():
+            placeholder_value = str(uuid.uuid4())
+            send_to_one_recipient_page.enter_placeholder_value(placeholder_value)
+            placeholders.append(placeholder_value)
+        send_to_one_recipient_page.click_continue()
+    if placeholders_number:
+        assert len(placeholders) == placeholders_number
+    preview_rows = send_to_one_recipient_page.get_preview_contents()
+    assert "From" in str(preview_rows[0].text)
+    assert config['service']['name'] in str(preview_rows[0].text)
+    assert "Reply to" in str(preview_rows[1].text)
+    assert config['service']['email_reply_to'] in str(preview_rows[1].text)
+    assert "To" in str(preview_rows[2].text)
+    if test is True:
+        assert config['service']['seeded_user']['email'] in str(preview_rows[2].text)
+    else:
+        assert recipient_email in str(preview_rows[2].text)
+    assert "Subject" in str(preview_rows[3].text)
+    assert send_to_one_recipient_page.is_page_title("Preview of ‘" + template_name + "’")
+
+    send_to_one_recipient_page.click_continue()
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):

@@ -92,40 +92,12 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     message_type = 'email'
-
-    template_id = {
-        'email': config['service']['templates']['email'],
-        'sms': config['service']['templates']['sms'],
-    }.get(message_type)
+    template_name = 'Functional Tests - CSV Email Template with Jenkins Build ID'
+    template_id = config['service']['templates']['email']
 
     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
-
-    send_to_one_recipient_page.go_to_send_one_recipient(
-        config['service']['id'],
-        config['service']['templates']['email']
-    )
-
-    send_to_one_recipient_page.choose_alternative_reply_to_email()
-    send_to_one_recipient_page.click_continue()
-    send_to_one_recipient_page.click_use_my_email()
-    send_to_one_recipient_page.update_build_id()
-    send_to_one_recipient_page.click_continue()
-
-    # assert the reply to address etc is correct
-    preview_rows = send_to_one_recipient_page.get_preview_contents()
-
-    assert "From" in str(preview_rows[0].text)
-    assert config['service']['name'] in str(preview_rows[0].text)
-    assert "Reply to" in str(preview_rows[1].text)
-    assert config['service']['email_reply_to'] in str(preview_rows[1].text)
-    assert "To" in str(preview_rows[2].text)
-    assert config['service']['seeded_user']['email'] in str(preview_rows[2].text)
-    assert "Subject" in str(preview_rows[3].text)
-    assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
-
-    send_to_one_recipient_page.click_continue()
+    do_send_email_to_one_recipient(driver, template_name, test=True)
 
     notification_id = dashboard_page.get_notification_id()
     one_off_email = seeded_client.get_notification_by_id(notification_id)
@@ -141,7 +113,7 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
 @recordtime
 def test_send_email_with_placeholders_to_one_recipient(driver, seeded_client, login_seeded_user):
     template_name = do_create_email_template_with_placeholders(driver)
-    do_send_email_to_one_recipient(driver, template_name=template_name)
+    do_send_email_to_one_recipient(driver, template_name=template_name, placeholders_number=2)
     do_delete_template(driver, template_name)
 
 
@@ -163,7 +135,7 @@ def test_send_sms_to_one_recipient(driver, login_seeded_user):
     send_to_one_recipient_page.click_continue()
     send_to_one_recipient_page.click_use_my_phone_number()
     # updates the personalisation field with 'test_1234'
-    send_to_one_recipient_page.update_build_id()
+    send_to_one_recipient_page.enter_placeholder_value("test_1234")
     send_to_one_recipient_page.click_continue()
 
     sms_sender = sms_sender_page.get_sms_sender()

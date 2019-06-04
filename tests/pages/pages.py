@@ -44,6 +44,7 @@ from tests.pages.locators import (
     TeamMembersPageLocators,
     UploadCsvLocators,
     VerifyPageLocators,
+    ViewTemplatePageLocators
 )
 
 
@@ -177,6 +178,10 @@ class BasePage(object):
     def click_save(self, time=10):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON, time=time)
         element.click()
+
+    def is_page_title(self, expected_page_title):
+        element = self.wait_for_element(CommonPageLocators.H1)
+        return element.text == expected_page_title
 
 
 class MainPage(BasePage):
@@ -541,6 +546,12 @@ class SendEmailTemplatePage(BasePage):
         element.click()
 
 
+class ViewTemplatePage(BasePage):
+    def click_send(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.SEND_BUTTON)
+        element.click()
+
+
 class EditEmailTemplatePage(BasePage):
 
     name_input = NameInputElement()
@@ -567,10 +578,13 @@ class EditEmailTemplatePage(BasePage):
         element = self.wait_for_element(EditEmailTemplatePage.confirm_delete_button)
         element.click()
 
-    def create_template(self, name='Test email template'):
+    def create_template(self, name='Test email template', content=None):
         self.name_input = name
         self.subject_input = 'Test email from functional tests'
-        self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
+        if content:
+            self.template_content_input = content
+        else:
+            self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
 
     def click_folder_path(self, folder_name):
@@ -837,9 +851,13 @@ class SendOneRecipient(BasePage):
         element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
         element.click()
 
-    def update_build_id(self):
-        element = self.wait_for_element(SingleRecipientLocators.BUILD_ID_INPUT)
-        element.send_keys("test_1234")
+    def is_placeholder_email_address(self):
+        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
+        return element.text == 'email address'
+
+    def enter_placeholder_value(self, placeholder_value):
+        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
+        element.send_keys(placeholder_value)
 
     def get_preview_contents(self):
         table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
