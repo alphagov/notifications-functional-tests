@@ -280,12 +280,16 @@ def send_notification_to_one_recipient(
         send_to_one_recipient_page.enter_placeholder_value(recipient_data)
         send_to_one_recipient_page.click_continue()
     placeholders = []
+    index = 0
     while send_to_one_recipient_page.is_page_title("Personalise this message"):
-        if not send_to_one_recipient_page.is_placeholder_recipient_field(message_type):
+        if not send_to_one_recipient_page.is_placeholder_a_recipient_field(message_type):
             placeholder_value = str(uuid.uuid4())
             send_to_one_recipient_page.enter_placeholder_value(placeholder_value)
             placeholders.append(placeholder_value)
         send_to_one_recipient_page.click_continue()
+        index += 1
+        if index > 10:
+            raise TimeoutException("Too many attempts, something is broken with placeholders")
     if placeholders_number:
         assert len(placeholders) == placeholders_number
     for placeholder_value in placeholders:

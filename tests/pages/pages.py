@@ -846,12 +846,12 @@ class SendOneRecipient(BasePage):
         url = "{}/services/{}/send/{}/set-sender".format(self.base_url, service_id, template_id)
         self.driver.get(url)
 
-    def is_placeholder_recipient_field(self, message_type):
+    def is_placeholder_a_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
         if message_type == "email":
-            return element.text == 'email address'
+            return element.text.strip() == 'email address'
         else:
-            return element.text == 'phone number'
+            return element.text.strip() == 'phone number'
 
     def enter_placeholder_value(self, placeholder_value):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
