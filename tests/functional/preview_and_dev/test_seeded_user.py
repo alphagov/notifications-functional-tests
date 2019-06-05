@@ -22,6 +22,7 @@ from tests.test_utils import (
     do_create_email_template_with_placeholders,
     do_delete_template,
     do_edit_and_delete_email_template,
+    do_edit_and_delete_sms_template,
     NotificationStatuses,
     recordtime,
     send_notification_to_one_recipient
@@ -79,9 +80,13 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
 
 
 @recordtime
-@pytest.mark.parametrize('message_type', ['sms', 'email'])
-def test_edit_and_delete_template(driver, login_seeded_user, seeded_client, message_type):
+def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
     do_edit_and_delete_email_template(driver)
+
+
+@recordtime
+def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
+    do_edit_and_delete_sms_template(driver)
 
 
 @recordtime

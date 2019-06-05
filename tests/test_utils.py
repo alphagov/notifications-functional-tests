@@ -16,6 +16,7 @@ from tests.pages import (
     AddServicePage,
     DashboardPage,
     EditEmailTemplatePage,
+    EditSmsTemplatePage,
     EmailReplyTo,
     InviteUserPage,
     MainPage,
@@ -203,11 +204,24 @@ def is_view_for_all_permissions(page):
 
 
 def do_edit_and_delete_email_template(driver):
-    test_name = 'edit/delete test'
+    test_name = 'edit/delete email template test'
     _go_to_templates_page(driver)
     existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     _create_email_template(driver, name=test_name, content=None)
+    _go_to_templates_page(driver)
+    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    do_delete_template(driver, test_name)
+    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
+
+
+def do_edit_and_delete_sms_template(driver):
+    test_name = 'edit/delete sms template test'
+    _go_to_templates_page(driver)
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    _create_sms_template(driver, name=test_name, content=None)
     _go_to_templates_page(driver)
     assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
@@ -229,6 +243,17 @@ def _create_email_template(driver, name="test template", content=None):
     show_templates_page.select_email()
 
     template_page = EditEmailTemplatePage(driver)
+    template_page.create_template(name=name, content=content)
+    return name
+
+
+def _create_sms_template(driver, name="test template", content=None):
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    show_templates_page.select_text_message()
+
+    template_page = EditSmsTemplatePage(driver)
     template_page.create_template(name=name, content=content)
     return name
 

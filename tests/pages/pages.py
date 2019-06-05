@@ -518,9 +518,12 @@ class EditSmsTemplatePage(BasePage):
         element = self.wait_for_element(EditSmsTemplatePage.save_button)
         element.click()
 
-    def create_template(self, name='Test sms template'):
+    def create_template(self, name='Test sms template', content=None):
         self.name_input = name
-        self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
+        if content:
+            self.template_content_input = content
+        else:
+            self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
 
     def get_id(self):
