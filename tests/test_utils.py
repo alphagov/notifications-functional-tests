@@ -203,47 +203,7 @@ def is_view_for_all_permissions(page):
     assert page.driver.current_url == expected
 
 
-def do_edit_and_delete_email_template(driver):
-    test_name = 'edit/delete email template test'
-    _go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
-
-    _create_email_template(driver, name=test_name, content=None)
-    _go_to_templates_page(driver)
-    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
-
-    do_delete_template(driver, test_name)
-    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
-
-
-def do_edit_and_delete_sms_template(driver):
-    test_name = 'edit/delete sms template test'
-    _go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
-
-    _create_sms_template(driver, name=test_name, content=None)
-    _go_to_templates_page(driver)
-    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
-
-    do_delete_template(driver, test_name)
-    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
-
-
-def do_create_email_template_with_placeholders(driver):
-    _go_to_templates_page(driver)
-    name = "email with placeholders" + str(uuid.uuid4())
-    content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
-    return _create_email_template(driver, name=name, content=content)
-
-
-def do_create_sms_template_with_placeholders(driver):
-    _go_to_templates_page(driver)
-    name = "sms with placeholders" + str(uuid.uuid4())
-    content = "Hi ((name)), Is ((phone number)) your mobile number? We want to send you some ((things))"
-    return _create_sms_template(driver, name=name, content=content)
-
-
-def _create_email_template(driver, name="test template", content=None):
+def create_email_template(driver, name="test template", content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
@@ -254,7 +214,7 @@ def _create_email_template(driver, name="test template", content=None):
     return name
 
 
-def _create_sms_template(driver, name="test template", content=None):
+def create_sms_template(driver, name="test template", content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
@@ -265,13 +225,13 @@ def _create_sms_template(driver, name="test template", content=None):
     return name
 
 
-def _go_to_templates_page(driver):
+def go_to_templates_page(driver):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_templates()
 
 
-def do_delete_template(driver, template_name):
+def delete_template(driver, template_name):
     show_templates_page = ShowTemplatesPage(driver)
     try:
         show_templates_page.click_template_by_link_text(template_name)

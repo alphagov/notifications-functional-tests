@@ -19,11 +19,10 @@ from tests.postman import (
 
 from tests.test_utils import (
     assert_notification_body,
-    do_create_email_template_with_placeholders,
-    do_create_sms_template_with_placeholders,
-    do_delete_template,
-    do_edit_and_delete_email_template,
-    do_edit_and_delete_sms_template,
+    create_email_template,
+    create_sms_template,
+    delete_template,
+    go_to_templates_page,
     NotificationStatuses,
     recordtime,
     send_notification_to_one_recipient
@@ -82,12 +81,30 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
 
 @recordtime
 def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
-    do_edit_and_delete_email_template(driver)
+    test_name = 'edit/delete email template test'
+    go_to_templates_page(driver)
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    create_email_template(driver, name=test_name, content=None)
+    go_to_templates_page(driver)
+    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    delete_template(driver, test_name)
+    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
 @recordtime
 def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
-    do_edit_and_delete_sms_template(driver)
+    test_name = 'edit/delete sms template test'
+    go_to_templates_page(driver)
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    create_sms_template(driver, name=test_name, content=None)
+    go_to_templates_page(driver)
+    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    delete_template(driver, test_name)
+    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
 @recordtime
@@ -117,24 +134,30 @@ def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
 def test_send_email_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
-    template_name = do_create_email_template_with_placeholders(driver)
+    go_to_templates_page(driver)
+    name = "email with placeholders" + str(uuid.uuid4())
+    content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
+    template_name = create_email_template(driver, name=name, content=content)
     send_notification_to_one_recipient(driver, template_name, "email", test=True, placeholders_number=2)
     send_notification_to_one_recipient(
         driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
     )
-    do_delete_template(driver, template_name)
+    delete_template(driver, template_name)
 
 
 @recordtime
 def test_send_sms_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
-    template_name = do_create_sms_template_with_placeholders(driver)
+    go_to_templates_page(driver)
+    name = "sms with placeholders" + str(uuid.uuid4())
+    content = "Hi ((name)), Is ((phone number)) your mobile number? We want to send you some ((things))"
+    template_name = create_sms_template(driver, name=name, content=content)
     send_notification_to_one_recipient(driver, template_name, "sms", test=True, placeholders_number=2)
     send_notification_to_one_recipient(
         driver, template_name, "sms", test=False, recipient_data='07700900998', placeholders_number=2
     )
-    do_delete_template(driver, template_name)
+    delete_template(driver, template_name)
 
 
 @recordtime
