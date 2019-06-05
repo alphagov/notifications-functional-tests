@@ -20,6 +20,7 @@ from tests.postman import (
 from tests.test_utils import (
     assert_notification_body,
     do_create_email_template_with_placeholders,
+    do_create_sms_template_with_placeholders,
     do_delete_template,
     do_edit_and_delete_email_template,
     do_edit_and_delete_sms_template,
@@ -120,6 +121,18 @@ def test_send_email_with_placeholders_to_one_recipient(
     send_notification_to_one_recipient(driver, template_name, "email", test=True, placeholders_number=2)
     send_notification_to_one_recipient(
         driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
+    )
+    do_delete_template(driver, template_name)
+
+
+@recordtime
+def test_send_sms_with_placeholders_to_one_recipient(
+    driver, seeded_client, login_seeded_user
+):
+    template_name = do_create_sms_template_with_placeholders(driver)
+    send_notification_to_one_recipient(driver, template_name, "sms", test=True, placeholders_number=2)
+    send_notification_to_one_recipient(
+        driver, template_name, "sms", test=False, recipient_data='07700900998', placeholders_number=2
     )
     do_delete_template(driver, template_name)
 

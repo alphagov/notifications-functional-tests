@@ -231,9 +231,16 @@ def do_edit_and_delete_sms_template(driver):
 
 def do_create_email_template_with_placeholders(driver):
     _go_to_templates_page(driver)
-    name = "template with placeholders" + str(uuid.uuid4())
+    name = "email with placeholders" + str(uuid.uuid4())
     content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
     return _create_email_template(driver, name=name, content=content)
+
+
+def do_create_sms_template_with_placeholders(driver):
+    _go_to_templates_page(driver)
+    name = "sms with placeholders" + str(uuid.uuid4())
+    content = "Hi ((name)), Is ((phone number)) your mobile number? We want to send you some ((things))"
+    return _create_sms_template(driver, name=name, content=content)
 
 
 def _create_email_template(driver, name="test template", content=None):
