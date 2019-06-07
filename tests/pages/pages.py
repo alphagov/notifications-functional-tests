@@ -853,6 +853,10 @@ class SendOneRecipient(BasePage):
         else:
             return element.text.strip() == 'phone number'
 
+    def get_placeholder_name(self):
+        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
+        return element.text.strip()
+
     def enter_placeholder_value(self, placeholder_value):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
         element.send_keys(placeholder_value)

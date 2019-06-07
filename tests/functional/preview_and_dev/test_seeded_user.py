@@ -138,10 +138,16 @@ def test_send_email_with_placeholders_to_one_recipient(
     name = "email with placeholders" + str(uuid.uuid4())
     content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
     template_name = create_email_template(driver, name=name, content=content)
-    send_notification_to_one_recipient(driver, template_name, "email", test=True, placeholders_number=2)
-    send_notification_to_one_recipient(
+    placeholders_test = send_notification_to_one_recipient(
+        driver, template_name, "email", test=True, placeholders_number=2
+    )
+    assert list(placeholders_test[0].keys()) == ["name"]
+    assert list(placeholders_test[1].keys()) == ["things"]
+    placeholders = send_notification_to_one_recipient(
         driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
     )
+    assert list(placeholders[0].keys()) == ["name"]
+    assert list(placeholders[1].keys()) == ["things"]
     delete_template(driver, template_name)
 
 
@@ -153,10 +159,16 @@ def test_send_sms_with_placeholders_to_one_recipient(
     name = "sms with placeholders" + str(uuid.uuid4())
     content = "Hi ((name)), Is ((phone number)) your mobile number? We want to send you some ((things))"
     template_name = create_sms_template(driver, name=name, content=content)
-    send_notification_to_one_recipient(driver, template_name, "sms", test=True, placeholders_number=2)
-    send_notification_to_one_recipient(
+    placeholders_test = send_notification_to_one_recipient(
+        driver, template_name, "sms", test=True, placeholders_number=2
+    )
+    assert list(placeholders_test[0].keys()) == ["name"]
+    assert list(placeholders_test[1].keys()) == ["things"]
+    placeholders = send_notification_to_one_recipient(
         driver, template_name, "sms", test=False, recipient_data='07700900998', placeholders_number=2
     )
+    assert list(placeholders[0].keys()) == ["name"]
+    assert list(placeholders[1].keys()) == ["things"]
     delete_template(driver, template_name)
 
 

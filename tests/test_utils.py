@@ -285,19 +285,21 @@ def send_notification_to_one_recipient(
         if not send_to_one_recipient_page.is_placeholder_a_recipient_field(message_type):
             placeholder_value = str(uuid.uuid4())
             send_to_one_recipient_page.enter_placeholder_value(placeholder_value)
-            placeholders.append(placeholder_value)
+            placeholder_name = send_to_one_recipient_page.get_placeholder_name()
+            placeholders.append({placeholder_name: placeholder_value})
         send_to_one_recipient_page.click_continue()
         index += 1
         if index > 10:
             raise TimeoutException("Too many attempts, something is broken with placeholders")
     if placeholders_number:
         assert len(placeholders) == placeholders_number
-    for placeholder_value in placeholders:
-        assert send_to_one_recipient_page.is_text_present_on_page(placeholder_value)
+    for placeholder in placeholders:
+        assert send_to_one_recipient_page.is_text_present_on_page(list(placeholder.values())[0])
     if message_type == "email":
         _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_data)
     else:
         _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_data)
+    return placeholders
 
 
 def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_number):
