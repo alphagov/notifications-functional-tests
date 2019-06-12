@@ -211,7 +211,7 @@ def create_email_template(driver, name="test template", content=None):
 
     template_page = EditEmailTemplatePage(driver)
     template_page.create_template(name=name, content=content)
-    return name
+    return template_page.get_template_id()
 
 
 def create_sms_template(driver, name="test template", content=None):
@@ -222,7 +222,7 @@ def create_sms_template(driver, name="test template", content=None):
 
     template_page = EditSmsTemplatePage(driver)
     template_page.create_template(name=name, content=content)
-    return name
+    return template_page.get_template_id()
 
 
 def go_to_templates_page(driver):

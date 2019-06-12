@@ -190,6 +190,12 @@ class BasePage(object):
     def is_text_present_on_page(self, search_text):
         return search_text in self.driver.page_source
 
+    def get_template_id(self):
+        # e.g.
+        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
+        # circle back and do better
+        return self.driver.current_url.split('/templates/')[1].split('/')[0]
+
 
 class MainPage(BasePage):
 
@@ -526,12 +532,6 @@ class EditSmsTemplatePage(BasePage):
             self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
 
-    def get_id(self):
-        # e.g.
-        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
-        # circle back and do better
-        return self.driver.current_url.split('/templates/')[1].split('/')[0]
-
 
 class SendEmailTemplatePage(BasePage):
 
@@ -601,12 +601,6 @@ class EditEmailTemplatePage(BasePage):
         element = self.wait_for_element(self.folder_path_item(folder_name))
         element.click()
 
-    def get_id(self):
-        # e.g.
-        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
-        # circle back and do better
-        return self.driver.current_url.split('/templates/')[1].split('/')[0]
-
 
 class UploadCsvPage(BasePage):
 
@@ -640,9 +634,6 @@ class UploadCsvPage(BasePage):
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
         self.driver.get(url)
-
-    def get_template_id(self):
-        return self.driver.current_url.split('//')[1].split('/')[4].split('?')[0]
 
 
 class TeamMembersPage(BasePage):

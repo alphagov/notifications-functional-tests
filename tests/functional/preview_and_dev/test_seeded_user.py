@@ -108,46 +108,39 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
 
 
 @recordtime
-def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-
-    message_type = 'email'
-    template_name = 'Functional Tests - CSV Email Template with Jenkins Build ID'
-    template_id = config['service']['templates']['email']
-
-    dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
-
-    send_notification_to_one_recipient(driver, template_name, "email", test=True)
-    dashboard_page.click_continue()
-
-    notification_id = dashboard_page.get_notification_id()
-    one_off_email = seeded_client.get_notification_by_id(notification_id)
-    assert one_off_email.get('created_by_name') == 'Preview admin tests user'
-
-    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-    dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
-
-
-@recordtime
 def test_send_email_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
     go_to_templates_page(driver)
-    name = "email with placeholders" + str(uuid.uuid4())
+    template_name = "email with placeholders" + str(uuid.uuid4())
     content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
-    template_name = create_email_template(driver, name=name, content=content)
-    placeholders_test = send_notification_to_one_recipient(
-        driver, template_name, "email", test=True, placeholders_number=2
-    )
-    assert list(placeholders_test[0].keys()) == ["name"]
-    assert list(placeholders_test[1].keys()) == ["things"]
+    template_id = create_email_template(driver, name=template_name, content=content)
+
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
+    dashboard_stats_before = get_dashboard_stats(dashboard_page, 'email', template_id)
+
     placeholders = send_notification_to_one_recipient(
         driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
     )
     assert list(placeholders[0].keys()) == ["name"]
     assert list(placeholders[1].keys()) == ["things"]
+
+    dashboard_page.click_continue()
+    notification_id = dashboard_page.get_notification_id()
+    one_off_email = seeded_client.get_notification_by_id(notification_id)
+    assert one_off_email.get('created_by_name') == 'Preview admin tests user'
+
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
+    dashboard_stats_after = get_dashboard_stats(dashboard_page, 'email', template_id)
+    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+    placeholders_test = send_notification_to_one_recipient(
+        driver, template_name, "email", test=True, placeholders_number=2
+    )
+    assert list(placeholders_test[0].keys()) == ["name"]
+    assert list(placeholders_test[1].keys()) == ["things"]
+
     delete_template(driver, template_name)
 
 
@@ -156,37 +149,32 @@ def test_send_sms_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
     go_to_templates_page(driver)
-    name = "sms with placeholders" + str(uuid.uuid4())
+    template_name = "sms with placeholders" + str(uuid.uuid4())
     content = "Hi ((name)), Is ((phone number)) your mobile number? We want to send you some ((things))"
-    template_name = create_sms_template(driver, name=name, content=content)
-    placeholders_test = send_notification_to_one_recipient(
-        driver, template_name, "sms", test=True, placeholders_number=2
-    )
-    assert list(placeholders_test[0].keys()) == ["name"]
-    assert list(placeholders_test[1].keys()) == ["things"]
+    template_id = create_sms_template(driver, name=template_name, content=content)
+
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
+    dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
+
     placeholders = send_notification_to_one_recipient(
         driver, template_name, "sms", test=False, recipient_data='07700900998', placeholders_number=2
     )
     assert list(placeholders[0].keys()) == ["name"]
     assert list(placeholders[1].keys()) == ["things"]
-    delete_template(driver, template_name)
 
-
-@recordtime
-def test_send_sms_to_one_recipient(driver, login_seeded_user):
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-
-    template_name = 'Functional Tests - CSV SMS Template with Jenkins Build ID'
-    template_id = config['service']['templates']['sms']
-    dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
-
-    send_notification_to_one_recipient(driver, template_name, "sms", test=True, placeholders_number=1)
     dashboard_page.click_continue()
-
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
     dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+    placeholders_test = send_notification_to_one_recipient(
+        driver, template_name, "sms", test=True, placeholders_number=2
+    )
+    assert list(placeholders_test[0].keys()) == ["name"]
+    assert list(placeholders_test[1].keys()) == ["things"]
+
+    delete_template(driver, template_name)
 
 
 def test_view_precompiled_letter_message_log_delivered(
@@ -311,7 +299,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 
     edit_template_page = EditEmailTemplatePage(driver)
     edit_template_page.create_template(name=template_name)
-    template_id = edit_template_page.get_id()
+    template_id = edit_template_page.get_template_id()
     edit_template_page.click_templates()
 
     # create folder using add to new folder
