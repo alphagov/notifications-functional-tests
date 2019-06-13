@@ -97,10 +97,10 @@ class ApiKeysPageLocators(object):
 class SingleRecipientLocators(object):
     USE_MY_EMAIL = (By.LINK_TEXT, 'Use my email address')
     USE_MY_NUMBER = (By.LINK_TEXT, 'Use my phone number')
-    BUILD_ID_INPUT = (By.NAME, 'placeholder_value')
+    PLACEHOLDER_NAME = (By.XPATH, "(//label[@for='placeholder_value'])")
+    PLACEHOLDER_VALUE_INPUT = (By.NAME, 'placeholder_value')
     PREVIEW_TABLE = (By.CLASS_NAME, 'email-message-meta')
-    ALTERNATIVE_EMAIL = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
-    ALTERNATIVE_SMS_SENDER = (By.ID, 'sender-1')
+    ALTERNATIVE_SENDER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
 
 
 class EmailReplyToLocators(object):
@@ -127,3 +127,7 @@ class ServiceSettingsLocators(object):
 class ChangeNameLocators(object):
     CHANGE_NAME_FIELD = (By.ID, 'name')
     PASSWORD_FIELD = (By.ID, 'password')
+
+
+class ViewTemplatePageLocators(object):
+    SEND_BUTTON = (By.LINK_TEXT, 'Send')
