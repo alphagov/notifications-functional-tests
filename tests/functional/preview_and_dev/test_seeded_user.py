@@ -434,14 +434,14 @@ def test_change_service_name(driver, login_seeded_user):
     change_name.click_save()
     change_name.enter_password(config['service']['seeded_user']['password'])
     change_name.click_save()
-    service_settings.check_service_name(new_name)
+    service_settings.check_service_name('Functional Test Org {}'.format(new_name))
     # change the name back
     change_name.go_to_change_service_name(config['service']['id'])
     change_name.enter_new_name(config['service']['name'])
     change_name.click_save()
     change_name.enter_password(config['service']['seeded_user']['password'])
     change_name.click_save()
-    service_settings.check_service_name(config['service']['name'])
+    service_settings.check_service_name('Functional Test Org {}'.format(config['service']['name']))
 
 
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
