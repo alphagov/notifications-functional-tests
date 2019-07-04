@@ -393,7 +393,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
     # click through, see that child folder invisible
     show_templates_page.click_template_by_link_text(folder_names[0])
     child_folder = show_templates_page.get_folder_by_name(folder_names[1])
-    name_of_folder_with_invisible_parent = folder_names[1] + " / " + folder_names[2]
+    name_of_folder_with_invisible_parent = folder_names[1] + folder_names[2]
     assert child_folder.text == name_of_folder_with_invisible_parent
     # grandchild folder has folder path as a name
     show_templates_page.click_template_by_link_text(name_of_folder_with_invisible_parent)
