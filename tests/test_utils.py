@@ -376,7 +376,7 @@ def do_user_can_add_reply_to_email_to_service(driver):
     email_reply_to_page.insert_email_reply_to_address(email_address)
     email_reply_to_page.click_add_email_reply_to()
 
-    email_reply_to_page.click_save(time=55)
+    email_reply_to_page.click_save(time=120)
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
@@ -392,7 +392,6 @@ def do_user_can_update_reply_to_email_to_service(driver):
         return True
     email_address = config['service']['email_reply_to']
     email_address2 = config['service']['email_reply_to_2']
-    email_address3 = config['service']['email_reply_to_3']
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
@@ -404,7 +403,7 @@ def do_user_can_update_reply_to_email_to_service(driver):
     email_reply_to_page.insert_email_reply_to_address(email_address2)
     email_reply_to_page.click_add_email_reply_to()
 
-    email_reply_to_page.click_save(time=55)
+    email_reply_to_page.click_save(time=120)
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
@@ -415,17 +414,13 @@ def do_user_can_update_reply_to_email_to_service(driver):
     email_reply_to_id = sub_body.split('\n')[2]  # the id is the third entry [ 'email address, 'Change', id' ]
 
     email_reply_to_page.go_to_edit_email_reply_to_address(service_id, email_reply_to_id)
-    email_reply_to_page.clear_email_reply_to()
-    email_reply_to_page.insert_email_reply_to_address(email_address3)
     email_reply_to_page.check_is_default_check_box()
     email_reply_to_page.click_add_email_reply_to()
-
-    email_reply_to_page.click_save(time=55)
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
     assert email_address in body.text
-    assert email_address2 not in body.text
-    assert email_address3 + default in body.text
+    assert email_address + default not in body.text
+    assert email_address2 + default in body.text
 
     dashboard_page.go_to_dashboard_for_service(service_id)
