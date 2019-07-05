@@ -417,7 +417,7 @@ class ShowTemplatesPage(BasePage):
     def template_link_text(link_text):
         return (
             By.XPATH,
-            "//nav[contains(@id,'template-list')]//a//span[contains(text(), '{}')]".format(link_text)
+            "//nav[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{}')]".format(link_text)
         )
 
     @staticmethod
