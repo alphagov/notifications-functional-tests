@@ -9,6 +9,7 @@ echo -n "" > docker.env
 env_vars=(
     ENVIRONMENT
     BUILD_ID
+    SELENIUM_DRIVER
 
     TEST_NUMBER
     FUNCTIONAL_TEST_EMAIL
