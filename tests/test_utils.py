@@ -16,14 +16,18 @@ from tests.pages import (
     AddServicePage,
     DashboardPage,
     EditEmailTemplatePage,
+    EditSmsTemplatePage,
     EmailReplyTo,
     InviteUserPage,
     MainPage,
     RegisterFromInvite,
     RegistrationPage,
+    SendOneRecipient,
     ShowTemplatesPage,
+    SmsSenderPage,
     TeamMembersPage,
-    VerifyPage
+    VerifyPage,
+    ViewTemplatePage
 )
 
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),
@@ -199,29 +203,45 @@ def is_view_for_all_permissions(page):
     assert page.driver.current_url == expected
 
 
-def do_edit_and_delete_email_template(driver):
-    test_name = 'edit/delete test'
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
-    dashboard_page.click_templates()
-
-    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
-
+def create_email_template(driver, name="test template", content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
     show_templates_page.select_email()
 
     template_page = EditEmailTemplatePage(driver)
-    template_page.create_template(name=test_name)
-    template_page.click_templates()
+    template_page.create_template(name=name, content=content)
+    return template_page.get_template_id()
 
-    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
 
-    show_templates_page.click_template_by_link_text(test_name)
+def create_sms_template(driver, name="test template", content=None):
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    show_templates_page.select_text_message()
+
+    template_page = EditSmsTemplatePage(driver)
+    template_page.create_template(name=name, content=content)
+    return template_page.get_template_id()
+
+
+def go_to_templates_page(driver):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+
+
+def delete_template(driver, template_name):
+    show_templates_page = ShowTemplatesPage(driver)
+    try:
+        show_templates_page.click_template_by_link_text(template_name)
+    except TimeoutException:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+        dashboard_page.click_templates()
+        show_templates_page.click_template_by_link_text(template_name)
+    template_page = EditEmailTemplatePage(driver)
     template_page.click_delete()
-
-    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
 def get_verify_code_from_api():
@@ -237,6 +257,78 @@ def get_verify_code_from_api():
             config['user']['mobile']
         ))
     return m.group(0)
+
+
+def send_notification_to_one_recipient(
+    driver, template_name, message_type, test=False, recipient_data=None, placeholders_number=None
+):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.click_templates()
+
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_template_by_link_text(template_name)
+    view_template_page = ViewTemplatePage(driver)
+    view_template_page.click_send()
+
+    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page.choose_alternative_sender()
+    send_to_one_recipient_page.click_continue()
+    if test is True:
+        send_to_one_recipient_page.send_to_myself(message_type)
+    else:
+        send_to_one_recipient_page.enter_placeholder_value(recipient_data)
+        send_to_one_recipient_page.click_continue()
+    placeholders = []
+    index = 0
+    while send_to_one_recipient_page.is_page_title("Personalise this message"):
+        if not send_to_one_recipient_page.is_placeholder_a_recipient_field(message_type):
+            placeholder_value = str(uuid.uuid4())
+            send_to_one_recipient_page.enter_placeholder_value(placeholder_value)
+            placeholder_name = send_to_one_recipient_page.get_placeholder_name()
+            placeholders.append({placeholder_name: placeholder_value})
+        send_to_one_recipient_page.click_continue()
+        index += 1
+        if index > 10:
+            raise TimeoutException("Too many attempts, something is broken with placeholders")
+    if placeholders_number:
+        assert len(placeholders) == placeholders_number
+    for placeholder in placeholders:
+        assert send_to_one_recipient_page.is_text_present_on_page(list(placeholder.values())[0])
+    if message_type == "email":
+        _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_data)
+    else:
+        _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_data)
+    return placeholders
+
+
+def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_number):
+    sms_sender_page = SmsSenderPage(driver)
+    sms_sender = sms_sender_page.get_sms_sender()
+    sms_recipient = sms_sender_page.get_sms_recipient()
+
+    assert sms_sender.text == 'From: {}'.format(config['service']['sms_sender_text'])
+    if test:
+        assert sms_recipient.text == 'To: {}'.format(config['user']['mobile'])
+    else:
+        assert sms_recipient.text == 'To: {}'.format(recipient_number)
+    assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
+
+
+def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_email):
+    send_to_one_recipient_page = SendOneRecipient(driver)
+    preview_rows = send_to_one_recipient_page.get_preview_contents()
+    assert "From" in str(preview_rows[0].text)
+    assert config['service']['name'] in str(preview_rows[0].text)
+    assert "Reply to" in str(preview_rows[1].text)
+    assert config['service']['email_reply_to'] in str(preview_rows[1].text)
+    assert "To" in str(preview_rows[2].text)
+    if test is True:
+        assert config['service']['seeded_user']['email'] in str(preview_rows[2].text)
+    else:
+        assert recipient_email in str(preview_rows[2].text)
+    assert "Subject" in str(preview_rows[3].text)
+    assert send_to_one_recipient_page.is_page_title("Preview of ‘" + template_name + "’")
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
@@ -284,7 +376,7 @@ def do_user_can_add_reply_to_email_to_service(driver):
     email_reply_to_page.insert_email_reply_to_address(email_address)
     email_reply_to_page.click_add_email_reply_to()
 
-    email_reply_to_page.click_save(time=55)
+    email_reply_to_page.click_save(time=120)
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
@@ -300,7 +392,6 @@ def do_user_can_update_reply_to_email_to_service(driver):
         return True
     email_address = config['service']['email_reply_to']
     email_address2 = config['service']['email_reply_to_2']
-    email_address3 = config['service']['email_reply_to_3']
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service()
 
@@ -312,7 +403,7 @@ def do_user_can_update_reply_to_email_to_service(driver):
     email_reply_to_page.insert_email_reply_to_address(email_address2)
     email_reply_to_page.click_add_email_reply_to()
 
-    email_reply_to_page.click_save(time=55)
+    email_reply_to_page.click_save(time=120)
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
@@ -323,17 +414,13 @@ def do_user_can_update_reply_to_email_to_service(driver):
     email_reply_to_id = sub_body.split('\n')[2]  # the id is the third entry [ 'email address, 'Change', id' ]
 
     email_reply_to_page.go_to_edit_email_reply_to_address(service_id, email_reply_to_id)
-    email_reply_to_page.clear_email_reply_to()
-    email_reply_to_page.insert_email_reply_to_address(email_address3)
     email_reply_to_page.check_is_default_check_box()
     email_reply_to_page.click_add_email_reply_to()
-
-    email_reply_to_page.click_save(time=55)
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
     assert email_address in body.text
-    assert email_address2 not in body.text
-    assert email_address3 + default in body.text
+    assert email_address + default not in body.text
+    assert email_address2 + default in body.text
 
     dashboard_page.go_to_dashboard_for_service(service_id)

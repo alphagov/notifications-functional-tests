@@ -44,6 +44,7 @@ from tests.pages.locators import (
     TeamMembersPageLocators,
     UploadCsvLocators,
     VerifyPageLocators,
+    ViewTemplatePageLocators
 )
 
 
@@ -177,6 +178,23 @@ class BasePage(object):
     def click_save(self, time=10):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON, time=time)
         element.click()
+
+    def click_continue(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
+        element.click()
+
+    def is_page_title(self, expected_page_title):
+        element = self.wait_for_element(CommonPageLocators.H1)
+        return element.text == expected_page_title
+
+    def is_text_present_on_page(self, search_text):
+        return search_text in self.driver.page_source
+
+    def get_template_id(self):
+        # e.g.
+        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
+        # circle back and do better
+        return self.driver.current_url.split('/templates/')[1].split('/')[0]
 
 
 class MainPage(BasePage):
@@ -399,7 +417,7 @@ class ShowTemplatesPage(BasePage):
     def template_link_text(link_text):
         return (
             By.XPATH,
-            "//nav[contains(@id,'template-list')]//a//span[contains(text(), '{}')]".format(link_text)
+            "//nav[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{}')]".format(link_text)
         )
 
     @staticmethod
@@ -506,16 +524,13 @@ class EditSmsTemplatePage(BasePage):
         element = self.wait_for_element(EditSmsTemplatePage.save_button)
         element.click()
 
-    def create_template(self, name='Test sms template'):
+    def create_template(self, name='Test sms template', content=None):
         self.name_input = name
-        self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
+        if content:
+            self.template_content_input = content
+        else:
+            self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
-
-    def get_id(self):
-        # e.g.
-        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
-        # circle back and do better
-        return self.driver.current_url.split('/templates/')[1].split('/')[0]
 
 
 class SendEmailTemplatePage(BasePage):
@@ -538,6 +553,12 @@ class SendEmailTemplatePage(BasePage):
 
     def click_upload_recipients(self):
         element = self.wait_for_element(TemplatePageLocators.UPLOAD_RECIPIENTS_LINK)
+        element.click()
+
+
+class ViewTemplatePage(BasePage):
+    def click_send(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.SEND_BUTTON)
         element.click()
 
 
@@ -567,21 +588,18 @@ class EditEmailTemplatePage(BasePage):
         element = self.wait_for_element(EditEmailTemplatePage.confirm_delete_button)
         element.click()
 
-    def create_template(self, name='Test email template'):
+    def create_template(self, name='Test email template', content=None):
         self.name_input = name
         self.subject_input = 'Test email from functional tests'
-        self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
+        if content:
+            self.template_content_input = content
+        else:
+            self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
 
     def click_folder_path(self, folder_name):
         element = self.wait_for_element(self.folder_path_item(folder_name))
         element.click()
-
-    def get_id(self):
-        # e.g.
-        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
-        # circle back and do better
-        return self.driver.current_url.split('/templates/')[1].split('/')[0]
 
 
 class UploadCsvPage(BasePage):
@@ -616,9 +634,6 @@ class UploadCsvPage(BasePage):
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
         self.driver.get(url)
-
-    def get_template_id(self):
-        return self.driver.current_url.split('//')[1].split('/')[4].split('?')[0]
 
 
 class TeamMembersPage(BasePage):
@@ -770,9 +785,6 @@ class PreviewLetterPage(BasePage):
     download_pdf_link = LetterPreviewPageLocators.DOWNLOAD_PDF_LINK
     pdf_image = LetterPreviewPageLocators.PDF_IMAGE
 
-    def is_text_present_on_page(self, search_text):
-        return search_text in self.driver.page_source
-
     def get_download_pdf_link(self):
         link = self.wait_for_element(PreviewLetterPage.download_pdf_link)
         return link.get_attribute("href")
@@ -825,33 +837,35 @@ class SendOneRecipient(BasePage):
         url = "{}/services/{}/send/{}/set-sender".format(self.base_url, service_id, template_id)
         self.driver.get(url)
 
-    def click_continue(self):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
-        element.click()
+    def is_placeholder_a_recipient_field(self, message_type):
+        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
+        if message_type == "email":
+            return element.text.strip() == 'email address'
+        else:
+            return element.text.strip() == 'phone number'
 
-    def choose_alternative_reply_to_email(self):
-        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_EMAIL)
-        radio.click()
+    def get_placeholder_name(self):
+        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
+        return element.text.strip()
 
-    def click_use_my_email(self):
-        element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
-        element.click()
-
-    def update_build_id(self):
-        element = self.wait_for_element(SingleRecipientLocators.BUILD_ID_INPUT)
-        element.send_keys("test_1234")
+    def enter_placeholder_value(self, placeholder_value):
+        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
+        element.send_keys(placeholder_value)
 
     def get_preview_contents(self):
         table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
         rows = table.find_elements(By.TAG_NAME, "tr")  # get all of the rows in the table
         return rows
 
-    def choose_alternative_sms_sender(self):
-        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_SMS_SENDER)
+    def choose_alternative_sender(self):
+        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
         radio.click()
 
-    def click_use_my_phone_number(self):
-        element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
+    def send_to_myself(self, message_type):
+        if message_type == "email":
+            element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
+        else:
+            element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
         element.click()
 
 

@@ -19,9 +19,13 @@ from tests.postman import (
 
 from tests.test_utils import (
     assert_notification_body,
-    do_edit_and_delete_email_template,
+    create_email_template,
+    create_sms_template,
+    delete_template,
+    go_to_templates_page,
     NotificationStatuses,
-    recordtime
+    recordtime,
+    send_notification_to_one_recipient
 )
 
 from tests.pages.rollups import sign_in, sign_in_email_auth
@@ -31,8 +35,6 @@ from tests.pages import (
     DashboardPage,
     ShowTemplatesPage,
     EditEmailTemplatePage,
-    SendOneRecipient,
-    SmsSenderPage,
     UploadCsvPage,
     PreviewLetterPage,
     ViewFolderPage,
@@ -78,100 +80,101 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
 
 
 @recordtime
-@pytest.mark.parametrize('message_type', ['sms', 'email'])
-def test_edit_and_delete_template(driver, login_seeded_user, seeded_client, message_type):
-    do_edit_and_delete_email_template(driver)
+def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
+    test_name = 'edit/delete email template test'
+    go_to_templates_page(driver)
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    create_email_template(driver, name=test_name, content=None)
+    go_to_templates_page(driver)
+    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    delete_template(driver, test_name)
+    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
 
 
 @recordtime
-def test_send_email_to_one_recipient(driver, seeded_client, login_seeded_user):
+def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
+    test_name = 'edit/delete sms template test'
+    go_to_templates_page(driver)
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    create_sms_template(driver, name=test_name, content=None)
+    go_to_templates_page(driver)
+    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    delete_template(driver, test_name)
+    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
+
+
+@recordtime
+def test_send_email_with_placeholders_to_one_recipient(
+    driver, seeded_client, login_seeded_user
+):
+    go_to_templates_page(driver)
+    template_name = "email with placeholders" + str(uuid.uuid4())
+    content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
+    template_id = create_email_template(driver, name=template_name, content=content)
+
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
+    dashboard_stats_before = get_dashboard_stats(dashboard_page, 'email', template_id)
 
-    message_type = 'email'
-
-    template_id = {
-        'email': config['service']['templates']['email'],
-        'sms': config['service']['templates']['sms'],
-    }.get(message_type)
-
-    dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
-
-    send_to_one_recipient_page = SendOneRecipient(driver)
-
-    send_to_one_recipient_page.go_to_send_one_recipient(
-        config['service']['id'],
-        config['service']['templates']['email']
+    placeholders = send_notification_to_one_recipient(
+        driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
     )
+    assert list(placeholders[0].keys()) == ["name"]
+    assert list(placeholders[1].keys()) == ["things"]
 
-    send_to_one_recipient_page.choose_alternative_reply_to_email()
-    send_to_one_recipient_page.click_continue()
-    send_to_one_recipient_page.click_use_my_email()
-    send_to_one_recipient_page.update_build_id()
-    send_to_one_recipient_page.click_continue()
-
-    # assert the reply to address etc is correct
-    preview_rows = send_to_one_recipient_page.get_preview_contents()
-
-    assert "From" in str(preview_rows[0].text)
-    assert config['service']['name'] in str(preview_rows[0].text)
-    assert "Reply to" in str(preview_rows[1].text)
-    assert config['service']['email_reply_to'] in str(preview_rows[1].text)
-    assert "To" in str(preview_rows[2].text)
-    assert config['service']['seeded_user']['email'] in str(preview_rows[2].text)
-    assert "Subject" in str(preview_rows[3].text)
-    assert "Functional Tests – CSV Email" in str(preview_rows[3].text)
-
-    send_to_one_recipient_page.click_continue()
-
+    dashboard_page.click_continue()
     notification_id = dashboard_page.get_notification_id()
     one_off_email = seeded_client.get_notification_by_id(notification_id)
     assert one_off_email.get('created_by_name') == 'Preview admin tests user'
 
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-
-    dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
-
+    dashboard_stats_after = get_dashboard_stats(dashboard_page, 'email', template_id)
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+    placeholders_test = send_notification_to_one_recipient(
+        driver, template_name, "email", test=True, placeholders_number=2
+    )
+    assert list(placeholders_test[0].keys()) == ["name"]
+    assert list(placeholders_test[1].keys()) == ["things"]
+
+    delete_template(driver, template_name)
 
 
 @recordtime
-def test_send_sms_to_one_recipient(driver, login_seeded_user):
+def test_send_sms_with_placeholders_to_one_recipient(
+    driver, seeded_client, login_seeded_user
+):
+    go_to_templates_page(driver)
+    template_name = "sms with placeholders" + str(uuid.uuid4())
+    content = "Hi ((name)), Is ((phone number)) your mobile number? We want to send you some ((things))"
+    template_id = create_sms_template(driver, name=template_name, content=content)
+
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-
-    template_id = config['service']['templates']['sms']
-
     dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
-    sms_sender_page = SmsSenderPage(driver)
+    placeholders = send_notification_to_one_recipient(
+        driver, template_name, "sms", test=False, recipient_data='07700900998', placeholders_number=2
+    )
+    assert list(placeholders[0].keys()) == ["name"]
+    assert list(placeholders[1].keys()) == ["things"]
 
-    send_to_one_recipient_page.go_to_send_one_recipient(config['service']['id'], template_id)
-
-    send_to_one_recipient_page.choose_alternative_sms_sender()
-    send_to_one_recipient_page.click_continue()
-    send_to_one_recipient_page.click_use_my_phone_number()
-    # updates the personalisation field with 'test_1234'
-    send_to_one_recipient_page.update_build_id()
-    send_to_one_recipient_page.click_continue()
-
-    sms_sender = sms_sender_page.get_sms_sender()
-    sms_recipient = sms_sender_page.get_sms_recipient()
-    sms_content = sms_sender_page.get_sms_content()
-
-    assert sms_sender.text == 'From: {}'.format(config['service']['sms_sender_text'])
-    assert sms_recipient.text == 'To: {}'.format(config['user']['mobile'])
-    assert 'The quick brown fox jumped over the lazy dog. Jenkins build id: {}.'.format('test_1234') \
-        in sms_content.text
-
-    send_to_one_recipient_page.click_continue()
-
+    dashboard_page.click_continue()
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
-
     dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
-
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+    placeholders_test = send_notification_to_one_recipient(
+        driver, template_name, "sms", test=True, placeholders_number=2
+    )
+    assert list(placeholders_test[0].keys()) == ["name"]
+    assert list(placeholders_test[1].keys()) == ["things"]
+
+    delete_template(driver, template_name)
 
 
 def test_view_precompiled_letter_message_log_delivered(
@@ -296,7 +299,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 
     edit_template_page = EditEmailTemplatePage(driver)
     edit_template_page.create_template(name=template_name)
-    template_id = edit_template_page.get_id()
+    template_id = edit_template_page.get_template_id()
     edit_template_page.click_templates()
 
     # create folder using add to new folder
@@ -390,7 +393,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
     # click through, see that child folder invisible
     show_templates_page.click_template_by_link_text(folder_names[0])
     child_folder = show_templates_page.get_folder_by_name(folder_names[1])
-    name_of_folder_with_invisible_parent = folder_names[1] + " / " + folder_names[2]
+    name_of_folder_with_invisible_parent = folder_names[1] + " " + folder_names[2]
     assert child_folder.text == name_of_folder_with_invisible_parent
     # grandchild folder has folder path as a name
     show_templates_page.click_template_by_link_text(name_of_folder_with_invisible_parent)
