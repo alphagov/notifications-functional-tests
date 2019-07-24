@@ -75,7 +75,6 @@ COPY service_permissions (service_id, permission, created_at) FROM stdin;
 34b725f0-1f47-49bc-a9f5-aa2a84587c53	international_sms	2019-03-25 15:02:40.883356
 34b725f0-1f47-49bc-a9f5-aa2a84587c53	email_auth	2019-03-25 15:10:35.734382
 34b725f0-1f47-49bc-a9f5-aa2a84587c53	inbound_sms	2019-03-25 15:20:26.075574
-34b725f0-1f47-49bc-a9f5-aa2a84587c53	precompiled_letter	2019-03-25 15:35:17.196132
 34b725f0-1f47-49bc-a9f5-aa2a84587c53	edit_folder_permissions	2019-03-25 15:35:17.196132
 \.
 
