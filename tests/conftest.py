@@ -22,10 +22,7 @@ def shared_config():
 
 @pytest.fixture(scope="module")
 def _driver():
-    driver_name = (os.getenv('SELENIUM_DRIVER') or 'chrome').lower()
-    if os.environ.get('TRAVIS'):
-        driver_name = 'firefox'
-
+    driver_name = (os.getenv('SELENIUM_DRIVER') or 'firefox').lower()
     http_proxy = os.getenv('HTTP_PROXY')
 
     if driver_name == 'firefox':
@@ -61,19 +58,6 @@ def _driver():
         driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
                                   service_args=service_args,
                                   options=options)
-
-    elif driver_name == 'phantomjs':
-
-        service_args = None
-
-        if http_proxy is not None and http_proxy != "":
-            service_args = [
-                '--proxy={}'.format(http_proxy)
-            ]
-
-        driver = webdriver.PhantomJS(service_args=service_args,
-                                     service_log_path='./logs/phantomjs.log')
-        driver.maximize_window()
 
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
