@@ -81,7 +81,7 @@ class AntiStaleElement(AntiStale):
         def _click():
             # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
             # the scrollIntoView function to bring it to the top of the page
-            self.driver.execute_script('arguments[0].scrollIntoViewIfNeeded()', self.element)
+            self.driver.execute_script('arguments[0].scrollIntoView()', self.element)
             try:
                 self.element.click()
             except WebDriverException:
