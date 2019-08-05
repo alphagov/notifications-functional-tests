@@ -36,7 +36,7 @@ build: dependencies ## Build project
 test: venv ## Run functional tests - preview, staging, func test repo PRs and merges post deploy and local dev
 	su -c '/var/project/scripts/run_functional_tests.sh' hostuser
 
-.PHONY: test_antivirus
+.PHONY: test-antivirus
 test-antivirus: venv # Test antivirus during deploy
 	su -c '/var/project/scripts/run_antivirus_functional_test.sh' hostuser
 
@@ -122,7 +122,7 @@ test-with-docker: ## Run all tests inside a Docker container
 
 .PHONY: test-antivirus-with-docker
 test-antivirus-with-docker: ## Run antivirus test inside a Docker container
-	$(call run_test_container, test_antivirus)
+	$(call run_test_container, test-antivirus)
 
 .PHONY: test-admin-with-docker
 test-admin-with-docker: ## Run admin tests inside a Docker container
