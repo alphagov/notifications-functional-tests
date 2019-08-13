@@ -47,6 +47,6 @@ mkdir logs
 echo "Running $ENVIRONMENT tests"
 display_status $ENVIRONMENT
 
-py.test -k test_send_precompiled_letter_with_virus_notification_via_api -x -v
+py.test -k 'test_send_precompiled_letter_with_virus_notification_via_api or test_document_download' -x -v
 
 display_result $? 3 "Antivirus tests"
