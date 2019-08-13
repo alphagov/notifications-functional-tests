@@ -105,6 +105,7 @@ class SingleRecipientLocators(object):
 
 class EmailReplyToLocators(object):
     ADD_EMAIL_REPLY_TO_BUTTON = (By.CLASS_NAME, 'button')
+    CONTINUE_BUTTON = (By.XPATH, "//a[@class = 'button' and contains(text(),'Continue')]")
     EMAIL_ADDRESS_FIELD = (By.ID, 'email_address')
     REPLY_TO_ADDRESSES = (By.TAG_NAME, "body")
     IS_DEFAULT_CHECKBOX = (By.ID, "is_default")

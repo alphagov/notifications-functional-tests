@@ -905,6 +905,10 @@ class EmailReplyTo(BasePage):
         element = self.wait_for_element(EmailReplyToLocators.ADD_EMAIL_REPLY_TO_BUTTON)
         element.click()
 
+    def click_continue_button(self, time=120):
+        element = self.wait_for_element(EmailReplyToLocators.CONTINUE_BUTTON, time=time)
+        element.click()
+
     def insert_email_reply_to_address(self, email_address):
         element = self.wait_for_element(EmailReplyToLocators.EMAIL_ADDRESS_FIELD)
         element.send_keys(email_address)
