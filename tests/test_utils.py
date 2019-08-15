@@ -376,7 +376,7 @@ def do_user_can_add_reply_to_email_to_service(driver):
     email_reply_to_page.insert_email_reply_to_address(email_address)
     email_reply_to_page.click_add_email_reply_to()
 
-    email_reply_to_page.click_save(time=120)
+    email_reply_to_page.click_continue_button(time=120)
 
     body = email_reply_to_page.get_reply_to_email_addresses()
 
