@@ -870,14 +870,12 @@ class SendOneRecipient(BasePage):
 
 
 class ServiceSettingsPage(BasePage):
-    def check_service_name(self, expected_name=None):
+    def check_service_name(self, expected_name):
         name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
-        if expected_name and name.element.text == expected_name:
+        if name.element.text == expected_name:
             return True
-        elif expected_name and name.element.text != expected_name:
-            raise ValueError("Service name not changed succesfully")
         else:
-            return name.element.text
+            raise ValueError("Service name not changed succesfully")
 
 
 class ChangeName(BasePage):
