@@ -1,10 +1,11 @@
+import pytest
 import uuid
 
 from retry.api import retry_call
 
 from config import config
 
-
+@pytest.mark.skip(reason="Currently failing due to VMN settings of our providers")
 def test_provider_inbound_sms_delivery_via_api(client):
     unique_content = 'inbound test {}'.format(uuid.uuid4())
     client.send_sms_notification(
