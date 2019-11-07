@@ -425,6 +425,8 @@ def test_template_folder_permissions(driver, login_seeded_user):
 def test_change_service_name(driver, login_seeded_user):
     new_name = "Functional Tests {}".format(uuid.uuid4())
     dashboard_page = DashboardPage(driver)
+    # make sure the service is actually named what we expect
+    assert dashboard_page.h2_is_service_name(config['service']['name'])
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_settings()
     service_settings = ServiceSettingsPage(driver)
@@ -435,6 +437,10 @@ def test_change_service_name(driver, login_seeded_user):
     change_name.enter_password(config['service']['seeded_user']['password'])
     change_name.click_save()
     service_settings.check_service_name(new_name)
+
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    assert dashboard_page.h2_is_service_name(new_name)
+
     # change the name back
     change_name.go_to_change_service_name(config['service']['id'])
     change_name.enter_new_name(config['service']['name'])
@@ -442,6 +448,9 @@ def test_change_service_name(driver, login_seeded_user):
     change_name.enter_password(config['service']['seeded_user']['password'])
     change_name.click_save()
     service_settings.check_service_name(config['service']['name'])
+
+    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    assert dashboard_page.h2_is_service_name(config['service']['name'])
 
 
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
