@@ -62,6 +62,7 @@ def _driver():
         driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
                                   service_args=service_args,
                                   options=options)
+        driver.set_window_size(1280, 720)
 
     elif driver_name == 'phantomjs':
 

@@ -1,4 +1,4 @@
-FROM joyzoursky/python-chromedriver:3.7
+FROM joyzoursky/python-chromedriver:3.7-selenium
 
 WORKDIR /var/project
 ADD requirements.txt requirements.txt
