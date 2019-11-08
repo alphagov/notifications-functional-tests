@@ -53,6 +53,7 @@ def _driver():
         options = webdriver.chrome.options.Options()
         service_args = ['--verbose']
         options.add_argument("--no-sandbox")
+        options.add_argument("--headless")
         options.add_argument("user-agent=Selenium")
 
         if http_proxy is not None and http_proxy != "":
@@ -61,6 +62,7 @@ def _driver():
         driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
                                   service_args=service_args,
                                   options=options)
+        driver.set_window_size(1280, 720)
 
     elif driver_name == 'phantomjs':
 
