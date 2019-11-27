@@ -64,19 +64,6 @@ def _driver():
                                   options=options)
         driver.set_window_size(1280, 720)
 
-    elif driver_name == 'phantomjs':
-
-        service_args = None
-
-        if http_proxy is not None and http_proxy != "":
-            service_args = [
-                '--proxy={}'.format(http_proxy)
-            ]
-
-        driver = webdriver.PhantomJS(service_args=service_args,
-                                     service_log_path='./logs/phantomjs.log')
-        driver.maximize_window()
-
     else:
         raise ValueError('Invalid Selenium driver', driver_name)
 
