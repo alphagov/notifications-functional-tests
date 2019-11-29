@@ -9,7 +9,7 @@ The majority of tests that are used in local development and also run on master 
 
 There is an order dependency in the main tests. The registration test must run before any of the other tests as a new user account created for each test run. That user account is used for all later browser based tests. Each test run will first register a user account using the configured FUNCTIONAL_TEST_EMAIL. The email account will have random characters added so that we do not have uniqueness issues with the email address of registered user.
 
-In the main suite there are also tests that that directly use the [python client](https://github.com/alphagov/notifications-python-client) for the notifications api. The client tests require an existing user, service, api key and both email and sms templates.
+In the main suite there are also tests that that directly use the [python client](https://github.com/alphagov/notifications-python-client) for the Notify api. The client tests require an existing user, service, api key and both email and sms templates.
 
 To run locally you need to populate a `.gitignore` and `environment.sh` file with the relevant values. On Jenkins the environment variables are set in the build settings page.
 
