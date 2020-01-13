@@ -761,7 +761,7 @@ class ApiIntegrationPage(BasePage):
         element.click()
 
     def get_client_reference(self):
-        element = self.wait_for_element(ApiIntegrationPage.client_reference)
+        element = self.wait_for_elements(ApiIntegrationPage.client_reference)[1]
         return element.text
 
     def go_to_api_integration_for_service(self, service_id):
