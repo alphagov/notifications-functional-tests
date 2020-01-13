@@ -74,7 +74,7 @@ class InviteUserPageLocators(object):
 
 class ApiIntegrationPageLocators(object):
     MESSAGE_LOG = (By.CSS_SELECTOR, 'div.api-notifications > details:nth-child(1)')
-    CLIENT_REFERENCE = (By.CSS_SELECTOR, '.govuk-details__summary-text')
+    CLIENT_REFERENCE = (By.CSS_SELECTOR, '.api-notifications-item__data-value')
     MESSAGE_LIST = (By.CSS_SELECTOR, '.api-notifications-item__data-value')
     VIEW_LETTER_LINK = (By.LINK_TEXT, 'View letter')
 
