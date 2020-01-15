@@ -52,7 +52,7 @@ class EditTemplatePageLocators(object):
 
 class UploadCsvLocators(object):
     FILE_INPUT = (By.ID, 'file')
-    SEND_BUTTON = (By.CSS_SELECTOR, '[type=submit]')
+    SEND_BUTTON = (By.CSS_SELECTOR, 'main [type=submit]')
     FIRST_NOTIFICATION_AFTER_UPLOAD = (By.CLASS_NAME, 'table-row')
 
 
@@ -69,7 +69,7 @@ class InviteUserPageLocators(object):
     MANAGE_API_KEYS_CHECKBOX = (By.NAME, 'manage_api_keys')
     MANAGE_TEMPLATES_CHECKBOX = (By.NAME, 'manage_templates')
     CHOOSE_FOLDERS_BUTTON = (By.CSS_SELECTOR, 'button[aria-controls=folder_permissions]')
-    SEND_INVITATION_BUTTON = (By.CSS_SELECTOR, '[type=submit]')
+    SEND_INVITATION_BUTTON = (By.CSS_SELECTOR, 'main [type=submit]')
 
 
 class ApiIntegrationPageLocators(object):

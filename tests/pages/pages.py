@@ -406,7 +406,7 @@ class ShowTemplatesPage(BasePage):
     email_radio = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
     text_message_radio = (By.CSS_SELECTOR, "input[type='radio'][value='sms']")
     letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
-    continue_button = (By.CSS_SELECTOR, '[type=submit]')
+    continue_button = (By.CSS_SELECTOR, 'main [type=submit]')
 
     add_new_folder_textbox = BasePageElement(name='add_new_folder_name')
     add_to_new_folder_textbox = BasePageElement(name='move_to_new_folder_name')
@@ -1060,7 +1060,7 @@ class ManageFolderPage(BasePage):
     delete_link = (By.LINK_TEXT, 'Delete this folder')
     name_input = NameInputElement()
     delete_button = (By.NAME, 'delete')
-    save_button = (By.CSS_SELECTOR, '[type=submit]')
+    save_button = (By.CSS_SELECTOR, 'main [type=submit]')
     error_message = (By.CSS_SELECTOR, '.banner-dangerous')
 
     def set_name(self, new_name):
