@@ -47,7 +47,7 @@ from tests.pages import (
 
 
 @recordtime
-@pytest.mark.parametrize('message_type', ['sms', 'email', 'letter'])
+@pytest.mark.parametrize('message_type', ['sms', 'email', pytest.param('letter', marks=pytest.mark.template_preview)])
 def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
@@ -177,6 +177,7 @@ def test_send_sms_with_placeholders_to_one_recipient(
     delete_template(driver, template_name)
 
 
+@pytest.mark.template_preview
 def test_view_precompiled_letter_message_log_delivered(
         driver,
         login_seeded_user,
@@ -206,6 +207,7 @@ def test_view_precompiled_letter_message_log_delivered(
     assert ref_link in link
 
 
+@pytest.mark.template_preview
 def test_view_precompiled_letter_preview_delivered(
         driver,
         login_seeded_user,
