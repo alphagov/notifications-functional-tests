@@ -4,8 +4,12 @@ COPY users (id, name, email_address, created_at, updated_at, _password, mobile_n
 c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	Preview admin tests user	notify-tests-local+admin_tests@digital.cabinet-office.gov.uk	2019-03-25 15:00:54.012798	2019-03-25 15:48:04.9784	$2b$10$rX7KZQG7NvsyfwqNX/eZru6w79nDXsABV6uSqsckLcwIL9T8TfHlG	07700900001	2019-03-25 15:00:54.005881	2019-03-25 15:48:04.97752	0	active	f	951ecf10-94e8-4b4d-86a9-a269477ed692	sms_auth
 \.
 
-COPY services (id, name, created_at, updated_at, active, message_limit, restricted, email_from, created_by_id, version, research_mode, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms) FROM stdin;
-34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	250000	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	t	central	t	t	3000	\N	\N	\N	\N	\N
+COPY organisation (id, name, active, created_at, updated_at, email_branding_id, letter_branding_id, agreement_signed, agreement_signed_at, agreement_signed_by_id, agreement_signed_version, crown, organisation_type) FROM stdin;
+e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.500149	\N	\N	\N	\N	\N	\N	\N	\N	\N
+\.
+
+COPY services (id, name, created_at, updated_at, active, message_limit, restricted, email_from, created_by_id, version, research_mode, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, organisation_id) FROM stdin;
+34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	250000	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	t	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	\N
 \.
 
 COPY annual_billing (id, service_id, financial_year_start, free_sms_fragment_limit, updated_at, created_at) FROM stdin;
@@ -36,16 +40,8 @@ COPY templates_history (id, name, template_type, created_at, updated_at, content
 c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Jenkins Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second
 \.
 
-COPY organisation (id, name, active, created_at, updated_at, email_branding_id, letter_branding_id, agreement_signed, agreement_signed_at, agreement_signed_by_id, agreement_signed_version, crown, organisation_type) FROM stdin;
-e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.500149	\N	\N	\N	\N	\N	\N	\N	\N	\N
-\.
-
 COPY inbound_numbers (id, number, provider, service_id, active, created_at, updated_at) FROM stdin;
 7d79137b-eb13-45f9-a5ec-8c2a27e00178	07700900500	mmg	34b725f0-1f47-49bc-a9f5-aa2a84587c53	t	2019-03-25 00:00:00	2019-03-25 15:20:26.028625
-\.
-
-COPY organisation_to_service (service_id, organisation_id) FROM stdin;
-34b725f0-1f47-49bc-a9f5-aa2a84587c53	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5
 \.
 
 COPY permissions (id, service_id, user_id, permission, created_at) FROM stdin;
