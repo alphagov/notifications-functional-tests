@@ -30,7 +30,7 @@ To populate the local database run
 The app uses Selenium to run web automation tests which requires ChromeDriver. Install using the following command. Chromedriver must be version 2.32 or higher to fix a bug where it fails to send the '3' character.
 
 ```shell
-    brew install chromedriver
+    brew cask install chromedriver
 ```
 
 Running the tests
