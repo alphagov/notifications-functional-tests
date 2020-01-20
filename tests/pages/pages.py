@@ -197,6 +197,16 @@ class BasePage(object):
         return self.driver.current_url.split('/templates/')[1].split('/')[0]
 
 
+class HomePage(BasePage):
+
+    def accept_cookie_warning(self):
+        # if the cookie warning isn't present, this does nothing
+        try:
+            self.wait_for_element(CommonPageLocators.ACCEPT_COOKIE_BUTTON, time=1).click()
+        except (NoSuchElementException, TimeoutException):
+            return
+
+
 class MainPage(BasePage):
 
     set_up_account_button = MainPageLocators.SETUP_ACCOUNT_BUTTON

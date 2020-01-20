@@ -8,6 +8,7 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 from notifications_python_client import NotificationsAPIClient
 
+from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in
 from config import config, setup_shared_config
 
@@ -68,6 +69,10 @@ def _driver():
         raise ValueError('Invalid Selenium driver', driver_name)
 
     driver.delete_all_cookies()
+
+    # go to root page and accept analytics cookies to hide banner in all pages
+    driver.get(config['notify_admin_url'])
+    HomePage(driver).accept_cookie_warning()
     yield driver
     driver.delete_all_cookies()
     driver.close()
