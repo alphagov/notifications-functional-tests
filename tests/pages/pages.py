@@ -1040,10 +1040,7 @@ class DocumentDownloadLandingPage(BasePage):
         return element.text.partition(' sent you ')[0]
 
     def go_to_download_page(self):
-        try:
-            button = self.wait_for_element(self.continue_button)
-        except:
-            button = self.wait_for_element((By.CSS_SELECTOR, 'a.button'))
+        button = self.wait_for_element(self.continue_button)
 
         button.click()
 
