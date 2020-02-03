@@ -1035,12 +1035,16 @@ class DocumentDownloadLandingPage(BasePage):
     continue_button = (By.CSS_SELECTOR, 'a.govuk-button')
 
     def get_service_name(self):
-        element = self.wait_for_element((By.CSS_SELECTOR, '.govuk-body > p:first-child'))
+        element = self.wait_for_element((By.CSS_SELECTOR, 'main p:first-of-type'))
 
         return element.text.partition(' sent you ')[0]
 
     def go_to_download_page(self):
-        button = self.wait_for_element(self.continue_button)
+        try:
+            button = self.wait_for_element(self.continue_button)
+        except:
+            button = self.wait_for_element((By.CSS_SELECTOR, 'a.button'))
+
         button.click()
 
 
