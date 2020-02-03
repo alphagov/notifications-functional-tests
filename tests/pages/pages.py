@@ -1032,10 +1032,10 @@ class ConversationPage(BasePage):
 
 
 class DocumentDownloadLandingPage(BasePage):
-    continue_button = (By.CSS_SELECTOR, 'a.button')
+    continue_button = (By.CSS_SELECTOR, 'a.govuk-button')
 
     def get_service_name(self):
-        element = self.wait_for_element((By.CSS_SELECTOR, 'h1+p'))
+        element = self.wait_for_element((By.CSS_SELECTOR, '.govuk-body > p:first-child'))
 
         return element.text.partition(' sent you ')[0]
 
