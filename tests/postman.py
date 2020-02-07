@@ -49,6 +49,8 @@ def send_notification_via_csv(upload_csv_page, message_type, seeded=False):
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):
+    if isinstance(expected_statuses, str):
+        expected_statuses = {expected_statuses}
     try:
         resp = client.get_notification_by_id(notification_id)
         notification_status = resp['status']

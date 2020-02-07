@@ -1,3 +1,4 @@
+import pytest
 import requests
 from retry.api import retry_call
 
@@ -22,6 +23,7 @@ def upload_document(service_id, file_contents):
     return json['document']
 
 
+@pytest.mark.antivirus
 def test_document_upload_and_download(driver):
     document = retry_call(
         upload_document,
