@@ -258,13 +258,14 @@ def test_view_precompiled_letter_preview_delivered(
     assert base64.b64encode(image_data) != preview_error
 
 
+@pytest.mark.antivirus
 def test_view_precompiled_letter_message_log_virus_scan_failed(
         driver,
         login_seeded_user,
         seeded_client_using_test_key
 ):
 
-    reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_delivered"
+    reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_virus_scan_failed"
 
     send_precompiled_letter_via_api(
         reference,
@@ -276,7 +277,7 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(
 
     retry_call(
         _check_status_of_notification,
-        fargs=[api_integration_page, config['service']['id'], reference, "virus-scan-failed"],
+        fargs=[api_integration_page, config['service']['id'], reference, NotificationStatuses.VIRUS_SCAN_FAILED],
         tries=config['notification_retry_times'],
         delay=config['notification_retry_interval']
     )

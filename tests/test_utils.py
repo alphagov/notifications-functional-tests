@@ -39,7 +39,8 @@ default = " (default)"
 
 
 class NotificationStatuses:
-    PENDING_VIRUS_CHECK = 'pending-virus-check'
+    VIRUS_SCAN_FAILED = 'virus-scan-failed'
+    ACCEPTED = {'accepted'}
     RECEIVED = {'received'}
     DELIVERED = {'delivered', 'temporary-failure', 'permanent-failure'}
     SENT = RECEIVED | DELIVERED | {'sending', 'pending'}

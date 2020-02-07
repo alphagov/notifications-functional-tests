@@ -1,6 +1,9 @@
 from io import BytesIO
 import base64
+
+import pytest
 from retry.api import retry_call
+
 from config import config
 
 from tests.postman import (
@@ -32,6 +35,7 @@ def test_send_letter_notification_via_api(seeded_client_using_test_key):
 
 
 @recordtime
+@pytest.mark.antivirus
 def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_key):
 
     reference = config['service_name'].replace(" ", "_") + "_delivered"
@@ -44,7 +48,7 @@ def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_k
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[seeded_client_using_test_key, notification_id, NotificationStatuses.PENDING_VIRUS_CHECK],
+        fargs=[seeded_client_using_test_key, notification_id, NotificationStatuses.RECEIVED],
         tries=config['notification_retry_times'],
         delay=config['notification_retry_interval']
     )
@@ -53,6 +57,7 @@ def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_k
 
 
 @recordtime
+@pytest.mark.antivirus
 def test_send_precompiled_letter_with_virus_notification_via_api(seeded_client_using_test_key):
 
     # This uses a file which drops the Eicar test virus into the temp directory
@@ -68,7 +73,7 @@ def test_send_precompiled_letter_with_virus_notification_via_api(seeded_client_u
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[seeded_client_using_test_key, notification_id, NotificationStatuses.PENDING_VIRUS_CHECK],
+        fargs=[seeded_client_using_test_key, notification_id, NotificationStatuses.VIRUS_SCAN_FAILED],
         tries=config['notification_retry_times'],
         delay=config['notification_retry_interval']
     )
