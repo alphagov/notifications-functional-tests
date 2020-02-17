@@ -5,13 +5,13 @@ class CommonPageLocators(object):
     NAME_INPUT = (By.NAME, 'name')
     EMAIL_INPUT = (By.NAME, 'email_address')
     PASSWORD_INPUT = (By.NAME, 'password')
-    CONTINUE_BUTTON = (By.CLASS_NAME, 'button')
+    CONTINUE_BUTTON = (By.CSS_SELECTOR, 'main button.govuk-button')
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, 'notify-cookie-banner__button-accept')
     H1 = (By.TAG_NAME, 'H1')
 
 
 class MainPageLocators(object):
-    SETUP_ACCOUNT_BUTTON = (By.CLASS_NAME, 'button')
+    SETUP_ACCOUNT_BUTTON = (By.CSS_SELECTOR, 'a.govuk-button.product-page-button')
 
 
 class SignUpPageLocators(object):
@@ -25,7 +25,7 @@ class VerifyPageLocators(object):
 class AddServicePageLocators(object):
     SERVICE_INPUT = (By.NAME, 'name')
     ORG_TYPE_INPUT = (By.ID, 'organisation_type-0')
-    ADD_SERVICE_BUTTON = (By.CLASS_NAME, 'button')
+    ADD_SERVICE_BUTTON = (By.CSS_SELECTOR, 'main button.govuk-button')
 
 
 class NavigationLocators(object):
@@ -46,7 +46,7 @@ class TemplatePageLocators(object):
 class EditTemplatePageLocators(object):
     TEMPLATE_SUBJECT_INPUT = (By.NAME, 'subject')
     TEMPLATE_CONTENT_INPUT = (By.NAME, 'template_content')
-    SAVE_BUTTON = (By.CLASS_NAME, 'button')
+    SAVE_BUTTON = (By.CSS_SELECTOR, 'main button.govuk-button')
     DELETE_BUTTON = (By.LINK_TEXT, 'Delete this template')
     CONFIRM_DELETE_BUTTON = (By.NAME, 'delete')
 
@@ -59,7 +59,7 @@ class UploadCsvLocators(object):
 
 class TeamMembersPageLocators(object):
     H1 = (By.TAG_NAME, 'h1')
-    INVITE_TEAM_MEMBER_BUTTON = (By.CLASS_NAME, 'button-secondary')
+    INVITE_TEAM_MEMBER_BUTTON = (By.CSS_SELECTOR, 'a.govuk-button')
     EDIT_TEAM_MEMBER_LINK = (By.LINK_TEXT, 'Edit team member')
 
 
@@ -105,8 +105,8 @@ class SingleRecipientLocators(object):
 
 
 class EmailReplyToLocators(object):
-    ADD_EMAIL_REPLY_TO_BUTTON = (By.CLASS_NAME, 'button')
-    CONTINUE_BUTTON = (By.XPATH, "//a[@class = 'button' and contains(text(),'Continue')]")
+    ADD_EMAIL_REPLY_TO_BUTTON = (By.CSS_SELECTOR, 'main button.govuk-button')
+    CONTINUE_BUTTON = (By.XPATH, "//a[@class = 'govuk-button' and contains(text(),'Continue')]")
     EMAIL_ADDRESS_FIELD = (By.ID, 'email_address')
     REPLY_TO_ADDRESSES = (By.TAG_NAME, "body")
     IS_DEFAULT_CHECKBOX = (By.ID, "is_default")
@@ -114,7 +114,7 @@ class EmailReplyToLocators(object):
 
 class SmsSenderLocators(object):
     SMS_SENDER_FIELD = (By.ID, 'sms_sender')
-    SAVE_SMS_SENDER_BUTTON = (By.CLASS_NAME, 'button')
+    SAVE_SMS_SENDER_BUTTON = (By.CSS_SELECTOR, 'main button.govuk-button')
     ALL_SMS_SENDERS = (By.TAG_NAME, 'main')
     FIRST_CHANGE_LINK = (By.LINK_TEXT, 'Change')
     SMS_SENDER = (By.CLASS_NAME, 'sms-message-sender')

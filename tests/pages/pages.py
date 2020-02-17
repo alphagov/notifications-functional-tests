@@ -459,10 +459,10 @@ class ShowTemplatesPage(BasePage):
     def _select_template_type(self, type):
         # wait for continue button to be displayed - sticky nav has rendered properly
         # we've seen issues
-        continue_element = self.wait_for_element(self.continue_button)
         radio_element = self.wait_for_invisible_element(type)
-
         self.select_checkbox_or_radio(radio_element)
+
+        continue_element = self.wait_for_element(self.continue_button)
         continue_element.click()
 
     def select_email(self):
