@@ -330,7 +330,7 @@ class DashboardPage(BasePage):
     total_email_div = (By.CSS_SELECTOR, '#total-email .big-number-number')
     total_sms_div = (By.CSS_SELECTOR, '#total-sms .big-number-number')
     total_letter_div = (By.CSS_SELECTOR, '#total-letters .big-number-number')
-    inbox_link = (By.CSS_SELECTOR, '#total-received a')
+    inbox_link = (By.CSS_SELECTOR, '#total-received')
     navigation = (By.CLASS_NAME, 'navigation')
 
     def _message_count_for_template_div(self, template_id):
