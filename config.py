@@ -27,6 +27,7 @@ config = {
         'email_auth_template_id': '299726d2-dba6-42b8-8209-30e1d66ea164',
         'invitation_template_id': '4f46df42-f795-4cc4-83bb-65ca312f49cc',
         'org_invitation_template_id': '203566f0-d835-47c5-aa06-932439c86573',
+        'password_reset_template_id': '474e9242-823b-4f99-813d-ed392e7f1201',
         'registration_template_id': 'ece42649-22a8-4d06-b87f-d52d5d3f0a27',
         'verify_code_template_id': '36fb0730-6259-4da1-8a80-c8de22ad4246',
     }

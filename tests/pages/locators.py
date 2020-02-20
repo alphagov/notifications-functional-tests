@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 class CommonPageLocators(object):
     NAME_INPUT = (By.NAME, 'name')
     EMAIL_INPUT = (By.NAME, 'email_address')
+    NEW_PASSWORD_INPUT = (By.NAME, 'new_password')
     PASSWORD_INPUT = (By.NAME, 'password')
     CONTINUE_BUTTON = (By.CSS_SELECTOR, 'main button.govuk-button')
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, 'notify-cookie-banner__button-accept')
@@ -16,6 +17,10 @@ class MainPageLocators(object):
 
 class SignUpPageLocators(object):
     MOBILE_INPUT = (By.NAME, 'mobile_number')
+
+
+class SignInPageLocators(object):
+    FORGOT_PASSWORD_LINK = (By.LINK_TEXT, 'Forgot your password?')
 
 
 class VerifyPageLocators(object):

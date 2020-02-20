@@ -42,6 +42,10 @@ class EmailInputElement(BasePageElement):
     name = CommonPageLocators.EMAIL_INPUT[1]
 
 
+class NewPasswordInputElement(BasePageElement):
+    name = CommonPageLocators.NEW_PASSWORD_INPUT[1]
+
+
 class PasswordInputElement(BasePageElement):
     name = CommonPageLocators.PASSWORD_INPUT[1]
 
