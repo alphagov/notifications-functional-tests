@@ -1,13 +1,14 @@
 from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
-    CommonPageLocators,
-    VerifyPageLocators,
-    SignUpPageLocators,
     AddServicePageLocators,
+    ApiKeysPageLocators,
+    CommonPageLocators,
     EditTemplatePageLocators,
+    NewPasswordPageLocators,
+    SignUpPageLocators,
     UploadCsvLocators,
-    ApiKeysPageLocators
+    VerifyPageLocators,
 )
 
 
@@ -43,7 +44,7 @@ class EmailInputElement(BasePageElement):
 
 
 class NewPasswordInputElement(BasePageElement):
-    name = CommonPageLocators.NEW_PASSWORD_INPUT[1]
+    name = NewPasswordPageLocators.NEW_PASSWORD_INPUT[1]
 
 
 class PasswordInputElement(BasePageElement):

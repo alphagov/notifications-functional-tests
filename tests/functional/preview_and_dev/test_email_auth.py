@@ -17,7 +17,7 @@ def test_email_auth(driver):
 
 
 @recordtime
-def test_reset_password(driver):
+def test_reset_forgotten_password(driver):
     email, password = get_email_and_password(account_type='seeded')
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
@@ -25,7 +25,7 @@ def test_reset_password(driver):
     sign_in_page.click_forgot_password_link()
 
     forgot_password_page = ForgotPasswordPage(driver)
-    assert forgot_password_page.is_page_title("Forgot your password?")
+    assert forgot_password_page.is_page_title("Forgotten your password?")
     forgot_password_page.input_email_address(email)
     forgot_password_page.click_continue()
     assert forgot_password_page.is_page_title("Check your email")
