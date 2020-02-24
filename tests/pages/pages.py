@@ -340,9 +340,9 @@ class DashboardPage(BasePage):
         expected = '{}/services/{}/dashboard'.format(self.base_url, service_id)
         return self.driver.current_url == expected
 
-    def h2_is_service_name(self, expected_name):
+    def get_service_name(self):
         element = self.wait_for_element(DashboardPage.h2)
-        return expected_name == element.text
+        return element.text
 
     def click_sms_templates(self):
         element = self.wait_for_element(DashboardPage.sms_templates_link)

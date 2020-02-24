@@ -142,7 +142,7 @@ def do_user_registration(driver):
     service_id = dashboard_page.get_service_id()
     dashboard_page.go_to_dashboard_for_service(service_id)
 
-    assert dashboard_page.h2_is_service_name(config['service_name'])
+    assert dashboard_page.get_service_name() == config['service_name']
 
 
 def do_user_can_invite_someone_to_notify(driver, basic_view):
@@ -183,7 +183,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
     service_id = dashboard_page.get_service_id()
     dashboard_page.go_to_dashboard_for_service(service_id)
 
-    assert dashboard_page.h2_is_service_name(config['service_name'])
+    assert dashboard_page.get_service_name() == config['service_name']
     if basic_view:
         is_basic_view(dashboard_page)
         dashboard_page.sign_out()
