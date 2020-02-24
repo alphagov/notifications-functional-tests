@@ -98,14 +98,22 @@ def do_verify(driver):
         raise RetryException
 
 
-@retry(RetryException, tries=config['verify_code_retry_times'], delay=config['verify_code_retry_interval'])
 def do_email_auth_verify(driver):
+    do_email_verification(
+        driver,
+        config['notify_templates']['email_auth_template_id'],
+        config['service']['email_auth_account']
+    )
+
+
+@retry(RetryException, tries=config['verify_code_retry_times'], delay=config['verify_code_retry_interval'])
+def do_email_verification(driver, template_id, email_address):
     try:
-        login_link = get_link(
-            config['notify_templates']['email_auth_template_id'],
-            config['service']['email_auth_account']
+        email_link = get_link(
+            template_id,
+            email_address
         )
-        driver.get(login_link)
+        driver.get(email_link)
 
         if driver.find_element_by_class_name('heading-large').text == 'The link has expired':
             #  There was an error message (presumably we tried to use an email token that was already used/expired)

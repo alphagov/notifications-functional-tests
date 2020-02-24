@@ -18,6 +18,14 @@ class SignUpPageLocators(object):
     MOBILE_INPUT = (By.NAME, 'mobile_number')
 
 
+class SignInPageLocators(object):
+    FORGOT_PASSWORD_LINK = (By.LINK_TEXT, 'Forgotten your password?')
+
+
+class NewPasswordPageLocators(object):
+    NEW_PASSWORD_INPUT = (By.NAME, 'new_password')
+
+
 class VerifyPageLocators(object):
     SMS_INPUT = (By.NAME, 'sms_code')
 

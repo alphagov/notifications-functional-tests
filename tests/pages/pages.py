@@ -18,6 +18,7 @@ from tests.pages.element import (
     KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
+    NewPasswordInputElement,
     PasswordInputElement,
     ServiceInputElement,
     SubjectInputElement,
@@ -38,6 +39,7 @@ from tests.pages.locators import (
     MainPageLocators,
     NavigationLocators,
     ServiceSettingsLocators,
+    SignInPageLocators,
     SingleRecipientLocators,
     SmsSenderLocators,
     TemplatePageLocators,
@@ -225,7 +227,6 @@ class RegistrationPage(BasePage):
     email_input = EmailInputElement()
     mobile_input = MobileInputElement()
     password_input = PasswordInputElement()
-    continue_button = CommonPageLocators.CONTINUE_BUTTON
 
     def is_current(self):
         return self.wait_until_url_is(self.base_url + '/register')
@@ -235,11 +236,7 @@ class RegistrationPage(BasePage):
         self.email_input = config['user']['email']
         self.mobile_input = config['user']['mobile']
         self.password_input = config['user']['password']
-        self.click_continue_button()
-
-    def click_continue_button(self):
-        element = self.wait_for_element(RegistrationPage.continue_button)
-        element.click()
+        self.click_continue()
 
 
 class AddServicePage(BasePage):
@@ -272,11 +269,25 @@ class AddServicePage(BasePage):
             pass
 
 
+class ForgotPasswordPage(BasePage):
+    email_input = EmailInputElement()
+
+    def input_email_address(self, email_address):
+        self.email_input = email_address
+
+
+class NewPasswordPage(BasePage):
+    new_password_input = NewPasswordInputElement()
+
+    def input_new_password(self, password):
+        self.new_password_input = password
+
+
 class SignInPage(BasePage):
 
     email_input = EmailInputElement()
     password_input = PasswordInputElement()
-    continue_button = CommonPageLocators.CONTINUE_BUTTON
+    forgot_password_link = SignInPageLocators.FORGOT_PASSWORD_LINK
 
     def get(self):
         self.driver.get(self.base_url + '/sign-in')
@@ -288,29 +299,24 @@ class SignInPage(BasePage):
         self.email_input = email
         self.password_input = password
 
-    def click_continue_button(self):
-        element = self.wait_for_element(SignInPage.continue_button)
+    def click_forgot_password_link(self):
+        element = self.wait_for_element(SignInPage.forgot_password_link)
         element.click()
 
     def login(self, email, password):
         self.fill_login_form(email, password)
-        self.click_continue_button()
+        self.click_continue()
 
 
 class VerifyPage(BasePage):
 
     sms_input = SmsInputElement()
-    continue_button = CommonPageLocators.CONTINUE_BUTTON
-
-    def click_continue_button(self):
-        element = self.wait_for_element(VerifyPage.continue_button)
-        element.click()
 
     def verify(self, code):
         element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
         element.clear()
         self.sms_input = code
-        self.click_continue_button()
+        self.click_continue()
 
     def has_code_error(self):
         try:
@@ -416,7 +422,6 @@ class ShowTemplatesPage(BasePage):
     email_radio = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
     text_message_radio = (By.CSS_SELECTOR, "input[type='radio'][value='sms']")
     letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
-    continue_button = (By.CSS_SELECTOR, 'main [type=submit]')
 
     add_new_folder_textbox = BasePageElement(name='add_new_folder_name')
     add_to_new_folder_textbox = BasePageElement(name='move_to_new_folder_name')
@@ -462,8 +467,7 @@ class ShowTemplatesPage(BasePage):
         radio_element = self.wait_for_invisible_element(type)
         self.select_checkbox_or_radio(radio_element)
 
-        continue_element = self.wait_for_element(self.continue_button)
-        continue_element.click()
+        self.click_continue()
 
     def select_email(self):
         self._select_template_type(self.email_radio)
@@ -493,11 +497,10 @@ class ShowTemplatesPage(BasePage):
         move_button.click()
         # wait for continue button to be displayed - sticky nav has rendered properly
         # we've seen issues
-        continue_element = self.wait_for_element(self.continue_button)
         radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
 
         self.select_checkbox_or_radio(radio_element)
-        continue_element.click()
+        self.click_continue()
 
     def get_folder_by_name(self, folder_name):
         try:
@@ -735,16 +738,11 @@ class RegisterFromInvite(BasePage):
     name_input = NameInputElement()
     mobile_input = MobileInputElement()
     password_input = PasswordInputElement()
-    continue_button = CommonPageLocators.CONTINUE_BUTTON
 
     def fill_registration_form(self, name):
         self.name_input = name
         self.mobile_input = config['user']['mobile']
         self.password_input = config['user']['password']
-
-    def click_continue(self):
-        element = self.wait_for_element(RegisterFromInvite.continue_button)
-        element.click()
 
 
 class ProfilePage(BasePage):
@@ -809,7 +807,6 @@ class ApiKeyPage(BasePage):
     key_name_input = KeyNameInputElement()
     keys_link = ApiKeysPageLocators.KEYS_PAGE_LINK
     create_key_link = ApiKeysPageLocators.CREATE_KEY_LINK
-    continue_button = CommonPageLocators.CONTINUE_BUTTON
     api_key_element = ApiKeysPageLocators.API_KEY_ELEMENT
     key_types = {
         'normal': ApiKeysPageLocators.NORMAL_KEY_RADIO,
@@ -826,10 +823,6 @@ class ApiKeyPage(BasePage):
 
     def click_create_key(self):
         element = self.wait_for_element(ApiKeyPage.create_key_link)
-        element.click()
-
-    def click_continue(self):
-        element = self.wait_for_element(ApiKeyPage.continue_button)
         element.click()
 
     def get_api_key(self):
