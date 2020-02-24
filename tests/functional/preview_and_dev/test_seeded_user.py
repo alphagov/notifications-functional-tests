@@ -429,7 +429,7 @@ def test_change_service_name(driver, login_seeded_user):
     new_name = "Functional Tests {}".format(uuid.uuid4())
     dashboard_page = DashboardPage(driver)
     # make sure the service is actually named what we expect
-    assert dashboard_page.h2_is_service_name(config['service']['name'])
+    assert dashboard_page.get_service_name() == config['service']['name']
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_settings()
     service_settings = ServiceSettingsPage(driver)
@@ -442,7 +442,7 @@ def test_change_service_name(driver, login_seeded_user):
     service_settings.check_service_name(new_name)
 
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
-    assert dashboard_page.h2_is_service_name(new_name)
+    assert dashboard_page.get_service_name() == new_name
 
     # change the name back
     change_name.go_to_change_service_name(config['service']['id'])
@@ -453,7 +453,7 @@ def test_change_service_name(driver, login_seeded_user):
     service_settings.check_service_name(config['service']['name'])
 
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
-    assert dashboard_page.h2_is_service_name(config['service']['name'])
+    assert dashboard_page.get_service_name() == config['service']['name']
 
 
 def _check_status_of_notification(page, notify_research_service_id, reference_to_check, status_to_check):
