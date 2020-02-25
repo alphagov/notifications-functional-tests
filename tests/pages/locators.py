@@ -131,7 +131,7 @@ class SmsSenderLocators(object):
 
 
 class ServiceSettingsLocators(object):
-    SERVICE_NAME = (By.XPATH, "//div[@class='navigation-service-name']")
+    SERVICE_NAME = (By.CSS_SELECTOR, ".navigation-service-name")
 
 
 class ChangeNameLocators(object):
