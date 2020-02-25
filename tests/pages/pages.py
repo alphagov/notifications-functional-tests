@@ -1048,7 +1048,7 @@ class DocumentDownloadPage(BasePage):
 
 
 class ViewFolderPage(ShowTemplatesPage):
-    manage_link = (By.LINK_TEXT, 'Manage')
+    manage_link = (By.CSS_SELECTOR, '.folder-heading-manage-link')
     template_path_and_name = (By.TAG_NAME, 'h1')
 
     def click_manage_folder(self):
