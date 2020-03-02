@@ -140,6 +140,9 @@ def setup_staging_live_config():
             'id': os.environ['SERVICE_ID'],
             'api_key': os.environ['API_KEY'],
 
+            'email_auth_account': os.environ['FUNCTIONAL_TEST_EMAIL_AUTH'],
+            'seeded_user': {'password': os.environ['FUNCTIONAL_TEST_PASSWORD']},
+
             'templates': {
                 'email': os.environ['JENKINS_BUILD_EMAIL_TEMPLATE_ID'],
                 'sms': os.environ['JENKINS_BUILD_SMS_TEMPLATE_ID'],

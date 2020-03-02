@@ -9,7 +9,7 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from notifications_python_client import NotificationsAPIClient
 
 from tests.pages.pages import HomePage
-from tests.pages.rollups import sign_in
+from tests.pages.rollups import sign_in, sign_in_email_auth
 from config import config, setup_shared_config
 
 
@@ -92,7 +92,7 @@ def driver(_driver, request):
 
 @pytest.fixture(scope="module")
 def login_user(_driver):
-    sign_in(_driver)
+    sign_in_email_auth(_driver)
 
 
 @pytest.fixture(scope="module")
