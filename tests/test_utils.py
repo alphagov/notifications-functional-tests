@@ -201,13 +201,13 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
 
 def is_basic_view(dashboard_page):
-    assert dashboard_page.get_navigation_list() == 'Templates\nSent messages\nTeam members'
+    assert dashboard_page.get_navigation_list() == 'Templates\nSent messages\nUploads\nTeam members'
     expected = '{}/services/{}/templates'.format(dashboard_page.base_url, dashboard_page.get_service_id())
     assert dashboard_page.driver.current_url == expected
 
 
 def is_view_for_all_permissions(page):
-    assert page.get_navigation_list() == """Dashboard\nTemplates\nTeam members\nUsage\nSettings\nAPI integration"""
+    assert page.get_navigation_list() == """Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"""
     expected = '{}/services/{}'.format(page.base_url, page.get_service_id())
     assert page.driver.current_url == expected
 
