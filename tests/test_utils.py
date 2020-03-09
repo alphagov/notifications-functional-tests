@@ -207,7 +207,7 @@ def is_basic_view(dashboard_page):
 
 
 def is_view_for_all_permissions(page):
-    assert page.get_navigation_list() == """Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"""
+    assert page.get_navigation_list() == "Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"
     expected = '{}/services/{}'.format(page.base_url, page.get_service_id())
     assert page.driver.current_url == expected
 
