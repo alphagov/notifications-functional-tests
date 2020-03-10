@@ -83,28 +83,45 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
 def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete email template test'
     go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    if len(existing_templates) == 0:
+        existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     create_email_template(driver, name=test_name, content=None)
     go_to_templates_page(driver)
-    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+    assert test_name in current_templates
 
     delete_template(driver, test_name)
-    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
+    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+    assert current_templates == existing_templates
 
 
 @recordtime
 def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete sms template test'
     go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+    existing_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    if len(existing_templates) == 0:
+        existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
 
     create_sms_template(driver, name=test_name, content=None)
     go_to_templates_page(driver)
-    assert test_name in [x.text for x in driver.find_elements_by_class_name('message-name')]
+    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+
+    assert test_name in current_templates
 
     delete_template(driver, test_name)
-    assert [x.text for x in driver.find_elements_by_class_name('message-name')] == existing_templates
+    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+    assert current_templates == existing_templates
 
 
 @recordtime
@@ -336,8 +353,11 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     view_folder_page.click_manage_folder()
     manage_folder_page.delete_folder()
     manage_folder_page.confirm_delete_folder()
+    current_folders = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    if len(current_folders) == 0:
+        current_folders = [x.text for x in driver.find_elements_by_class_name('message-name')]
     # assert folder not visible
-    assert new_folder_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
+    assert new_folder_name not in current_folders
 
     # delete template
     show_templates_page.click_template_by_link_text(template_name)
