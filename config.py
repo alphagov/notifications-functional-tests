@@ -20,7 +20,7 @@ config = {
     'verify_code_retry_interval': 9,
     'functional_test_service_name': 'Functional Test Service_',
 
-    'letter_contact_data': {"address_line_1": "test", "address_line_2": "London", "postcode": "N1"},
+    'letter_contact_data': {"address_line_1": "test", "address_line_2": "London", "postcode": "N1 7RA"},
 
     # notify templates
     'notify_templates': {
