@@ -12,7 +12,7 @@ from tests.postman import (
     send_precompiled_letter_via_api,
 )
 
-from tests.functional.preview_and_dev.consts import multi_page_pdf, pdf_with_virus
+from tests.functional.preview_and_dev.consts import correct_letter, pdf_with_virus
 from tests.test_utils import assert_notification_body, recordtime, NotificationStatuses
 
 
@@ -43,7 +43,7 @@ def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_k
     notification_id = send_precompiled_letter_via_api(
         reference,
         seeded_client_using_test_key,
-        BytesIO(base64.b64decode(multi_page_pdf))
+        BytesIO(base64.b64decode(correct_letter))
     )
 
     notification = retry_call(

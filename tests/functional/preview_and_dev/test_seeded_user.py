@@ -10,7 +10,7 @@ from config import config
 from selenium.common.exceptions import TimeoutException
 
 from tests.decorators import retry_on_stale_element_exception
-from tests.functional.preview_and_dev.consts import multi_page_pdf, pdf_with_virus, preview_error
+from tests.functional.preview_and_dev.consts import correct_letter, pdf_with_virus, preview_error
 
 from tests.postman import (
     send_notification_via_csv,
@@ -206,7 +206,7 @@ def test_view_precompiled_letter_message_log_delivered(
     send_precompiled_letter_via_api(
         reference,
         seeded_client_using_test_key,
-        BytesIO(base64.b64decode(multi_page_pdf))
+        BytesIO(base64.b64decode(correct_letter))
     )
 
     api_integration_page = ApiIntegrationPage(driver)
@@ -236,7 +236,7 @@ def test_view_precompiled_letter_preview_delivered(
     notification_id = send_precompiled_letter_via_api(
         reference,
         seeded_client_using_test_key,
-        BytesIO(base64.b64decode(multi_page_pdf))
+        BytesIO(base64.b64decode(correct_letter))
     )
 
     api_integration_page = ApiIntegrationPage(driver)
