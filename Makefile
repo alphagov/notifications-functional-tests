@@ -52,6 +52,10 @@ test-notify-api-email: venv ## Run notify-api email tests
 test-notify-api-sms: venv ## Run notify-api sms tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/functional/staging_and_prod/notify_api/test_notify_api_sms.py' hostuser
 
+.PHONY: test-notify-api-letter
+test-notify-api-letter: venv ## Run notify-api letter tests
+	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/functional/staging_and_prod/notify_api/test_notify_api_letter.py' hostuser
+
 .PHONY: test-provider-email-delivery
 test-provider-email-delivery: venv ## Run provider delivery email tests
 	su -c '/var/project/scripts/run_test_script.sh /var/project/tests/provider_delivery/test_provider_delivery_email.py' hostuser

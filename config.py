@@ -139,6 +139,7 @@ def setup_staging_live_config():
         'service': {
             'id': os.environ['SERVICE_ID'],
             'api_key': os.environ['API_KEY'],
+            'api_test_key': os.environ['API_TEST_KEY'],
 
             'email_auth_account': os.environ['FUNCTIONAL_TEST_EMAIL_AUTH'],
             'seeded_user': {'password': os.environ['FUNCTIONAL_TEST_PASSWORD']},
