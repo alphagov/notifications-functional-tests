@@ -67,7 +67,7 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
         get_notification_by_id_via_api,
         fargs=[seeded_client_using_test_key if message_type == 'letter' else seeded_client,
                notification_id,
-               NotificationStatuses.RECEIVED if message_type == 'letter' else NotificationStatuses.SENT],
+               NotificationStatuses.ACCEPTED if message_type == 'letter' else NotificationStatuses.SENT],
         tries=config['notification_retry_times'],
         delay=config['notification_retry_interval']
     )

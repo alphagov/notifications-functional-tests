@@ -134,8 +134,6 @@ def setup_staging_live_config():
 
         'notify_service_api_key': os.environ['NOTIFY_SERVICE_API_KEY'],
 
-        # this is either a live service or in research mode, depending on what tests are running
-        # (provider vs functional smoke tests)
         'service': {
             'id': os.environ['SERVICE_ID'],
             'api_key': os.environ['API_KEY'],
