@@ -15,6 +15,7 @@ from tests.functional.preview_and_dev.consts import correct_letter, pdf_with_vir
 from tests.postman import (
     send_notification_via_csv,
     get_notification_by_id_via_api,
+    get_pdf_for_letter_via_api,
     send_precompiled_letter_via_api)
 
 from tests.test_utils import (
@@ -72,6 +73,16 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
         delay=config['notification_retry_interval']
     )
     assert_notification_body(notification_id, notification)
+
+    # test the whole letter creation flow, by checking the PDF has been created
+    if message_type == 'letter':
+        retry_call(
+            get_pdf_for_letter_via_api,
+            fargs=[seeded_client, notification_id],
+            tries=config['notification_retry_times'],
+            delay=config['notification_retry_interval']
+        )
+
     dashboard_page.go_to_dashboard_for_service(service_id=config['service']['id'])
 
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
