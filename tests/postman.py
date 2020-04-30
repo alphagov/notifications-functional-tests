@@ -72,3 +72,7 @@ def get_notification_by_id_via_api(client, notification_id, expected_statuses):
             raise RetryException(message)
         else:
             raise
+
+
+def get_pdf_for_letter_via_api(client, notification_id):
+    return client.get_pdf_for_letter(notification_id)

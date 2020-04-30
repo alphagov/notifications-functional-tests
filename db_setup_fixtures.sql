@@ -9,7 +9,7 @@ e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.
 \.
 
 COPY services (id, name, created_at, updated_at, active, message_limit, restricted, email_from, created_by_id, version, research_mode, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, organisation_id) FROM stdin;
-34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	250000	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	t	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	\N
+34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	250000	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	f	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	\N
 \.
 
 COPY annual_billing (id, service_id, financial_year_start, free_sms_fragment_limit, updated_at, created_at) FROM stdin;
