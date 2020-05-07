@@ -72,11 +72,11 @@ class TeamMembersPageLocators(object):
 
 
 class InviteUserPageLocators(object):
-    SEND_MESSAGES_CHECKBOX = (By.NAME, 'send_messages')
-    SEE_DASHBOARD_CHECKBOX = (By.NAME, 'view_activity')
-    MANAGE_SERVICES_CHECKBOX = (By.NAME, 'manage_service')
-    MANAGE_API_KEYS_CHECKBOX = (By.NAME, 'manage_api_keys')
-    MANAGE_TEMPLATES_CHECKBOX = (By.NAME, 'manage_templates')
+    SEND_MESSAGES_CHECKBOX = (By.CSS_SELECTOR, '[value=send_messages], [name=send_messages]')
+    SEE_DASHBOARD_CHECKBOX = (By.CSS_SELECTOR, '[value=view_activity], [name=view_activity]')
+    MANAGE_SERVICES_CHECKBOX = (By.CSS_SELECTOR, '[value=manage_service], [name=manage_service]')
+    MANAGE_API_KEYS_CHECKBOX = (By.CSS_SELECTOR, '[value=manage_api_keys], [name=manage_api_keys]')
+    MANAGE_TEMPLATES_CHECKBOX = (By.CSS_SELECTOR, '[value=manage_templates], [name=manage_templates]')
     CHOOSE_FOLDERS_BUTTON = (By.CSS_SELECTOR, 'button[aria-controls=folder_permissions]')
     SEND_INVITATION_BUTTON = (By.CSS_SELECTOR, 'main [type=submit]')
 
