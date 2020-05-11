@@ -10,7 +10,7 @@ from tests.pages.rollups import get_email_and_password
 def test_email_auth(driver):
     # login email auth user
     sign_in_email_auth(driver)
-    # assert url is research mode service's dashboard
+    # assert url is FUNCTIONAL_TESTS_SERVICE's dashboard
     assert driver.current_url == config['notify_admin_url'] + '/services/{}'.format(config['service']['id'])
     base_page = BasePage(driver)
     base_page.sign_out()

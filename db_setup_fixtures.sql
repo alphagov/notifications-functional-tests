@@ -17,15 +17,15 @@ COPY annual_billing (id, service_id, financial_year_start, free_sms_fragment_lim
 \.
 
 COPY api_keys (id, name, secret, service_id, expiry_date, created_at, created_by_id, updated_at, version, key_type) FROM stdin;
-ccadd239-bae1-4ade-9f5b-fc389a1622a9	functional_tests	IjhmNjBiNDIzLTkwZmItNGQ0OC1hN2NiLTYyZTc1ODBjZDg4MSI.IRb1WKwUfeMS0AhcG9cUDkr5m50	d6aa2c68-a2d9-4437-ab19-3ae8eb202553	\N	2019-03-25 14:57:08.679353	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	\N	1	normal
-c1d8e17f-3abe-4858-913e-d88f689ca430	functional_tests_research_live_key	Ijg0NmE4OTc1LTllMzctNDUzMC1iYTJiLTZlZDUzODE5Yjc4ZCI.S9_8a8r5rGLqvFhwC2AOXT1g3C4	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:17.182987	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	\N	1	normal
-9e80ccb3-98fb-4b0b-84c0-40a9443e326b	functional_tests_research_test_key	ImZmYWYyZGVjLWU3ZGEtNGZiZS1iY2M3LWNlNmFkNTFlM2I1ZSI.hU8Q_AkTwYvlsdYyShU7H38Qw8U	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:44.583174	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	\N	1	test
+ccadd239-bae1-4ade-9f5b-fc389a1622a9	govuk_notify	IjhmNjBiNDIzLTkwZmItNGQ0OC1hN2NiLTYyZTc1ODBjZDg4MSI.IRb1WKwUfeMS0AhcG9cUDkr5m50	d6aa2c68-a2d9-4437-ab19-3ae8eb202553	\N	2019-03-25 14:57:08.679353	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	\N	1	normal
+c1d8e17f-3abe-4858-913e-d88f689ca430	functional_tests_service_live_key	Ijg0NmE4OTc1LTllMzctNDUzMC1iYTJiLTZlZDUzODE5Yjc4ZCI.S9_8a8r5rGLqvFhwC2AOXT1g3C4	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:17.182987	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	\N	1	normal
+9e80ccb3-98fb-4b0b-84c0-40a9443e326b	functional_tests_service_test_key	ImZmYWYyZGVjLWU3ZGEtNGZiZS1iY2M3LWNlNmFkNTFlM2I1ZSI.hU8Q_AkTwYvlsdYyShU7H38Qw8U	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:44.583174	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	\N	1	test
 \.
 
 COPY api_keys_history (id, name, secret, service_id, expiry_date, created_at, updated_at, created_by_id, version, key_type) FROM stdin;
-ccadd239-bae1-4ade-9f5b-fc389a1622a9	functional_tests	IjhmNjBiNDIzLTkwZmItNGQ0OC1hN2NiLTYyZTc1ODBjZDg4MSI.IRb1WKwUfeMS0AhcG9cUDkr5m50	d6aa2c68-a2d9-4437-ab19-3ae8eb202553	\N	2019-03-25 14:57:08.679353	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	normal
-c1d8e17f-3abe-4858-913e-d88f689ca430	functional_tests_research_live_key	Ijg0NmE4OTc1LTllMzctNDUzMC1iYTJiLTZlZDUzODE5Yjc4ZCI.S9_8a8r5rGLqvFhwC2AOXT1g3C4	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:17.182987	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	normal
-9e80ccb3-98fb-4b0b-84c0-40a9443e326b	functional_tests_research_test_key	ImZmYWYyZGVjLWU3ZGEtNGZiZS1iY2M3LWNlNmFkNTFlM2I1ZSI.hU8Q_AkTwYvlsdYyShU7H38Qw8U	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:44.583174	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	test
+ccadd239-bae1-4ade-9f5b-fc389a1622a9	govuk_notify	IjhmNjBiNDIzLTkwZmItNGQ0OC1hN2NiLTYyZTc1ODBjZDg4MSI.IRb1WKwUfeMS0AhcG9cUDkr5m50	d6aa2c68-a2d9-4437-ab19-3ae8eb202553	\N	2019-03-25 14:57:08.679353	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	normal
+c1d8e17f-3abe-4858-913e-d88f689ca430	functional_tests_service_live_key	Ijg0NmE4OTc1LTllMzctNDUzMC1iYTJiLTZlZDUzODE5Yjc4ZCI.S9_8a8r5rGLqvFhwC2AOXT1g3C4	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:17.182987	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	normal
+9e80ccb3-98fb-4b0b-84c0-40a9443e326b	functional_tests_service_test_key	ImZmYWYyZGVjLWU3ZGEtNGZiZS1iY2M3LWNlNmFkNTFlM2I1ZSI.hU8Q_AkTwYvlsdYyShU7H38Qw8U	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	2019-03-25 15:07:44.583174	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	test
 \.
 
 COPY templates (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, service_letter_contact_id, hidden, postage) FROM stdin;

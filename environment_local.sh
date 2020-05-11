@@ -6,18 +6,18 @@ export TEST_NUMBER=07700900001
 
 export NOTIFY_SERVICE_API_KEY='functional_tests-d6aa2c68-a2d9-4437-ab19-3ae8eb202553-8f60b423-90fb-4d48-a7cb-62e7580cd881'
 
-export NOTIFY_RESEARCH_MODE_EMAIL='notify-tests-local+admin_tests@digital.cabinet-office.gov.uk'
-export NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT='notify-tests-local+email-auth@digital.cabinet-office.gov.uk'
-export NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD=Password1234
+export FUNCTIONAL_TESTS_SERVICE_EMAIL='notify-tests-local+admin_tests@digital.cabinet-office.gov.uk'
+export FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT='notify-tests-local+email-auth@digital.cabinet-office.gov.uk'
+export FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD=Password1234
 
-export NOTIFY_RESEARCH_SERVICE_ID='34b725f0-1f47-49bc-a9f5-aa2a84587c53'
-export NOTIFY_RESEARCH_SERVICE_NAME='Functional Tests'
-export NOTIFY_RESEARCH_ORGANISATION_ID='e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5'
-export NOTIFY_RESEARCH_SERVICE_API_KEY='functional_tests_research_live_key-34b725f0-1f47-49bc-a9f5-aa2a84587c53-846a8975-9e37-4530-ba2b-6ed53819b78d'
-export NOTIFY_RESEARCH_SERVICE_API_TEST_KEY='functional_tests_research_test_key-34b725f0-1f47-49bc-a9f5-aa2a84587c53-ffaf2dec-e7da-4fbe-bcc7-ce6ad51e3b5e'
+export FUNCTIONAL_TESTS_SERVICE_ID='34b725f0-1f47-49bc-a9f5-aa2a84587c53'
+export FUNCTIONAL_TESTS_SERVICE_NAME='Functional Tests'
+export FUNCTIONAL_TESTS_ORGANISATION_ID='e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5'
+export FUNCTIONAL_TESTS_SERVICE_API_KEY='functional_tests_research_live_key-34b725f0-1f47-49bc-a9f5-aa2a84587c53-846a8975-9e37-4530-ba2b-6ed53819b78d'
+export FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY='functional_tests_research_test_key-34b725f0-1f47-49bc-a9f5-aa2a84587c53-ffaf2dec-e7da-4fbe-bcc7-ce6ad51e3b5e'
 
-export NOTIFY_RESEARCH_EMAIL_REPLY_TO='notify-tests-local+reply-to@digital.cabinet-office.gov.uk'
-export NOTIFY_RESEARCH_SERVICE_INBOUND_NUMBER=07700900500
+export FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO='notify-tests-local+reply-to@digital.cabinet-office.gov.uk'
+export FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER=07700900500
 
 export JENKINS_BUILD_SMS_TEMPLATE_ID=63d41316-1c0a-415b-968b-8211a71ab7f1
 export JENKINS_BUILD_EMAIL_TEMPLATE_ID=75a02fb0-177a-4d10-89f8-e28e48ede6e5

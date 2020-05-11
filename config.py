@@ -86,23 +86,23 @@ def setup_preview_dev_config():
         'notify_service_api_key': os.environ['NOTIFY_SERVICE_API_KEY'],
 
         'service': {
-            'id': os.environ['NOTIFY_RESEARCH_SERVICE_ID'],
-            'name': os.environ['NOTIFY_RESEARCH_SERVICE_NAME'],
+            'id': os.environ['FUNCTIONAL_TESTS_SERVICE_ID'],
+            'name': os.environ['FUNCTIONAL_TESTS_SERVICE_NAME'],
 
             'seeded_user': {
-                'email': os.environ['NOTIFY_RESEARCH_MODE_EMAIL'],
-                'password': os.environ['NOTIFY_RESEARCH_MODE_EMAIL_PASSWORD'],
+                'email': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL'],
+                'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
             },
-            'api_live_key': os.environ['NOTIFY_RESEARCH_SERVICE_API_KEY'],
-            'api_test_key': os.environ['NOTIFY_RESEARCH_SERVICE_API_TEST_KEY'],
+            'api_live_key': os.environ['FUNCTIONAL_TESTS_SERVICE_API_KEY'],
+            'api_test_key': os.environ['FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY'],
 
             # email address of seeded email auth user
-            'email_auth_account': os.environ['NOTIFY_RESEARCH_SERVICE_EMAIL_AUTH_ACCOUNT'],
-            'organisation_id': os.environ['NOTIFY_RESEARCH_ORGANISATION_ID'],
+            'email_auth_account': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT'],
+            'organisation_id': os.environ['FUNCTIONAL_TESTS_ORGANISATION_ID'],
 
-            'email_reply_to': os.environ['NOTIFY_RESEARCH_EMAIL_REPLY_TO'],
-            'email_reply_to_2': os.environ.get('NOTIFY_RESEARCH_EMAIL_REPLY_TO_2'),
-            'email_reply_to_3': os.environ.get('NOTIFY_RESEARCH_EMAIL_REPLY_TO_3'),
+            'email_reply_to': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO'],
+            'email_reply_to_2': os.environ.get('FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_2'),
+            'email_reply_to_3': os.environ.get('FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_3'),
 
             'sms_sender_text': 'func tests',
 
@@ -112,7 +112,7 @@ def setup_preview_dev_config():
                 'letter': os.environ['JENKINS_BUILD_LETTER_TEMPLATE_ID'],
             },
 
-            'inbound_number': os.environ['NOTIFY_RESEARCH_SERVICE_INBOUND_NUMBER'],
+            'inbound_number': os.environ['FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER'],
         },
 
         'mmg_inbound_sms': {
@@ -156,7 +156,7 @@ def setup_staging_live_config():
 def setup_document_download_config():
     config.update({
         'service': {
-            'id': os.environ['NOTIFY_RESEARCH_SERVICE_ID']
+            'id': os.environ['FUNCTIONAL_TESTS_SERVICE_ID']
         },
         'document_download': {
             'api_host': os.environ['DOCUMENT_DOWNLOAD_API_HOST'],
