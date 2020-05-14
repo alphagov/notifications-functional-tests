@@ -1,7 +1,7 @@
 COPY users (id, name, email_address, created_at, updated_at, _password, mobile_number, password_changed_at, logged_in_at, failed_login_count, state, platform_admin, current_session_id, auth_type, email_access_validated_at) FROM stdin;
-44c41c45-0fb4-4ce8-8c92-72734e31995c	Functional Tests	notify-tests-local@digital.cabinet-office.gov.uk	2019-03-25 14:48:38.719334	2019-03-25 14:50:58.826605	$2b$10$pQIWZpetCN4qCtGX0GdSou6D6CeNU97U2TLWL2DnucKjjncVTJcw.	07700900001	2019-03-25 14:48:38.71801	2019-03-25 14:50:58.796995	0	active	f	23ca4bbf-347f-44a7-b998-142bca2fa991	sms_auth	NOW()
-0ebf8f7d-c511-498c-9762-41c4d47507ec	Functional Tests Email Auth	notify-tests-local+email-auth@digital.cabinet-office.gov.uk	2019-03-25 15:12:53.939099	2019-03-25 15:45:48.148452	$2b$10$6k4SCUnF9q39Q/RasnGRXO0JaXoXRkd9x.vFLGG5Eo/8XOpgbdBQC	\N	2019-03-25 15:12:53.937723	2019-03-25 15:45:48.147457	0	active	f	a953c3c0-1edb-4852-a35e-1011bd1b6e20	email_auth	NOW()
-c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	Preview admin tests user	notify-tests-local+admin_tests@digital.cabinet-office.gov.uk	2019-03-25 15:00:54.012798	2019-03-25 15:48:04.9784	$2b$10$rX7KZQG7NvsyfwqNX/eZru6w79nDXsABV6uSqsckLcwIL9T8TfHlG	07700900001	2019-03-25 15:00:54.005881	2019-03-25 15:48:04.97752	0	active	f	951ecf10-94e8-4b4d-86a9-a269477ed692	sms_auth	NOW()
+44c41c45-0fb4-4ce8-8c92-72734e31995c	Functional Tests	notify-tests-preview+local@digital.cabinet-office.gov.uk	2019-03-25 14:48:38.719334	2019-03-25 14:50:58.826605	$2b$10$pQIWZpetCN4qCtGX0GdSou6D6CeNU97U2TLWL2DnucKjjncVTJcw.	07700900001	2019-03-25 14:48:38.71801	2019-03-25 14:50:58.796995	0	active	f	23ca4bbf-347f-44a7-b998-142bca2fa991	sms_auth	NOW()
+0ebf8f7d-c511-498c-9762-41c4d47507ec	Functional Tests Email Auth	notify-tests-preview+local-email-auth@digital.cabinet-office.gov.uk	2019-03-25 15:12:53.939099	2019-03-25 15:45:48.148452	$2b$10$6k4SCUnF9q39Q/RasnGRXO0JaXoXRkd9x.vFLGG5Eo/8XOpgbdBQC	\N	2019-03-25 15:12:53.937723	2019-03-25 15:45:48.147457	0	active	f	a953c3c0-1edb-4852-a35e-1011bd1b6e20	email_auth	NOW()
+c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	Preview admin tests user	notify-tests-preview+local-admin-tests@digital.cabinet-office.gov.uk	2019-03-25 15:00:54.012798	2019-03-25 15:48:04.9784	$2b$10$rX7KZQG7NvsyfwqNX/eZru6w79nDXsABV6uSqsckLcwIL9T8TfHlG	07700900001	2019-03-25 15:00:54.005881	2019-03-25 15:48:04.97752	0	active	f	951ecf10-94e8-4b4d-86a9-a269477ed692	sms_auth	NOW()
 \.
 
 COPY organisation (id, name, active, created_at, updated_at, email_branding_id, letter_branding_id, agreement_signed, agreement_signed_at, agreement_signed_by_id, agreement_signed_version, crown, organisation_type) FROM stdin;
@@ -60,8 +60,8 @@ e02d1c3e-613a-46d0-bbbb-b3e341444cdb	34b725f0-1f47-49bc-a9f5-aa2a84587c53	0ebf8f
 \.
 
 COPY service_email_reply_to (id, service_id, email_address, is_default, created_at, updated_at, archived) FROM stdin;
-9640a2c9-2438-4b27-9c1a-31bf73107422	34b725f0-1f47-49bc-a9f5-aa2a84587c53	notify-tests-local+reply-to@digital.cabinet-office.gov.uk	f	2019-03-25 15:08:45.679181	2019-03-25 15:09:35.049148	f
-47843c11-471e-446a-94ca-f783b6201078	34b725f0-1f47-49bc-a9f5-aa2a84587c53	notify-tests-local+reply-to-default@digital.cabinet-office.gov.uk	t	2019-03-25 15:09:35.04979	\N	f
+9640a2c9-2438-4b27-9c1a-31bf73107422	34b725f0-1f47-49bc-a9f5-aa2a84587c53	notify-tests-preview+local-reply-to@digital.cabinet-office.gov.uk	f	2019-03-25 15:08:45.679181	2019-03-25 15:09:35.049148	f
+47843c11-471e-446a-94ca-f783b6201078	34b725f0-1f47-49bc-a9f5-aa2a84587c53	notify-tests-preview+local-reply-to-default@digital.cabinet-office.gov.uk	t	2019-03-25 15:09:35.04979	\N	f
 \.
 
 COPY service_permissions (service_id, permission, created_at) FROM stdin;
