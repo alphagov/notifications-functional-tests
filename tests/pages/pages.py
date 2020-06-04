@@ -759,6 +759,7 @@ class ApiIntegrationPage(BasePage):
     heading_button = ApiIntegrationPageLocators.HEADING_BUTTON
     client_reference = ApiIntegrationPageLocators.CLIENT_REFERENCE
     message_list = ApiIntegrationPageLocators.MESSAGE_LIST
+    status = ApiIntegrationPageLocators.STATUS
     view_letter_link = ApiIntegrationPageLocators.VIEW_LETTER_LINK
 
     def get_notification_id(self):
@@ -780,7 +781,7 @@ class ApiIntegrationPage(BasePage):
         self.driver.get(url)
 
     def get_status_from_message(self):
-        element = self.wait_for_elements(ApiIntegrationPage.message_list)[5]
+        element = self.wait_for_elements(ApiIntegrationPage.status)[0]
         return element.text
 
     def get_view_letter_link(self):
