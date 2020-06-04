@@ -756,6 +756,7 @@ class ProfilePage(BasePage):
 
 class ApiIntegrationPage(BasePage):
     message_log = ApiIntegrationPageLocators.MESSAGE_LOG
+    heading_button = ApiIntegrationPageLocators.HEADING_BUTTON
     client_reference = ApiIntegrationPageLocators.CLIENT_REFERENCE
     message_list = ApiIntegrationPageLocators.MESSAGE_LIST
     view_letter_link = ApiIntegrationPageLocators.VIEW_LETTER_LINK
@@ -769,6 +770,8 @@ class ApiIntegrationPage(BasePage):
         element.click()
 
     def get_client_reference(self):
+        button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
+        button.click()
         element = self.wait_for_elements(ApiIntegrationPage.client_reference)[1]
         return element.text
 
