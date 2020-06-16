@@ -785,6 +785,8 @@ class ApiIntegrationPage(BasePage):
         return element.text
 
     def get_view_letter_link(self):
+        button = self.wait_for_elements(ApiIntegrationPage.heading_button)[1]
+        button.click()
         link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
         return link.get_attribute("href")
 
