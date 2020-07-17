@@ -433,7 +433,7 @@ class DashboardPage(BasePage):
         return int(element.text)
 
 
-class ShowTemplatesPage(BasePage):
+class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
     add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
@@ -480,6 +480,7 @@ class ShowTemplatesPage(BasePage):
 
     def click_template_by_link_text(self, link_text):
         element = self.wait_for_element(self.template_link_text(link_text))
+        self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
         element.click()
 
     def _select_template_type(self, type):
