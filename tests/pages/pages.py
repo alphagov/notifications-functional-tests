@@ -199,6 +199,27 @@ class BasePage(object):
         return self.driver.current_url.split('/templates/')[1].split('/')[0]
 
 
+class PageWithStickyNavMixin:
+    def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
+        namespace = 'window.GOVUK.stickAtBottomWhenScrolling'
+        if stuckToBottom == False:
+            namespace = 'window.GOVUK.stickAtTopWhenScrolling'
+
+        if selector is not None:
+            js_str = f"if ('scrollToRevealElement' in {namespace}) {namespace}.scrollToRevealElement($('{selector}').eq(0))"
+            self.driver.execute_script(js_str)
+        elif xpath is not None:
+            js_str = f"""(function (document) {{
+                             if ('scrollToRevealElement' in {namespace}) {{
+                                 var matches = document.evaluate("{xpath}", document, null, XPathResult.ANY_TYPE, null);
+                                 if (matches) {{
+                                     {namespace}.scrollToRevealElement($(matches.iterateNext()));
+                                 }}
+                             }}
+                         }}(document));"""
+            self.driver.execute_script(js_str)
+
+
 class HomePage(BasePage):
 
     def accept_cookie_warning(self):
