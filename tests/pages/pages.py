@@ -202,6 +202,27 @@ class BasePage(object):
         return self.driver.current_url.split('/templates/')[1].split('/')[0]
 
 
+class PageWithStickyNavMixin:
+    def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
+        namespace = 'window.GOVUK.stickAtBottomWhenScrolling'
+        if stuckToBottom == False:
+            namespace = 'window.GOVUK.stickAtTopWhenScrolling'
+
+        if selector is not None:
+            js_str = f"if ('scrollToRevealElement' in {namespace}) {namespace}.scrollToRevealElement($('{selector}').eq(0))"
+            self.driver.execute_script(js_str)
+        elif xpath is not None:
+            js_str = f"""(function (document) {{
+                             if ('scrollToRevealElement' in {namespace}) {{
+                                 var matches = document.evaluate("{xpath}", document, null, XPathResult.ANY_TYPE, null);
+                                 if (matches) {{
+                                     {namespace}.scrollToRevealElement($(matches.iterateNext()));
+                                 }}
+                             }}
+                         }}(document));"""
+            self.driver.execute_script(js_str)
+
+
 class HomePage(BasePage):
 
     def accept_cookie_warning(self):
@@ -415,7 +436,7 @@ class DashboardPage(BasePage):
         return int(element.text)
 
 
-class ShowTemplatesPage(BasePage):
+class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
     add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
@@ -462,6 +483,7 @@ class ShowTemplatesPage(BasePage):
 
     def click_template_by_link_text(self, link_text):
         element = self.wait_for_element(self.template_link_text(link_text))
+        self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
         element.click()
 
     def _select_template_type(self, type):
