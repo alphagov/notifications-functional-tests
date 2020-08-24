@@ -205,11 +205,12 @@ class BasePage(object):
 class PageWithStickyNavMixin:
     def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
         namespace = 'window.GOVUK.stickAtBottomWhenScrolling'
-        if stuckToBottom == False:
+        if stuckToBottom is False:
             namespace = 'window.GOVUK.stickAtTopWhenScrolling'
 
         if selector is not None:
-            js_str = f"if ('scrollToRevealElement' in {namespace}) {namespace}.scrollToRevealElement($('{selector}').eq(0))"
+            js_str = f"if ('scrollToRevealElement' in {namespace})" \
+                     f"{namespace}.scrollToRevealElement($('{selector}').eq(0))"
             self.driver.execute_script(js_str)
         elif xpath is not None:
             js_str = f"""(function (document) {{
@@ -681,7 +682,7 @@ class TeamMembersPage(BasePage):
     edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
 
     def get_edit_link_for_member_name(self, email):
-        return self.wait_for_element((By.XPATH, "//h3[@title='{}']/..//a".format(email)))
+        return self.wait_for_element((By.XPATH, "//h2[@title='{}']/..//a".format(email)))
 
     def h1_is_team_members(self):
         element = self.wait_for_element(TeamMembersPage.h1)
