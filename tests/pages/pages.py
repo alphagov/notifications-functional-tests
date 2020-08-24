@@ -682,7 +682,7 @@ class TeamMembersPage(BasePage):
     edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
 
     def get_edit_link_for_member_name(self, email):
-        return self.wait_for_element((By.XPATH, "//h3[@title='{}']/..//a".format(email)))
+        return self.wait_for_element((By.XPATH, "//h2[@title='{}']/..//a".format(email)))
 
     def h1_is_team_members(self):
         element = self.wait_for_element(TeamMembersPage.h1)
