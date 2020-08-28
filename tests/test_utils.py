@@ -420,7 +420,8 @@ def do_user_can_update_reply_to_email_to_service(driver):
     assert email_address2 in body.text
 
     sub_body = body.text[body.text.index(email_address2):]  # find the index of the email address
-    email_reply_to_id = sub_body.split('\n')[2]  # the id is the third entry [ 'email address, 'Change', id' ]
+    # the id is the fourth entry [ 'email address, 'Change', 'id label', id' ]
+    email_reply_to_id = sub_body.split('\n')[3]
 
     email_reply_to_page.go_to_edit_email_reply_to_address(service_id, email_reply_to_id)
     email_reply_to_page.check_is_default_check_box()
