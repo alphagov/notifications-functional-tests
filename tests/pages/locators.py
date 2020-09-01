@@ -142,4 +142,4 @@ class ChangeNameLocators(object):
 
 
 class ViewTemplatePageLocators(object):
-    SEND_BUTTON = (By.LINK_TEXT, 'Send')
+    SEND_BUTTON = (By.PARTIAL_LINK_TEXT, 'Send')
