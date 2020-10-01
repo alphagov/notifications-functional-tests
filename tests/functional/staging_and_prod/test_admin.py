@@ -1,5 +1,3 @@
-import pytest
-
 from retry.api import retry_call
 from config import config
 
@@ -16,8 +14,6 @@ from tests.test_utils import assert_notification_body, recordtime, NotificationS
 @recordtime
 def test_admin(driver, client, login_user):
     upload_csv_page = UploadCsvPage(driver)
-
-    pytest.skip('intermittent pager duty alerts due to queue backlog')
 
     csv_sms_notification_id = send_notification_via_csv(upload_csv_page, 'sms')
     csv_sms_notification = retry_call(
