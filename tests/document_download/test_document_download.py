@@ -36,7 +36,7 @@ def test_document_upload_and_download(driver):
     driver.get(document['url'])
 
     landing_page = DocumentDownloadLandingPage(driver)
-    assert landing_page.get_service_name() == 'Functional Tests'
+    assert 'Functional Tests' in landing_page.get_service_name()
 
     landing_page.go_to_download_page()
 
