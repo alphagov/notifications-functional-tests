@@ -26,7 +26,7 @@ def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_k
     notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[seeded_client_using_test_key, notification_id, NotificationStatuses.RECEIVED],
-        tries=config['notification_retry_times'],
+        tries=config['letter_retry_times'],
         delay=config['notification_retry_interval']
     )
 

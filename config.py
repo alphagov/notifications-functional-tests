@@ -14,6 +14,7 @@ config = {
     # static
     'notification_retry_times': 15,
     'notification_retry_interval': 5,
+    'letter_retry_times': 48, 
     'provider_retry_times': 12,
     'provider_retry_interval': 22,
     'verify_code_retry_times': 8,
