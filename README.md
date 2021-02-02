@@ -8,7 +8,7 @@ The tests are:
 ## Running the tests from your local dev machine
 
 ```shell
-brew cask install chromedriver # needs to be >= v2.32
+brew install --cask chromedriver # needs to be >= v2.32
 ```
 
 To run locally you need to populate a `.gitignore` and `environment.sh` file with the relevant values.
