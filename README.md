@@ -1,7 +1,7 @@
 # notifications-functional-tests
 
 The tests are:
- 
+
 - Selenium web driver tests of the Notify user interface
 - tests of the API using the [python API client](https://github.com/alphagov/notifications-python-client).
 
