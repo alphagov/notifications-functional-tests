@@ -5,36 +5,24 @@ The tests are:
 - Selenium web driver tests of the Notify user interface
 - tests of the API using the [python API client](https://github.com/alphagov/notifications-python-client).
 
-## Running the tests from your local dev machine
+## Installation
 
 ```shell
 brew install --cask chromedriver # needs to be >= v2.32
 ```
 
-To run locally you need to populate a `.gitignore` and `environment.sh` file with the relevant values.
-
-- To run locally, `source environment_local.sh`
-- To run against preview, staging, or live, grab the environment files found in credentials repo in `credentials/functional-tests/{env_name}`, and save them locally to a separate file that you can source separately. `environment_staging.sh`
-
-Running the tests
-
-```shell
-source environment_local.sh
-# source environment_preview.sh # etc etc
-./scripts/run_functional_tests.sh
-```
-
+## Running tests
 Note, there is an order dependency in the main tests. The registration test must run before any of the other tests as a new user account created for each test run. That user account is used for all later browser based tests. Each test run will first register a user account using the configured FUNCTIONAL_TEST_EMAIL. The email account will have random characters added so that we do not have uniqueness issues with the email address of registered user.
 
-## Running the tests against your local development environment
+### Running the tests against your local development environment
 
-To populate the local database run
+Populate the local database with fixture data:
 
 ```shell
 psql notification_api -f db_setup_fixtures.sql
 ```
 
-Run the following in other tabs / windows:
+Now run the following in other tabs / windows:
 
 - [notifications-api](https://github.com/alphagov/notifications-api):
   - Flask app (run `export ANTIVIRUS_ENABLED=1 first`)
@@ -46,6 +34,24 @@ Run the following in other tabs / windows:
 
 - [notifications-admin](https://github.com/alphagov/notifications-admin)
 - [notifications-antivirus](https://github.com/alphagov/notifications-antivirus)
+
+Then source the environment and run the tests:
+
+```
+source environment_local.sh
+
+./scripts/run_functional_tests.sh
+```
+
+### Running the tests against preview, staging or production
+
+You will need to grab an environment file in the credentials repo in `credentials/functional-tests/{env_name}`, and save it locally to a separate file e.g. `environment_staging.sh`. Then:
+
+```
+source environment_{env_name}.sh
+
+./scripts/run_functional_tests.sh
+```
 
 ## Tests running on Concourse
 
