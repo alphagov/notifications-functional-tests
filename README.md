@@ -28,15 +28,24 @@ Note, there is an order dependency in the main tests. The registration test must
 
 ## Running the tests against your local development environment
 
-Make sure `Notifications Admin`, `Notifications Template Preview`, `Notifications API`, `Notifications API celery` and `Document Download API` are running locally.
-
-Your local celery must be run with `ANTIVIRUS_ENABLED=1` set in the environment for the test_view_precompiled_letter_message_log_virus_scan_failed test to work
-
 To populate the local database run
 
 ```shell
 psql notification_api -f db_setup_fixtures.sql
 ```
+
+Run the following in other tabs / windows:
+
+- [notifications-api](https://github.com/alphagov/notifications-api):
+  - Flask app (run `export ANTIVIRUS_ENABLED=1 first`)
+  - Celery
+
+- [notifications-template-preview](https://github.com/alphagov/notifications-template-preview):
+  - Flask app
+  - Celery
+
+- [notifications-admin](https://github.com/alphagov/notifications-admin)
+- [notifications-antivirus](https://github.com/alphagov/notifications-antivirus)
 
 ## Tests running on Concourse
 
