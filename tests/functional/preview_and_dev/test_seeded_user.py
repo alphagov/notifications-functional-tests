@@ -231,7 +231,7 @@ def test_view_precompiled_letter_message_log_delivered(
     )
 
     ref_link = config['service']['id'] + "/notification/" + api_integration_page.get_notification_id()
-    link = api_integration_page.get_view_letter_link()
+    link = api_integration_page.within_first_log_entry(api_integration_page.get_view_letter_link)
     assert ref_link in link
 
 
@@ -260,7 +260,8 @@ def test_view_precompiled_letter_preview_delivered(
         delay=config['notification_retry_interval']
     )
 
-    api_integration_page.go_to_preview_letter()
+    link = api_integration_page.within_first_log_entry(api_integration_page.get_view_letter_link)
+    driver.get(link)
 
     letter_preview_page = PreviewLetterPage(driver)
     assert letter_preview_page.is_text_present_on_page("Provided as PDF")
@@ -489,9 +490,9 @@ def test_change_service_name(driver, login_seeded_user):
 
 def _check_status_of_notification(page, functional_tests_service_id, reference_to_check, status_to_check):
     page.go_to_api_integration_for_service(service_id=functional_tests_service_id)
-    client_reference = page.get_client_reference()
+    client_reference = page.within_first_log_entry(page.get_client_reference)
     assert reference_to_check == client_reference
-    assert status_to_check == page.get_status_from_message()
+    assert status_to_check == page.within_first_log_entry(page.get_status_from_message)
 
 
 @retry_on_stale_element_exception

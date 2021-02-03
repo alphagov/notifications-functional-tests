@@ -797,34 +797,29 @@ class ApiIntegrationPage(BasePage):
         element = self.wait_for_element(ApiIntegrationPage.message_log)
         element.click()
 
-    def get_client_reference(self):
+    def within_first_log_entry(self, func):
         button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
         button.click()
-        element = self.driver.find_elements(*ApiIntegrationPage.client_reference)[1]
-        text = element.text
+        result = func()
         button.click()  # reset the log entry so it's in a known state
-        return text
+        return result
+
+    def get_client_reference(self):
+        element = self.driver.find_elements(*ApiIntegrationPage.client_reference)[1]
+        return element.text
 
     def go_to_api_integration_for_service(self, service_id):
         url = "{}/services/{}/api".format(self.base_url, service_id)
         self.driver.get(url)
 
     def get_status_from_message(self):
-        button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
-        button.click()
         element = self.driver.find_element(*ApiIntegrationPage.status)
-        text = element.text
-        button.click()  # reset the log entry so it's in a known state
-        return text
+        return element.text
 
     def get_view_letter_link(self):
-        button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
-        button.click()
         # it's possible for there to be no link in the case of a virus
         links = self.driver.find_elements(*ApiIntegrationPage.view_letter_link)
-        href = links[0].get_attribute("href") if links else ""
-        button.click()  # reset the log entry so it's in a known state
-        return href
+        return links[0].get_attribute("href") if links else ""
 
     def go_to_preview_letter(self):
         self.driver.get(self.get_view_letter_link())
