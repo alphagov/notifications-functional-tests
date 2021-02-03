@@ -5,6 +5,10 @@ The tests are:
 - Selenium web driver tests of the Notify user interface
 - tests of the API using the [python API client](https://github.com/alphagov/notifications-python-client).
 
+These tests are run against preview, staging and production using Concourse. We run a full set of tests on preview but only a smaller set of tests, also known as smoke tests, on staging and production.
+
+The Concourse jobs are defined in our [infrastructure repo](https://github.com/alphagov/notifications-aws/blob/master/concourse/templates/functional-tests.yml.j2).
+
 ## Installation
 
 ```shell
@@ -45,7 +49,7 @@ source environment_local.sh
 
 ### Running the tests against preview, staging or production
 
-You will need to grab an environment file in the credentials repo in `credentials/functional-tests/{env_name}`, and save it locally to a separate file e.g. `environment_staging.sh`. Then:
+Users with the required services and templates have already been set up for each of these environments. The details for these are found in our credentials repo, under `credentials/functional-tests/{env_name}`. Decrypt one and paste it locally in a separate file e.g. `environment_staging.sh`. Then:
 
 ```
 source environment_{env_name}.sh
@@ -53,17 +57,7 @@ source environment_{env_name}.sh
 ./scripts/run_functional_tests.sh
 ```
 
-## Tests running on Concourse
-
-These tests are run against preview, staging and production using Concourse. We run a full set of tests on preview but only a smaller set of tests, also known as smoke tests, on staging and production.
-
-The Concourse jobs are defined in our [infrastructure repo](https://github.com/alphagov/notifications-aws/blob/master/concourse/templates/functional-tests.yml.j2).
-
-Users with the required services and templates have already been set up for each of those environments. The details for these are found in our credentials repo. Note credentials containing the needed environment variables are prefixed 'preview', 'staging' and 'live'.
-
-
 ## What we want to test here and what we do not want to test here
 We do not want to test contents of the page beyond a simple check that would prove we are on the page we expect to be for example check the page title or a heading in the page.
 
 These test are not intended to be used for load testing.
-
