@@ -800,28 +800,34 @@ class ApiIntegrationPage(BasePage):
     def get_client_reference(self):
         button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
         button.click()
-        element = self.wait_for_elements(ApiIntegrationPage.client_reference)[1]
-        return element.text
+        element = self.driver.find_elements(*ApiIntegrationPage.client_reference)[1]
+        text = element.text
+        button.click()  # reset the log entry so it's in a known state
+        return text
 
     def go_to_api_integration_for_service(self, service_id):
         url = "{}/services/{}/api".format(self.base_url, service_id)
         self.driver.get(url)
 
     def get_status_from_message(self):
-        element = self.wait_for_elements(ApiIntegrationPage.status)[0]
-        return element.text
+        button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
+        button.click()
+        element = self.driver.find_element(*ApiIntegrationPage.status)
+        text = element.text
+        button.click()  # reset the log entry so it's in a known state
+        return text
 
     def get_view_letter_link(self):
-        buttons = self.wait_for_elements(ApiIntegrationPage.heading_button)
-        # open all message log entries
-        for index in range(len(buttons)):
-            buttons[index].click()
-        link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
-        return link.get_attribute("href")
+        button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
+        button.click()
+        # it's possible for there to be no link in the case of a virus
+        links = self.driver.find_elements(*ApiIntegrationPage.view_letter_link)
+        href = links[0].get_attribute("href") if links else ""
+        button.click()  # reset the log entry so it's in a known state
+        return href
 
     def go_to_preview_letter(self):
-        link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
-        self.driver.get(link.get_attribute("href"))
+        self.driver.get(self.get_view_letter_link())
 
 
 class PreviewLetterPage(BasePage):
