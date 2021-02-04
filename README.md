@@ -2,9 +2,9 @@
 
 The tests are:
 
-- Selenium web driver tests of the Notify user interface (notifications.service.gov.uk)
-- Selenium web driver tests of the Document user interface (documents.service.gov.uk)
-- Tests of the API using the [python API client](https://github.com/alphagov/notifications-python-client).
+- `functional/`: tests of the Notify user interface and API (notifications.service.gov.uk)
+- `document_download/`: tests of the Documents user interface and API (documents.service.gov.uk)
+- `provider_delivery/`: tests for delivery of notifications (Staging and Production only)
 
 These tests are run against preview, staging and production using Concourse. We run a full set of tests on preview but only a smaller set of tests, also known as smoke tests, on staging and production.
 
@@ -21,6 +21,8 @@ brew install --cask chromedriver # needs to be >= v2.32
 Note, there is an order dependency in the main tests. The registration test must run before any of the other tests as a new user account created for each test run. That user account is used for all later browser based tests. Each test run will first register a user account using the configured FUNCTIONAL_TEST_EMAIL. The email account will have random characters added so that we do not have uniqueness issues with the email address of registered user.
 
 ### Running the tests against your local development environment
+
+**Note: this is currently only supported for `functional/` and `document_download/` tests.** See the next section if you want to run the `provider_delivery/` tests locally.
 
 Populate the local database with fixture data:
 
@@ -41,7 +43,7 @@ Now run the following in other tabs / windows:
   - [notifications-admin](https://github.com/alphagov/notifications-admin)
   - [notifications-antivirus](https://github.com/alphagov/notifications-antivirus)
 
-- If you're testing the Document user interface:
+- If you're testing the Documents user interface:
 
   - [notifications-api](https://github.com/alphagov/notifications-api) (Flask app only)
   - [notifications-admin](https://github.com/alphagov/notifications-admin)
@@ -59,13 +61,14 @@ pytest document_download
 
 ### Running the tests against preview, staging or production
 
-Users with the required services and templates have already been set up for each of these environments. The details for these are found in our credentials repo, under `credentials/functional-tests/{env_name}`. Decrypt one and paste it locally in a separate file e.g. `environment_staging.sh`. Then:
+Users with the required services and templates have already been set up for each of these environments. The details for these are found in our credentials repo, under `credentials/functional-tests`. There are different sets of credentials depending on the tests you want to run e.g. `staging-provider`, `staging-functional` . Decrypt the credentials you need and paste them locally in a separate file e.g. `environment_staging.sh`. Then:
 
 ```
 source environment_{env_name}.sh
 
 ./scripts/run_functional_tests.sh # or
-pytest document_download
+pytest document_download # or
+pytest provider_delivery
 ```
 
 ## What we want to test here and what we do not want to test here
