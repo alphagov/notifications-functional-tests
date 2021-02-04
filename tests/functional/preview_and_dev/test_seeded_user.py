@@ -221,7 +221,6 @@ def test_view_precompiled_letter_message_log_delivered(
     )
 
     api_integration_page = ApiIntegrationPage(driver)
-    api_integration_page.go_to_api_integration_for_service(service_id=config['service']['id'])
 
     retry_call(
         _check_status_of_notification,
@@ -251,7 +250,6 @@ def test_view_precompiled_letter_preview_delivered(
     )
 
     api_integration_page = ApiIntegrationPage(driver)
-    api_integration_page.go_to_api_integration_for_service(service_id=config['service']['id'])
 
     retry_call(
         _check_status_of_notification,
