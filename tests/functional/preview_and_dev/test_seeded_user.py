@@ -489,6 +489,7 @@ def test_change_service_name(driver, login_seeded_user):
 
 def _check_status_of_notification(page, functional_tests_service_id, reference_to_check, status_to_check):
     page.go_to_api_integration_for_service(service_id=functional_tests_service_id)
+    page.expand_all_messages()
     client_reference = page.get_client_reference()
     assert reference_to_check == client_reference
     assert status_to_check == page.get_status_from_message()
