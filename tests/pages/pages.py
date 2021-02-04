@@ -798,8 +798,6 @@ class ApiIntegrationPage(BasePage):
         element.click()
 
     def get_client_reference(self):
-        button = self.wait_for_elements(ApiIntegrationPage.heading_button)[0]
-        button.click()
         element = self.wait_for_elements(ApiIntegrationPage.client_reference)[1]
         return element.text
 
@@ -812,10 +810,6 @@ class ApiIntegrationPage(BasePage):
         return element.text
 
     def get_view_letter_link(self):
-        buttons = self.wait_for_elements(ApiIntegrationPage.heading_button)
-        # open all message log entries
-        for index in range(len(buttons)):
-            buttons[index].click()
         link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
         return link.get_attribute("href")
 
