@@ -126,7 +126,7 @@ class SmsSenderLocators(object):
     SMS_SENDER_FIELD = (By.ID, 'sms_sender')
     SAVE_SMS_SENDER_BUTTON = (By.CSS_SELECTOR, 'main button.govuk-button')
     ALL_SMS_SENDERS = (By.TAG_NAME, 'main')
-    FIRST_CHANGE_LINK = (By.LINK_TEXT, 'Change')
+    FIRST_CHANGE_LINK = (By.PARTIAL_LINK_TEXT, 'Change')
     SMS_SENDER = (By.CLASS_NAME, 'sms-message-sender')
     SMS_RECIPIENT = (By.CLASS_NAME, 'sms-message-recipient')
     SMS_CONTENT = (By.CLASS_NAME, 'sms-message-wrapper')
