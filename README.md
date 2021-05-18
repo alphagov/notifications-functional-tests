@@ -71,7 +71,16 @@ pytest document_download # or
 pytest provider_delivery
 ```
 
+Every 90 days we need to re-validate the email for the `notify-tests-preview+admin_tests` user. You can check if this is the cause of failures using the following query in Kibana:
+
+```
+access.agent: selenium AND _type: gorouter AND cf.app: notify-admin AND access.url: "re-validate-email"
+```
+
+To re-validate the email, use an Incognito window to sign in to Notify as the service user. As platform admin, you can snoop the 2FA code and verification link from the GOV.UK Notify service.
+
 ## What we want to test here and what we do not want to test here
+
 We do not want to test contents of the page beyond a simple check that would prove we are on the page we expect to be for example check the page title or a heading in the page.
 
 These test are not intended to be used for load testing.

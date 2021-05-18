@@ -799,7 +799,8 @@ class ApiIntegrationPage(BasePage):
 
     def expand_all_messages(self):
         buttons = self.wait_for_elements(ApiIntegrationPage.heading_button)
-        for index in range(len(buttons)): buttons[index].click()
+        for index in range(len(buttons)):
+            buttons[index].click()
 
     def get_client_reference(self):
         element = self.wait_for_elements(ApiIntegrationPage.client_reference)[1]
