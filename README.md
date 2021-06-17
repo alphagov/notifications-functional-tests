@@ -43,7 +43,9 @@ Now run the following in other tabs / windows:
     - Flask app
     - Celery
   - [notifications-admin](https://github.com/alphagov/notifications-admin)
+    - Flask app
   - [notifications-antivirus](https://github.com/alphagov/notifications-antivirus)
+    - Celery
 
 - If you're testing the Documents user interface:
 
