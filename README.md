@@ -14,6 +14,8 @@ The Concourse jobs are defined in our [infrastructure repo](https://github.com/a
 
 ```shell
 brew install --cask chromedriver # needs to be >= v2.32
+
+make bootstrap # install dependencies, etc.
 ```
 
 ## Running tests
