@@ -1,14 +1,10 @@
+from tests.pages import DashboardPage, SmsSenderPage
 from tests.test_utils import (
     do_user_can_add_reply_to_email_to_service,
     do_user_can_invite_someone_to_notify,
     do_user_can_update_reply_to_email_to_service,
     do_user_registration,
-    recordtime
-)
-
-from tests.pages import (
-    DashboardPage,
-    SmsSenderPage,
+    recordtime,
 )
 
 

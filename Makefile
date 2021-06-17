@@ -16,6 +16,7 @@ clean: ## Remove temporary files
 
 .PHONY: test
 test: clean ## Run functional tests against local environment
+	isort --check-only tests
 	flake8 .
 	pytest -v tests/functional/preview_and_dev
 	pytest -v tests/document_download

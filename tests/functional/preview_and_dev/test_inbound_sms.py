@@ -12,15 +12,11 @@ Test:
 from datetime import datetime
 from urllib.parse import quote_plus
 
-import requests
 import pytest
+import requests
 
 from config import config
-from tests.pages import (
-    DashboardPage,
-    InboxPage,
-    ConversationPage,
-)
+from tests.pages import ConversationPage, DashboardPage, InboxPage
 
 
 @pytest.fixture(scope='module')

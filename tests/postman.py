@@ -3,7 +3,7 @@ import os
 from notifications_python_client.errors import HTTPError
 
 from config import config
-from tests.test_utils import create_temp_csv, RetryException
+from tests.test_utils import RetryException, create_temp_csv
 
 
 def send_notification_via_api(client, template_id, to, message_type):

@@ -1,9 +1,12 @@
 from config import config
+from tests.pages import (
+    BasePage,
+    ForgotPasswordPage,
+    NewPasswordPage,
+    SignInPage,
+)
+from tests.pages.rollups import get_email_and_password, sign_in_email_auth
 from tests.test_utils import do_email_verification, recordtime
-
-from tests.pages.rollups import sign_in_email_auth
-from tests.pages import BasePage, ForgotPasswordPage, NewPasswordPage, SignInPage
-from tests.pages.rollups import get_email_and_password
 
 
 @recordtime
