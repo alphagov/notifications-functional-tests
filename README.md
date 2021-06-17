@@ -57,8 +57,11 @@ Then source the environment and run the tests:
 ```
 source environment_local.sh
 
-./scripts/run_functional_tests.sh # or
-pytest document_download
+# run all the tests
+make test
+
+# run a specific test
+pytest tests/functional/preview_and_dev/test_seeded_user.py
 ```
 
 ### Running the tests against preview, staging or production
@@ -68,9 +71,8 @@ Users with the required services and templates have already been set up for each
 ```
 source environment_{env_name}.sh
 
-./scripts/run_functional_tests.sh # or
-pytest document_download # or
-pytest provider_delivery
+# run specific tests
+pytest tests/document_download
 ```
 
 Every 90 days we need to re-validate the email for the `notify-tests-preview+admin_tests` user. You can check if this is the cause of failures using the following query in Kibana:

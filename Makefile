@@ -9,6 +9,13 @@ help:
 bootstrap: ## Install build dependencies
 	pip install -r requirements.txt
 
+.PHONY: clean
+clean: ## Remove temporary files
+	rm -rf screenshots/*
+	rm -rf logs/*
+
 .PHONY: test
-test: ## Run functional tests - preview, staging, func test repo PRs and merges post deploy and local dev
-	su -c '/var/project/scripts/run_functional_tests.sh' hostuser
+test: clean ## Run functional tests against local environment
+	flake8 .
+	pytest -v tests/functional/preview_and_dev
+	pytest -v tests/document_download
