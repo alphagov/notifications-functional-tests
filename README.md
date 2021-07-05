@@ -18,6 +18,8 @@ brew install --cask chromedriver # needs to be >= v2.32
 make bootstrap # install dependencies, etc.
 ```
 
+Note: when you run the tests for the first time on a Mac, **you may need to authorise `chromedriver` in your security settings** ("System Preferences > Security & Privacy > General").
+
 ## Running tests
 
 Note, there is an order dependency in the main tests. The registration test must run before any of the other tests as a new user account created for each test run. That user account is used for all later browser based tests. Each test run will first register a user account using the configured FUNCTIONAL_TEST_EMAIL. The email account will have random characters added so that we do not have uniqueness issues with the email address of registered user.
