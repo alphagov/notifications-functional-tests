@@ -4,46 +4,46 @@ import uuid
 from io import BytesIO
 
 import pytest
-
 from retry.api import retry_call
-from config import config
 from selenium.common.exceptions import TimeoutException
 
+from config import config
 from tests.decorators import retry_on_stale_element_exception
-from tests.functional.preview_and_dev.consts import correct_letter, pdf_with_virus, preview_error
-
+from tests.functional.preview_and_dev.consts import (
+    correct_letter,
+    pdf_with_virus,
+    preview_error,
+)
+from tests.pages import (
+    ApiIntegrationPage,
+    ChangeName,
+    DashboardPage,
+    EditEmailTemplatePage,
+    InviteUserPage,
+    ManageFolderPage,
+    PreviewLetterPage,
+    ServiceSettingsPage,
+    ShowTemplatesPage,
+    TeamMembersPage,
+    UploadCsvPage,
+    ViewFolderPage,
+)
+from tests.pages.rollups import sign_in, sign_in_email_auth
 from tests.postman import (
-    send_notification_via_csv,
     get_notification_by_id_via_api,
     get_pdf_for_letter_via_api,
-    send_precompiled_letter_via_api)
-
+    send_notification_via_csv,
+    send_precompiled_letter_via_api,
+)
 from tests.test_utils import (
+    NotificationStatuses,
     assert_notification_body,
     create_email_template,
     create_sms_template,
     delete_template,
     go_to_templates_page,
-    NotificationStatuses,
     recordtime,
-    send_notification_to_one_recipient
-)
-
-from tests.pages.rollups import sign_in, sign_in_email_auth
-
-from tests.pages import (
-    ApiIntegrationPage,
-    DashboardPage,
-    ShowTemplatesPage,
-    EditEmailTemplatePage,
-    UploadCsvPage,
-    PreviewLetterPage,
-    ViewFolderPage,
-    ManageFolderPage,
-    TeamMembersPage,
-    InviteUserPage,
-    ChangeName,
-    ServiceSettingsPage
+    send_notification_to_one_recipient,
 )
 
 

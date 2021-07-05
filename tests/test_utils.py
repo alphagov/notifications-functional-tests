@@ -1,14 +1,14 @@
-import functools
-import os
-import tempfile
 import csv
-import re
+import functools
 import logging
+import os
+import re
+import tempfile
 import uuid
-
 from datetime import datetime
-from retry import retry
+
 from notifications_python_client.notifications import NotificationsAPIClient
+from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from config import config, generate_unique_email
@@ -27,7 +27,7 @@ from tests.pages import (
     SmsSenderPage,
     TeamMembersPage,
     VerifyPage,
-    ViewTemplatePage
+    ViewTemplatePage,
 )
 
 logging.basicConfig(filename='./logs/test_run_{}.log'.format(datetime.utcnow()),

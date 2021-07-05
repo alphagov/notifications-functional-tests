@@ -1,16 +1,18 @@
 import os
 import shutil
 
+from retry import retry
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+    WebDriverException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import (
-    NoSuchElementException, StaleElementReferenceException, TimeoutException, WebDriverException
-)
 
-from retry import retry
 from config import config
-
 from tests.pages.element import (
     BasePageElement,
     EmailInputElement,
@@ -21,11 +23,10 @@ from tests.pages.element import (
     NewPasswordInputElement,
     PasswordInputElement,
     ServiceInputElement,
-    SubjectInputElement,
     SmsInputElement,
-    TemplateContentElement
+    SubjectInputElement,
+    TemplateContentElement,
 )
-
 from tests.pages.locators import (
     AddServicePageLocators,
     ApiIntegrationPageLocators,
@@ -42,11 +43,11 @@ from tests.pages.locators import (
     SignInPageLocators,
     SingleRecipientLocators,
     SmsSenderLocators,
-    TemplatePageLocators,
     TeamMembersPageLocators,
+    TemplatePageLocators,
     UploadCsvLocators,
     VerifyPageLocators,
-    ViewTemplatePageLocators
+    ViewTemplatePageLocators,
 )
 
 

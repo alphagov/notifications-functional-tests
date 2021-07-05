@@ -1,15 +1,15 @@
-from io import BytesIO
 import base64
+from io import BytesIO
 
 from retry.api import retry_call
-from config import config
 
-from tests.postman import (
-    send_precompiled_letter_via_api,
-    get_notification_by_id_via_api,
-)
-from tests.test_utils import recordtime, NotificationStatuses
+from config import config
 from tests.functional.preview_and_dev.consts import correct_letter
+from tests.postman import (
+    get_notification_by_id_via_api,
+    send_precompiled_letter_via_api,
+)
+from tests.test_utils import NotificationStatuses, recordtime
 
 
 @recordtime

@@ -1,19 +1,24 @@
-from io import BytesIO
 import base64
+from io import BytesIO
 
 import pytest
 from retry.api import retry_call
 
 from config import config
-
+from tests.functional.preview_and_dev.consts import (
+    correct_letter,
+    pdf_with_virus,
+)
 from tests.postman import (
     get_notification_by_id_via_api,
     send_notification_via_api,
     send_precompiled_letter_via_api,
 )
-
-from tests.functional.preview_and_dev.consts import correct_letter, pdf_with_virus
-from tests.test_utils import assert_notification_body, recordtime, NotificationStatuses
+from tests.test_utils import (
+    NotificationStatuses,
+    assert_notification_body,
+    recordtime,
+)
 
 
 @recordtime

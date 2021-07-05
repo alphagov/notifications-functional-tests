@@ -8,11 +8,7 @@ from tests.pages import (
     RegisterFromInvite,
     TeamMembersPage,
 )
-from tests.test_utils import (
-    recordtime,
-    do_verify,
-    get_link,
-)
+from tests.test_utils import do_verify, get_link, recordtime
 
 
 @recordtime

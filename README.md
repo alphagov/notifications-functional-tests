@@ -14,7 +14,11 @@ The Concourse jobs are defined in our [infrastructure repo](https://github.com/a
 
 ```shell
 brew install --cask chromedriver # needs to be >= v2.32
+
+make bootstrap # install dependencies, etc.
 ```
+
+Note: when you run the tests for the first time on a Mac, **you may need to authorise `chromedriver` in your security settings** ("System Preferences > Security & Privacy > General").
 
 ## Running tests
 
@@ -41,7 +45,9 @@ Now run the following in other tabs / windows:
     - Flask app
     - Celery
   - [notifications-admin](https://github.com/alphagov/notifications-admin)
+    - Flask app
   - [notifications-antivirus](https://github.com/alphagov/notifications-antivirus)
+    - Celery
 
 - If you're testing the Documents user interface:
 
@@ -55,8 +61,11 @@ Then source the environment and run the tests:
 ```
 source environment_local.sh
 
-./scripts/run_functional_tests.sh # or
-pytest document_download
+# run all the tests
+make test
+
+# run a specific test
+pytest tests/functional/preview_and_dev/test_seeded_user.py
 ```
 
 ### Running the tests against preview, staging or production
@@ -66,9 +75,8 @@ Users with the required services and templates have already been set up for each
 ```
 source environment_{env_name}.sh
 
-./scripts/run_functional_tests.sh # or
-pytest document_download # or
-pytest provider_delivery
+# run specific tests
+pytest tests/document_download
 ```
 
 Every 90 days we need to re-validate the email for the `notify-tests-preview+admin_tests` user. You can check if this is the cause of failures using the following query in Kibana:

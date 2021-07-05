@@ -1,7 +1,6 @@
 from config import config
 from tests.pages import SignInPage
-
-from tests.test_utils import do_verify, do_email_auth_verify
+from tests.test_utils import do_email_auth_verify, do_verify
 
 
 def sign_in(driver, seeded=False):

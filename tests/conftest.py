@@ -1,16 +1,15 @@
 import os
-import pytest
 from datetime import datetime
 from pathlib import Path
 
+import pytest
+from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
-from notifications_python_client import NotificationsAPIClient
-
+from config import config, setup_shared_config
 from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in, sign_in_email_auth
-from config import config, setup_shared_config
 
 
 @pytest.fixture(scope="session", autouse=True)
