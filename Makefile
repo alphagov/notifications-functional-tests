@@ -7,6 +7,7 @@ help:
 
 .PHONY: bootstrap
 bootstrap: ## Install build dependencies
+	mkdir -p logs screenshots
 	pip install -r requirements.txt
 
 .PHONY: clean
