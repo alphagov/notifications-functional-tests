@@ -8,5 +8,6 @@ ADD config.py config.py
 ADD .flake8 .flake8
 ADD setup.cfg setup.cfg
 ADD pytest.ini pytest.ini
+ADD Makefile Makefile
 RUN mkdir logs
 ENTRYPOINT bash
