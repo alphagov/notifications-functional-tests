@@ -40,6 +40,7 @@ class NavigationLocators(object):
     SIGN_OUT_LINK = (By.LINK_TEXT, 'Sign out')
     TEMPLATES_LINK = (By.LINK_TEXT, 'Templates')
     SETTINGS_LINK = (By.LINK_TEXT, 'Settings')
+    CURRENT_ALERTS_LINK = (By.LINK_TEXT, 'Current alerts')
 
 
 class TemplatePageLocators(object):

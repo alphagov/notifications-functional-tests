@@ -163,7 +163,10 @@ class BasePage(object):
             return url in self.driver.current_url
         return check_contains_url
 
-    def select_checkbox_or_radio(self, element):
+    def select_checkbox_or_radio(self, element=None, value=None):
+        if not element and value:
+            locator = (By.CSS_SELECTOR, f'[value={value}]')
+            element = self.wait_for_invisible_element(locator)
         if not element.get_attribute('checked'):
             element.click()
             assert element.get_attribute('checked')
@@ -175,6 +178,10 @@ class BasePage(object):
 
     def click_templates(self):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
+        element.click()
+
+    def click_current_alerts(self):
+        element = self.wait_for_element(NavigationLocators.CURRENT_ALERTS_LINK)
         element.click()
 
     def click_settings(self):
@@ -201,6 +208,10 @@ class BasePage(object):
         # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
         # circle back and do better
         return self.driver.current_url.split('/templates/')[1].split('/')[0]
+
+    def click_element_by_link_text(self, link_text):
+        element = self.wait_for_element((By.LINK_TEXT, link_text))
+        element.click()
 
 
 class PageWithStickyNavMixin:
@@ -393,8 +404,7 @@ class DashboardPage(BasePage):
         element.click()
 
     def click_user_profile_link(self, link_text):
-        element = self.wait_for_element((By.LINK_TEXT, link_text))
-        element.click()
+        self.click_element_by_link_text(link_text)
 
     def click_api_keys_link(self):
         element = self.wait_for_element(DashboardPage.api_keys_link)
@@ -1118,3 +1128,28 @@ class ManageFolderPage(BasePage):
     def get_errors(self):
         errors = self.wait_for_element(self.error_message)
         return errors.text.strip()
+
+
+class CurrentAlertsPage(BasePage):
+    add_to_new_folder_link = (By.LINK_TEXT, "New alert")
+
+    def click_new_alert(self):
+        link = self.wait_for_element(self.add_to_new_folder_link)
+        link.click()
+
+
+class NewAlertPage(BasePage):
+    from_template_radio = (By.CSS_SELECTOR, "input[type='radio'][value='template']")
+
+    def _select_content_type(self, type):
+        radio_element = self.wait_for_invisible_element(type)
+        self.select_checkbox_or_radio(radio_element)
+
+        self.click_continue()
+
+    def select_use_a_template(self):
+        self._select_content_type(self.from_template_radio)
+
+
+class PrepareAlertsPages(BasePage):
+    pass
