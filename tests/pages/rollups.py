@@ -14,6 +14,16 @@ def sign_in_email_auth(driver):
     do_email_auth_verify(driver)
 
 
+def sign_in_broadcast_create_user(driver):
+    _sign_in(driver, 'broadcast_create_user')
+    do_verify(driver)
+
+
+def sign_in_broadcast_approve_user(driver):
+    _sign_in(driver, 'broadcast_approve_user')
+    do_verify(driver)
+
+
 def _sign_in(driver, account_type):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
@@ -30,4 +40,14 @@ def get_email_and_password(account_type):
     elif account_type == 'email_auth':
         # has the same password as the seeded user
         return config['service']['email_auth_account'], config['service']['seeded_user']['password']
+    elif account_type == 'broadcast_create_user':
+        return (
+            config['broadcast_service']['broadcast_user_1']['email'],
+            config['broadcast_service']['broadcast_user_1']['password']
+        )
+    elif account_type == 'broadcast_approve_user':
+        return (
+            config['broadcast_service']['broadcast_user_2']['email'],
+            config['broadcast_service']['broadcast_user_2']['password']
+        )
     raise Exception('unknown account_type {}'.format(account_type))

@@ -86,6 +86,18 @@ def setup_preview_dev_config():
 
         'notify_service_api_key': os.environ['NOTIFY_SERVICE_API_KEY'],
 
+        'broadcast_service': {
+            'id': os.environ['BROADCAST_SERVICE_ID'],
+            'broadcast_user_1': {
+                'email': os.environ['BROADCAST_USER_1_EMAIL'],
+                'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
+            },
+            'broadcast_user_2': {
+                'email': os.environ['BROADCAST_USER_2_EMAIL'],
+                'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
+            },
+        },
+
         'service': {
             'id': os.environ['FUNCTIONAL_TESTS_SERVICE_ID'],
             'name': os.environ['FUNCTIONAL_TESTS_SERVICE_NAME'],
