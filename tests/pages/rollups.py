@@ -3,8 +3,8 @@ from tests.pages import SignInPage
 from tests.test_utils import do_email_auth_verify, do_verify
 
 
-def sign_in(driver, seeded=False):
-    _sign_in(driver, 'seeded' if seeded else 'normal')
+def sign_in(driver, account_type='normal'):
+    _sign_in(driver, account_type)
     do_verify(driver)
 
 
@@ -12,16 +12,6 @@ def sign_in_email_auth(driver):
     _sign_in(driver, 'email_auth')
     assert driver.current_url == config['notify_admin_url'] + '/two-factor-email-sent'
     do_email_auth_verify(driver)
-
-
-def sign_in_broadcast_create_user(driver):
-    _sign_in(driver, 'broadcast_create_user')
-    do_verify(driver)
-
-
-def sign_in_broadcast_approve_user(driver):
-    _sign_in(driver, 'broadcast_approve_user')
-    do_verify(driver)
 
 
 def _sign_in(driver, account_type):

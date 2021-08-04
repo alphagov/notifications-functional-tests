@@ -90,10 +90,12 @@ def setup_preview_dev_config():
             'id': os.environ['BROADCAST_SERVICE_ID'],
             'broadcast_user_1': {
                 'email': os.environ['BROADCAST_USER_1_EMAIL'],
+                # we are re-using seeded user's password
                 'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
             },
             'broadcast_user_2': {
                 'email': os.environ['BROADCAST_USER_2_EMAIL'],
+                # we are re-using seeded user's password
                 'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
             },
         },

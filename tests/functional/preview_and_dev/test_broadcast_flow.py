@@ -7,10 +7,7 @@ from tests.pages import (
     DashboardPage,
     ShowTemplatesPage,
 )
-from tests.pages.rollups import (
-    sign_in_broadcast_approve_user,
-    sign_in_broadcast_create_user,
-)
+from tests.pages.rollups import sign_in
 from tests.test_utils import (
     create_broadcast_template,
     delete_template,
@@ -21,9 +18,9 @@ from tests.test_utils import (
 
 @recordtime
 def test_prepare_broadcast_with_new_content(
-    driver, seeded_client
+    driver
 ):
-    sign_in_broadcast_create_user(driver)
+    sign_in(driver, account_type='broadcast_create_user')
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_element_by_link_text('Current alerts')
@@ -56,7 +53,7 @@ def test_prepare_broadcast_with_new_content(
 
     prepare_alert_pages.sign_out()
 
-    sign_in_broadcast_approve_user(driver)
+    sign_in(driver, account_type='broadcast_approve_user')
 
     dashboard_page.click_element_by_link_text('Current alerts')
     current_alerts_page.click_element_by_link_text(broadcast_title)
@@ -76,9 +73,9 @@ def test_prepare_broadcast_with_new_content(
 
 @recordtime
 def test_prepare_broadcast_with_template(
-    driver, seeded_client
+    driver
 ):
-    sign_in_broadcast_create_user(driver)
+    sign_in(driver, account_type='broadcast_create_user')
 
     go_to_templates_page(driver, service='broadcast_service')
     template_name = "test broadcast" + str(uuid.uuid4())
