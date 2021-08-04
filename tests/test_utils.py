@@ -15,6 +15,7 @@ from config import config, generate_unique_email
 from tests.pages import (
     AddServicePage,
     DashboardPage,
+    EditBroadcastTemplatePage,
     EditEmailTemplatePage,
     EditSmsTemplatePage,
     EmailReplyTo,
@@ -238,7 +239,7 @@ def create_broadcast_template(driver, name="test template", content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
-    template_page = EditSmsTemplatePage(driver)
+    template_page = EditBroadcastTemplatePage(driver)
     template_page.create_template(name=name, content=content)
     return template_page.get_template_id()
 

@@ -180,14 +180,6 @@ class BasePage(object):
         element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
         element.click()
 
-    def click_current_alerts(self):
-        element = self.wait_for_element(NavigationLocators.CURRENT_ALERTS_LINK)
-        element.click()
-
-    def click_past_alerts(self):
-        element = self.wait_for_element(NavigationLocators.PAST_ALERTS_LINK)
-        element.click()
-
     def click_settings(self):
         element = self.wait_for_element(NavigationLocators.SETTINGS_LINK)
         element.click()
@@ -585,6 +577,10 @@ class EditSmsTemplatePage(BasePage):
         else:
             self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
+
+
+class EditBroadcastTemplatePage(EditSmsTemplatePage):
+    pass
 
 
 class SendEmailTemplatePage(BasePage):
@@ -1132,35 +1128,6 @@ class ManageFolderPage(BasePage):
     def get_errors(self):
         errors = self.wait_for_element(self.error_message)
         return errors.text.strip()
-
-
-class CurrentAlertsPage(BasePage):
-    add_to_new_folder_link = (By.LINK_TEXT, "New alert")
-
-    def click_new_alert(self):
-        link = self.wait_for_element(self.add_to_new_folder_link)
-        link.click()
-
-
-class NewAlertPage(BasePage):
-    from_template_radio = (By.CSS_SELECTOR, "input[type='radio'][value='template']")
-    freeform_radio = (By.CSS_SELECTOR, "input[type='radio'][value='freeform']")
-
-    def _select_content_type(self, type):
-        radio_element = self.wait_for_invisible_element(type)
-        self.select_checkbox_or_radio(radio_element)
-
-        self.click_continue()
-
-    def select_use_a_template(self):
-        self._select_content_type(self.from_template_radio)
-
-    def select_write_your_own_message(self):
-        self._select_content_type(self.freeform_radio)
-
-
-class PrepareAlertsPages(BasePage):
-    pass
 
 
 class BroadcastFreeformPage(BasePage):
