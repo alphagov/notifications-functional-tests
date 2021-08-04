@@ -184,6 +184,10 @@ class BasePage(object):
         element = self.wait_for_element(NavigationLocators.CURRENT_ALERTS_LINK)
         element.click()
 
+    def click_past_alerts(self):
+        element = self.wait_for_element(NavigationLocators.PAST_ALERTS_LINK)
+        element.click()
+
     def click_settings(self):
         element = self.wait_for_element(NavigationLocators.SETTINGS_LINK)
         element.click()

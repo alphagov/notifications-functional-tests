@@ -41,6 +41,7 @@ class NavigationLocators(object):
     TEMPLATES_LINK = (By.LINK_TEXT, 'Templates')
     SETTINGS_LINK = (By.LINK_TEXT, 'Settings')
     CURRENT_ALERTS_LINK = (By.LINK_TEXT, 'Current alerts')
+    PAST_ALERTS_LINK = (By.LINK_TEXT, 'Past alerts')
 
 
 class TemplatePageLocators(object):
