@@ -34,6 +34,8 @@ Populate the local database with fixture data:
 psql notification_api -f db_setup_fixtures.sql
 ```
 
+Note: If you see any errors (for example a `duplicate key value violates unique constraint` line or similar), that table will not be saved but other following table inserts will still attempt. You'll need to fix the errors for that table (either in your local database or in the fixture script) and run the script again, or open `psql` and just copy-paste the lines from the script that you need.
+
 Now run the following in other tabs / windows:
 
 - If you're testing the Notify user interface:
@@ -92,3 +94,14 @@ To re-validate the email, use an Incognito window to sign in to Notify as the se
 We do not want to test contents of the page beyond a simple check that would prove we are on the page we expect to be for example check the page title or a heading in the page.
 
 These test are not intended to be used for load testing.
+
+## Updating db_setup_fixtures.sql
+
+1. Back up your local database with `pg_dump --format=t notification_api > ~/Downloads/my_local_db_backup.tar`
+2. Drop your local db with `dropdb notification_api`
+3. Run `make bootstrap` in the notifications-api repo to set up the database.
+4. Run `psql notification_api --file=db_setup_fixtures.sql` to get existing db objects from the db_setup_fixtures file.
+5. Make changes to your local that you want in the fixture. Note, you'll need to log in as one of the functional test users if you want to use the interface. You might need to tempoarily go into the database and make them a platform admin depending on what you are doing.
+6. Back up your new functional test data with `pg_dump --format=p --data-only notification_api > temp_db_setup_fixtures.sql`
+7. Compare the new fixtures file with the existing one and remove any extra rows that people won't want to re-add to their database. For example, Notify service templates, any notifications you might have sent while making the changes, etc.
+8. (Optional) revert your local to its previous state with `dropdb notification_api` then recreate with `createdb notification_api` and restore your data with `pg_restore -Ft -d notification_api < ~/Downloads/my_local_db_backup.tar`; Then apply the `temp_db_setup_fixtures.sql` you just updated (you may have to tackle quite a few errors), or open `psql` and just copy-paste the lines from the script that you need.
