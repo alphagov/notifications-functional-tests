@@ -1140,6 +1140,7 @@ class CurrentAlertsPage(BasePage):
 
 class NewAlertPage(BasePage):
     from_template_radio = (By.CSS_SELECTOR, "input[type='radio'][value='template']")
+    freeform_radio = (By.CSS_SELECTOR, "input[type='radio'][value='freeform']")
 
     def _select_content_type(self, type):
         radio_element = self.wait_for_invisible_element(type)
@@ -1150,6 +1151,18 @@ class NewAlertPage(BasePage):
     def select_use_a_template(self):
         self._select_content_type(self.from_template_radio)
 
+    def select_write_your_own_message(self):
+        self._select_content_type(self.freeform_radio)
+
 
 class PrepareAlertsPages(BasePage):
     pass
+
+
+class BroadcastFreeformPage(BasePage):
+    title_input = NameInputElement()
+    content_input = TemplateContentElement()
+
+    def create_broadcast_content(self, title, content):
+        self.title_input = title
+        self.content_input = content
