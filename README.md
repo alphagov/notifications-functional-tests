@@ -10,6 +10,10 @@ These tests are run against preview, staging and production using Concourse. We 
 
 The Concourse jobs are defined in our [infrastructure repo](https://github.com/alphagov/notifications-aws/blob/master/concourse/templates/functional-tests.yml.j2).
 
+## Uses
+
+These tests are not intended to be used for load testing.
+
 ## Installation
 
 ```shell
@@ -89,12 +93,8 @@ access.agent: selenium AND _type: gorouter AND cf.app: notify-admin AND access.u
 
 To re-validate the email, use an Incognito window to sign in to Notify as the service user. As platform admin, you can snoop the 2FA code and verification link from the GOV.UK Notify service.
 
-## What we want to test here and what we do not want to test here
-
-We do not want to test contents of the page beyond a simple check that would prove we are on the page we expect to be for example check the page title or a heading in the page.
-
-These test are not intended to be used for load testing.
 
 ## Further documentation
 
-- [Updating db_setup_fixtures.sql](docs/update-db_setup_fixtures.md)
+- [Updating db_setup_fixtures](docs/update-db_setup_fixtures.md)
+- [Style guide](docs/style-guide.md)
