@@ -96,7 +96,7 @@ def login_user(_driver):
 
 @pytest.fixture(scope="module")
 def login_seeded_user(_driver):
-    sign_in(_driver, True)
+    sign_in(_driver, account_type='seeded')
 
 
 @pytest.fixture(scope="module")

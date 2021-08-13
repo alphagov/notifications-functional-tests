@@ -28,3 +28,9 @@ export MMG_INBOUND_SMS_AUTH=testkey
 
 export DOCUMENT_DOWNLOAD_API_HOST=http://localhost:7000
 export DOCUMENT_DOWNLOAD_API_KEY=auth-token
+
+export BROADCAST_USER_1_EMAIL='notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk'
+
+export BROADCAST_USER_2_EMAIL='notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk'
+
+export BROADCAST_SERVICE_ID='8e1d56fa-12a8-4d00-bed2-db47180bed0a'

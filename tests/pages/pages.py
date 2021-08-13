@@ -163,7 +163,10 @@ class BasePage(object):
             return url in self.driver.current_url
         return check_contains_url
 
-    def select_checkbox_or_radio(self, element):
+    def select_checkbox_or_radio(self, element=None, value=None):
+        if not element and value:
+            locator = (By.CSS_SELECTOR, f'[value={value}]')
+            element = self.wait_for_invisible_element(locator)
         if not element.get_attribute('checked'):
             element.click()
             assert element.get_attribute('checked')
@@ -201,6 +204,10 @@ class BasePage(object):
         # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
         # circle back and do better
         return self.driver.current_url.split('/templates/')[1].split('/')[0]
+
+    def click_element_by_link_text(self, link_text):
+        element = self.wait_for_element((By.LINK_TEXT, link_text))
+        element.click()
 
 
 class PageWithStickyNavMixin:
@@ -393,8 +400,7 @@ class DashboardPage(BasePage):
         element.click()
 
     def click_user_profile_link(self, link_text):
-        element = self.wait_for_element((By.LINK_TEXT, link_text))
-        element.click()
+        self.click_element_by_link_text(link_text)
 
     def click_api_keys_link(self):
         element = self.wait_for_element(DashboardPage.api_keys_link)
@@ -571,6 +577,10 @@ class EditSmsTemplatePage(BasePage):
         else:
             self.template_content_input = 'The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))'
         self.click_save()
+
+
+class EditBroadcastTemplatePage(EditSmsTemplatePage):
+    pass
 
 
 class SendEmailTemplatePage(BasePage):
@@ -1118,3 +1128,12 @@ class ManageFolderPage(BasePage):
     def get_errors(self):
         errors = self.wait_for_element(self.error_message)
         return errors.text.strip()
+
+
+class BroadcastFreeformPage(BasePage):
+    title_input = NameInputElement()
+    content_input = TemplateContentElement()
+
+    def create_broadcast_content(self, title, content):
+        self.title_input = title
+        self.content_input = content

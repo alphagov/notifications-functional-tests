@@ -3,8 +3,8 @@ from tests.pages import SignInPage
 from tests.test_utils import do_email_auth_verify, do_verify
 
 
-def sign_in(driver, seeded=False):
-    _sign_in(driver, 'seeded' if seeded else 'normal')
+def sign_in(driver, account_type='normal'):
+    _sign_in(driver, account_type)
     do_verify(driver)
 
 
@@ -30,4 +30,14 @@ def get_email_and_password(account_type):
     elif account_type == 'email_auth':
         # has the same password as the seeded user
         return config['service']['email_auth_account'], config['service']['seeded_user']['password']
+    elif account_type == 'broadcast_create_user':
+        return (
+            config['broadcast_service']['broadcast_user_1']['email'],
+            config['broadcast_service']['broadcast_user_1']['password']
+        )
+    elif account_type == 'broadcast_approve_user':
+        return (
+            config['broadcast_service']['broadcast_user_2']['email'],
+            config['broadcast_service']['broadcast_user_2']['password']
+        )
     raise Exception('unknown account_type {}'.format(account_type))

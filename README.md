@@ -10,6 +10,10 @@ These tests are run against preview, staging and production using Concourse. We 
 
 The Concourse jobs are defined in our [infrastructure repo](https://github.com/alphagov/notifications-aws/blob/master/concourse/templates/functional-tests.yml.j2).
 
+## Uses
+
+These tests are not intended to be used for load testing.
+
 ## Installation
 
 ```shell
@@ -33,6 +37,8 @@ Populate the local database with fixture data:
 ```shell
 psql notification_api -f db_setup_fixtures.sql
 ```
+
+Note: If you see any errors (for example a `duplicate key value violates unique constraint` line or similar), that table will not be saved but other following table inserts will still attempt. You'll need to fix the errors for that table (either in your local database or in the fixture script) and run the script again, or open `psql` and just copy-paste the lines from the script that you need.
 
 Now run the following in other tabs / windows:
 
@@ -87,8 +93,8 @@ access.agent: selenium AND _type: gorouter AND cf.app: notify-admin AND access.u
 
 To re-validate the email, use an Incognito window to sign in to Notify as the service user. As platform admin, you can snoop the 2FA code and verification link from the GOV.UK Notify service.
 
-## What we want to test here and what we do not want to test here
 
-We do not want to test contents of the page beyond a simple check that would prove we are on the page we expect to be for example check the page title or a heading in the page.
+## Further documentation
 
-These test are not intended to be used for load testing.
+- [Updating db_setup_fixtures](docs/update-db_setup_fixtures.md)
+- [Style guide](docs/style-guide.md)
