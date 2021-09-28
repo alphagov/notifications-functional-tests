@@ -85,15 +85,6 @@ source environment_{env_name}.sh
 pytest tests/document_download
 ```
 
-Every 90 days we need to re-validate the email for the `notify-tests-preview+admin_tests` user. You can check if this is the cause of failures using the following query in Kibana:
-
-```
-access.agent: selenium AND _type: gorouter AND cf.app: notify-admin AND access.url: "re-validate-email"
-```
-
-To re-validate the email, use an Incognito window to sign in to Notify as the service user. As platform admin, you can snoop the 2FA code and verification link from the GOV.UK Notify service.
-
-
 ## Further documentation
 
 - [Updating db_setup_fixtures](docs/update-db_setup_fixtures.md)
