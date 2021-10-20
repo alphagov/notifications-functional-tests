@@ -35,18 +35,18 @@ def test_prepare_broadcast_with_new_content(
     new_alert_page.click_continue()
 
     broadcast_freeform_page = BroadcastFreeformPage(driver)
-    broadcast_freeform_page.create_broadcast_content(broadcast_title, "This is a test of write your own message.")
+    message_content = "This is a test of write your own message. Test ID: " + str(uuid.uuid4())
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, message_content)
     broadcast_freeform_page.click_continue()
 
     prepare_alert_pages = BasePage(driver)
-    prepare_alert_pages.click_element_by_link_text("Test areas")
-    prepare_alert_pages.select_checkbox_or_radio(value="test-santa-claus-village-rovaniemi-a")
-    prepare_alert_pages.select_checkbox_or_radio(value="test-santa-claus-village-rovaniemi-b")
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Aberdeenshire")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd20-S13002866")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_continue()  # click "Preview this alert"
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page("Santa Claus Village, Rovaniemi A")
-    assert prepare_alert_pages.is_text_present_on_page("Santa Claus Village, Rovaniemi B")
+    assert prepare_alert_pages.is_text_present_on_page("Mearns")
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(f"{broadcast_title} is waiting for approval")
@@ -60,6 +60,10 @@ def test_prepare_broadcast_with_new_content(
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
     current_alerts_page.click_continue()
     assert current_alerts_page.is_text_present_on_page("Live since ")
+
+    driver.get('https://www.integration.publishing.service.gov.uk/alerts/current-alerts')
+    govuk_alerts_page = BasePage(driver)
+    assert govuk_alerts_page.is_text_present_on_page(message_content)
 
     current_alerts_page.click_element_by_link_text('Stop sending')
     current_alerts_page.click_continue()  # stop broadcasting
