@@ -1,4 +1,4 @@
-FROM joyzoursky/python-chromedriver:3.7-selenium
+FROM joyzoursky/python-chromedriver:3.9-selenium
 
 WORKDIR /var/project
 COPY . .
