@@ -3,7 +3,7 @@ Flask-Cache==0.13.1
 requests==2.26.0
 beautifulsoup4>=4.5.1
 flake8==4.0.1
-isort==5.9.3
+isort==5.10.0
 pytest==6.2.5
 retry==0.9.2
 selenium==3.141.0
