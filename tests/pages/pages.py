@@ -119,6 +119,15 @@ class BasePage(object):
         self.base_url = config['notify_admin_url']
         self.driver = driver
 
+    def get(self, url=None):
+        if url:
+            self.driver.get(url)
+        else:
+            self.driver.get(self.base_url)
+
+    def get_current_url(self):
+        return self.driver.current_url
+
     def wait_for_invisible_element(self, locator):
         return AntiStaleElement(
             self.driver,
@@ -245,9 +254,6 @@ class HomePage(BasePage):
 class MainPage(BasePage):
 
     set_up_account_button = MainPageLocators.SETUP_ACCOUNT_BUTTON
-
-    def get(self):
-        self.driver.get(self.base_url)
 
     def click_set_up_account(self):
         element = self.wait_for_element(MainPage.set_up_account_button)
