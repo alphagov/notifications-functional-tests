@@ -39,14 +39,15 @@ def test_prepare_broadcast_with_new_content(
     broadcast_freeform_page.click_continue()
 
     prepare_alert_pages = BasePage(driver)
-    prepare_alert_pages.click_element_by_link_text("Test areas")
-    prepare_alert_pages.select_checkbox_or_radio(value="test-santa-claus-village-rovaniemi-a")
-    prepare_alert_pages.select_checkbox_or_radio(value="test-santa-claus-village-rovaniemi-b")
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd20-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd20-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_continue()  # click "Preview this alert"
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page("Santa Claus Village, Rovaniemi A")
-    assert prepare_alert_pages.is_text_present_on_page("Santa Claus Village, Rovaniemi B")
+    assert prepare_alert_pages.is_text_present_on_page("Cokeham")
+    assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(f"{broadcast_title} is waiting for approval")
@@ -100,14 +101,15 @@ def test_prepare_broadcast_with_template(
     templates_page.click_element_by_link_text("Get ready to send")
 
     prepare_alert_pages = BasePage(driver)
-    prepare_alert_pages.click_element_by_link_text("Test areas")
-    prepare_alert_pages.select_checkbox_or_radio(value="test-santa-claus-village-rovaniemi-a")
-    prepare_alert_pages.select_checkbox_or_radio(value="test-santa-claus-village-rovaniemi-b")
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd20-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd20-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_continue()  # click "Preview this alert"
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page("Santa Claus Village, Rovaniemi A")
-    assert prepare_alert_pages.is_text_present_on_page("Santa Claus Village, Rovaniemi B")
+    assert prepare_alert_pages.is_text_present_on_page("Cokeham")
+    assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(f"{template_name} is waiting for approval")
