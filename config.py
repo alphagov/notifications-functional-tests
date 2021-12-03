@@ -42,15 +42,18 @@ urls = {
     },
     'preview': {
         'api': 'https://api.notify.works',
-        'admin': 'https://www.notify.works'
+        'admin': 'https://www.notify.works',
+        'gov_uk_alerts': 'https://www.integration.publishing.service.gov.uk/alerts'
     },
     'staging': {
         'api': 'https://api.staging-notify.works',
-        'admin': 'https://www.staging-notify.works'
+        'admin': 'https://www.staging-notify.works',
+        'gov_uk_alerts': 'https://www.staging.publishing.service.gov.uk/alerts'
     },
     'live': {
         'api': 'https://api.notifications.service.gov.uk',
-        'admin': 'https://www.notifications.service.gov.uk'
+        'admin': 'https://www.notifications.service.gov.uk',
+        'gov_uk_alerts': 'https://www.gov.uk/alerts'
     }
 }
 
@@ -68,6 +71,7 @@ def setup_shared_config():
         'env': env,
         'notify_api_url': urls[env]['api'],
         'notify_admin_url': urls[env]['admin'],
+        'gov_uk_alerts_url': urls[env]['gov_uk_alerts']
     })
 
 

@@ -125,7 +125,8 @@ class BasePage(object):
         else:
             self.driver.get(self.base_url)
 
-    def get_current_url(self):
+    @property
+    def current_url(self):
         return self.driver.current_url
 
     def wait_for_invisible_element(self, locator):
@@ -1143,3 +1144,23 @@ class BroadcastFreeformPage(BasePage):
     def create_broadcast_content(self, title, content):
         self.title_input = title
         self.content_input = content
+
+
+class GovUkAlertsPage(BasePage):
+    def __init__(self, driver):
+        self.gov_uk_alerts_url = config['gov_uk_alerts_url']
+        self.driver = driver
+
+    def get(self):
+        self.driver.get(self.gov_uk_alerts_url)
+
+    def check_alert_is_published(self, page_title, broadcast_content):
+        locator = (By.XPATH, "//p[text() = '{}']".format(broadcast_content))
+        for x in range(6):
+            try:
+                self.wait_for_invisible_element(locator)
+                assert self.is_text_present_on_page(broadcast_content)
+                return
+            except TimeoutException:
+                self.click_element_by_link_text(page_title)  # refresh page
+        raise TimeoutException  # if alert not present after this time, raise exception
