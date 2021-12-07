@@ -936,10 +936,6 @@ class ChangeName(BasePage):
         element.clear()
         element.send_keys(new_name)
 
-    def enter_password(self, password):
-        element = self.wait_for_element(ChangeNameLocators.PASSWORD_FIELD)
-        element.send_keys(password)
-
 
 class EmailReplyTo(BasePage):
 
