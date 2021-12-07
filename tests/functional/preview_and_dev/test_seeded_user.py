@@ -466,8 +466,6 @@ def test_change_service_name(driver, login_seeded_user):
     change_name.go_to_change_service_name(config['service']['id'])
     change_name.enter_new_name(new_name)
     change_name.click_save()
-    change_name.enter_password(config['service']['seeded_user']['password'])
-    change_name.click_save()
     service_settings.check_service_name(new_name)
 
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
@@ -476,8 +474,6 @@ def test_change_service_name(driver, login_seeded_user):
     # change the name back
     change_name.go_to_change_service_name(config['service']['id'])
     change_name.enter_new_name(config['service']['name'])
-    change_name.click_save()
-    change_name.enter_password(config['service']['seeded_user']['password'])
     change_name.click_save()
     service_settings.check_service_name(config['service']['name'])
 
