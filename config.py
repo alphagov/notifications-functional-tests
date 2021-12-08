@@ -42,18 +42,15 @@ urls = {
     },
     'preview': {
         'api': 'https://api.notify.works',
-        'admin': 'https://www.notify.works',
-        'gov_uk_alerts': 'https://www.integration.publishing.service.gov.uk/alerts'
+        'admin': 'https://www.notify.works'
     },
     'staging': {
         'api': 'https://api.staging-notify.works',
-        'admin': 'https://www.staging-notify.works',
-        'gov_uk_alerts': 'https://www.staging.publishing.service.gov.uk/alerts'
+        'admin': 'https://www.staging-notify.works'
     },
     'live': {
         'api': 'https://api.notifications.service.gov.uk',
-        'admin': 'https://www.notifications.service.gov.uk',
-        'gov_uk_alerts': 'https://www.gov.uk/alerts'
+        'admin': 'https://www.notifications.service.gov.uk'
     }
 }
 
@@ -71,7 +68,6 @@ def setup_shared_config():
         'env': env,
         'notify_api_url': urls[env]['api'],
         'notify_admin_url': urls[env]['admin'],
-        'gov_uk_alerts_url': urls[env]['gov_uk_alerts']
     })
 
 
@@ -79,6 +75,8 @@ def setup_preview_dev_config():
     uuid_for_test_run = str(uuid.uuid4())
 
     config.update({
+        'gov_uk_alerts_url': 'https://www.integration.publishing.service.gov.uk/alerts',
+
         'service_name': 'Functional Test_{}'.format(uuid_for_test_run),
 
         'user': {
