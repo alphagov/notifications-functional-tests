@@ -119,6 +119,16 @@ class BasePage(object):
         self.base_url = config['notify_admin_url']
         self.driver = driver
 
+    def get(self, url=None):
+        if url:
+            self.driver.get(url)
+        else:
+            self.driver.get(self.base_url)
+
+    @property
+    def current_url(self):
+        return self.driver.current_url
+
     def wait_for_invisible_element(self, locator):
         return AntiStaleElement(
             self.driver,
@@ -245,9 +255,6 @@ class HomePage(BasePage):
 class MainPage(BasePage):
 
     set_up_account_button = MainPageLocators.SETUP_ACCOUNT_BUTTON
-
-    def get(self):
-        self.driver.get(self.base_url)
 
     def click_set_up_account(self):
         element = self.wait_for_element(MainPage.set_up_account_button)
@@ -1133,3 +1140,23 @@ class BroadcastFreeformPage(BasePage):
     def create_broadcast_content(self, title, content):
         self.title_input = title
         self.content_input = content
+
+
+class GovUkAlertsPage(BasePage):
+    def __init__(self, driver):
+        self.gov_uk_alerts_url = config['gov_uk_alerts_url']
+        self.driver = driver
+
+    def get(self):
+        self.driver.get(self.gov_uk_alerts_url)
+
+    def check_alert_is_published(self, page_title, broadcast_content):
+        locator = (By.XPATH, "//p[text() = '{}']".format(broadcast_content))
+        for x in range(6):
+            try:
+                self.wait_for_invisible_element(locator)
+                assert self.is_text_present_on_page(broadcast_content)
+                return
+            except TimeoutException:
+                self.click_element_by_link_text(page_title)  # refresh page
+        raise TimeoutException  # if alert not present after this time, raise exception

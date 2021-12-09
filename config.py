@@ -75,6 +75,8 @@ def setup_preview_dev_config():
     uuid_for_test_run = str(uuid.uuid4())
 
     config.update({
+        'gov_uk_alerts_url': 'https://www.integration.publishing.service.gov.uk/alerts',
+
         'service_name': 'Functional Test_{}'.format(uuid_for_test_run),
 
         'user': {
