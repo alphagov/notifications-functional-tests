@@ -1,4 +1,5 @@
 import base64
+import os
 import urllib
 import uuid
 from io import BytesIO
@@ -6,6 +7,7 @@ from io import BytesIO
 import pytest
 from retry.api import retry_call
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
 
 from config import config
 from tests.decorators import retry_on_stale_element_exception
@@ -94,21 +96,21 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
 def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete email template test'
     go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'template-list-item-label')]
     if len(existing_templates) == 0:
-        existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+        existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
 
     create_email_template(driver, name=test_name, content=None)
     go_to_templates_page(driver)
-    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'template-list-item-label')]
     if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
     assert test_name in current_templates
 
     delete_template(driver, test_name)
-    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'template-list-item-label')]
     if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
     assert current_templates == existing_templates
 
 
@@ -116,22 +118,22 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client
 def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete sms template test'
     go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'template-list-item-label')]
     if len(existing_templates) == 0:
-        existing_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+        existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
 
     create_sms_template(driver, name=test_name, content=None)
     go_to_templates_page(driver)
-    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'template-list-item-label')]
     if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
 
     assert test_name in current_templates
 
     delete_template(driver, test_name)
-    current_templates = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'template-list-item-label')]
     if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements_by_class_name('message-name')]
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
     assert current_templates == existing_templates
 
 
@@ -149,7 +151,12 @@ def test_send_email_with_placeholders_to_one_recipient(
     dashboard_stats_before = get_dashboard_stats(dashboard_page, 'email', template_id)
 
     placeholders = send_notification_to_one_recipient(
-        driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
+        driver,
+        template_name,
+        "email",
+        test=False,
+        recipient_data=os.environ['FUNCTIONAL_TEST_EMAIL'],
+        placeholders_number=2,
     )
     assert list(placeholders[0].keys()) == ["name"]
     assert list(placeholders[1].keys()) == ["things"]
@@ -186,7 +193,7 @@ def test_send_sms_with_placeholders_to_one_recipient(
     dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
     placeholders = send_notification_to_one_recipient(
-        driver, template_name, "sms", test=False, recipient_data='07700900998', placeholders_number=2
+        driver, template_name, "sms", test=False, recipient_data=os.environ['TEST_NUMBER'], placeholders_number=2
     )
     assert list(placeholders[0].keys()) == ["name"]
     assert list(placeholders[1].keys()) == ["things"]
@@ -362,9 +369,9 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     view_folder_page.click_manage_folder()
     manage_folder_page.delete_folder()
     manage_folder_page.confirm_delete_folder()
-    current_folders = [x.text for x in driver.find_elements_by_class_name('template-list-item-label')]
+    current_folders = [x.text for x in driver.find_elements(By.CLASS_NAME, 'template-list-item-label')]
     if len(current_folders) == 0:
-        current_folders = [x.text for x in driver.find_elements_by_class_name('message-name')]
+        current_folders = [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
     # assert folder not visible
     assert new_folder_name not in current_folders
 
@@ -372,7 +379,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     show_templates_page.click_template_by_link_text(template_name)
     edit_template_page.click_delete()
 
-    assert template_name not in [x.text for x in driver.find_elements_by_class_name('message-name')]
+    assert template_name not in [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
 
 
 def test_template_folder_permissions(driver, login_seeded_user):

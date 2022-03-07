@@ -360,7 +360,7 @@ class VerifyPage(BasePage):
 
     def has_code_error(self):
         try:
-            self.driver.find_element_by_class_name('error-message')
+            self.driver.find_element(By.CLASS_NAME, 'error-message')
         except NoSuchElementException:
             return False
         return True
@@ -729,7 +729,7 @@ class InviteUserPage(BasePage):
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
 
     def get_folder_checkbox(self, folder_name):
-        label = self.driver.find_elements_by_xpath("//label[contains(text(), '{}')]".format(folder_name))
+        label = self.driver.find_elements(By.XPATH, f"//label[contains(text(), '{folder_name}')]")
         return (By.ID, label[0].get_attribute("for"))
 
     def fill_invitation_form(self, email, send_messages_only):
