@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 from config import config, setup_shared_config
@@ -51,7 +52,6 @@ def _driver():
 
     elif driver_name == 'chrome':
         options = webdriver.chrome.options.Options()
-        service_args = ['--verbose']
         options.add_argument("--no-sandbox")
         options.add_argument("--headless")
         options.add_argument("user-agent=Selenium")
@@ -59,9 +59,9 @@ def _driver():
         if http_proxy is not None and http_proxy != "":
             options.add_argument('--proxy-server={}'.format(http_proxy))
 
-        driver = webdriver.Chrome(service_log_path='./logs/chrome_browser.log',
-                                  service_args=service_args,
-                                  options=options)
+        service = ChromeService(log_path='./logs/chrome_browser.log', service_args=['--verbose'])
+
+        driver = webdriver.Chrome(service=service, options=options)
         driver.set_window_size(1280, 720)
 
     else:
