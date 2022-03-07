@@ -1,4 +1,5 @@
 import base64
+import os
 import urllib
 import uuid
 from io import BytesIO
@@ -150,7 +151,12 @@ def test_send_email_with_placeholders_to_one_recipient(
     dashboard_stats_before = get_dashboard_stats(dashboard_page, 'email', template_id)
 
     placeholders = send_notification_to_one_recipient(
-        driver, template_name, "email", test=False, recipient_data='anne@example.com', placeholders_number=2
+        driver,
+        template_name,
+        "email",
+        test=False,
+        recipient_data=os.environ['FUNCTIONAL_TEST_EMAIL'],
+        placeholders_number=2,
     )
     assert list(placeholders[0].keys()) == ["name"]
     assert list(placeholders[1].keys()) == ["things"]
@@ -187,7 +193,7 @@ def test_send_sms_with_placeholders_to_one_recipient(
     dashboard_stats_before = get_dashboard_stats(dashboard_page, 'sms', template_id)
 
     placeholders = send_notification_to_one_recipient(
-        driver, template_name, "sms", test=False, recipient_data='07700900998', placeholders_number=2
+        driver, template_name, "sms", test=False, recipient_data=os.environ['TEST_NUMBER'], placeholders_number=2
     )
     assert list(placeholders[0].keys()) == ["name"]
     assert list(placeholders[1].keys()) == ["things"]
