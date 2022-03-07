@@ -10,6 +10,7 @@ from datetime import datetime
 from notifications_python_client.notifications import NotificationsAPIClient
 from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.common.by import By
 
 from config import config, generate_unique_email
 from tests.pages import (
@@ -89,7 +90,7 @@ def do_verify(driver):
         verify_code = get_verify_code_from_api()
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
-        driver.find_element_by_class_name('error-message')
+        driver.find_element(By.CLASS_NAME, 'error-message')
     except (NoSuchElementException, TimeoutException):
         #  In some cases a TimeoutException is raised even if we have managed to verify.
         #  For now, check explicitly if we 'have verified' and if so move on.
@@ -116,7 +117,7 @@ def do_email_verification(driver, template_id, email_address):
         )
         driver.get(email_link)
 
-        if driver.find_element_by_class_name('heading-large').text == 'The link has expired':
+        if driver.find_element(By.CLASS_NAME, 'heading-large').text == 'The link has expired':
             #  There was an error message (presumably we tried to use an email token that was already used/expired)
             raise RetryException
 

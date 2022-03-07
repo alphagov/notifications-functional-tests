@@ -1,3 +1,4 @@
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
@@ -20,14 +21,14 @@ class BasePageElement(object):
     def __set__(self, obj, value):
         driver = obj.driver
         WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element_by_name(self.name))
-        driver.find_element_by_name(self.name).send_keys(value)
+            lambda driver: driver.find_element(By.NAME, self.name))
+        driver.find_element(By.NAME, self.name).send_keys(value)
 
     def __get__(self, obj, owner):
         driver = obj.driver
         WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element_by_name(self.name))
-        element = driver.find_element_by_name(self.name)
+            lambda driver: driver.find_element(By.NAME, self.name))
+        element = driver.find_element(By.NAME, self.name)
         return element.get_attribute("value")
 
 
