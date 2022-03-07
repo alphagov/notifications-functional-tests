@@ -6,7 +6,6 @@ import pytest
 from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 from config import config, setup_shared_config
 from tests.pages.pages import HomePage
@@ -23,49 +22,20 @@ def shared_config():
 
 @pytest.fixture(scope="module")
 def _driver():
-    driver_name = (os.getenv('SELENIUM_DRIVER') or 'chrome').lower()
-    if os.environ.get('TRAVIS'):
-        driver_name = 'firefox'
-
     http_proxy = os.getenv('HTTP_PROXY')
 
-    if driver_name == 'firefox':
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference("general.useragent.override", "Selenium")
+    options = webdriver.chrome.options.Options()
+    options.add_argument("--no-sandbox")
+    options.add_argument("--headless")
+    options.add_argument("user-agent=Selenium")
 
-        if http_proxy is not None and http_proxy != "":
-            http_proxy_url = http_proxy.split(':')[0] + ':' + http_proxy.split(':')[1]
-            http_proxy_port = int(http_proxy.split(':')[2])
-            profile.set_preference("network.proxy.type", 5)
-            profile.set_preference("network.proxy.http", http_proxy_url)
-            profile.set_preference("network.proxy.http_port", http_proxy_port)
-            profile.set_preference("network.proxy.https", http_proxy_url)
-            profile.set_preference("network.proxy.https_port", http_proxy_port)
-            profile.set_preference("network.proxy.ssl", http_proxy_url)
-            profile.set_preference("network.proxy.ssl_port", http_proxy_port)
-            profile.update_preferences()
+    if http_proxy is not None and http_proxy != "":
+        options.add_argument('--proxy-server={}'.format(http_proxy))
 
-        binary = FirefoxBinary(log_file=open("./logs/browser.log", "wb"))
-        driver = webdriver.Firefox(profile, firefox_binary=binary)
-        driver.set_window_position(0, 0)
-        driver.set_window_size(1280, 720)
+    service = ChromeService(log_path='./logs/chrome_browser.log', service_args=['--verbose'])
 
-    elif driver_name == 'chrome':
-        options = webdriver.chrome.options.Options()
-        options.add_argument("--no-sandbox")
-        options.add_argument("--headless")
-        options.add_argument("user-agent=Selenium")
-
-        if http_proxy is not None and http_proxy != "":
-            options.add_argument('--proxy-server={}'.format(http_proxy))
-
-        service = ChromeService(log_path='./logs/chrome_browser.log', service_args=['--verbose'])
-
-        driver = webdriver.Chrome(service=service, options=options)
-        driver.set_window_size(1280, 720)
-
-    else:
-        raise ValueError('Invalid Selenium driver', driver_name)
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.set_window_size(1280, 720)
 
     driver.delete_all_cookies()
 
