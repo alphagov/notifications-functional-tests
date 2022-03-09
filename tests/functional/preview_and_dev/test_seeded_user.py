@@ -30,7 +30,7 @@ from tests.pages import (
     UploadCsvPage,
     ViewFolderPage,
 )
-from tests.pages.rollups import sign_in, sign_in_email_auth
+from tests.pages.rollups import sign_in_sms, sign_in_email_auth
 from tests.postman import (
     get_notification_by_id_via_api,
     get_pdf_for_letter_via_api,
@@ -440,7 +440,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
     show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
     dashboard_page.sign_out()
     # delete everything
-    sign_in(driver, account_type='seeded')
+    sign_in_sms(driver, account_type='seeded')
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
     dashboard_page.click_templates()
     show_templates_page = ShowTemplatesPage(driver)

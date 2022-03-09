@@ -3,7 +3,7 @@ from tests.pages import SignInPage
 from tests.test_utils import do_email_auth_verify, do_verify
 
 
-def sign_in(driver, account_type='normal'):
+def sign_in_sms(driver, account_type='normal'):
     _sign_in(driver, account_type)
     do_verify(driver)
 

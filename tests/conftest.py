@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 
 from config import config, setup_shared_config
 from tests.pages.pages import HomePage
-from tests.pages.rollups import sign_in, sign_in_email_auth
+from tests.pages.rollups import sign_in_sms, sign_in_email_auth
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -66,7 +66,7 @@ def login_user(_driver):
 
 @pytest.fixture(scope="module")
 def login_seeded_user(_driver):
-    sign_in(_driver, account_type='seeded')
+    sign_in_sms(_driver, account_type='seeded')
 
 
 @pytest.fixture(scope="module")
