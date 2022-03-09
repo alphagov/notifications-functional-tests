@@ -26,7 +26,7 @@ def _driver():
 
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     options.add_argument("user-agent=Selenium")
 
     if http_proxy is not None and http_proxy != "":
