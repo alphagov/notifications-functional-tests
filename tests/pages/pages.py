@@ -1144,7 +1144,7 @@ class BroadcastFreeformPage(BasePage):
 
 class GovUkAlertsPage(BasePage):
     def __init__(self, driver):
-        self.gov_uk_alerts_url = config['gov_uk_alerts_url']
+        self.gov_uk_alerts_url = config['govuk_alerts_url']
         self.driver = driver
 
     def get(self):
