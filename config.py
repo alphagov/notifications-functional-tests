@@ -48,11 +48,13 @@ urls = {
     },
     'staging': {
         'api': 'https://api.staging-notify.works',
-        'admin': 'https://www.staging-notify.works'
+        'admin': 'https://www.staging-notify.works',
+        'govuk_alerts': 'not used in this environment'
     },
     'live': {
         'api': 'https://api.notifications.service.gov.uk',
-        'admin': 'https://www.notifications.service.gov.uk'
+        'admin': 'https://www.notifications.service.gov.uk',
+        'govuk_alerts': 'not used in this environment'
     }
 }
 
