@@ -1,6 +1,11 @@
 import uuid
+from datetime import datetime, timedelta
 
 from config import config
+from tests.functional.preview_and_dev.sample_cap_xml import (
+    ALERT_XML,
+    CANCEL_XML,
+)
 from tests.pages import (
     BasePage,
     BroadcastFreeformPage,
@@ -10,6 +15,7 @@ from tests.pages import (
 )
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
+    convert_naive_utc_datetime_to_cap_standard_string,
     create_broadcast_template,
     delete_template,
     go_to_templates_page,
@@ -146,3 +152,100 @@ def test_prepare_broadcast_with_template(
     assert rejected_alerts_page.is_text_present_on_page(template_name)
 
     delete_template(driver, template_name, service='broadcast_service')
+
+    prepare_alert_pages.sign_out()
+
+
+@recordtime
+def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
+    sent_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() - timedelta(hours=1))
+    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
+    expires_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() + timedelta(hours=1))
+    identifier = uuid.uuid4()
+    event = f'test broadcast {identifier}'
+
+    new_alert_xml = ALERT_XML.format(identifier=identifier, alert_sent=sent_time, event=event)
+    broadcast_client.post_broadcast_data(new_alert_xml)
+
+    sign_in(driver, account_type='broadcast_approve_user')
+    page = BasePage(driver)
+    page.click_element_by_link_text('Current alerts')
+    page.click_element_by_link_text(event)
+
+    assert page.is_text_present_on_page(f'An API call wants to broadcast {event}')
+
+    reject_broadcast_xml = CANCEL_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        cancel_sent=cancel_time,
+        event=event,
+        expires=expires_time,
+    )
+    broadcast_client.post_broadcast_data(reject_broadcast_xml)
+
+    page.click_element_by_link_text('Rejected alerts')
+    assert page.is_text_present_on_page(event)
+
+    page.sign_out()
+
+
+@recordtime
+def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
+    sent_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() - timedelta(hours=1))
+    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
+    expires_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() + timedelta(hours=1))
+    identifier = uuid.uuid4()
+    event = f'test broadcast {identifier}'
+
+    new_alert_xml = ALERT_XML.format(identifier=identifier, alert_sent=sent_time, event=event)
+    broadcast_client.post_broadcast_data(new_alert_xml)
+
+    sign_in(driver, account_type='broadcast_approve_user')
+
+    page = BasePage(driver)
+    page.click_element_by_link_text('Current alerts')
+    page.click_element_by_link_text(event)
+    page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    page.click_continue()
+    assert page.is_text_present_on_page("Live since ")
+    alert_page_url = page.current_url
+
+    # check if alert is published on gov.uk/alerts
+    gov_uk_alerts_page = GovUkAlertsPage(driver)
+    gov_uk_alerts_page.get()
+    page_title = 'Current alerts'
+    gov_uk_alerts_page.click_element_by_link_text(page_title)
+    gov_uk_alerts_page.check_alert_is_published(
+        page_title=page_title,
+        broadcast_content='A severe flood warning has been issued',
+    )
+
+    cancel_broadcast_xml = CANCEL_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        cancel_sent=cancel_time,
+        event=event,
+        expires=expires_time,
+    )
+    broadcast_client.post_broadcast_data(cancel_broadcast_xml)
+
+    # go back to the page for the current alert
+    page.get(alert_page_url)
+
+    # assert that it's now cancelled
+    assert page.is_text_present_on_page('Stopped by an API call')
+    page.click_element_by_link_text('Past alerts')
+    assert page.is_text_present_on_page(event)
+
+    # check if alert on gov.uk/alerts is moved to past alerts
+    gov_uk_alerts_page = GovUkAlertsPage(driver)
+    gov_uk_alerts_page.get()
+    page_title = 'Past alerts'
+    gov_uk_alerts_page.click_element_by_link_text(page_title)
+    gov_uk_alerts_page.check_alert_is_published(
+        page_title=page_title,
+        broadcast_content='A severe flood warning has been issued',
+    )
+
+    page.get()
+    page.sign_out()

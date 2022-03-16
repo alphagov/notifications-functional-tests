@@ -207,7 +207,9 @@ class BasePage(object):
         return element.text == expected_page_title
 
     def is_text_present_on_page(self, search_text):
-        return search_text in self.driver.page_source
+        normalized_page_source = ' '.join(self.driver.page_source.split())
+
+        return search_text in normalized_page_source
 
     def get_template_id(self):
         # e.g.
