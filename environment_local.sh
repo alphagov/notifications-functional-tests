@@ -34,3 +34,4 @@ export BROADCAST_USER_1_EMAIL='notify-tests-preview+local-broadcast1@digital.cab
 export BROADCAST_USER_2_EMAIL='notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk'
 
 export BROADCAST_SERVICE_ID='8e1d56fa-12a8-4d00-bed2-db47180bed0a'
+export BROADCAST_SERVICE_LIVE_API_KEY='func_tests_broadcast_service_live_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-c3e6b68f-bd43-4e33-8fba-67a8c1bad4a3'

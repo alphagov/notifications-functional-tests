@@ -103,6 +103,7 @@ def setup_preview_dev_config():
                 # we are re-using seeded user's password
                 'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
             },
+            'api_key_live': os.environ['BROADCAST_SERVICE_LIVE_API_KEY'],
         },
 
         'service': {
