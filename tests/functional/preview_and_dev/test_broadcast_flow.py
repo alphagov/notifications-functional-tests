@@ -10,11 +10,11 @@ from tests.pages import (
     BasePage,
     BroadcastFreeformPage,
     DashboardPage,
-    GovUkAlertsPage,
     ShowTemplatesPage,
 )
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
+    check_alert_is_published_on_govuk_alerts,
     convert_naive_utc_datetime_to_cap_standard_string,
     create_broadcast_template,
     delete_template,
@@ -74,12 +74,7 @@ def test_prepare_broadcast_with_new_content(
     assert current_alerts_page.is_text_present_on_page("Live since ")
     alert_page_url = current_alerts_page.current_url
 
-    # check if alert is published on gov.uk/alerts
-    gov_uk_alerts_page = GovUkAlertsPage(driver)
-    gov_uk_alerts_page.get()
-    page_title = 'Current alerts'
-    gov_uk_alerts_page.click_element_by_link_text(page_title)
-    gov_uk_alerts_page.check_alert_is_published(page_title=page_title, broadcast_content=broadcast_content)
+    check_alert_is_published_on_govuk_alerts(driver, 'Current alerts', broadcast_content)
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -92,12 +87,7 @@ def test_prepare_broadcast_with_new_content(
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.is_text_present_on_page(broadcast_title)
 
-    # check if alert on gov.uk/alerts is moved to past alerts
-    gov_uk_alerts_page = GovUkAlertsPage(driver)
-    gov_uk_alerts_page.get()
-    page_title = 'Past alerts'
-    gov_uk_alerts_page.click_element_by_link_text(page_title)
-    gov_uk_alerts_page.check_alert_is_published(page_title=page_title, broadcast_content=broadcast_content)
+    check_alert_is_published_on_govuk_alerts(driver, 'Past alerts', broadcast_content)
 
     # sign out
     current_alerts_page.get()
@@ -210,13 +200,9 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     assert page.is_text_present_on_page("Live since ")
     alert_page_url = page.current_url
 
-    # check if alert is published on gov.uk/alerts
-    gov_uk_alerts_page = GovUkAlertsPage(driver)
-    gov_uk_alerts_page.get()
-    page_title = 'Current alerts'
-    gov_uk_alerts_page.click_element_by_link_text(page_title)
-    gov_uk_alerts_page.check_alert_is_published(
-        page_title=page_title,
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        page_title='Current alerts',
         broadcast_content='A severe flood warning has been issued',
     )
 
@@ -237,13 +223,9 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.click_element_by_link_text('Past alerts')
     assert page.is_text_present_on_page(event)
 
-    # check if alert on gov.uk/alerts is moved to past alerts
-    gov_uk_alerts_page = GovUkAlertsPage(driver)
-    gov_uk_alerts_page.get()
-    page_title = 'Past alerts'
-    gov_uk_alerts_page.click_element_by_link_text(page_title)
-    gov_uk_alerts_page.check_alert_is_published(
-        page_title=page_title,
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        page_title='Past alerts',
         broadcast_content='A severe flood warning has been issued',
     )
 

@@ -20,6 +20,7 @@ from tests.pages import (
     EditEmailTemplatePage,
     EditSmsTemplatePage,
     EmailReplyTo,
+    GovUkAlertsPage,
     InviteUserPage,
     MainPage,
     RegisterFromInvite,
@@ -455,3 +456,15 @@ def do_user_can_update_reply_to_email_to_service(driver):
     assert email_address2 + default in body.text
 
     dashboard_page.go_to_dashboard_for_service(service_id)
+
+
+def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_content):
+    gov_uk_alerts_page = GovUkAlertsPage(driver)
+    gov_uk_alerts_page.get()
+
+    gov_uk_alerts_page.click_element_by_link_text(page_title)
+
+    gov_uk_alerts_page.check_alert_is_published(
+        page_title=page_title,
+        broadcast_content=broadcast_content,
+    )
