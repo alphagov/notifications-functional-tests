@@ -13,9 +13,9 @@ ALERT_XML = """
             <urgency>Immediate</urgency>
             <severity>Severe</severity>
             <certainty>Likely</certainty>
-            <expires>2022-03-15T12:12:13-00:00</expires>
+            <expires>2022-06-15T12:12:13-00:00</expires>
             <senderName>Environment Agency</senderName>
-            <description>A severe flood warning has been issued</description>
+            <description>{broadcast_content}</description>
             <instruction>Check the latest information for your area. </instruction>
             <area>
                 <areaDesc>River Steeping</areaDesc>
@@ -45,7 +45,7 @@ CANCEL_XML = """
             <urgency>Immediate</urgency>
             <severity>Severe</severity>
             <certainty>Likely</certainty>
-            <expires>{expires}</expires>
+            <expires>2022-06-15T12:12:13-00:00</expires>
             <senderName>Environment Agency</senderName>
             <description></description>
             <area>
