@@ -38,19 +38,23 @@ config = {
 urls = {
     'dev': {
         'api': 'http://localhost:6011',
-        'admin': 'http://localhost:6012'
+        'admin': 'http://localhost:6012',
+        'govuk_alerts': 'http://localhost:6017/alerts'
     },
     'preview': {
         'api': 'https://api.notify.works',
-        'admin': 'https://www.notify.works'
+        'admin': 'https://www.notify.works',
+        'govuk_alerts': 'https://www.integration.publishing.service.gov.uk/alerts'
     },
     'staging': {
         'api': 'https://api.staging-notify.works',
-        'admin': 'https://www.staging-notify.works'
+        'admin': 'https://www.staging-notify.works',
+        'govuk_alerts': 'not used in this environment'
     },
     'live': {
         'api': 'https://api.notifications.service.gov.uk',
-        'admin': 'https://www.notifications.service.gov.uk'
+        'admin': 'https://www.notifications.service.gov.uk',
+        'govuk_alerts': 'not used in this environment'
     }
 }
 
@@ -68,6 +72,7 @@ def setup_shared_config():
         'env': env,
         'notify_api_url': urls[env]['api'],
         'notify_admin_url': urls[env]['admin'],
+        'govuk_alerts_url': urls[env]['govuk_alerts']
     })
 
 
@@ -75,8 +80,6 @@ def setup_preview_dev_config():
     uuid_for_test_run = str(uuid.uuid4())
 
     config.update({
-        'gov_uk_alerts_url': 'https://www.integration.publishing.service.gov.uk/alerts',
-
         'service_name': 'Functional Test_{}'.format(uuid_for_test_run),
 
         'user': {

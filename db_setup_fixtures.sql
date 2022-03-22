@@ -74,7 +74,7 @@ ea0ec5d2-ce6c-4499-98d7-60a94fd72800	8e1d56fa-12a8-4d00-bed2-db47180bed0a	0d2e9b
 
 
 COPY service_broadcast_settings (service_id, channel, created_at, updated_at, provider) FROM stdin;
-8e1d56fa-12a8-4d00-bed2-db47180bed0a	test	2021-07-14 14:37:35.103872	\N	all
+8e1d56fa-12a8-4d00-bed2-db47180bed0a	severe	2021-07-14 14:37:35.103872	\N	all
 \.
 
 
