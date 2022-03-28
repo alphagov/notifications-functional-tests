@@ -20,6 +20,7 @@ from tests.pages import (
     EditEmailTemplatePage,
     EditSmsTemplatePage,
     EmailReplyTo,
+    GovUkAlertsPage,
     InviteUserPage,
     MainPage,
     RegisterFromInvite,
@@ -58,6 +59,16 @@ def create_temp_csv(fields):
         csv_writer.writeheader()
         csv_writer.writerow(fields)
     return directory_name, csv_filename
+
+
+def convert_naive_utc_datetime_to_cap_standard_string(dt):
+    """
+    As defined in section 3.3.2 of
+    http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
+    They define the standard "YYYY-MM-DDThh:mm:ssXzh:zm", where X is
+    `+` if the timezone is > UTC, otherwise `-`
+    """
+    return f"{dt.strftime('%Y-%m-%dT%H:%M:%S')}-00:00"
 
 
 class RetryException(Exception):
@@ -445,3 +456,15 @@ def do_user_can_update_reply_to_email_to_service(driver):
     assert email_address2 + default in body.text
 
     dashboard_page.go_to_dashboard_for_service(service_id)
+
+
+def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_content):
+    gov_uk_alerts_page = GovUkAlertsPage(driver)
+    gov_uk_alerts_page.get()
+
+    gov_uk_alerts_page.click_element_by_link_text(page_title)
+
+    gov_uk_alerts_page.check_alert_is_published(
+        page_title=page_title,
+        broadcast_content=broadcast_content,
+    )
