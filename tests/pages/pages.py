@@ -1152,13 +1152,13 @@ class GovUkAlertsPage(BasePage):
     def get(self):
         self.driver.get(self.gov_uk_alerts_url)
 
-    def check_alert_is_published(self, page_title, broadcast_content):
-        locator = (By.XPATH, "//p[text() = '{}']".format(broadcast_content))
+    def check_alert_is_published(self, broadcast_content):
+        locator = (By.XPATH, f"//p[text() = '{broadcast_content}']")
         for x in range(6):
             try:
                 self.wait_for_invisible_element(locator)
                 assert self.is_text_present_on_page(broadcast_content)
                 return
             except TimeoutException:
-                self.click_element_by_link_text(page_title)  # refresh page
+                self.driver.refresh()
         raise TimeoutException  # if alert not present after this time, raise exception

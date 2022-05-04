@@ -464,7 +464,4 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
 
     gov_uk_alerts_page.click_element_by_link_text(page_title)
 
-    gov_uk_alerts_page.check_alert_is_published(
-        page_title=page_title,
-        broadcast_content=broadcast_content,
-    )
+    gov_uk_alerts_page.check_alert_is_published(broadcast_content)
