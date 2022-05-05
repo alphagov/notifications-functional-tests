@@ -1155,9 +1155,9 @@ class GovUkAlertsPage(BasePage):
         self.driver.get(self.gov_uk_alerts_url)
 
     def check_alert_is_published(self, broadcast_content):
-        for x in range(6):
+        for x in range(12):
             if self.is_text_present_on_page(broadcast_content):
                 return
-            time.sleep(3)
+            time.sleep(10)
             self.driver.refresh()
-        pytest.fail(f'Could not find alert with content "{broadcast_content}" despite waiting')
+        pytest.fail(f'Could not find alert with content "{broadcast_content}" despite waiting 2 mins')
