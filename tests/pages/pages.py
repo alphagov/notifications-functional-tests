@@ -1,8 +1,6 @@
 import os
 import shutil
-import time
 
-import pytest
 from retry import retry
 from selenium.common.exceptions import (
     NoSuchElementException,
@@ -1154,10 +1152,12 @@ class GovUkAlertsPage(BasePage):
     def get(self):
         self.driver.get(self.gov_uk_alerts_url)
 
+    @retry(
+        RetryException,
+        tries=config['govuk_alerts_wait_retry_times'],
+        delay=config['govuk_alerts_wait_retry_interval']
+    )
     def check_alert_is_published(self, broadcast_content):
-        for x in range(12):
-            if self.is_text_present_on_page(broadcast_content):
-                return
-            time.sleep(10)
+        if not self.is_text_present_on_page(broadcast_content):
             self.driver.refresh()
-        pytest.fail(f'Could not find alert with content "{broadcast_content}" despite waiting 2 mins')
+            raise RetryException(f'Could not find alert with content "{broadcast_content}"')
