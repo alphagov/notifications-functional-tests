@@ -792,15 +792,6 @@ class RegisterFromInvite(BasePage):
         self.password_input = config['user']['password']
 
 
-class ProfilePage(BasePage):
-
-    h1 = CommonPageLocators.H1
-
-    def h1_is_correct(self):
-        element = self.wait_for_element(ProfilePage.h1)
-        return element.text == 'Your profile'
-
-
 class ApiIntegrationPage(BasePage):
     message_log = ApiIntegrationPageLocators.MESSAGE_LOG
     heading_button = ApiIntegrationPageLocators.HEADING_BUTTON
