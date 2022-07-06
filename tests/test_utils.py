@@ -96,9 +96,9 @@ def get_link(template_id, email):
 
 
 @retry(RetryException, tries=config['verify_code_retry_times'], delay=config['verify_code_retry_interval'])
-def do_verify(driver):
+def do_verify(driver, mobile_number):
     try:
-        verify_code = get_verify_code_from_api()
+        verify_code = get_verify_code_from_api(mobile_number)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
         driver.find_element(By.CLASS_NAME, 'error-message')
@@ -275,17 +275,17 @@ def delete_template(driver, template_name, service='service'):
     template_page.click_delete()
 
 
-def get_verify_code_from_api():
+def get_verify_code_from_api(mobile_number):
     verify_code_message = get_notification_by_to_field(
         config['notify_templates']['verify_code_template_id'],
         config['notify_service_api_key'],
-        config['user']['mobile']
+        mobile_number
     )
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
         raise RetryException("Could not find a verify code for template {} sent to {}".format(
             config['notify_templates']['verify_code_template_id'],
-            config['user']['mobile']
+            mobile_number
         ))
     return m.group(0)
 
