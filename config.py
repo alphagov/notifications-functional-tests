@@ -99,11 +99,13 @@ def setup_preview_dev_config():
                 'email': os.environ['BROADCAST_USER_1_EMAIL'],
                 # we are re-using seeded user's password
                 'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
+                'mobile': os.environ['BROADCAST_USER_1_NUMBER'],
             },
             'broadcast_user_2': {
                 'email': os.environ['BROADCAST_USER_2_EMAIL'],
                 # we are re-using seeded user's password
                 'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
+                'mobile': os.environ['BROADCAST_USER_2_NUMBER'],
             },
             'api_key_live': os.environ['BROADCAST_SERVICE_LIVE_API_KEY'],
         },
@@ -115,6 +117,7 @@ def setup_preview_dev_config():
             'seeded_user': {
                 'email': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL'],
                 'password': os.environ['FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD'],
+                'mobile': os.environ['FUNCTIONAL_TESTS_SERVICE_NUMBER'],
             },
             'api_live_key': os.environ['FUNCTIONAL_TESTS_SERVICE_API_KEY'],
             'api_test_key': os.environ['FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY'],

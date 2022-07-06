@@ -5,7 +5,8 @@ from tests.test_utils import do_email_auth_verify, do_verify
 
 def sign_in(driver, account_type='normal'):
     _sign_in(driver, account_type)
-    do_verify(driver)
+    mobile_number = get_mobile_number(account_type=account_type)
+    do_verify(driver, mobile_number)
 
 
 def sign_in_email_auth(driver):
@@ -40,4 +41,18 @@ def get_email_and_password(account_type):
             config['broadcast_service']['broadcast_user_2']['email'],
             config['broadcast_service']['broadcast_user_2']['password']
         )
+    raise Exception('unknown account_type {}'.format(account_type))
+
+
+def get_mobile_number(account_type):
+    if account_type == 'normal':
+        return config['user']['mobile']
+    elif account_type == 'seeded':
+        return config['service']['seeded_user']['mobile']
+    elif account_type == 'email_auth':
+        return config['user']['mobile']
+    elif account_type == 'broadcast_create_user':
+        return config['broadcast_service']['broadcast_user_1']['mobile']
+    elif account_type == 'broadcast_approve_user':
+        return config['broadcast_service']['broadcast_user_2']['mobile']
     raise Exception('unknown account_type {}'.format(account_type))
