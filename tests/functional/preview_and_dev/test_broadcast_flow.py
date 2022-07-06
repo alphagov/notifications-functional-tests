@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime, timedelta
 
+import pytest
+
 from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
@@ -24,6 +26,7 @@ from tests.test_utils import (
 
 
 @recordtime
+@pytest.mark.xdist_group(name="broadcasts")
 def test_prepare_broadcast_with_new_content(
     driver
 ):
@@ -95,6 +98,7 @@ def test_prepare_broadcast_with_new_content(
 
 
 @recordtime
+@pytest.mark.xdist_group(name="broadcasts")
 def test_prepare_broadcast_with_template(
     driver
 ):
@@ -147,6 +151,7 @@ def test_prepare_broadcast_with_template(
 
 
 @recordtime
+@pytest.mark.xdist_group(name="broadcasts")
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() - timedelta(hours=1))
     cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
@@ -184,6 +189,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
 
 
 @recordtime
+@pytest.mark.xdist_group(name="broadcasts")
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() - timedelta(hours=1))
     cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())

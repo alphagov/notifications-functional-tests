@@ -50,6 +50,7 @@ from tests.test_utils import (
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 @pytest.mark.parametrize('message_type', ['sms', 'email', pytest.param('letter', marks=pytest.mark.template_preview)])
 def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
     dashboard_page = DashboardPage(driver)
@@ -93,6 +94,7 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete email template test'
     go_to_templates_page(driver)
@@ -115,6 +117,7 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete sms template test'
     go_to_templates_page(driver)
@@ -138,6 +141,7 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_send_email_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
@@ -180,6 +184,7 @@ def test_send_email_with_placeholders_to_one_recipient(
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_send_sms_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
