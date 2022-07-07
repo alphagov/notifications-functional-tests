@@ -19,7 +19,7 @@ config = {
     'provider_retry_interval': 22,
     'verify_code_retry_times': 8,
     'verify_code_retry_interval': 9,
-    'govuk_alerts_wait_retry_times': 12,
+    'govuk_alerts_wait_retry_times': 24,
     'govuk_alerts_wait_retry_interval': 10,
     'functional_test_service_name': 'Functional Test Service_',
 
