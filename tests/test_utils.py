@@ -153,7 +153,7 @@ def do_user_registration(driver):
 
     driver.get(registration_link)
 
-    do_verify(driver)
+    do_verify(driver, config['user']['mobile'])
 
     add_service_page = AddServicePage(driver)
     assert add_service_page.is_current()
@@ -199,7 +199,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
     register_from_invite_page.fill_registration_form(invited_user_name)
     register_from_invite_page.click_continue()
 
-    do_verify(driver)
+    do_verify(driver, config['user']['mobile'])
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
     dashboard_page.go_to_dashboard_for_service(service_id)
