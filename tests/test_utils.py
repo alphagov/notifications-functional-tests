@@ -339,10 +339,7 @@ def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipien
     sms_recipient = sms_sender_page.get_sms_recipient()
 
     assert sms_sender.text == 'From: {}'.format(config['service']['sms_sender_text'])
-    if test:
-        assert sms_recipient.text == 'To: {}'.format(config['user']['mobile'])
-    else:
-        assert sms_recipient.text == 'To: {}'.format(recipient_number)
+    assert sms_recipient.text == 'To: {}'.format(recipient_number)
     assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
 
 

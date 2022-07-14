@@ -203,8 +203,14 @@ def test_send_sms_with_placeholders_to_one_recipient(
     dashboard_stats_after = get_dashboard_stats(dashboard_page, 'sms', template_id)
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
+    # Test sending to ourselves (seeded user)
     placeholders_test = send_notification_to_one_recipient(
-        driver, template_name, "sms", test=True, placeholders_number=2
+        driver,
+        template_name,
+        "sms",
+        test=True,
+        recipient_data=config['service']['seeded_user']['mobile'],
+        placeholders_number=2
     )
     assert list(placeholders_test[0].keys()) == ["name"]
     assert list(placeholders_test[1].keys()) == ["things"]
