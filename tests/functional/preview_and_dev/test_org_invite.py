@@ -40,7 +40,7 @@ def test_org_invite(driver, login_seeded_user):
     register_from_invite_page.fill_registration_form(invited_user_email.split('@')[0])
     register_from_invite_page.click_continue()
 
-    do_verify(driver)
+    do_verify(driver, config['user']['mobile'])
 
     org_dashboard_page = OrganisationDashboardPage(driver)
 

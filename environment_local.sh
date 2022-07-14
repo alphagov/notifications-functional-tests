@@ -9,6 +9,7 @@ export NOTIFY_SERVICE_API_KEY='functional_tests-d6aa2c68-a2d9-4437-ab19-3ae8eb20
 export FUNCTIONAL_TESTS_SERVICE_EMAIL='notify-tests-preview+local-admin-tests@digital.cabinet-office.gov.uk'
 export FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT='notify-tests-preview+local-email-auth@digital.cabinet-office.gov.uk'
 export FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD=Password1234
+export FUNCTIONAL_TESTS_SERVICE_NUMBER=07700900501
 
 export FUNCTIONAL_TESTS_SERVICE_ID='34b725f0-1f47-49bc-a9f5-aa2a84587c53'
 export FUNCTIONAL_TESTS_SERVICE_NAME='Functional Tests'
@@ -30,8 +31,10 @@ export DOCUMENT_DOWNLOAD_API_HOST=http://localhost:7000
 export DOCUMENT_DOWNLOAD_API_KEY=auth-token
 
 export BROADCAST_USER_1_EMAIL='notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk'
+export BROADCAST_USER_1_NUMBER=07700900002
 
 export BROADCAST_USER_2_EMAIL='notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk'
+export BROADCAST_USER_2_NUMBER=07700900003
 
 export BROADCAST_SERVICE_ID='8e1d56fa-12a8-4d00-bed2-db47180bed0a'
 export BROADCAST_SERVICE_LIVE_API_KEY='func_tests_broadcast_service_live_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-c3e6b68f-bd43-4e33-8fba-67a8c1bad4a3'

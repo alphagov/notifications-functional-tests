@@ -96,9 +96,9 @@ def get_link(template_id, email):
 
 
 @retry(RetryException, tries=config['verify_code_retry_times'], delay=config['verify_code_retry_interval'])
-def do_verify(driver):
+def do_verify(driver, mobile_number):
     try:
-        verify_code = get_verify_code_from_api()
+        verify_code = get_verify_code_from_api(mobile_number)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
         driver.find_element(By.CLASS_NAME, 'error-message')
@@ -153,7 +153,7 @@ def do_user_registration(driver):
 
     driver.get(registration_link)
 
-    do_verify(driver)
+    do_verify(driver, config['user']['mobile'])
 
     add_service_page = AddServicePage(driver)
     assert add_service_page.is_current()
@@ -199,7 +199,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
     register_from_invite_page.fill_registration_form(invited_user_name)
     register_from_invite_page.click_continue()
 
-    do_verify(driver)
+    do_verify(driver, config['user']['mobile'])
     dashboard_page = DashboardPage(driver)
     service_id = dashboard_page.get_service_id()
     dashboard_page.go_to_dashboard_for_service(service_id)
@@ -275,17 +275,17 @@ def delete_template(driver, template_name, service='service'):
     template_page.click_delete()
 
 
-def get_verify_code_from_api():
+def get_verify_code_from_api(mobile_number):
     verify_code_message = get_notification_by_to_field(
         config['notify_templates']['verify_code_template_id'],
         config['notify_service_api_key'],
-        config['user']['mobile']
+        mobile_number
     )
     m = re.search(r'\d{5}', verify_code_message)
     if not m:
         raise RetryException("Could not find a verify code for template {} sent to {}".format(
             config['notify_templates']['verify_code_template_id'],
-            config['user']['mobile']
+            mobile_number
         ))
     return m.group(0)
 
@@ -339,10 +339,7 @@ def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipien
     sms_recipient = sms_sender_page.get_sms_recipient()
 
     assert sms_sender.text == 'From: {}'.format(config['service']['sms_sender_text'])
-    if test:
-        assert sms_recipient.text == 'To: {}'.format(config['user']['mobile'])
-    else:
-        assert sms_recipient.text == 'To: {}'.format(recipient_number)
+    assert sms_recipient.text == 'To: {}'.format(recipient_number)
     assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
 
 
