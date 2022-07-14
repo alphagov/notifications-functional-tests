@@ -43,6 +43,7 @@ def inbound_sms():
     return message
 
 
+@pytest.mark.xdist_group(name="api-client")
 def test_inbound_api(inbound_sms, seeded_client):
     # this'll raise if the message isn't in the list.
     next(
@@ -52,6 +53,7 @@ def test_inbound_api(inbound_sms, seeded_client):
     )
 
 
+@pytest.mark.xdist_group(name="seeded-user")
 def test_inbox_page(inbound_sms, driver, login_seeded_user):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config['service']['id'])
