@@ -85,6 +85,33 @@ source environment_{env_name}.sh
 pytest tests/document_download
 ```
 
+### Running tests in parallel
+
+We can reduce the duration of the test suite by running some tests in parallel.
+
+We use the pytest [x-dist plugin](https://pypi.org/project/pytest-xdist/) to support running tests in parallel automatically. The number of test runners is determined automatically using the `pytest -n auto` option. This will be set to the number of CPUs available on the test machine.
+
+Each test runner launches a separate selenium/chromedriver instance so browser state is isolated between runners.
+
+#### Defining parallel groups
+
+We execute tests in parallel groups using the `pytest --dist loadgroup` option. This allows us to group tests by the authenticated user type or other logical domain - this is useful for functional tests that rely on a particular state of a real user environment during execution.
+
+Parallel tests executed using the same user type can cause race conditions and interfere with other tests. Tests belonging to different groups are executed in parallel. Each test within the same group is executed sequentially by the same test runner.
+
+We use the following annotations on test methods to define the groups:
+
+```python
+@pytest.mark.xdist_group(name="seeded-user")
+@pytest.mark.xdist_group(name="registration-flow")
+@pytest.mark.xdist_group(name="api-client")
+@pytest.mark.xdist_group(name="seeded-email")
+@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="api-letters")
+```
+
+More groups generally equals better parallelisation (limited by test runner count). However, in the case of functional tests, increased parallelisation increases the risk of side effects and race conditions in the shared environment unless grouped carefully.
+
 ## Further documentation
 
 - [Updating db_setup_fixtures](docs/update-db_setup_fixtures.md)
