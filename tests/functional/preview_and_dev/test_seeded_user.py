@@ -50,6 +50,7 @@ from tests.test_utils import (
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 @pytest.mark.parametrize('message_type', ['sms', 'email', pytest.param('letter', marks=pytest.mark.template_preview)])
 def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type):
     dashboard_page = DashboardPage(driver)
@@ -93,6 +94,7 @@ def test_send_csv(driver, login_seeded_user, seeded_client, seeded_client_using_
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete email template test'
     go_to_templates_page(driver)
@@ -115,6 +117,7 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
     test_name = 'edit/delete sms template test'
     go_to_templates_page(driver)
@@ -138,6 +141,7 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_send_email_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
@@ -180,6 +184,7 @@ def test_send_email_with_placeholders_to_one_recipient(
 
 
 @recordtime
+@pytest.mark.xdist_group(name="seeded-user")
 def test_send_sms_with_placeholders_to_one_recipient(
     driver, seeded_client, login_seeded_user
 ):
@@ -219,6 +224,7 @@ def test_send_sms_with_placeholders_to_one_recipient(
 
 
 @pytest.mark.template_preview
+@pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_message_log_delivered(
         driver,
         login_seeded_user,
@@ -248,6 +254,7 @@ def test_view_precompiled_letter_message_log_delivered(
 
 
 @pytest.mark.template_preview
+@pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_preview_delivered(
         driver,
         login_seeded_user,
@@ -298,6 +305,7 @@ def test_view_precompiled_letter_preview_delivered(
 
 
 @pytest.mark.antivirus
+@pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_message_log_virus_scan_failed(
         driver,
         login_seeded_user,
@@ -326,6 +334,7 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(
     assert ref_link not in link
 
 
+@pytest.mark.xdist_group(name="seeded-user")
 def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user):
     # create new template
     template_name = 'template-for-folder-test {}'.format(uuid.uuid4())
@@ -388,6 +397,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     assert template_name not in [x.text for x in driver.find_elements(By.CLASS_NAME, 'message-name')]
 
 
+@pytest.mark.xdist_group(name="seeded-user")
 def test_template_folder_permissions(driver, login_seeded_user):
     family_id = uuid.uuid4()
     folder_names = [
@@ -467,6 +477,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
         manage_folder_page.confirm_delete_folder()
 
 
+@pytest.mark.xdist_group(name="seeded-user")
 def test_change_service_name(driver, login_seeded_user):
     new_name = "Functional Tests {}".format(uuid.uuid4())
     dashboard_page = DashboardPage(driver)

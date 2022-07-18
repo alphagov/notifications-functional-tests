@@ -1,3 +1,5 @@
+import pytest
+
 from tests.pages import DashboardPage, SmsSenderPage
 from tests.test_utils import (
     do_user_can_add_reply_to_email_to_service,
@@ -9,6 +11,7 @@ from tests.test_utils import (
 
 
 @recordtime
+@pytest.mark.xdist_group(name="registration-flow")
 def test_registration_and_invite_flow(driver):
     do_user_registration(driver)
     do_user_can_add_reply_to_email_to_service(driver)

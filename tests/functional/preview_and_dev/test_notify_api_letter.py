@@ -22,6 +22,7 @@ from tests.test_utils import (
 
 
 @recordtime
+@pytest.mark.xdist_group(name="api-client")
 def test_send_letter_notification_via_api(seeded_client_using_test_key):
     notification_id = send_notification_via_api(
         seeded_client_using_test_key,
@@ -40,6 +41,7 @@ def test_send_letter_notification_via_api(seeded_client_using_test_key):
 
 
 @recordtime
+@pytest.mark.xdist_group(name="api-letters")
 @pytest.mark.antivirus
 def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_key):
 
@@ -62,6 +64,7 @@ def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_k
 
 
 @recordtime
+@pytest.mark.xdist_group(name="api-letters")
 @pytest.mark.antivirus
 def test_send_precompiled_letter_with_virus_notification_via_api(seeded_client_using_test_key):
 
