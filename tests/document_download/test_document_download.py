@@ -1,3 +1,5 @@
+import base64
+
 import pytest
 import requests
 from retry.api import retry_call
@@ -8,12 +10,12 @@ from tests.pages import DocumentDownloadLandingPage, DocumentDownloadPage
 
 def upload_document(service_id, file_contents):
     response = requests.post(
-        "{}/services/{}/documents".format(config['document_download']['api_host'], service_id),
+        f"{config['document_download']['api_host']}/services/{service_id}/documents",
         headers={
-            'Authorization': "Bearer {}".format(config['document_download']['api_key']),
+            'Authorization': f"Bearer {config['document_download']['api_key']}",
         },
-        files={
-            'document': file_contents
+        json={
+            'document': base64.b64encode(file_contents).decode('ascii')
         }
     )
 
@@ -28,7 +30,7 @@ def test_document_upload_and_download(driver):
     document = retry_call(
         upload_document,
         # add PDF header to trick doc download into thinking its a real pdf
-        fargs=[config['service']['id'], '%PDF-1.4 functional tests file'],
+        fargs=[config['service']['id'], b'%PDF-1.4 functional tests file'],
         tries=3,
         delay=10
     )
