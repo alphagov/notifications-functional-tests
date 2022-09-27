@@ -95,16 +95,6 @@ class LetterPreviewPageLocators(object):
     PDF_IMAGE = (By.CSS_SELECTOR, '.letter img')
 
 
-class ApiKeysPageLocators(object):
-    KEY_NAME_INPUT = (By.NAME, 'key_name')
-    KEYS_PAGE_LINK = (By.LINK_TEXT, 'API keys')
-    CREATE_KEY_LINK = (By.LINK_TEXT, 'Create an API key')
-    API_KEY_ELEMENT = (By.XPATH, "(//span[@class='api-key-key'])[last()]")
-    NORMAL_KEY_RADIO = (By.XPATH, "//input[@value='normal']")
-    TEST_KEY_RADIO = (By.XPATH, "//input[@value='test']")
-    TEAM_KEY_RADIO = (By.XPATH, "//input[@value='team']")
-
-
 class SingleRecipientLocators(object):
     USE_MY_EMAIL = (By.LINK_TEXT, 'Use my email address')
     USE_MY_NUMBER = (By.LINK_TEXT, 'Use my phone number')

@@ -3,7 +3,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
     AddServicePageLocators,
-    ApiKeysPageLocators,
     CommonPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
@@ -74,7 +73,3 @@ class FileInputElement(BasePageElement):
 
 class SubjectInputElement(BasePageElement):
     name = EditTemplatePageLocators.TEMPLATE_SUBJECT_INPUT[1]
-
-
-class KeyNameInputElement(BasePageElement):
-    name = ApiKeysPageLocators.KEY_NAME_INPUT[1]
