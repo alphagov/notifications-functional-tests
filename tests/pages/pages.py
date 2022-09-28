@@ -17,7 +17,6 @@ from tests.pages.element import (
     BasePageElement,
     EmailInputElement,
     FileInputElement,
-    KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -30,7 +29,6 @@ from tests.pages.element import (
 from tests.pages.locators import (
     AddServicePageLocators,
     ApiIntegrationPageLocators,
-    ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
     EditTemplatePageLocators,
@@ -360,13 +358,6 @@ class VerifyPage(BasePage):
         self.sms_input = code
         self.click_continue()
 
-    def has_code_error(self):
-        try:
-            self.driver.find_element(By.CLASS_NAME, 'error-message')
-        except NoSuchElementException:
-            return False
-        return True
-
 
 class DashboardPage(BasePage):
 
@@ -400,19 +391,8 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(DashboardPage.email_templates_link)
         element.click()
 
-    def click_email_header(self):
-        element = self.wait_for_element(DashboardPage.email_filter_link)
-        element.click()
-
     def click_team_members_link(self):
         element = self.wait_for_element(DashboardPage.team_members_link)
-        element.click()
-
-    def click_user_profile_link(self, link_text):
-        self.click_element_by_link_text(link_text)
-
-    def click_api_keys_link(self):
-        element = self.wait_for_element(DashboardPage.api_keys_link)
         element.click()
 
     def click_inbox_link(self):
@@ -494,10 +474,6 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element = self.wait_for_element(self.add_new_folder_link)
         element.click()
 
-    def click_email_filter_link(self):
-        element = self.wait_for_element(self.email_filter_link)
-        element.click()
-
     def click_template_by_link_text(self, link_text):
         element = self.wait_for_element(self.template_link_text(link_text))
         self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
@@ -516,9 +492,6 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
 
     def select_text_message(self):
         self._select_template_type(self.text_message_radio)
-
-    def select_letter(self):
-        self._select_template_type(self.letter_radio)
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
@@ -560,14 +533,6 @@ class SendSmsTemplatePage(BasePage):
         element = self.wait_for_element(SendSmsTemplatePage.new_sms_template_link)
         element.click()
 
-    def click_edit_template(self):
-        element = self.wait_for_element(SendSmsTemplatePage.edit_sms_template_link)
-        element.click()
-
-    def click_upload_recipients(self):
-        element = self.wait_for_element(TemplatePageLocators.UPLOAD_RECIPIENTS_LINK)
-        element.click()
-
 
 class EditSmsTemplatePage(BasePage):
 
@@ -604,14 +569,6 @@ class SendEmailTemplatePage(BasePage):
 
     def click_add_new_template(self):
         element = self.wait_for_element(SendEmailTemplatePage.add_new_email_template_link)
-        element.click()
-
-    def click_edit_template(self):
-        element = self.wait_for_element(SendEmailTemplatePage.edit_email_template_link)
-        element.click()
-
-    def click_upload_recipients(self):
-        element = self.wait_for_element(TemplatePageLocators.UPLOAD_RECIPIENTS_LINK)
         element.click()
 
 
@@ -804,10 +761,6 @@ class ApiIntegrationPage(BasePage):
         element = self.wait_for_elements(ApiIntegrationPage.message_list)[0]
         return element.text
 
-    def click_message_log(self):
-        element = self.wait_for_element(ApiIntegrationPage.message_log)
-        element.click()
-
     def expand_all_messages(self):
         buttons = self.wait_for_elements(ApiIntegrationPage.heading_button)
         for index in range(len(buttons)):
@@ -847,43 +800,7 @@ class PreviewLetterPage(BasePage):
         return link.get_attribute("src")
 
 
-class ApiKeyPage(BasePage):
-
-    key_name_input = KeyNameInputElement()
-    keys_link = ApiKeysPageLocators.KEYS_PAGE_LINK
-    create_key_link = ApiKeysPageLocators.CREATE_KEY_LINK
-    api_key_element = ApiKeysPageLocators.API_KEY_ELEMENT
-    key_types = {
-        'normal': ApiKeysPageLocators.NORMAL_KEY_RADIO,
-        'test': ApiKeysPageLocators.TEST_KEY_RADIO,
-        'team': ApiKeysPageLocators.TEAM_KEY_RADIO,
-    }
-
-    def enter_key_name(self, key_type='normal'):
-        self.key_name_input = 'Test ' + key_type
-
-    def click_keys_link(self):
-        element = self.wait_for_element(ApiKeyPage.keys_link)
-        element.click()
-
-    def click_create_key(self):
-        element = self.wait_for_element(ApiKeyPage.create_key_link)
-        element.click()
-
-    def get_api_key(self):
-        element = self.wait_for_element(ApiKeyPage.api_key_element)
-        return element.text
-
-    def click_key_type_radio(self, key_type='normal'):
-        element = self.wait_for_invisible_element(ApiKeyPage.key_types[key_type])
-        self.select_checkbox_or_radio(element)
-
-
 class SendOneRecipient(BasePage):
-
-    def go_to_send_one_recipient(self, service_id, template_id):
-        url = "{}/services/{}/send/{}/set-sender".format(self.base_url, service_id, template_id)
-        self.driver.get(url)
 
     def is_placeholder_a_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
@@ -971,10 +888,6 @@ class EmailReplyTo(BasePage):
         radio = self.wait_for_invisible_element(EmailReplyToLocators.IS_DEFAULT_CHECKBOX)
         radio.click()
 
-    def clear_email_reply_to(self):
-        element = self.wait_for_element(EmailReplyToLocators.EMAIL_ADDRESS_FIELD)
-        element.clear()
-
 
 class SmsSenderPage(BasePage):
     def go_to_text_message_senders(self, service_id):
@@ -1007,9 +920,6 @@ class SmsSenderPage(BasePage):
 
     def get_sms_recipient(self):
         return self.wait_for_element(SmsSenderLocators.SMS_RECIPIENT)
-
-    def get_sms_content(self):
-        return self.wait_for_element(SmsSenderLocators.SMS_CONTENT)
 
 
 class OrganisationDashboardPage(BasePage):
