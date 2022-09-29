@@ -990,7 +990,7 @@ class DocumentDownloadLandingPage(BasePage):
 
 
 class DocumentDownloadPage(BasePage):
-    download_link = (By.PARTIAL_LINK_TEXT, "Download this file")
+    download_link = (By.PARTIAL_LINK_TEXT, "Download this ")
 
     def get_download_link(self):
         link = self.wait_for_element(self.download_link)
