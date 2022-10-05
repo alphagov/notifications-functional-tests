@@ -19,5 +19,6 @@ clean: ## Remove temporary files
 test: clean ## Run functional tests against local environment
 	isort --check-only tests
 	flake8 .
+	black --check .
 	pytest -v tests/functional/preview_and_dev -n auto --dist loadgroup
 	pytest -v tests/document_download
