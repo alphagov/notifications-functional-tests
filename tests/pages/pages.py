@@ -1057,10 +1057,24 @@ class DocumentDownloadLandingPage(BasePage):
 class DocumentDownloadPage(BasePage):
     download_link = (By.PARTIAL_LINK_TEXT, "Download this ")
 
-    def get_download_link(self):
+    def _get_download_link_element(self):
         link = self.wait_for_element(self.download_link)
 
-        return link.element.get_attribute("href")
+        return link.element
+
+    def click_download_link(self):
+        return self._get_download_link_element().click()
+
+    def get_download_link(self):
+        return self._get_download_link_element().get_attribute("href")
+
+
+class DocumentDownloadConfirmEmailPage(BasePage):
+    continue_button = CommonPageLocators.CONTINUE_BUTTON
+    email_input = EmailInputElement()
+
+    def input_email_address(self, email_address):
+        self.email_input = email_address
 
 
 class ViewFolderPage(ShowTemplatesPage):
