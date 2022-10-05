@@ -17,7 +17,9 @@ def test_email_auth(driver):
     # login email auth user
     sign_in_email_auth(driver)
     # assert url is FUNCTIONAL_TESTS_SERVICE's dashboard
-    assert driver.current_url == config['notify_admin_url'] + '/services/{}'.format(config['service']['id'])
+    assert driver.current_url == config["notify_admin_url"] + "/services/{}".format(
+        config["service"]["id"]
+    )
     base_page = BasePage(driver)
     base_page.sign_out()
 
@@ -25,7 +27,7 @@ def test_email_auth(driver):
 @recordtime
 @pytest.mark.xdist_group(name="seeded-user")
 def test_reset_forgotten_password(driver):
-    email, password = get_email_and_password(account_type='seeded')
+    email, password = get_email_and_password(account_type="seeded")
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
@@ -38,9 +40,7 @@ def test_reset_forgotten_password(driver):
     assert forgot_password_page.is_page_title("Check your email")
 
     do_email_verification(
-        driver,
-        config['notify_templates']['password_reset_template_id'],
-        email
+        driver, config["notify_templates"]["password_reset_template_id"], email
     )
     new_password_page = NewPasswordPage(driver)
     assert new_password_page.is_page_title("Create a new password")
