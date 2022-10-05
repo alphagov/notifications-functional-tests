@@ -23,7 +23,7 @@ def shared_config():
 
 @pytest.fixture(scope="module")
 def _driver():
-    http_proxy = os.getenv('HTTP_PROXY')
+    http_proxy = os.getenv("HTTP_PROXY")
 
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
@@ -31,9 +31,11 @@ def _driver():
     options.add_argument("user-agent=Selenium")
 
     if http_proxy is not None and http_proxy != "":
-        options.add_argument('--proxy-server={}'.format(http_proxy))
+        options.add_argument("--proxy-server={}".format(http_proxy))
 
-    service = ChromeService(log_path='./logs/chrome_browser.log', service_args=['--verbose'])
+    service = ChromeService(
+        log_path="./logs/chrome_browser.log", service_args=["--verbose"]
+    )
 
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
@@ -41,23 +43,27 @@ def _driver():
     driver.delete_all_cookies()
 
     # go to root page and accept analytics cookies to hide banner in all pages
-    driver.get(config['notify_admin_url'])
+    driver.get(config["notify_admin_url"])
     HomePage(driver).accept_cookie_warning()
     yield driver
     driver.delete_all_cookies()
     driver.close()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
-        print('URL at time of failure:', _driver.current_url)
+        print("URL at time of failure:", _driver.current_url)
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        filename = str(Path.cwd() / 'screenshots' / '{}_{}.png'.format(filename_datetime, request.function.__name__))
+        filename = str(
+            Path.cwd()
+            / "screenshots"
+            / "{}_{}.png".format(filename_datetime, request.function.__name__)
+        )
         _driver.save_screenshot(str(filename))
-        print('Error screenshot saved to ' + filename)
+        print("Error screenshot saved to " + filename)
 
 
 @pytest.fixture(scope="module")
@@ -67,14 +73,13 @@ def login_user(_driver):
 
 @pytest.fixture(scope="module")
 def login_seeded_user(_driver):
-    sign_in(_driver, account_type='seeded')
+    sign_in(_driver, account_type="seeded")
 
 
 @pytest.fixture(scope="module")
 def client():
     client = NotificationsAPIClient(
-        base_url=config['notify_api_url'],
-        api_key=config['service']['api_key']
+        base_url=config["notify_api_url"], api_key=config["service"]["api_key"]
     )
     return client
 
@@ -82,8 +87,7 @@ def client():
 @pytest.fixture(scope="module")
 def seeded_client():
     client = NotificationsAPIClient(
-        base_url=config['notify_api_url'],
-        api_key=config['service']['api_live_key']
+        base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"]
     )
     return client
 
@@ -91,8 +95,7 @@ def seeded_client():
 @pytest.fixture(scope="module")
 def seeded_client_using_test_key():
     client = NotificationsAPIClient(
-        base_url=config['notify_api_url'],
-        api_key=config['service']['api_test_key']
+        base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"]
     )
     return client
 
@@ -100,7 +103,7 @@ def seeded_client_using_test_key():
 @pytest.fixture(scope="module")
 def broadcast_client():
     client = BroadcastClient(
-        api_key=config['broadcast_service']['api_key_live'],
-        base_url=config['notify_api_url'],
+        api_key=config["broadcast_service"]["api_key_live"],
+        base_url=config["notify_api_url"],
     )
     return client

@@ -19,24 +19,27 @@ from config import config
 from tests.pages import ConversationPage, DashboardPage, InboxPage
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def inbound_sms():
     # the message has the func test user's name in it - which has a unique uuid
-    message = 'Inbound message from {}'.format(config['user']['name'])
+    message = "Inbound message from {}".format(config["user"]["name"])
 
     # hand-craft a request to receive messages API.
     mmg_inbound_body = {
-        'MSISDN': config['user']['mobile'],  # from_user number
-        'Number': config['service']['inbound_number'],  # service inbound number
-        'Message': quote_plus(message),
-        'ID': 'SOME-MMG-SPECIFIC-ID',
-        'DateRecieved': quote_plus(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
+        "MSISDN": config["user"]["mobile"],  # from_user number
+        "Number": config["service"]["inbound_number"],  # service inbound number
+        "Message": quote_plus(message),
+        "ID": "SOME-MMG-SPECIFIC-ID",
+        "DateRecieved": quote_plus(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
     }
 
     response = requests.post(
-        config['notify_api_url'] + '/notifications/sms/receive/mmg',
+        config["notify_api_url"] + "/notifications/sms/receive/mmg",
         json=mmg_inbound_body,
-        auth=(config['mmg_inbound_sms']['username'], config['mmg_inbound_sms']['password'])
+        auth=(
+            config["mmg_inbound_sms"]["username"],
+            config["mmg_inbound_sms"]["password"],
+        ),
     )
     response.raise_for_status()
 
@@ -48,24 +51,24 @@ def test_inbound_api(inbound_sms, seeded_client):
     # this'll raise if the message isn't in the list.
     next(
         x
-        for x in seeded_client.get_received_texts()['received_text_messages']
-        if x['content'] == inbound_sms
+        for x in seeded_client.get_received_texts()["received_text_messages"]
+        if x["content"] == inbound_sms
     )
 
 
 @pytest.mark.xdist_group(name="seeded-user")
 def test_inbox_page(inbound_sms, driver, login_seeded_user):
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(config['service']['id'])
+    dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
 
     # go to inbox page
     dashboard_page.click_inbox_link()
 
     # select conversation for outbound phone number
     inbox_page = InboxPage(driver)
-    assert inbox_page.is_current(config['service']['id'])
+    assert inbox_page.is_current(config["service"]["id"])
 
-    inbox_page.go_to_conversation(config['user']['mobile'])
+    inbox_page.go_to_conversation(config["user"]["mobile"])
 
     conversation = ConversationPage(driver)
     assert conversation.get_message(inbound_sms) is not None

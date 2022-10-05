@@ -15,19 +15,23 @@ from tests.test_utils import NotificationStatuses, recordtime
 @recordtime
 def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_key):
 
-    reference = config['name'].replace(" ", "_") + "_delivered"
+    reference = config["name"].replace(" ", "_") + "_delivered"
 
     notification_id = send_precompiled_letter_via_api(
         reference,
         seeded_client_using_test_key,
-        BytesIO(base64.b64decode(correct_letter))
+        BytesIO(base64.b64decode(correct_letter)),
     )
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[seeded_client_using_test_key, notification_id, NotificationStatuses.RECEIVED],
-        tries=config['letter_retry_times'],
-        delay=config['notification_retry_interval']
+        fargs=[
+            seeded_client_using_test_key,
+            notification_id,
+            NotificationStatuses.RECEIVED,
+        ],
+        tries=config["letter_retry_times"],
+        delay=config["notification_retry_interval"],
     )
 
-    assert reference == notification['reference']
+    assert reference == notification["reference"]
