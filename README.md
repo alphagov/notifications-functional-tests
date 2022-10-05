@@ -112,6 +112,14 @@ We use the following annotations on test methods to define the groups:
 
 More groups generally equals better parallelisation (limited by test runner count). However, in the case of functional tests, increased parallelisation increases the risk of side effects and race conditions in the shared environment unless grouped carefully.
 
+
+## Pre-commit
+
+We use [pre-commit](https://pre-commit.com/) to ensure that committed code meets basic standards for formatting, and will make basic fixes for you to save time and aggravation.
+
+Install pre-commit system-wide with, eg `brew install pre-commit`. Then, install the hooks in this repository with `pre-commit install --install-hooks`.
+
+
 ## Further documentation
 
 - [Updating db_setup_fixtures](docs/update-db_setup_fixtures.md)
