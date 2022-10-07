@@ -8,16 +8,20 @@ from tests.postman import (
 from tests.test_utils import NotificationStatuses, assert_notification_body
 
 
-def test_provider_email_delivery_via_api(client):
+def test_provider_email_delivery_via_api(staging_and_prod_client):
     notification_id = send_notification_via_api(
-        client,
+        staging_and_prod_client,
         config["service"]["templates"]["email"],
         config["user"]["email"],
         "email",
     )
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[client, notification_id, NotificationStatuses.DELIVERED],
+        fargs=[
+            staging_and_prod_client,
+            notification_id,
+            NotificationStatuses.DELIVERED,
+        ],
         tries=config["provider_retry_times"],
         delay=config["provider_retry_interval"],
     )
