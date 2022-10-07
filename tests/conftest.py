@@ -13,6 +13,10 @@ from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in, sign_in_email_auth
 
 
+def pytest_addoption(parser):
+    parser.addoption("--no-headless", action="store_true", default=False)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def shared_config():
     """
@@ -22,13 +26,15 @@ def shared_config():
 
 
 @pytest.fixture(scope="module")
-def _driver():
+def _driver(request):
     http_proxy = os.getenv("HTTP_PROXY")
 
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
-    options.add_argument("--headless")
     options.add_argument("user-agent=Selenium")
+
+    if not request.config.getoption("--no-headless"):
+        options.add_argument("--headless")
 
     if http_proxy is not None and http_proxy != "":
         options.add_argument("--proxy-server={}".format(http_proxy))
