@@ -1,5 +1,5 @@
-import uuid
 import os
+import uuid
 
 import pytest
 
@@ -176,18 +176,6 @@ def setup_staging_live_config():
                     # letter template not set up on staging and live
                 },
                 "inbound_number": os.environ["PROVIDER_TEST_INBOUND_NUMBER"],
-            },
-        }
-    )
-
-
-def setup_document_download_config():
-    config.update(
-        {
-            "service": {"id": os.environ["FUNCTIONAL_TESTS_SERVICE_ID"]},
-            "document_download": {
-                "api_host": os.environ["DOCUMENT_DOWNLOAD_API_HOST"],
-                "api_key": os.environ["DOCUMENT_DOWNLOAD_API_KEY"],
             },
         }
     )

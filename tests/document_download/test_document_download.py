@@ -1,39 +1,35 @@
-import base64
+import re
+from io import BytesIO
 
 import pytest
 import requests
-from retry.api import retry_call
+from notifications_python_client import prepare_upload
 
 from config import config
 from tests.pages import DocumentDownloadLandingPage, DocumentDownloadPage
 
 
-def upload_document(service_id, file_contents):
-    response = requests.post(
-        f"{config['document_download']['api_host']}/services/{service_id}/documents",
-        headers={
-            "Authorization": f"Bearer {config['document_download']['api_key']}",
-        },
-        json={"document": base64.b64encode(file_contents).decode("ascii")},
-    )
-
-    json = response.json()
-    assert "error" not in json, "Status code {}".format(response.status_code)
-
-    return json["document"]
-
-
 @pytest.mark.antivirus
-def test_document_upload_and_download(driver):
-    document = retry_call(
-        upload_document,
-        # add PDF header to trick doc download into thinking its a real pdf
-        fargs=[config["service"]["id"], b"%PDF-1.4 functional tests file"],
-        tries=3,
-        delay=10,
+def test_document_upload_and_download(driver, seeded_client):
+
+    # add PDF header to trick doc download into thinking its a real pdf
+    file = prepare_upload(
+        BytesIO(b"%PDF-1.4 functional tests file"),
+        confirm_email_before_download=False,
+    )
+    personalisation = {"build_id": file}
+    email_address = config["user"]["email"]
+    template_id = config["service"]["templates"]["email"]
+
+    resp_json = seeded_client.send_email_notification(
+        email_address, template_id, personalisation
     )
 
-    driver.get(document["url"])
+    download_link = re.search(r"(https?://\S+)", resp_json["content"]["body"])
+
+    assert download_link
+
+    driver.get(download_link.group(0))
 
     landing_page = DocumentDownloadLandingPage(driver)
     assert "Functional Tests" in landing_page.get_service_name()
