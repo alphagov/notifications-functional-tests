@@ -76,3 +76,27 @@ def test_document_download_with_email_confirmation(driver, seeded_client):
 
     body = driver.find_element(By.TAG_NAME, "body")
     assert body.text == "foo-bar-baz"
+
+
+def test_document_download_with_email_confirmation_rejects_bad_email(
+    driver, seeded_client
+):
+    download_link = _get_test_doc_dl_url(
+        seeded_client,
+        {"confirm_email_before_download": True},
+    )
+
+    driver.get(download_link)
+    landing_page = DocumentDownloadLandingPage(driver)
+    assert "Functional Tests" in landing_page.get_service_name()
+
+    landing_page.go_to_download_page()
+
+    email_confirm_page = DocumentDownloadConfirmEmailPage(driver)
+    email_confirm_page.input_email_address("foo@bar.com")
+    email_confirm_page.click_continue()
+
+    assert (
+        "This is not the email address the file was sent to"
+        in email_confirm_page.get_errors()
+    )

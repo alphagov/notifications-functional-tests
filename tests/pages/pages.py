@@ -223,6 +223,11 @@ class BasePage(object):
         element = self.wait_for_element((By.LINK_TEXT, link_text))
         element.click()
 
+    def get_errors(self):
+        error_message = (By.CSS_SELECTOR, ".banner-dangerous")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
 
 class PageWithStickyNavMixin:
     def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
@@ -1040,7 +1045,15 @@ class ConversationPage(BasePage):
         return next((el for el in elements if content in el.text), None)
 
 
-class DocumentDownloadLandingPage(BasePage):
+class DocumentDownloadBasePage(BasePage):
+    def get_errors(self):
+        # these are diff to notify admin which has the class .banner-dangerous for its error messages
+        error_message = (By.CSS_SELECTOR, ".govuk-error-summary")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
+
+class DocumentDownloadLandingPage(DocumentDownloadBasePage):
     continue_button = (By.CSS_SELECTOR, "a.govuk-button")
 
     def get_service_name(self):
@@ -1054,7 +1067,7 @@ class DocumentDownloadLandingPage(BasePage):
         button.click()
 
 
-class DocumentDownloadPage(BasePage):
+class DocumentDownloadPage(DocumentDownloadBasePage):
     download_link = (By.PARTIAL_LINK_TEXT, "Download this ")
 
     def _get_download_link_element(self):
@@ -1069,7 +1082,7 @@ class DocumentDownloadPage(BasePage):
         return self._get_download_link_element().get_attribute("href")
 
 
-class DocumentDownloadConfirmEmailPage(BasePage):
+class DocumentDownloadConfirmEmailPage(DocumentDownloadBasePage):
     continue_button = CommonPageLocators.CONTINUE_BUTTON
     email_input = EmailInputElement()
 
@@ -1095,7 +1108,6 @@ class ManageFolderPage(BasePage):
     name_input = NameInputElement()
     delete_button = (By.NAME, "delete")
     save_button = (By.CSS_SELECTOR, "main [type=submit]")
-    error_message = (By.CSS_SELECTOR, ".banner-dangerous")
 
     def set_name(self, new_name):
         self.name_input = new_name
@@ -1109,10 +1121,6 @@ class ManageFolderPage(BasePage):
     def confirm_delete_folder(self):
         link = self.wait_for_element(self.delete_button)
         link.click()
-
-    def get_errors(self):
-        errors = self.wait_for_element(self.error_message)
-        return errors.text.strip()
 
 
 class BroadcastFreeformPage(BasePage):
