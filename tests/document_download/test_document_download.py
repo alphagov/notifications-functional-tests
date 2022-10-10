@@ -17,7 +17,7 @@ from tests.pages import (
 from tests.test_utils import RetryException
 
 
-def _get_test_doc_dl_url(seeded_client, prepare_upload_kwargs):
+def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs):
     file = prepare_upload(
         BytesIO("foo-bar-baz".encode("utf-8")), **prepare_upload_kwargs
     )
@@ -25,7 +25,7 @@ def _get_test_doc_dl_url(seeded_client, prepare_upload_kwargs):
     email_address = config["service"]["seeded_user"]["email"]
     template_id = config["service"]["templates"]["email"]
 
-    resp_json = seeded_client.send_email_notification(
+    resp_json = client_live_key.send_email_notification(
         email_address, template_id, personalisation
     )
 
@@ -52,9 +52,9 @@ def get_downloaded_document(download_directory, filename):
 
 
 @pytest.mark.antivirus
-def test_document_upload_and_download(driver, seeded_client):
+def test_document_upload_and_download(driver, client_live_key):
     download_link = _get_test_doc_dl_url(
-        seeded_client,
+        client_live_key,
         {"confirm_email_before_download": False},
     )
 
@@ -74,10 +74,10 @@ def test_document_upload_and_download(driver, seeded_client):
 
 
 def test_document_download_with_email_confirmation(
-    driver, seeded_client, download_directory
+    driver, client_live_key, download_directory
 ):
     download_link = _get_test_doc_dl_url(
-        seeded_client,
+        client_live_key,
         {"confirm_email_before_download": True},
     )
 
@@ -115,10 +115,10 @@ def test_document_download_with_email_confirmation(
 
 
 def test_document_download_with_email_confirmation_rejects_bad_email(
-    driver, seeded_client
+    driver, client_live_key
 ):
     download_link = _get_test_doc_dl_url(
-        seeded_client,
+        client_live_key,
         {"confirm_email_before_download": True},
     )
 

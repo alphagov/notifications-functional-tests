@@ -56,7 +56,7 @@ from tests.test_utils import (
     ["sms", "email", pytest.param("letter", marks=pytest.mark.template_preview)],
 )
 def test_send_csv(
-    driver, login_seeded_user, seeded_client, seeded_client_using_test_key, message_type
+    driver, login_seeded_user, client_live_key, client_test_key, message_type
 ):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
@@ -79,7 +79,7 @@ def test_send_csv(
     notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[
-            seeded_client_using_test_key if message_type == "letter" else seeded_client,
+            client_test_key if message_type == "letter" else client_live_key,
             notification_id,
             NotificationStatuses.ACCEPTED
             if message_type == "letter"
@@ -94,7 +94,7 @@ def test_send_csv(
     if message_type == "letter":
         retry_call(
             get_pdf_for_letter_via_api,
-            fargs=[seeded_client, notification_id],
+            fargs=[client_live_key, notification_id],
             tries=config["notification_retry_times"],
             delay=config["notification_retry_interval"],
         )
@@ -110,7 +110,7 @@ def test_send_csv(
 
 @recordtime
 @pytest.mark.xdist_group(name="seeded-user")
-def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client):
+def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_key):
     test_name = "edit/delete email template test"
     go_to_templates_page(driver)
     existing_templates = [
@@ -145,7 +145,7 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, seeded_client
 
 @recordtime
 @pytest.mark.xdist_group(name="seeded-user")
-def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
+def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key):
     test_name = "edit/delete sms template test"
     go_to_templates_page(driver)
     existing_templates = [
@@ -182,7 +182,7 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, seeded_client):
 @recordtime
 @pytest.mark.xdist_group(name="seeded-user")
 def test_send_email_with_placeholders_to_one_recipient(
-    driver, seeded_client, login_seeded_user
+    driver, client_live_key, login_seeded_user
 ):
     go_to_templates_page(driver)
     template_name = "email with placeholders" + str(uuid.uuid4())
@@ -206,7 +206,7 @@ def test_send_email_with_placeholders_to_one_recipient(
 
     dashboard_page.click_continue()
     notification_id = dashboard_page.get_notification_id()
-    one_off_email = seeded_client.get_notification_by_id(notification_id)
+    one_off_email = client_live_key.get_notification_by_id(notification_id)
     assert one_off_email.get("created_by_name") == "Preview admin tests user"
 
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
@@ -225,7 +225,7 @@ def test_send_email_with_placeholders_to_one_recipient(
 @recordtime
 @pytest.mark.xdist_group(name="seeded-user")
 def test_send_sms_with_placeholders_to_one_recipient(
-    driver, seeded_client, login_seeded_user
+    driver, client_live_key, login_seeded_user
 ):
     go_to_templates_page(driver)
     template_name = "sms with placeholders" + str(uuid.uuid4())
@@ -270,14 +270,14 @@ def test_send_sms_with_placeholders_to_one_recipient(
 @pytest.mark.template_preview
 @pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_message_log_delivered(
-    driver, login_seeded_user, seeded_client_using_test_key
+    driver, login_seeded_user, client_test_key
 ):
 
     reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_delivered"
 
     send_precompiled_letter_via_api(
         reference,
-        seeded_client_using_test_key,
+        client_test_key,
         BytesIO(base64.b64decode(correct_letter)),
     )
 
@@ -302,7 +302,7 @@ def test_view_precompiled_letter_message_log_delivered(
 @pytest.mark.template_preview
 @pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_preview_delivered(
-    driver, login_seeded_user, seeded_client_using_test_key
+    driver, login_seeded_user, client_test_key
 ):
 
     reference = (
@@ -313,7 +313,7 @@ def test_view_precompiled_letter_preview_delivered(
 
     notification_id = send_precompiled_letter_via_api(
         reference,
-        seeded_client_using_test_key,
+        client_test_key,
         BytesIO(base64.b64decode(correct_letter)),
     )
 
@@ -355,7 +355,7 @@ def test_view_precompiled_letter_preview_delivered(
 @pytest.mark.antivirus
 @pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_message_log_virus_scan_failed(
-    driver, login_seeded_user, seeded_client_using_test_key
+    driver, login_seeded_user, client_test_key
 ):
 
     reference = (
@@ -364,7 +364,7 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(
 
     send_precompiled_letter_via_api(
         reference,
-        seeded_client_using_test_key,
+        client_test_key,
         BytesIO(base64.b64decode(pdf_with_virus)),
     )
 

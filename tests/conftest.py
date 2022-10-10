@@ -97,15 +97,7 @@ def login_seeded_user(_driver):
 
 
 @pytest.fixture(scope="module")
-def staging_and_prod_client():
-    client = NotificationsAPIClient(
-        base_url=config["notify_api_url"], api_key=config["service"]["api_key"]
-    )
-    return client
-
-
-@pytest.fixture(scope="module")
-def seeded_client():
+def client_live_key():
     client = NotificationsAPIClient(
         base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"]
     )
@@ -113,7 +105,7 @@ def seeded_client():
 
 
 @pytest.fixture(scope="module")
-def seeded_client_using_test_key():
+def client_test_key():
     client = NotificationsAPIClient(
         base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"]
     )

@@ -166,7 +166,7 @@ def setup_staging_prod_config():
             "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
             "service": {
                 "id": os.environ["SERVICE_ID"],
-                "api_key": os.environ["API_KEY"],
+                "api_live_key": os.environ["API_KEY"],
                 "api_test_key": os.environ["API_TEST_KEY"],
                 "email_auth_account": os.environ["FUNCTIONAL_TEST_EMAIL_AUTH"],
                 "seeded_user": {"password": os.environ["FUNCTIONAL_TEST_PASSWORD"]},

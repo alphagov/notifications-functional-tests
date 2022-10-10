@@ -14,14 +14,14 @@ from tests.test_utils import (
 
 
 @recordtime
-def test_admin(driver, staging_and_prod_client, login_user):
+def test_admin(driver, client_live_key, login_user):
     upload_csv_page = UploadCsvPage(driver)
 
     csv_sms_notification_id = send_notification_via_csv(upload_csv_page, "sms")
     csv_sms_notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[
-            staging_and_prod_client,
+            client_live_key,
             csv_sms_notification_id,
             NotificationStatuses.SENT,
         ],
@@ -34,7 +34,7 @@ def test_admin(driver, staging_and_prod_client, login_user):
     csv_email_notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[
-            staging_and_prod_client,
+            client_live_key,
             csv_email_notification_id,
             NotificationStatuses.SENT,
         ],

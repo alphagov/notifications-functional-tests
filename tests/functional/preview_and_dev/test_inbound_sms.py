@@ -47,11 +47,11 @@ def inbound_sms():
 
 
 @pytest.mark.xdist_group(name="api-client")
-def test_inbound_api(inbound_sms, seeded_client):
+def test_inbound_api(inbound_sms, client_live_key):
     # this'll raise if the message isn't in the list.
     next(
         x
-        for x in seeded_client.get_received_texts()["received_text_messages"]
+        for x in client_live_key.get_received_texts()["received_text_messages"]
         if x["content"] == inbound_sms
     )
 
