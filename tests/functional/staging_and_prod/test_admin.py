@@ -14,13 +14,17 @@ from tests.test_utils import (
 
 
 @recordtime
-def test_admin(driver, client, login_user):
+def test_admin(driver, staging_and_prod_client, login_user):
     upload_csv_page = UploadCsvPage(driver)
 
     csv_sms_notification_id = send_notification_via_csv(upload_csv_page, "sms")
     csv_sms_notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[client, csv_sms_notification_id, NotificationStatuses.SENT],
+        fargs=[
+            staging_and_prod_client,
+            csv_sms_notification_id,
+            NotificationStatuses.SENT,
+        ],
         tries=config["notification_retry_times"],
         delay=config["notification_retry_interval"],
     )
@@ -29,7 +33,11 @@ def test_admin(driver, client, login_user):
     csv_email_notification_id = send_notification_via_csv(upload_csv_page, "email")
     csv_email_notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[client, csv_email_notification_id, NotificationStatuses.SENT],
+        fargs=[
+            staging_and_prod_client,
+            csv_email_notification_id,
+            NotificationStatuses.SENT,
+        ],
         tries=config["notification_retry_times"],
         delay=config["notification_retry_interval"],
     )

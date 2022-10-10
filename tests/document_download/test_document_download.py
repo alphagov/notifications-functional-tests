@@ -1,39 +1,64 @@
-import base64
+import re
+from io import BytesIO
+from urllib.parse import urlparse
 
 import pytest
 import requests
-from retry.api import retry_call
+from notifications_python_client import prepare_upload
+from retry import retry
+from selenium.webdriver.common.by import By
 
 from config import config
-from tests.pages import DocumentDownloadLandingPage, DocumentDownloadPage
+from tests.pages import (
+    DocumentDownloadConfirmEmailPage,
+    DocumentDownloadLandingPage,
+    DocumentDownloadPage,
+)
+from tests.test_utils import RetryException
 
 
-def upload_document(service_id, file_contents):
-    response = requests.post(
-        f"{config['document_download']['api_host']}/services/{service_id}/documents",
-        headers={
-            "Authorization": f"Bearer {config['document_download']['api_key']}",
-        },
-        json={"document": base64.b64encode(file_contents).decode("ascii")},
+def _get_test_doc_dl_url(seeded_client, prepare_upload_kwargs):
+    file = prepare_upload(
+        BytesIO("foo-bar-baz".encode("utf-8")), **prepare_upload_kwargs
+    )
+    personalisation = {"build_id": file}
+    email_address = config["service"]["seeded_user"]["email"]
+    template_id = config["service"]["templates"]["email"]
+
+    resp_json = seeded_client.send_email_notification(
+        email_address, template_id, personalisation
     )
 
-    json = response.json()
-    assert "error" not in json, "Status code {}".format(response.status_code)
+    download_link = re.search(r"(https?://\S+)", resp_json["content"]["body"])
 
-    return json["document"]
+    assert download_link
+
+    return download_link.group(0)
+
+
+@retry(
+    RetryException,
+    tries=10,
+    delay=1,
+)
+def get_downloaded_document(download_directory, filename):
+    """
+    Wait up to ten seconds for the file to be downloaded, checking every second
+    """
+    for file in download_directory.iterdir():
+        if file.is_file() and file.name == filename:
+            return file
+    raise RetryException(f"{filename} not found in downloads folder")
 
 
 @pytest.mark.antivirus
-def test_document_upload_and_download(driver):
-    document = retry_call(
-        upload_document,
-        # add PDF header to trick doc download into thinking its a real pdf
-        fargs=[config["service"]["id"], b"%PDF-1.4 functional tests file"],
-        tries=3,
-        delay=10,
+def test_document_upload_and_download(driver, seeded_client):
+    download_link = _get_test_doc_dl_url(
+        seeded_client,
+        {"confirm_email_before_download": False},
     )
 
-    driver.get(document["url"])
+    driver.get(download_link)
 
     landing_page = DocumentDownloadLandingPage(driver)
     assert "Functional Tests" in landing_page.get_service_name()
@@ -45,4 +70,69 @@ def test_document_upload_and_download(driver):
 
     downloaded_document = requests.get(document_url)
 
-    assert downloaded_document.text == "%PDF-1.4 functional tests file"
+    assert downloaded_document.text == "foo-bar-baz"
+
+
+def test_document_download_with_email_confirmation(
+    driver, seeded_client, download_directory
+):
+    download_link = _get_test_doc_dl_url(
+        seeded_client,
+        {"confirm_email_before_download": True},
+    )
+
+    driver.get(download_link)
+    landing_page = DocumentDownloadLandingPage(driver)
+    assert "Functional Tests" in landing_page.get_service_name()
+
+    landing_page.go_to_download_page()
+
+    email_confirm_page = DocumentDownloadConfirmEmailPage(driver)
+    email_confirm_page.input_email_address(config["service"]["seeded_user"]["email"])
+    email_confirm_page.click_continue()
+
+    download_page = DocumentDownloadPage(driver)
+
+    file_url = download_page.get_download_link()
+    download_page.click_download_link()
+
+    # the file _might_ have downloaded, or alternatively it might have rendered in browser.
+    # Lets check either way.
+    if file_url == driver.current_url:
+        # chrome has rendered the file in browser
+        body = driver.find_element(By.TAG_NAME, "body")
+        assert body.text == "foo-bar-baz"
+    else:
+        # chrome has downloaded the file
+
+        # get the filename out of the download URL
+        filename = urlparse(file_url).path.split("/")[-1]
+
+        document_path = get_downloaded_document(download_directory, filename)
+
+        with open(document_path) as f:
+            assert f.read() == "foo-bar-baz"
+
+
+def test_document_download_with_email_confirmation_rejects_bad_email(
+    driver, seeded_client
+):
+    download_link = _get_test_doc_dl_url(
+        seeded_client,
+        {"confirm_email_before_download": True},
+    )
+
+    driver.get(download_link)
+    landing_page = DocumentDownloadLandingPage(driver)
+    assert "Functional Tests" in landing_page.get_service_name()
+
+    landing_page.go_to_download_page()
+
+    email_confirm_page = DocumentDownloadConfirmEmailPage(driver)
+    email_confirm_page.input_email_address("foo@bar.com")
+    email_confirm_page.click_continue()
+
+    assert (
+        "This is not the email address the file was sent to"
+        in email_confirm_page.get_errors()
+    )

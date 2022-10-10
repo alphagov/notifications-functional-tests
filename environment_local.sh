@@ -27,9 +27,6 @@ export JENKINS_BUILD_LETTER_TEMPLATE_ID=c3caccab-b066-4a43-8340-cae8b2887e86
 export MMG_INBOUND_SMS_USERNAME=username
 export MMG_INBOUND_SMS_AUTH=testkey
 
-export DOCUMENT_DOWNLOAD_API_HOST=http://localhost:7000
-export DOCUMENT_DOWNLOAD_API_KEY=auth-token
-
 export BROADCAST_USER_1_EMAIL='notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk'
 export BROADCAST_USER_1_NUMBER=07700900002
 

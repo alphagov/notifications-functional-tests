@@ -13,9 +13,9 @@ from tests.test_utils import (
 
 
 @recordtime
-def test_send_email_notification_via_api(client):
+def test_send_email_notification_via_api(staging_and_prod_client):
     notification_id = send_notification_via_api(
-        client,
+        staging_and_prod_client,
         config["service"]["templates"]["email"],
         config["user"]["email"],
         "email",
@@ -23,7 +23,7 @@ def test_send_email_notification_via_api(client):
 
     notification = retry_call(
         get_notification_by_id_via_api,
-        fargs=[client, notification_id, NotificationStatuses.SENT],
+        fargs=[staging_and_prod_client, notification_id, NotificationStatuses.SENT],
         tries=config["notification_retry_times"],
         delay=config["notification_retry_interval"],
     )
