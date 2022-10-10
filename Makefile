@@ -21,4 +21,4 @@ test: clean ## Run functional tests against local environment
 	flake8 .
 	black --check .
 	pytest -v tests/functional/preview_and_dev -n auto --dist loadgroup
-	pytest -v tests/document_download
+	pytest -v tests/document_download/preview_and_dev
