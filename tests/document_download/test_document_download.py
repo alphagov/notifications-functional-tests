@@ -1,9 +1,11 @@
 import re
 from io import BytesIO
+from urllib.parse import urlparse
 
 import pytest
 import requests
 from notifications_python_client import prepare_upload
+from retry import retry
 from selenium.webdriver.common.by import By
 
 from config import config
@@ -12,6 +14,7 @@ from tests.pages import (
     DocumentDownloadLandingPage,
     DocumentDownloadPage,
 )
+from tests.test_utils import RetryException
 
 
 def _get_test_doc_dl_url(seeded_client, prepare_upload_kwargs):
@@ -31,6 +34,21 @@ def _get_test_doc_dl_url(seeded_client, prepare_upload_kwargs):
     assert download_link
 
     return download_link.group(0)
+
+
+@retry(
+    RetryException,
+    tries=10,
+    delay=1,
+)
+def get_downloaded_document(download_directory, filename):
+    """
+    Wait up to ten seconds for the file to be downloaded, checking every second
+    """
+    for file in download_directory.iterdir():
+        if file.is_file() and file.name == filename:
+            return file
+    raise RetryException(f"{filename} not found in downloads folder")
 
 
 @pytest.mark.antivirus
@@ -55,7 +73,9 @@ def test_document_upload_and_download(driver, seeded_client):
     assert downloaded_document.text == "foo-bar-baz"
 
 
-def test_document_download_with_email_confirmation(driver, seeded_client):
+def test_document_download_with_email_confirmation(
+    driver, seeded_client, download_directory
+):
     download_link = _get_test_doc_dl_url(
         seeded_client,
         {"confirm_email_before_download": True},
@@ -72,10 +92,26 @@ def test_document_download_with_email_confirmation(driver, seeded_client):
     email_confirm_page.click_continue()
 
     download_page = DocumentDownloadPage(driver)
+
+    file_url = download_page.get_download_link()
     download_page.click_download_link()
 
-    body = driver.find_element(By.TAG_NAME, "body")
-    assert body.text == "foo-bar-baz"
+    # the file _might_ have downloaded, or alternatively it might have rendered in browser.
+    # Lets check either way.
+    if file_url == driver.current_url:
+        # chrome has rendered the file in browser
+        body = driver.find_element(By.TAG_NAME, "body")
+        assert body.text == "foo-bar-baz"
+    else:
+        # chrome has downloaded the file
+
+        # get the filename out of the download URL
+        filename = urlparse(file_url).path.split("/")[-1]
+
+        document_path = get_downloaded_document(download_directory, filename)
+
+        with open(document_path) as f:
+            assert f.read() == "foo-bar-baz"
 
 
 def test_document_download_with_email_confirmation_rejects_bad_email(

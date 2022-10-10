@@ -25,13 +25,27 @@ def shared_config():
     setup_shared_config()
 
 
+@pytest.fixture(scope="session")
+def download_directory(tmp_path_factory):
+    return tmp_path_factory.mktemp("downloads")
+
+
 @pytest.fixture(scope="module")
-def _driver(request):
+def _driver(request, download_directory):
     http_proxy = os.getenv("HTTP_PROXY")
 
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
     options.add_argument("user-agent=Selenium")
+    options.add_experimental_option(
+        "prefs",
+        {
+            "download.default_directory": str(download_directory),
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": False,
+        },
+    )
 
     if not request.config.getoption("--no-headless"):
         options.add_argument("--headless")
