@@ -81,8 +81,8 @@ Users with the required services and templates have already been set up for each
 ```
 source environment_{env_name}.sh
 
-# run specific tests
-pytest tests/document_download
+# run specific tests, for example:
+pytest tests/document_download/preview_and_dev
 ```
 
 ### Running tests in parallel

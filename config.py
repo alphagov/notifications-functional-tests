@@ -153,8 +153,8 @@ def setup_preview_dev_config():
     )
 
 
-def setup_staging_live_config():
-    # staging and live run the same simple smoke tests
+def setup_staging_prod_config():
+    # staging and prod run the same simple smoke tests
     config.update(
         {
             "name": "{} Functional Tests".format(config["env"]),
@@ -166,14 +166,14 @@ def setup_staging_live_config():
             "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
             "service": {
                 "id": os.environ["SERVICE_ID"],
-                "api_key": os.environ["API_KEY"],
+                "api_live_key": os.environ["API_KEY"],
                 "api_test_key": os.environ["API_TEST_KEY"],
                 "email_auth_account": os.environ["FUNCTIONAL_TEST_EMAIL_AUTH"],
                 "seeded_user": {"password": os.environ["FUNCTIONAL_TEST_PASSWORD"]},
                 "templates": {
                     "email": os.environ["JENKINS_BUILD_EMAIL_TEMPLATE_ID"],
                     "sms": os.environ["JENKINS_BUILD_SMS_TEMPLATE_ID"],
-                    # letter template not set up on staging and live
+                    # letter template not set up on staging and prod
                 },
                 "inbound_number": os.environ["PROVIDER_TEST_INBOUND_NUMBER"],
             },

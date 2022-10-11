@@ -23,9 +23,9 @@ from tests.test_utils import (
 
 @recordtime
 @pytest.mark.xdist_group(name="api-client")
-def test_send_letter_notification_via_api(seeded_client_using_test_key):
+def test_send_letter_notification_via_api(client_test_key):
     notification_id = send_notification_via_api(
-        seeded_client_using_test_key,
+        client_test_key,
         config["service"]["templates"]["letter"],
         config["letter_contact_data"],
         "letter",
@@ -34,7 +34,7 @@ def test_send_letter_notification_via_api(seeded_client_using_test_key):
     notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[
-            seeded_client_using_test_key,
+            client_test_key,
             notification_id,
             NotificationStatuses.RECEIVED,
         ],
@@ -47,20 +47,20 @@ def test_send_letter_notification_via_api(seeded_client_using_test_key):
 @recordtime
 @pytest.mark.xdist_group(name="api-letters")
 @pytest.mark.antivirus
-def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_key):
+def test_send_precompiled_letter_notification_via_api(client_test_key):
 
     reference = config["service_name"].replace(" ", "_") + "_delivered"
 
     notification_id = send_precompiled_letter_via_api(
         reference,
-        seeded_client_using_test_key,
+        client_test_key,
         BytesIO(base64.b64decode(correct_letter)),
     )
 
     notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[
-            seeded_client_using_test_key,
+            client_test_key,
             notification_id,
             NotificationStatuses.RECEIVED,
         ],
@@ -75,7 +75,7 @@ def test_send_precompiled_letter_notification_via_api(seeded_client_using_test_k
 @pytest.mark.xdist_group(name="api-letters")
 @pytest.mark.antivirus
 def test_send_precompiled_letter_with_virus_notification_via_api(
-    seeded_client_using_test_key,
+    client_test_key,
 ):
 
     # This uses a file which drops the Eicar test virus into the temp directory
@@ -85,14 +85,14 @@ def test_send_precompiled_letter_with_virus_notification_via_api(
 
     notification_id = send_precompiled_letter_via_api(
         reference,
-        seeded_client_using_test_key,
+        client_test_key,
         BytesIO(base64.b64decode(pdf_with_virus)),
     )
 
     notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[
-            seeded_client_using_test_key,
+            client_test_key,
             notification_id,
             NotificationStatuses.VIRUS_SCAN_FAILED,
         ],

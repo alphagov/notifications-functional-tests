@@ -8,9 +8,9 @@ from tests.postman import (
 from tests.test_utils import NotificationStatuses, assert_notification_body
 
 
-def test_provider_email_delivery_via_api(staging_and_prod_client):
+def test_provider_email_delivery_via_api(client_live_key):
     notification_id = send_notification_via_api(
-        staging_and_prod_client,
+        client_live_key,
         config["service"]["templates"]["email"],
         config["user"]["email"],
         "email",
@@ -18,7 +18,7 @@ def test_provider_email_delivery_via_api(staging_and_prod_client):
     notification = retry_call(
         get_notification_by_id_via_api,
         fargs=[
-            staging_and_prod_client,
+            client_live_key,
             notification_id,
             NotificationStatuses.DELIVERED,
         ],
