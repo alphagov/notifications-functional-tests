@@ -1107,7 +1107,10 @@ class ManageFolderPage(BasePage):
     delete_link = (By.LINK_TEXT, "Delete this folder")
     name_input = NameInputElement()
     delete_button = (By.NAME, "delete")
-    save_button = (By.CSS_SELECTOR, "main [type=submit]")
+    save_button = (
+        By.CSS_SELECTOR,
+        "form button.govuk-button:not(.govuk-button--secondary)",
+    )
 
     def set_name(self, new_name):
         self.name_input = new_name
