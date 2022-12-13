@@ -50,6 +50,13 @@ urls = {
         "admin": "https://www.notify.works",
         "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
     },
+    # ECS apps are being deployed piecemeal and at present there are no api or govuk_alerts
+    # urls for the ecs-preview environment, so for now we will use those of the preview env
+    "ecs-preview": {
+        "api": "https://api.notify.works",
+        "admin": "https://www-ecs.notify.works",
+        "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
+    },
     "staging": {
         "api": "https://api.staging-notify.works",
         "admin": "https://www.staging-notify.works",
@@ -69,7 +76,7 @@ def setup_shared_config():
     """
     env = os.environ["ENVIRONMENT"].lower()
 
-    if env not in {"dev", "preview", "staging", "live"}:
+    if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
         pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
 
     config.update(
