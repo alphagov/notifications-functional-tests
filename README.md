@@ -35,7 +35,7 @@ Note, there is an order dependency in the main tests. The registration test must
 Populate the local database with fixture data:
 
 ```shell
-psql notification_api -f db_setup_fixtures.sql
+psql notification_api -f db_fixtures/local.sql
 ```
 
 Note: If you see any errors (for example a `duplicate key value violates unique constraint` line or similar), that table will not be saved but other following table inserts will still attempt. You'll need to fix the errors for that table (either in your local database or in the fixture script) and run the script again, or open `psql` and just copy-paste the lines from the script that you need.
@@ -122,5 +122,5 @@ Install pre-commit system-wide with, eg `brew install pre-commit`. Then, install
 
 ## Further documentation
 
-- [Updating db_setup_fixtures](docs/update-db_setup_fixtures.md)
+- [Updating local database fixtures](docs/update-local-db-fixtures.md)
 - [Style guide](docs/style-guide.md)
