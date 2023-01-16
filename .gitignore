@@ -67,3 +67,7 @@ environment*.sh
 docker.env
 
 screenshots
+
+db_fixtures/preview.sql
+db_fixtures/staging.sql
+db_fixtures/production.sql
