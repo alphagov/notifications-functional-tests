@@ -7,6 +7,7 @@ from tests.pages import (
     ServiceSettingsPage,
     SmsSenderPage,
 )
+from tests.pages.rollups import sign_in
 from tests.test_utils import (
     do_user_can_add_reply_to_email_to_service,
     do_user_can_invite_someone_to_notify,
@@ -24,11 +25,28 @@ def register_user(_driver):
     do_user_registration(_driver)
 
 
+def _sign_in_again(driver):
+    # sign back in as the original service user
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.sign_out()
+    dashboard_page.wait_until_url_is(config["notify_admin_url"])
+
+    sign_in(driver, account_type="normal")
+
+    service_id = dashboard_page.get_service_id()
+    dashboard_page.go_to_dashboard_for_service(service_id)
+
+
 @recordtime
 @pytest.mark.xdist_group(name="registration-flow")
 def test_invite_flow(driver):
     do_user_can_invite_someone_to_notify(driver, basic_view=False)
+
+    _sign_in_again(driver)
+
     do_user_can_invite_someone_to_notify(driver, basic_view=True)
+
+    _sign_in_again(driver)
 
 
 @recordtime
