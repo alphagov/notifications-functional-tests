@@ -18,13 +18,11 @@ from tests.functional.preview_and_dev.consts import (
 )
 from tests.pages import (
     ApiIntegrationPage,
-    ChangeName,
     DashboardPage,
     EditEmailTemplatePage,
     InviteUserPage,
     ManageFolderPage,
     PreviewLetterPage,
-    ServiceSettingsPage,
     ShowTemplatesPage,
     TeamMembersPage,
     UploadCsvPage,
@@ -543,34 +541,6 @@ def test_template_folder_permissions(driver, login_seeded_user):
         manage_folder_page = ManageFolderPage(driver)
         manage_folder_page.delete_folder()
         manage_folder_page.confirm_delete_folder()
-
-
-@pytest.mark.xdist_group(name="seeded-user")
-def test_change_service_name(driver, login_seeded_user):
-    new_name = "Functional Tests {}".format(uuid.uuid4())
-    dashboard_page = DashboardPage(driver)
-    # make sure the service is actually named what we expect
-    assert dashboard_page.get_service_name() == config["service"]["name"]
-    dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
-    dashboard_page.click_settings()
-    service_settings = ServiceSettingsPage(driver)
-    change_name = ChangeName(driver)
-    change_name.go_to_change_service_name(config["service"]["id"])
-    change_name.enter_new_name(new_name)
-    change_name.click_save()
-    service_settings.check_service_name(new_name)
-
-    dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
-    assert dashboard_page.get_service_name() == new_name
-
-    # change the name back
-    change_name.go_to_change_service_name(config["service"]["id"])
-    change_name.enter_new_name(config["service"]["name"])
-    change_name.click_save()
-    service_settings.check_service_name(config["service"]["name"])
-
-    dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
-    assert dashboard_page.get_service_name() == config["service"]["name"]
 
 
 def _check_status_of_notification(

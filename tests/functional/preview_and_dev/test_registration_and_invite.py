@@ -1,6 +1,12 @@
 import pytest
 
-from tests.pages import DashboardPage, SmsSenderPage
+from config import config
+from tests.pages import (
+    ChangeName,
+    DashboardPage,
+    ServiceSettingsPage,
+    SmsSenderPage,
+)
 from tests.test_utils import (
     do_user_can_add_reply_to_email_to_service,
     do_user_can_invite_someone_to_notify,
@@ -75,3 +81,37 @@ def test_can_update_sms_sender_of_service(driver):
     assert "first \u2002 (default)" in main_content.text
 
     dashboard_page.go_to_dashboard_for_service(service_id)
+
+
+@recordtime
+@pytest.mark.xdist_group(name="registration-flow")
+def test_change_service_name(driver):
+    old_name = config["service_name"]
+    new_name = f"{old_name} (renamed)"
+
+    dashboard_page = DashboardPage(driver)
+    service_settings = ServiceSettingsPage(driver)
+    change_name = ChangeName(driver)
+
+    # make sure the service is actually named what we expect
+    assert dashboard_page.get_service_name() == old_name
+
+    dashboard_page.go_to_dashboard_for_service()
+    dashboard_page.click_settings()
+
+    service_settings.go_to_change_service_name()
+
+    change_name.enter_new_name(new_name)
+    change_name.click_save()
+
+    dashboard_page.go_to_dashboard_for_service()
+    assert dashboard_page.get_service_name() == new_name
+
+    # change the name back. it's probably not essential that this happens
+    dashboard_page.click_settings()
+    service_settings.go_to_change_service_name()
+    change_name.enter_new_name(old_name)
+    change_name.click_save()
+
+    dashboard_page.go_to_dashboard_for_service()
+    assert dashboard_page.get_service_name() == old_name
