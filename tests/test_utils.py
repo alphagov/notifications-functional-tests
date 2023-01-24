@@ -221,8 +221,6 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
     assert dashboard_page.get_service_name() == config["service_name"]
     if basic_view:
         is_basic_view(dashboard_page)
-        dashboard_page.sign_out()
-        dashboard_page.wait_until_url_is(config["notify_admin_url"])
     else:
         is_view_for_all_permissions(dashboard_page)
 

@@ -1,7 +1,7 @@
 import urllib.parse
 
-from notifications_python_client.base import BaseAPIClient
 from notifications_python_client.authentication import create_jwt_token
+from notifications_python_client.base import BaseAPIClient
 
 
 class BroadcastClient(BaseAPIClient):

@@ -151,6 +151,7 @@ class SmsSenderLocators(object):
 
 class ServiceSettingsLocators(object):
     SERVICE_NAME = (By.CSS_SELECTOR, ".navigation-service-name")
+    CHANGE_SERVICE_NAME_LINK = (By.CSS_SELECTOR, "tr:nth-child(1) > td:nth-child(3) a")
 
 
 class ChangeNameLocators(object):
