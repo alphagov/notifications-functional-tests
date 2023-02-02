@@ -117,6 +117,7 @@ class AntiStaleElementList(AntiStale):
 class BasePage(object):
 
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
+    profile_page_link = NavigationLocators.PROFILE_LINK
 
     def __init__(self, driver):
         self.base_url = config["notify_admin_url"]
@@ -162,8 +163,12 @@ class BasePage(object):
         )
 
     def sign_out(self):
-        element = self.wait_for_element(BasePage.sign_out_link)
-        element.click()
+        profile_page_link = self.wait_for_element(BasePage.profile_page_link)
+        profile_page_link.click()
+
+        sign_out_link = self.wait_for_element(BasePage.sign_out_link)
+        sign_out_link.click()
+
         self.driver.delete_all_cookies()
 
     def wait_until_url_is(self, url):
