@@ -37,7 +37,7 @@ logging.basicConfig(
     filename="./logs/test_run_{}.log".format(datetime.utcnow()), level=logging.INFO
 )
 
-jenkins_build_id = os.getenv("BUILD_ID", "No build id")
+build_id = os.getenv("BUILD_ID", "No build id")
 
 default = " (default)"
 
@@ -54,7 +54,7 @@ def create_temp_csv(fields):
     directory_name = tempfile.mkdtemp()
     csv_filename = "{}-sample.csv".format(uuid.uuid4())
     csv_file_path = os.path.join(directory_name, csv_filename)
-    fields.update({"build_id": jenkins_build_id})
+    fields.update({"build_id": build_id})
     with open(csv_file_path, "w") as csv_file:
         csv_writer = csv.DictWriter(csv_file, fieldnames=fields.keys())
         csv_writer.writeheader()

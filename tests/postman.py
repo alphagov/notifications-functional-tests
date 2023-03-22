@@ -7,8 +7,8 @@ from tests.test_utils import RetryException, create_temp_csv
 
 
 def send_notification_via_api(client, template_id, to, message_type):
-    jenkins_build_id = os.getenv("BUILD_ID", "No build id")
-    personalisation = {"build_id": jenkins_build_id}
+    build_id = os.getenv("BUILD_ID", "No build id")
+    personalisation = {"build_id": build_id}
 
     if message_type == "sms":
         resp_json = client.send_sms_notification(to, template_id, personalisation)

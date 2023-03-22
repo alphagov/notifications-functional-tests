@@ -146,9 +146,9 @@ def setup_preview_dev_config():
                 ),
                 "sms_sender_text": "func tests",
                 "templates": {
-                    "email": os.environ["JENKINS_BUILD_EMAIL_TEMPLATE_ID"],
-                    "sms": os.environ["JENKINS_BUILD_SMS_TEMPLATE_ID"],
-                    "letter": os.environ["JENKINS_BUILD_LETTER_TEMPLATE_ID"],
+                    "email": os.environ["FUNCTIONAL_TESTS_EMAIL_TEMPLATE_ID"],
+                    "sms": os.environ["FUNCTIONAL_TESTS_SMS_TEMPLATE_ID"],
+                    "letter": os.environ["FUNCTIONAL_TESTS_LETTER_TEMPLATE_ID"],
                 },
                 "inbound_number": os.environ["FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER"],
             },
@@ -178,8 +178,8 @@ def setup_staging_prod_config():
                 "email_auth_account": os.environ["FUNCTIONAL_TEST_EMAIL_AUTH"],
                 "seeded_user": {"password": os.environ["FUNCTIONAL_TEST_PASSWORD"]},
                 "templates": {
-                    "email": os.environ["JENKINS_BUILD_EMAIL_TEMPLATE_ID"],
-                    "sms": os.environ["JENKINS_BUILD_SMS_TEMPLATE_ID"],
+                    "email": os.environ["FUNCTIONAL_TESTS_EMAIL_TEMPLATE_ID"],
+                    "sms": os.environ["FUNCTIONAL_TESTS_SMS_TEMPLATE_ID"],
                     # letter template not set up on staging and prod
                 },
                 "inbound_number": os.environ["PROVIDER_TEST_INBOUND_NUMBER"],
