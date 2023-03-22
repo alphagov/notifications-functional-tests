@@ -1,19 +1,19 @@
-# Updating db_setup_fixtures.sql
+# Updating local database fixtures
 
-Sometimes we need to add new fixtures to our functional tests setup. When we do that, it is good to update db_setup_fixtures.sql with those new fixtures.
+Sometimes we need to add new fixtures to our functional tests setup. When we do that, it is good to update db_fixtures/local.sql with those new fixtures.
 We do this work so that it's easier for new devs to set up and so we can maintain consistency across local environments.
 
-Below please find a step-by-step guide for updating db_setup_fixtures.sql:
+Below please find a step-by-step guide for updating db_fixtures/local.sql:
 
 1. Back up your local database with `pg_dump --format=t notification_api > ~/Downloads/my_local_db_backup.tar`
 2. Drop your local db with `dropdb notification_api`
 3. Run `make bootstrap` in the notifications-api repo to set up the database.
-4. Run `psql notification_api --file=db_setup_fixtures.sql` to get existing db objects from the db_setup_fixtures file.
+4. Run `psql notification_api --file=db_fixtures/local.sql` to insert the existing fixtures for your local environment.
 5. Make changes to your local that you want in the fixture. Note, you'll need to log in as one of the functional test users if you want to use the interface. You might need to tempoarily go into the database and make them a platform admin depending on what you are doing.
 6. Back up your new functional test data with `pg_dump --format=p --data-only notification_api > temp_db_setup_fixtures.sql`
 7. Compare the new fixtures file with the existing one and remove any extra rows that people won't want to re-add to their database. For example, Notify service templates, any notifications you might have sent while making the changes, etc.
 8. (Optional) revert your local to its previous state with `dropdb notification_api` then recreate with `createdb notification_api` and restore your data with `pg_restore -Ft -d notification_api < ~/Downloads/my_local_db_backup.tar`; Then apply the `temp_db_setup_fixtures.sql` you just updated (you may have to tackle quite a few errors), or open `psql` and just copy-paste the lines from the script that you need.
-9. When tests using the new fixtures are ready, add the new db rows to preview environment by copying the lines you need from the db_setup_fixtures.sql, for example:
+9. You may need to also copy these fixtures onto the preview database so the functional tests you've written will also run successfully there, for example:
 
 ```sql
 --log into preview

@@ -35,7 +35,7 @@ Note, there is an order dependency in the main tests. The registration test must
 Populate the local database with fixture data:
 
 ```shell
-psql notification_api -f db_setup_fixtures.sql
+psql notification_api -f db_fixtures/local.sql
 ```
 
 Note: If you see any errors (for example a `duplicate key value violates unique constraint` line or similar), that table will not be saved but other following table inserts will still attempt. You'll need to fix the errors for that table (either in your local database or in the fixture script) and run the script again, or open `psql` and just copy-paste the lines from the script that you need.
@@ -112,6 +112,17 @@ We use the following annotations on test methods to define the groups:
 
 More groups generally equals better parallelisation (limited by test runner count). However, in the case of functional tests, increased parallelisation increases the risk of side effects and race conditions in the shared environment unless grouped carefully.
 
+## Database fixtures
+
+For the functional tests to pass in any environment, they require certain database fixtures to exist.
+
+For your local environment, these fixtures are found in db_fixtures/local.sql. There are [instructions on how to update the local database fixtures](docs/update-local-db-fixtures.md).
+
+For our preview environment, these fixtures are not yet stored in code, but will be similar to (but not the same as) the local fixtures.
+
+For our staging environment, these fixtures are found in db_fixtures/staging.sql.j2. You'll need to generate the actual fixtures by populating the jinja template with some secrets from the credentials repo. You can do this using `make generate-staging-db-fixtures`. You should only need to do this in the very rare case that our staging database has lost the fixtures that exist in there already.
+
+For our production environment, these fixtures are not yet stored in code, but will be similar to (but not the same as) the staging fixtures.
 
 ## Pre-commit
 
@@ -122,5 +133,5 @@ Install pre-commit system-wide with, eg `brew install pre-commit`. Then, install
 
 ## Further documentation
 
-- [Updating db_setup_fixtures](docs/update-db_setup_fixtures.md)
+- [Updating local database fixtures](docs/update-local-db-fixtures.md)
 - [Style guide](docs/style-guide.md)

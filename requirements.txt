@@ -10,3 +10,4 @@ selenium==4.6.0
 notifications-python-client==6.4.1
 pytest-xdist==3.0.2
 black==22.10.0  # Also update `.pre-commit-config.yaml` if this changes
+jinja2-cli==0.8.2
