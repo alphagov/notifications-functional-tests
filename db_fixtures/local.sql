@@ -35,9 +35,9 @@ c1d8e17f-3abe-4858-913e-d88f689ca430	functional_tests_service_live_key	Ijg0NmE4O
 \.
 
 COPY templates_history (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, service_letter_contact_id, hidden, postage, broadcast_data) FROM stdin;
-75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Jenkins Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Jenkins Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Jenkins Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N
+75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
+63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
+c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N
 \.
 
 COPY inbound_numbers (id, number, provider, service_id, active, created_at, updated_at) FROM stdin;
@@ -45,9 +45,9 @@ COPY inbound_numbers (id, number, provider, service_id, active, created_at, upda
 \.
 
 COPY templates (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, service_letter_contact_id, hidden, postage, broadcast_data) FROM stdin;
-75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Jenkins Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Jenkins Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Jenkins Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N
+75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
+63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
+c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N
 \.
 
 COPY permissions (id, service_id, user_id, permission, created_at) FROM stdin;

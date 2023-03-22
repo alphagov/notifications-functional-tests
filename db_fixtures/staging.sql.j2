@@ -40,13 +40,13 @@ COPY permissions (id, service_id, user_id, permission, created_at) FROM stdin;
 \.
 
 COPY templates (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, hidden) FROM stdin;
-a04e2700-03af-4398-b855-03434de2860a	Functional Tests - CSV Email Template with Jenkins Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	Functional Tests - CSV Email	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
-bcc6c6d1-6dd8-49c7-8c28-075da9dcfcf3	Functional Tests - CSV SMS Template with Jenkins Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	\N	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
+a04e2700-03af-4398-b855-03434de2860a	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	Functional Tests - CSV Email	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
+bcc6c6d1-6dd8-49c7-8c28-075da9dcfcf3	Functional Tests - CSV SMS Template with build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	\N	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
 \.
 
 COPY templates_history (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, hidden) FROM stdin;
-a04e2700-03af-4398-b855-03434de2860a	Functional Tests - CSV Email Template with Jenkins Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	Functional Tests - CSV Email	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
-bcc6c6d1-6dd8-49c7-8c28-075da9dcfcf3	Functional Tests - CSV SMS Template with Jenkins Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Jenkins build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	\N	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
+a04e2700-03af-4398-b855-03434de2860a	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	Functional Tests - CSV Email	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
+bcc6c6d1-6dd8-49c7-8c28-075da9dcfcf3	Functional Tests - CSV SMS Template with Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	\N	ff336294-a59e-46a6-a339-dd23a0635a0e	1	f	normal	f
 \.
 
 COPY service_sms_senders (id, sms_sender, service_id, is_default, created_at, updated_at, archived) FROM stdin;
