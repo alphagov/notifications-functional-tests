@@ -3,12 +3,12 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 
 from broadcast_client.broadcast_client import BroadcastClient
 from config import config, setup_shared_config
+from tests.client import FunctionalTestsAPIClient
 from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in, sign_in_email_auth
 
@@ -93,7 +93,7 @@ def login_seeded_user(_driver):
 
 @pytest.fixture(scope="module")
 def client_live_key():
-    client = NotificationsAPIClient(
+    client = FunctionalTestsAPIClient(
         base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"]
     )
     return client
@@ -101,7 +101,7 @@ def client_live_key():
 
 @pytest.fixture(scope="module")
 def client_test_key():
-    client = NotificationsAPIClient(
+    client = FunctionalTestsAPIClient(
         base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"]
     )
     return client
