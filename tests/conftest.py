@@ -32,8 +32,6 @@ def download_directory(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
-    http_proxy = os.getenv("HTTP_PROXY")
-
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
     options.add_argument("user-agent=Selenium")
@@ -49,9 +47,6 @@ def _driver(request, download_directory):
 
     if not request.config.getoption("--no-headless"):
         options.add_argument("--headless")
-
-    if http_proxy is not None and http_proxy != "":
-        options.add_argument("--proxy-server={}".format(http_proxy))
 
     service = ChromeService(
         log_path="./logs/chrome_browser.log", service_args=["--verbose"]
