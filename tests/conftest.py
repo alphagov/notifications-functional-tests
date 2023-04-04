@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
+from seleniumwire import webdriver as selenium_wire_webdriver
 
 from broadcast_client.broadcast_client import BroadcastClient
 from config import config, setup_shared_config
@@ -52,8 +53,14 @@ def _driver(request, download_directory):
         log_path="./logs/chrome_browser.log", service_args=["--verbose"]
     )
 
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = selenium_wire_webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
+
+    def interceptor(request):
+        request.headers["x-notify-ecs-origin"] = "true"
+
+    if os.getenv("NOTIFY_ECS_ORIGIN"):
+        driver.request_interceptor = interceptor
 
     driver.delete_all_cookies()
 
