@@ -3,12 +3,13 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
+from seleniumwire import webdriver as selenium_wire_webdriver
 
 from broadcast_client.broadcast_client import BroadcastClient
 from config import config, setup_shared_config
+from tests.client import FunctionalTestsAPIClient
 from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in, sign_in_email_auth
 
@@ -32,8 +33,6 @@ def download_directory(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
-    http_proxy = os.getenv("HTTP_PROXY")
-
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
     options.add_argument("user-agent=Selenium")
@@ -50,15 +49,18 @@ def _driver(request, download_directory):
     if not request.config.getoption("--no-headless"):
         options.add_argument("--headless")
 
-    if http_proxy is not None and http_proxy != "":
-        options.add_argument("--proxy-server={}".format(http_proxy))
-
     service = ChromeService(
         log_path="./logs/chrome_browser.log", service_args=["--verbose"]
     )
 
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = selenium_wire_webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
+
+    def interceptor(request):
+        request.headers["x-notify-ecs-origin"] = "true"
+
+    if os.getenv("NOTIFY_ECS_ORIGIN"):
+        driver.request_interceptor = interceptor
 
     driver.delete_all_cookies()
 
@@ -98,7 +100,7 @@ def login_seeded_user(_driver):
 
 @pytest.fixture(scope="module")
 def client_live_key():
-    client = NotificationsAPIClient(
+    client = FunctionalTestsAPIClient(
         base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"]
     )
     return client
@@ -106,7 +108,7 @@ def client_live_key():
 
 @pytest.fixture(scope="module")
 def client_test_key():
-    client = NotificationsAPIClient(
+    client = FunctionalTestsAPIClient(
         base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"]
     )
     return client
