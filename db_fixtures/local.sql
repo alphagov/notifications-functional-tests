@@ -6,13 +6,13 @@ c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	Preview admin tests user	notify-tests-previ
 1048af40-45f6-4249-a670-df72ba3352d7	Functional Tests - Broadcast User Approve	notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk	2021-07-14 14:52:41.503215	2021-07-14 14:53:59.806529	$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC	07700900003	2021-07-14 14:52:41.496841	2021-07-14 14:53:00.204258	0	active	f	\N	sms_auth	NOW()
 \.
 
-COPY organisation (id, name, active, created_at, updated_at, email_branding_id, letter_branding_id, agreement_signed, agreement_signed_at, agreement_signed_by_id, agreement_signed_version, crown, organisation_type, request_to_go_live_notes, agreement_signed_on_behalf_of_email_address, agreement_signed_on_behalf_of_name, billing_contact_email_addresses, billing_contact_names, billing_reference, notes, purchase_order_number) FROM stdin;
-e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.500149	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+COPY organisation (id, name, active, created_at, updated_at, email_branding_id, letter_branding_id, agreement_signed, agreement_signed_at, agreement_signed_by_id, agreement_signed_version, crown, organisation_type, request_to_go_live_notes, agreement_signed_on_behalf_of_email_address, agreement_signed_on_behalf_of_name, billing_contact_email_addresses, billing_contact_names, billing_reference, notes, purchase_order_number, can_approve_own_go_live_requests) FROM stdin;
+e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.500149	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t
 \.
 
-COPY services (id, name, created_at, updated_at, active, message_limit, restricted, email_from, created_by_id, version, research_mode, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number) FROM stdin;
-34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	250000	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	f	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	t	\N	\N	\N	\N	\N	\N	\N	\N
-8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	50	f	functional.tests.broadcast.service	0d2e9b87-9c54-448c-b549-f764231ee599	2	f	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N
+COPY services (id, name, created_at, updated_at, active, restricted, email_from, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
+34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	t	\N	\N	\N	\N	\N	\N	\N	\N	10	1000	1000	f
+8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	f	functional.tests.broadcast.service	0d2e9b87-9c54-448c-b549-f764231ee599	2	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N	10	1000	1000	f
 \.
 
 COPY annual_billing (id, service_id, financial_year_start, free_sms_fragment_limit, updated_at, created_at) FROM stdin;
@@ -102,9 +102,9 @@ bdf151d6-2fd7-4c7f-96e5-4a23a373d13a	func tests	34b725f0-1f47-49bc-a9f5-aa2a8458
 1f54be97-48f5-4a57-afdb-b548dbba477a	development	8e1d56fa-12a8-4d00-bed2-db47180bed0a	t	\N	2021-07-14 14:36:03.457803	\N	f
 \.
 
-COPY services_history (id, name, created_at, updated_at, active, message_limit, restricted, email_from, created_by_id, version, research_mode, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number) FROM stdin;
-8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	\N	t	50	t	functional.tests.broadcast.service	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	central	t	\N	3000	\N	\N	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N
-8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	50	f	functional.tests.broadcast.service	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N
+COPY services_history (id, name, created_at, updated_at, active, letter_message_limit, restricted, email_from, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
+8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	\N	t	50	t	functional.tests.broadcast.service	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	central	t	\N	3000	\N	\N	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	5000	5000	f
+8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	50	f	functional.tests.broadcast.service	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N	5000	5000	f
 \.
 
 COPY template_redacted (template_id, redact_personalisation, updated_at, updated_by_id) FROM stdin;
