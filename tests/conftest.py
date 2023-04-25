@@ -53,7 +53,9 @@ def _driver(request, download_directory):
         log_path="./logs/chrome_browser.log", service_args=["--verbose"]
     )
 
-    driver = selenium_wire_webdriver.Chrome(service=service, options=options)
+    driver = selenium_wire_webdriver.Chrome(
+        service=service, options=options, seleniumwire_options={"mitm_http2": False}
+    )
     driver.set_window_size(1280, 720)
 
     def interceptor(request):
