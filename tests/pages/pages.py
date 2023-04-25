@@ -627,7 +627,7 @@ class EditEmailTemplatePage(BasePage):
     def folder_path_item(folder_name):
         return (
             By.XPATH,
-            "//a[contains(@class,'folder-heading-folder') and contains(text(), '{}')]".format(
+            "//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{}')]/..".format(
                 folder_name
             ),
         )
