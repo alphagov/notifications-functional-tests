@@ -25,16 +25,12 @@ def send_precompiled_letter_via_api(reference, client, pdf_file):
 
 def send_notification_via_csv(upload_csv_page, message_type, seeded=False):
     service_id = config["service"]["id"] if seeded else config["service"]["id"]
-    email = (
-        config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
-    )
+    email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
     letter_contact = config["letter_contact_data"]
 
     if message_type == "sms":
         template_id = config["service"]["templates"]["sms"]
-        directory, filename = create_temp_csv(
-            {"phone number": config["user"]["mobile"]}
-        )
+        directory, filename = create_temp_csv({"phone number": config["user"]["mobile"]})
     elif message_type == "email":
         template_id = config["service"]["templates"]["email"]
         directory, filename = create_temp_csv({"email address": email})

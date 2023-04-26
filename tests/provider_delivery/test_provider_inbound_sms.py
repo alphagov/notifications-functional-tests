@@ -24,7 +24,5 @@ def test_provider_inbound_sms_delivery_via_api(client_live_key):
 def get_inbound_sms(client_live_key, expected_content):
     # this'll raise if the message isn't in the list.
     return next(
-        x
-        for x in client_live_key.get_received_texts()["received_text_messages"]
-        if expected_content in x["content"]
+        x for x in client_live_key.get_received_texts()["received_text_messages"] if expected_content in x["content"]
     )

@@ -82,15 +82,11 @@ class AntiStaleElement(AntiStale):
         def _click():
             # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
             # the scrollIntoView function to bring it to the top of the page
-            self.driver.execute_script(
-                "arguments[0].scrollIntoViewIfNeeded()", self.element
-            )
+            self.driver.execute_script("arguments[0].scrollIntoViewIfNeeded()", self.element)
             try:
                 self.element.click()
             except WebDriverException:
-                self.driver.execute_script(
-                    "arguments[0].scrollIntoView()", self.element
-                )
+                self.driver.execute_script("arguments[0].scrollIntoView()", self.element)
                 self.element.click()
 
         return self.retry_on_stale(_click)
@@ -137,9 +133,7 @@ class BasePage(object):
         return AntiStaleElement(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(locator)
-            ),
+            lambda locator: WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(locator)),
         )
 
     def wait_for_element(self, locator, time=10):
@@ -262,9 +256,7 @@ class HomePage(BasePage):
     def accept_cookie_warning(self):
         # if the cookie warning isn't present, this does nothing
         try:
-            self.wait_for_element(
-                CommonPageLocators.ACCEPT_COOKIE_BUTTON, time=1
-            ).click()
+            self.wait_for_element(CommonPageLocators.ACCEPT_COOKIE_BUTTON, time=1).click()
         except (NoSuchElementException, TimeoutException):
             return
 
@@ -444,9 +436,7 @@ class DashboardPage(BasePage):
         return int(element.text)
 
     def get_template_message_count(self, template_id):
-        messages_sent_count_for_template_div = self._message_count_for_template_div(
-            template_id
-        )
+        messages_sent_count_for_template_div = self._message_count_for_template_div(template_id)
         element = self.wait_for_element(messages_sent_count_for_template_div)
 
         return int(element.text)
@@ -478,9 +468,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def template_link_text(link_text):
         return (
             By.XPATH,
-            "//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{}')]".format(
-                link_text
-            ),
+            "//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{}')]".format(link_text),
         )
 
     @staticmethod
@@ -579,9 +567,7 @@ class EditSmsTemplatePage(BasePage):
         if content:
             self.template_content_input = content
         else:
-            self.template_content_input = (
-                "The quick brown fox jumped over the lazy dog. Job id: ((build_id))"
-            )
+            self.template_content_input = "The quick brown fox jumped over the lazy dog. Job id: ((build_id))"
         self.click_save()
 
 
@@ -596,15 +582,11 @@ class SendEmailTemplatePage(BasePage):
     edit_email_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
 
     def click_add_a_new_template(self):
-        element = self.wait_for_element(
-            SendEmailTemplatePage.add_a_new_email_template_link
-        )
+        element = self.wait_for_element(SendEmailTemplatePage.add_a_new_email_template_link)
         element.click()
 
     def click_add_new_template(self):
-        element = self.wait_for_element(
-            SendEmailTemplatePage.add_new_email_template_link
-        )
+        element = self.wait_for_element(SendEmailTemplatePage.add_new_email_template_link)
         element.click()
 
 
@@ -627,9 +609,7 @@ class EditEmailTemplatePage(BasePage):
     def folder_path_item(folder_name):
         return (
             By.XPATH,
-            "//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{}')]/..".format(
-                folder_name
-            ),
+            "//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{}')]/..".format(folder_name),
         )
 
     def click_save(self):
@@ -648,9 +628,7 @@ class EditEmailTemplatePage(BasePage):
         if content:
             self.template_content_input = content
         else:
-            self.template_content_input = (
-                "The quick brown fox jumped over the lazy dog. Job id: ((build_id))"
-            )
+            self.template_content_input = "The quick brown fox jumped over the lazy dog. Job id: ((build_id))"
         self.click_save()
 
     def click_folder_path(self, folder_name):
@@ -681,18 +659,14 @@ class UploadCsvPage(BasePage):
             element = self.wait_for_element(UploadCsvPage.first_notification)
             notification_id = element.get_attribute("id")
             if not notification_id:
-                raise RetryException(
-                    "No notification id yet {}".format(notification_id)
-                )
+                raise RetryException("No notification id yet {}".format(notification_id))
             else:
                 return notification_id
         except StaleElementReferenceException:
             raise RetryException("Could not find element...")
 
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
-        url = "{}/services/{}/send/{}/csv".format(
-            self.base_url, service_id, template_id
-        )
+        url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
         self.driver.get(url)
 
 
@@ -706,9 +680,7 @@ class TeamMembersPage(BasePage):
         return self.wait_for_element(
             (
                 By.XPATH,
-                "//h2[@title='{}']/ancestor::div[contains(@class, 'user-list-item')]//a".format(
-                    email
-                ),
+                "//h2[@title='{}']/ancestor::div[contains(@class, 'user-list-item')]//a".format(email),
             )
         )
 
@@ -738,38 +710,24 @@ class InviteUserPage(BasePage):
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
 
     def get_folder_checkbox(self, folder_name):
-        label = self.driver.find_elements(
-            By.XPATH, f"//label[contains(text(), '{folder_name}')]"
-        )
+        label = self.driver.find_elements(By.XPATH, f"//label[contains(text(), '{folder_name}')]")
         return (By.ID, label[0].get_attribute("for"))
 
     def fill_invitation_form(self, email, send_messages_only):
         self.email_input = email
         if send_messages_only:
-            element = self.wait_for_invisible_element(
-                InviteUserPage.send_messages_checkbox
-            )
+            element = self.wait_for_invisible_element(InviteUserPage.send_messages_checkbox)
             self.select_checkbox_or_radio(element)
         else:
-            element = self.wait_for_invisible_element(
-                InviteUserPage.see_dashboard_check_box
-            )
+            element = self.wait_for_invisible_element(InviteUserPage.see_dashboard_check_box)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(
-                InviteUserPage.send_messages_checkbox
-            )
+            element = self.wait_for_invisible_element(InviteUserPage.send_messages_checkbox)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(
-                InviteUserPage.manage_templates_checkbox
-            )
+            element = self.wait_for_invisible_element(InviteUserPage.manage_templates_checkbox)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(
-                InviteUserPage.manage_services_checkbox
-            )
+            element = self.wait_for_invisible_element(InviteUserPage.manage_services_checkbox)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(
-                InviteUserPage.manage_api_keys_checkbox
-            )
+            element = self.wait_for_invisible_element(InviteUserPage.manage_api_keys_checkbox)
             self.select_checkbox_or_radio(element)
 
     def send_invitation(self):
@@ -782,30 +740,22 @@ class InviteUserPage(BasePage):
 
     def uncheck_folder_permission_checkbox(self, folder_name):
         try:
-            choose_folders_button = self.wait_for_invisible_element(
-                InviteUserPage.choose_folders_button
-            )
+            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
             choose_folders_button.click()
         except (NoSuchElementException, TimeoutException):
             pass
 
-        checkbox = self.wait_for_invisible_element(
-            self.get_folder_checkbox(folder_name)
-        )
+        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
         self.unselect_checkbox(checkbox)
 
     def is_checkbox_checked(self, folder_name):
         try:
-            choose_folders_button = self.wait_for_invisible_element(
-                InviteUserPage.choose_folders_button
-            )
+            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
             choose_folders_button.click()
         except (NoSuchElementException, TimeoutException):
             pass
 
-        checkbox = self.wait_for_invisible_element(
-            self.get_folder_checkbox(folder_name)
-        )
+        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
         return checkbox.get_attribute("checked")
 
 
@@ -890,15 +840,11 @@ class SendOneRecipient(BasePage):
 
     def get_preview_contents(self):
         table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
-        rows = table.find_elements(
-            By.TAG_NAME, "tr"
-        )  # get all of the rows in the table
+        rows = table.find_elements(By.TAG_NAME, "tr")  # get all of the rows in the table
         return rows
 
     def choose_alternative_sender(self):
-        radio = self.wait_for_invisible_element(
-            SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO
-        )
+        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
         radio.click()
 
     def send_to_myself(self, message_type):
@@ -911,9 +857,7 @@ class SendOneRecipient(BasePage):
 
 class ServiceSettingsPage(BasePage):
     def go_to_change_service_name(self):
-        element = self.wait_for_element(
-            ServiceSettingsLocators.CHANGE_SERVICE_NAME_LINK
-        )
+        element = self.wait_for_element(ServiceSettingsLocators.CHANGE_SERVICE_NAME_LINK)
         element.click()
 
 
@@ -930,9 +874,7 @@ class ChangeName(BasePage):
 
 class EmailReplyTo(BasePage):
     def go_to_add_email_reply_to_address(self, service_id):
-        url = "{}/services/{}/service-settings/email-reply-to/add".format(
-            self.base_url, service_id
-        )
+        url = "{}/services/{}/service-settings/email-reply-to/add".format(self.base_url, service_id)
         self.driver.get(url)
 
     def click_add_email_reply_to(self):
@@ -958,23 +900,17 @@ class EmailReplyTo(BasePage):
         self.driver.get(url)
 
     def check_is_default_check_box(self):
-        radio = self.wait_for_invisible_element(
-            EmailReplyToLocators.IS_DEFAULT_CHECKBOX
-        )
+        radio = self.wait_for_invisible_element(EmailReplyToLocators.IS_DEFAULT_CHECKBOX)
         radio.click()
 
 
 class SmsSenderPage(BasePage):
     def go_to_text_message_senders(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender".format(
-            self.base_url, service_id
-        )
+        url = "{}/services/{}/service-settings/sms-sender".format(self.base_url, service_id)
         self.driver.get(url)
 
     def go_to_add_text_message_sender(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender/add".format(
-            self.base_url, service_id
-        )
+        url = "{}/services/{}/service-settings/sms-sender/add".format(self.base_url, service_id)
         self.driver.get(url)
 
     def insert_sms_sender(self, sender):
@@ -1159,6 +1095,4 @@ class GovUkAlertsPage(BasePage):
     def check_alert_is_published(self, broadcast_content):
         if not self.is_text_present_on_page(broadcast_content):
             self.driver.refresh()
-            raise RetryException(
-                f'Could not find alert with content "{broadcast_content}"'
-            )
+            raise RetryException(f'Could not find alert with content "{broadcast_content}"')

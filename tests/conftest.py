@@ -49,9 +49,7 @@ def _driver(request, download_directory):
     if not request.config.getoption("--no-headless"):
         options.add_argument("--headless")
 
-    service = ChromeService(
-        log_path="./logs/chrome_browser.log", service_args=["--verbose"]
-    )
+    service = ChromeService(log_path="./logs/chrome_browser.log", service_args=["--verbose"])
 
     driver = selenium_wire_webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
@@ -79,11 +77,7 @@ def driver(_driver, request):
     if prev_failed_tests != request.session.testsfailed:
         print("URL at time of failure:", _driver.current_url)
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        filename = str(
-            Path.cwd()
-            / "screenshots"
-            / "{}_{}.png".format(filename_datetime, request.function.__name__)
-        )
+        filename = str(Path.cwd() / "screenshots" / "{}_{}.png".format(filename_datetime, request.function.__name__))
         _driver.save_screenshot(str(filename))
         print("Error screenshot saved to " + filename)
 
@@ -100,17 +94,13 @@ def login_seeded_user(_driver):
 
 @pytest.fixture(scope="module")
 def client_live_key():
-    client = FunctionalTestsAPIClient(
-        base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"]
-    )
+    client = FunctionalTestsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"])
     return client
 
 
 @pytest.fixture(scope="module")
 def client_test_key():
-    client = FunctionalTestsAPIClient(
-        base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"]
-    )
+    client = FunctionalTestsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"])
     return client
 
 

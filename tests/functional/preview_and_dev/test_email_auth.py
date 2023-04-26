@@ -17,9 +17,7 @@ def test_email_auth(driver):
     # login email auth user
     sign_in_email_auth(driver)
     # assert url is FUNCTIONAL_TESTS_SERVICE's dashboard
-    assert driver.current_url == config["notify_admin_url"] + "/services/{}".format(
-        config["service"]["id"]
-    )
+    assert driver.current_url == config["notify_admin_url"] + "/services/{}".format(config["service"]["id"])
     base_page = BasePage(driver)
     base_page.sign_out()
 
@@ -39,9 +37,7 @@ def test_reset_forgotten_password(driver):
     forgot_password_page.click_continue()
     assert forgot_password_page.is_page_title("Check your email")
 
-    do_email_verification(
-        driver, config["notify_templates"]["password_reset_template_id"], email
-    )
+    do_email_verification(driver, config["notify_templates"]["password_reset_template_id"], email)
     new_password_page = NewPasswordPage(driver)
     assert new_password_page.is_page_title("Create a new password")
     new_password_page.input_new_password(password)

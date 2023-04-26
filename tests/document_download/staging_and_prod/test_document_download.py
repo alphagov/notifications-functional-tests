@@ -16,16 +16,12 @@ from tests.test_utils import RetryException
 
 
 def _get_test_doc_dl_url(client_test_key, prepare_upload_kwargs):
-    file = prepare_upload(
-        BytesIO("foo-bar-baz".encode("utf-8")), **prepare_upload_kwargs
-    )
+    file = prepare_upload(BytesIO("foo-bar-baz".encode("utf-8")), **prepare_upload_kwargs)
     personalisation = {"build_id": file}
     email_address = config["user"]["email"]
     template_id = config["service"]["templates"]["email"]
 
-    resp_json = client_test_key.send_email_notification(
-        email_address, template_id, personalisation
-    )
+    resp_json = client_test_key.send_email_notification(email_address, template_id, personalisation)
 
     download_link = re.search(r"(https?://\S+)", resp_json["content"]["body"])
 
@@ -49,9 +45,7 @@ def get_downloaded_document(download_directory, filename):
     raise RetryException(f"{filename} not found in downloads folder")
 
 
-def test_document_download_with_email_confirmation(
-    driver, client_test_key, download_directory
-):
+def test_document_download_with_email_confirmation(driver, client_test_key, download_directory):
     download_link = _get_test_doc_dl_url(
         client_test_key,
         {"confirm_email_before_download": True},
