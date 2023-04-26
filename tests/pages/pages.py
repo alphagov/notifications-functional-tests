@@ -662,8 +662,8 @@ class UploadCsvPage(BasePage):
                 raise RetryException("No notification id yet {}".format(notification_id))
             else:
                 return notification_id
-        except StaleElementReferenceException:
-            raise RetryException("Could not find element...")
+        except StaleElementReferenceException as e:
+            raise RetryException("Could not find element...") from e
 
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
