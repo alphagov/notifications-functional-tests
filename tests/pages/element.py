@@ -13,14 +13,21 @@ from tests.pages.locators import (
 
 
 class BasePageElement(object):
-    def __init__(self, name=None):
+    def __init__(self, name=None, clear=False):
         if name:
             self.name = name
+        self.clear = clear
 
     def __set__(self, obj, value):
         driver = obj.driver
         WebDriverWait(driver, 100).until(lambda driver: driver.find_element(By.NAME, self.name))
-        driver.find_element(By.NAME, self.name).send_keys(value)
+
+        element = driver.find_element(By.NAME, self.name)
+
+        if self.clear:
+            element.clear()
+
+        element.send_keys(value)
 
     def __get__(self, obj, owner):
         driver = obj.driver
