@@ -39,6 +39,7 @@ from tests.test_utils import (
     NotificationStatuses,
     assert_notification_body,
     create_email_template,
+    create_letter_template,
     create_sms_template,
     delete_template,
     go_to_templates_page,
@@ -129,6 +130,30 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key
         existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     create_sms_template(driver, name=test_name, content=None)
+    go_to_templates_page(driver)
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
+
+    assert test_name in current_templates
+
+    delete_template(driver, test_name)
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
+    assert current_templates == existing_templates
+
+
+@recordtime
+@pytest.mark.xdist_group(name="seeded-user")
+def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_key):
+    test_name = "edit/delete letter template test"
+    go_to_templates_page(driver)
+    existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+    if len(existing_templates) == 0:
+        existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
+
+    create_letter_template(driver, name=test_name, content=None)
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:

@@ -60,6 +60,10 @@ class EditTemplatePageLocators(object):
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
 
 
+class ViewLetterTemplatePageLocators(object):
+    EDIT_BODY = (By.CLASS_NAME, "edit-template-link-letter-body")
+
+
 class UploadCsvLocators(object):
     FILE_INPUT = (By.ID, "file")
     SEND_BUTTON = (
