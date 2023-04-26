@@ -589,7 +589,7 @@ class EditLetterTemplatePage(BasePage):
     save_button = EditTemplatePageLocators.SAVE_BUTTON
 
     def click_save(self):
-        element = self.wait_for_element(EditSmsTemplatePage.save_button)
+        element = self.wait_for_element(EditLetterTemplatePage.save_button)
         element.click()
 
     def create_template(self, name="Test letter template", content=None):
