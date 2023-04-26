@@ -61,9 +61,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.is_text_present_on_page(
-        f"{broadcast_title} is waiting for approval"
-    )
+    assert prepare_alert_pages.is_text_present_on_page(f"{broadcast_title} is waiting for approval")
 
     prepare_alert_pages.sign_out()
 
@@ -77,9 +75,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert current_alerts_page.is_text_present_on_page("Live since ")
     alert_page_url = current_alerts_page.current_url
 
-    check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
-    )
+    check_alert_is_published_on_govuk_alerts(driver, "Current alerts", broadcast_content)
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -87,9 +83,7 @@ def test_prepare_broadcast_with_new_content(driver):
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
     current_alerts_page.click_continue()  # stop broadcasting
-    assert current_alerts_page.is_text_present_on_page(
-        "Stopped by Functional Tests - Broadcast User Approve"
-    )
+    assert current_alerts_page.is_text_present_on_page("Stopped by Functional Tests - Broadcast User Approve")
     current_alerts_page.click_element_by_link_text("Past alerts")
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.is_text_present_on_page(broadcast_title)
@@ -112,9 +106,7 @@ def test_prepare_broadcast_with_template(driver):
     create_broadcast_template(driver, name=template_name, content=content)
 
     dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(
-        service_id=config["broadcast_service"]["id"]
-    )
+    dashboard_page.go_to_dashboard_for_service(service_id=config["broadcast_service"]["id"])
 
     dashboard_page.click_element_by_link_text("Current alerts")
 
@@ -142,9 +134,7 @@ def test_prepare_broadcast_with_template(driver):
     assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.is_text_present_on_page(
-        f"{template_name} is waiting for approval"
-    )
+    assert prepare_alert_pages.is_text_present_on_page(f"{template_name} is waiting for approval")
 
     prepare_alert_pages.click_element_by_link_text("Discard this alert")
     prepare_alert_pages.click_element_by_link_text("Rejected alerts")
@@ -159,9 +149,7 @@ def test_prepare_broadcast_with_template(driver):
 @recordtime
 @pytest.mark.xdist_group(name="broadcasts")
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
-    sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-        datetime.utcnow() - timedelta(hours=1)
-    )
+    sent_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() - timedelta(hours=1))
     cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
     identifier = uuid.uuid4()
     event = f"test broadcast {identifier}"
@@ -199,9 +187,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
 @recordtime
 @pytest.mark.xdist_group(name="broadcasts")
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
-    sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-        datetime.utcnow() - timedelta(hours=1)
-    )
+    sent_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow() - timedelta(hours=1))
     cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
     identifier = uuid.uuid4()
     event = f"test broadcast {identifier}"
@@ -225,9 +211,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     assert page.is_text_present_on_page("Live since ")
     alert_page_url = page.current_url
 
-    check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
-    )
+    check_alert_is_published_on_govuk_alerts(driver, "Current alerts", broadcast_content)
 
     cancel_broadcast_xml = CANCEL_XML.format(
         identifier=identifier,

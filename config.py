@@ -89,12 +89,8 @@ def setup_preview_dev_config():
         {
             "service_name": "Functional Test_{}".format(uuid_for_test_run),
             "user": {
-                "name": "{}_Functional Test_{}".format(
-                    config["env"], uuid_for_test_run
-                ),
-                "email": generate_unique_email(
-                    os.environ["FUNCTIONAL_TEST_EMAIL"], uuid_for_test_run
-                ),
+                "name": "{}_Functional Test_{}".format(config["env"], uuid_for_test_run),
+                "email": generate_unique_email(os.environ["FUNCTIONAL_TEST_EMAIL"], uuid_for_test_run),
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
                 "mobile": os.environ["TEST_NUMBER"],
             },
@@ -126,17 +122,11 @@ def setup_preview_dev_config():
                 "api_live_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_KEY"],
                 "api_test_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY"],
                 # email address of seeded email auth user
-                "email_auth_account": os.environ[
-                    "FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT"
-                ],
+                "email_auth_account": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT"],
                 "organisation_id": os.environ["FUNCTIONAL_TESTS_ORGANISATION_ID"],
                 "email_reply_to": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO"],
-                "email_reply_to_2": os.environ.get(
-                    "FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_2"
-                ),
-                "email_reply_to_3": os.environ.get(
-                    "FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_3"
-                ),
+                "email_reply_to_2": os.environ.get("FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_2"),
+                "email_reply_to_3": os.environ.get("FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_3"),
                 "sms_sender_text": "func tests",
                 "templates": {
                     "email": os.environ["FUNCTIONAL_TEST_EMAIL_TEMPLATE_ID"],

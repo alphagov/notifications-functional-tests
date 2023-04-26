@@ -17,7 +17,5 @@ def ecs_override_generate_headers(self, api_token):
 
 
 FunctionalTestsAPIClient = NotificationsAPIClient
-FunctionalTestsAPIClient.original_generate_headers = (
-    FunctionalTestsAPIClient.generate_headers
-)
+FunctionalTestsAPIClient.original_generate_headers = FunctionalTestsAPIClient.generate_headers
 FunctionalTestsAPIClient.generate_headers = ecs_override_generate_headers

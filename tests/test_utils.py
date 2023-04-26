@@ -33,9 +33,7 @@ from tests.pages import (
     ViewTemplatePage,
 )
 
-logging.basicConfig(
-    filename="./logs/test_run_{}.log".format(datetime.utcnow()), level=logging.INFO
-)
+logging.basicConfig(filename="./logs/test_run_{}.log".format(datetime.utcnow()), level=logging.INFO)
 
 default = " (default)"
 
@@ -80,16 +78,10 @@ def assert_notification_body(notification_id, notification):
 
 
 def get_link(template_id, email):
-    email_body = get_notification_by_to_field(
-        template_id, config["notify_service_api_key"], email
-    )
+    email_body = get_notification_by_to_field(template_id, config["notify_service_api_key"], email)
     m = re.search(r"http[s]?://\S+", email_body, re.MULTILINE)
     if not m:
-        raise RetryException(
-            "Could not find a verify email code for template {} sent to {}".format(
-                template_id, email
-            )
-        )
+        raise RetryException("Could not find a verify email code for template {} sent to {}".format(template_id, email))
     return m.group(0)
 
 
@@ -131,10 +123,7 @@ def do_email_verification(driver, template_id, email_address):
         email_link = get_link(template_id, email_address)
         driver.get(email_link)
 
-        if (
-            driver.find_element(By.CLASS_NAME, "heading-large").text
-            == "The link has expired"
-        ):
+        if driver.find_element(By.CLASS_NAME, "heading-large").text == "The link has expired":
             #  There was an error message (presumably we tried to use an email token that was already used/expired)
             raise RetryException
 
@@ -155,9 +144,7 @@ def do_user_registration(driver):
 
     assert driver.current_url == config["notify_admin_url"] + "/registration-continue"
 
-    registration_link = get_link(
-        config["notify_templates"]["registration_template_id"], config["user"]["email"]
-    )
+    registration_link = get_link(config["notify_templates"]["registration_template_id"], config["user"]["email"])
 
     driver.get(registration_link)
 
@@ -187,9 +174,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
     invited_user_randomness = str(uuid.uuid1())
     invited_user_name = "Invited User " + invited_user_randomness
-    invite_email = generate_unique_email(
-        config["user"]["email"], invited_user_randomness
-    )
+    invite_email = generate_unique_email(config["user"]["email"], invited_user_randomness)
     if basic_view:
         invite_user_page.fill_invitation_form(invite_email, send_messages_only=True)
     else:
@@ -203,9 +188,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
     # i.e. after visting invite_link we'll be registering using invite_email
     # but use same mobile number and password as profile
 
-    invite_link = get_link(
-        config["notify_templates"]["invitation_template_id"], invite_email
-    )
+    invite_link = get_link(config["notify_templates"]["invitation_template_id"], invite_email)
     driver.get(invite_link)
     register_from_invite_page = RegisterFromInvite(driver)
     register_from_invite_page.fill_registration_form(invited_user_name)
@@ -224,21 +207,13 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
 
 def is_basic_view(dashboard_page):
-    assert (
-        dashboard_page.get_navigation_list()
-        == "Templates\nSent messages\nUploads\nTeam members"
-    )
-    expected = "{}/services/{}/templates".format(
-        dashboard_page.base_url, dashboard_page.get_service_id()
-    )
+    assert dashboard_page.get_navigation_list() == "Templates\nSent messages\nUploads\nTeam members"
+    expected = "{}/services/{}/templates".format(dashboard_page.base_url, dashboard_page.get_service_id())
     assert dashboard_page.driver.current_url == expected
 
 
 def is_view_for_all_permissions(page):
-    assert (
-        page.get_navigation_list()
-        == "Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"
-    )
+    assert page.get_navigation_list() == "Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"
     expected = "{}/services/{}".format(page.base_url, page.get_service_id())
     assert page.driver.current_url == expected
 
@@ -337,9 +312,7 @@ def send_notification_to_one_recipient(
     placeholders = []
     index = 0
     while send_to_one_recipient_page.is_page_title("Personalise this message"):
-        if not send_to_one_recipient_page.is_placeholder_a_recipient_field(
-            message_type
-        ):
+        if not send_to_one_recipient_page.is_placeholder_a_recipient_field(message_type):
             placeholder_value = str(uuid.uuid4())
             send_to_one_recipient_page.enter_placeholder_value(placeholder_value)
             placeholder_name = send_to_one_recipient_page.get_placeholder_name()
@@ -347,29 +320,19 @@ def send_notification_to_one_recipient(
         send_to_one_recipient_page.click_continue()
         index += 1
         if index > 10:
-            raise TimeoutException(
-                "Too many attempts, something is broken with placeholders"
-            )
+            raise TimeoutException("Too many attempts, something is broken with placeholders")
     if placeholders_number:
         assert len(placeholders) == placeholders_number
     for placeholder in placeholders:
-        assert send_to_one_recipient_page.is_text_present_on_page(
-            list(placeholder.values())[0]
-        )
+        assert send_to_one_recipient_page.is_text_present_on_page(list(placeholder.values())[0])
     if message_type == "email":
-        _assert_one_off_email_filled_in_properly(
-            driver, template_name, test, recipient_data
-        )
+        _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_data)
     else:
-        _assert_one_off_sms_filled_in_properly(
-            driver, template_name, test, recipient_data
-        )
+        _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_data)
     return placeholders
 
 
-def _assert_one_off_sms_filled_in_properly(
-    driver, template_name, test, recipient_number
-):
+def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_number):
     sms_sender_page = SmsSenderPage(driver)
     sms_sender = sms_sender_page.get_sms_sender()
     sms_recipient = sms_sender_page.get_sms_recipient()
@@ -379,9 +342,7 @@ def _assert_one_off_sms_filled_in_properly(
     assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
 
 
-def _assert_one_off_email_filled_in_properly(
-    driver, template_name, test, recipient_email
-):
+def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_email):
     send_to_one_recipient_page = SendOneRecipient(driver)
     preview_rows = send_to_one_recipient_page.get_preview_contents()
     assert "From" in str(preview_rows[0].text)
@@ -394,24 +355,16 @@ def _assert_one_off_email_filled_in_properly(
     else:
         assert recipient_email in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)
-    assert send_to_one_recipient_page.is_page_title(
-        "Preview of ‘" + template_name + "’"
-    )
+    assert send_to_one_recipient_page.is_page_title("Preview of ‘" + template_name + "’")
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
-    client = FunctionalTestsAPIClient(
-        base_url=config["notify_api_url"], api_key=api_key
-    )
+    client = FunctionalTestsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
     resp = client.get("v2/notifications")
     for notification in resp["notifications"]:
         t_id = notification["template"]["id"]
         to = notification["email_address"] or notification["phone_number"]
-        if (
-            t_id == template_id
-            and to == sent_to
-            and (not statuses or notification["status"] in statuses)
-        ):
+        if t_id == template_id and to == sent_to and (not statuses or notification["status"] in statuses):
             return notification["body"]
     return ""
 
@@ -481,9 +434,7 @@ def do_user_can_update_reply_to_email_to_service(driver):
     assert email_address + default in body.text
     assert email_address2 in body.text
 
-    sub_body = body.text[
-        body.text.index(email_address2) :
-    ]  # find the index of the email address
+    sub_body = body.text[body.text.index(email_address2) :]  # find the index of the email address
     # the id is the fifth entry [ 'email address, 'Change', 'email address', 'id label', id' ]
     email_reply_to_id = sub_body.split("\n")[4]
 
