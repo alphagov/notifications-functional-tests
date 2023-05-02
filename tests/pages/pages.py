@@ -583,10 +583,24 @@ class ViewLetterTemplatePage(BasePage):
         element.click()
 
 
-class EditLetterTemplatePage(EditSmsTemplatePage):
-
+class EditLetterTemplatePage(BasePage):
     name_input = NameInputElement(clear=True)
     template_content_input = TemplateContentElement(clear=True)
+    save_button = EditTemplatePageLocators.SAVE_BUTTON
+
+    def click_save(self):
+        element = self.wait_for_element(EditSmsTemplatePage.save_button)
+        element.click()
+
+    def create_template(self, name="Test letter template", content=None):
+        self.name_input = name
+        if content:
+            self.template_content_input = content
+        else:
+            self.template_content_input = (
+                "The quick brown fox jumped over the lazy dog. I'm a letter. Job id: ((build_id))"
+            )
+        self.click_save()
 
 
 class ConfirmEditLetterTemplatePage(BasePage):
