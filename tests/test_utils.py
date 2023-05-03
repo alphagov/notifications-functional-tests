@@ -15,9 +15,11 @@ from config import config, generate_unique_email
 from tests.client import FunctionalTestsAPIClient
 from tests.pages import (
     AddServicePage,
+    ConfirmEditLetterTemplatePage,
     DashboardPage,
     EditBroadcastTemplatePage,
     EditEmailTemplatePage,
+    EditLetterTemplatePage,
     EditSmsTemplatePage,
     EmailReplyTo,
     GovUkAlertsPage,
@@ -30,6 +32,7 @@ from tests.pages import (
     SmsSenderPage,
     TeamMembersPage,
     VerifyPage,
+    ViewLetterTemplatePage,
     ViewTemplatePage,
 )
 
@@ -238,6 +241,24 @@ def create_sms_template(driver, name="test template", content=None):
     template_page = EditSmsTemplatePage(driver)
     template_page.create_template(name=name, content=content)
     return template_page.get_template_id()
+
+
+def create_letter_template(driver, name="test template", content=None):
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+
+    show_templates_page.select_letter()
+
+    view_template_page = ViewLetterTemplatePage(driver)
+    view_template_page.click_edit_body()
+
+    edit_template_page = EditLetterTemplatePage(driver)
+    edit_template_page.create_template(name=name, content=content)
+
+    confirm_edit_template_page = ConfirmEditLetterTemplatePage(driver)
+    confirm_edit_template_page.click_save()
+
+    return confirm_edit_template_page.get_template_id()
 
 
 def create_broadcast_template(driver, name="test template", content=None):

@@ -45,6 +45,7 @@ from tests.pages.locators import (
     TemplatePageLocators,
     UploadCsvLocators,
     VerifyPageLocators,
+    ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
 )
 
@@ -511,6 +512,9 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def select_text_message(self):
         self._select_template_type(self.text_message_radio)
 
+    def select_letter(self):
+        self._select_template_type(self.letter_radio)
+
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
         self.select_checkbox_or_radio(element)
@@ -569,6 +573,42 @@ class EditSmsTemplatePage(BasePage):
         else:
             self.template_content_input = "The quick brown fox jumped over the lazy dog. Job id: ((build_id))"
         self.click_save()
+
+
+class ViewLetterTemplatePage(BasePage):
+    edit_body = ViewLetterTemplatePageLocators.EDIT_BODY
+
+    def click_edit_body(self):
+        element = self.wait_for_element(ViewLetterTemplatePage.edit_body)
+        element.click()
+
+
+class EditLetterTemplatePage(BasePage):
+    name_input = NameInputElement(clear=True)
+    template_content_input = TemplateContentElement(clear=True)
+    save_button = EditTemplatePageLocators.SAVE_BUTTON
+
+    def click_save(self):
+        element = self.wait_for_element(EditSmsTemplatePage.save_button)
+        element.click()
+
+    def create_template(self, name="Test letter template", content=None):
+        self.name_input = name
+        if content:
+            self.template_content_input = content
+        else:
+            self.template_content_input = (
+                "The quick brown fox jumped over the lazy dog. I'm a letter. Job id: ((build_id))"
+            )
+        self.click_save()
+
+
+class ConfirmEditLetterTemplatePage(BasePage):
+    save_button = EditTemplatePageLocators.SAVE_BUTTON
+
+    def click_save(self):
+        element = self.wait_for_element(ConfirmEditLetterTemplatePage.save_button)
+        element.click()
 
 
 class EditBroadcastTemplatePage(EditSmsTemplatePage):
