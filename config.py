@@ -69,7 +69,7 @@ def setup_shared_config():
     """
     env = os.environ["ENVIRONMENT"].lower()
 
-    if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
+    if env not in {"dev", "preview", "staging", "live"}:
         pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
 
     config.update(
