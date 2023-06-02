@@ -37,12 +37,15 @@ from tests.postman import (
 )
 from tests.test_utils import (
     NotificationStatuses,
+    add_letter_attachment_for_template,
     assert_notification_body,
     create_email_template,
     create_letter_template,
     create_sms_template,
+    delete_letter_attachment,
     delete_template,
     go_to_templates_page,
+    manage_letter_attachment,
     recordtime,
     send_notification_to_one_recipient,
 )
@@ -166,6 +169,22 @@ def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
     assert current_templates == existing_templates
+
+
+@recordtime
+@pytest.mark.xdist_group(name="seeded-user")
+def test_add_and_delete_letter_attachment(driver, login_seeded_user, client_live_key):
+    test_name = "edit/delete letter attachment test"
+    go_to_templates_page(driver)
+    create_letter_template(driver, name=test_name, content=None)
+    go_to_templates_page(driver)
+    add_letter_attachment_for_template(driver, name=test_name)
+    assert driver.find_element(By.CLASS_NAME, "edit-template-link-attachment").text == "Manage attachment"
+    manage_letter_attachment(driver)
+    assert driver.find_element(By.ID, "filename").text == "blank_page.pdf"
+    delete_letter_attachment(driver)
+    go_to_templates_page(driver)
+    delete_template(driver, test_name)
 
 
 @recordtime

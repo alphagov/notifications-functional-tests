@@ -36,6 +36,7 @@ from tests.pages.locators import (
     InviteUserPageLocators,
     LetterPreviewPageLocators,
     MainPageLocators,
+    ManageLetterAttachPageLocators,
     NavigationLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
@@ -112,7 +113,6 @@ class AntiStaleElementList(AntiStale):
 
 
 class BasePage(object):
-
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
     profile_page_link = NavigationLocators.PROFILE_LINK
 
@@ -263,7 +263,6 @@ class HomePage(BasePage):
 
 
 class MainPage(BasePage):
-
     set_up_account_button = MainPageLocators.SETUP_ACCOUNT_BUTTON
 
     def click_set_up_account(self):
@@ -272,7 +271,6 @@ class MainPage(BasePage):
 
 
 class RegistrationPage(BasePage):
-
     name_input = NameInputElement()
     email_input = EmailInputElement()
     mobile_input = MobileInputElement()
@@ -290,7 +288,6 @@ class RegistrationPage(BasePage):
 
 
 class AddServicePage(BasePage):
-
     service_input = ServiceInputElement()
     org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
@@ -334,7 +331,6 @@ class NewPasswordPage(BasePage):
 
 
 class SignInPage(BasePage):
-
     email_input = EmailInputElement()
     password_input = PasswordInputElement()
     forgot_password_link = SignInPageLocators.FORGOT_PASSWORD_LINK
@@ -359,7 +355,6 @@ class SignInPage(BasePage):
 
 
 class VerifyPage(BasePage):
-
     sms_input = SmsInputElement()
 
     def verify(self, code):
@@ -370,7 +365,6 @@ class VerifyPage(BasePage):
 
 
 class DashboardPage(BasePage):
-
     h2 = (By.CLASS_NAME, "navigation-service-name")
     sms_templates_link = (By.LINK_TEXT, "Text message templates")
     email_templates_link = (By.LINK_TEXT, "Email templates")
@@ -547,7 +541,6 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
 
 
 class SendSmsTemplatePage(BasePage):
-
     new_sms_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
     edit_sms_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
 
@@ -557,7 +550,6 @@ class SendSmsTemplatePage(BasePage):
 
 
 class EditSmsTemplatePage(BasePage):
-
     name_input = NameInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
@@ -577,9 +569,14 @@ class EditSmsTemplatePage(BasePage):
 
 class ViewLetterTemplatePage(BasePage):
     edit_body = ViewLetterTemplatePageLocators.EDIT_BODY
+    attach_button = ViewLetterTemplatePageLocators.ATTACH_BUTTON
 
     def click_edit_body(self):
         element = self.wait_for_element(ViewLetterTemplatePage.edit_body)
+        element.click()
+
+    def click_attachment_button(self):
+        element = self.wait_for_element(ViewLetterTemplatePage.attach_button)
         element.click()
 
 
@@ -616,7 +613,6 @@ class EditBroadcastTemplatePage(EditSmsTemplatePage):
 
 
 class SendEmailTemplatePage(BasePage):
-
     add_a_new_email_template_link = TemplatePageLocators.ADD_A_NEW_TEMPLATE_LINK
     add_new_email_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
     edit_email_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
@@ -637,7 +633,6 @@ class ViewTemplatePage(BasePage):
 
 
 class EditEmailTemplatePage(BasePage):
-
     name_input = NameInputElement()
     subject_input = SubjectInputElement()
     template_content_input = TemplateContentElement()
@@ -677,7 +672,6 @@ class EditEmailTemplatePage(BasePage):
 
 
 class UploadCsvPage(BasePage):
-
     file_input_element = FileInputElement()
     send_button = UploadCsvLocators.SEND_BUTTON
     first_notification = UploadCsvLocators.FIRST_NOTIFICATION_AFTER_UPLOAD
@@ -711,7 +705,6 @@ class UploadCsvPage(BasePage):
 
 
 class TeamMembersPage(BasePage):
-
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
     edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
@@ -738,7 +731,6 @@ class TeamMembersPage(BasePage):
 
 
 class InviteUserPage(BasePage):
-
     email_input = EmailInputElement()
     see_dashboard_check_box = InviteUserPageLocators.SEE_DASHBOARD_CHECKBOX
     choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
@@ -800,7 +792,6 @@ class InviteUserPage(BasePage):
 
 
 class RegisterFromInvite(BasePage):
-
     name_input = NameInputElement()
     mobile_input = MobileInputElement()
     password_input = PasswordInputElement()
@@ -978,7 +969,6 @@ class SmsSenderPage(BasePage):
 
 
 class OrganisationDashboardPage(BasePage):
-
     h1 = (By.CSS_SELECTOR, "h1")
     team_members_link = (By.LINK_TEXT, "Team members")
     service_list = (By.CSS_SELECTOR, "main .browse-list-item")
@@ -1136,3 +1126,21 @@ class GovUkAlertsPage(BasePage):
         if not self.is_text_present_on_page(broadcast_content):
             self.driver.refresh()
             raise RetryException(f'Could not find alert with content "{broadcast_content}"')
+
+
+class UploadAttachmentPage(BasePage):
+    file_input_element = FileInputElement()
+
+    def upload_attachment(self, file_path):
+        self.file_input_element = file_path
+
+
+class ManageAttachmentPage(BasePage):
+    delete_button = ManageLetterAttachPageLocators.DELETE_BUTTON
+    confirm_button = ManageLetterAttachPageLocators.CONFIRM_DELETE_BUTTON
+
+    def delete_attachment(self):
+        delete_button = self.wait_for_element(self.delete_button)
+        delete_button.click()
+        confirm_button = self.wait_for_element(self.confirm_button)
+        confirm_button.click()

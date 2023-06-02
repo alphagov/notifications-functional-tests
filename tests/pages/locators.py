@@ -62,6 +62,12 @@ class EditTemplatePageLocators(object):
 
 class ViewLetterTemplatePageLocators(object):
     EDIT_BODY = (By.CLASS_NAME, "edit-template-link-letter-body")
+    ATTACH_BUTTON = (By.CLASS_NAME, "edit-template-link-attachment")
+
+
+class ManageLetterAttachPageLocators(object):
+    DELETE_BUTTON = (By.LINK_TEXT, "Remove attachment")
+    CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
 
 
 class UploadCsvLocators(object):
@@ -166,3 +172,7 @@ class ChangeNameLocators(object):
 
 class ViewTemplatePageLocators(object):
     SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
+
+
+class UploadAttachmentLocators(object):
+    FILE_INPUT = (By.ID, "file")
