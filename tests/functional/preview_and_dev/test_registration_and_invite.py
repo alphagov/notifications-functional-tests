@@ -39,6 +39,7 @@ def _sign_in_again(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="registration-flow")
+@pytest.mark.dev
 def test_invite_flow(driver):
     do_user_can_invite_someone_to_notify(driver, basic_view=False)
 
@@ -51,6 +52,7 @@ def test_invite_flow(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="registration-flow")
+@pytest.mark.dev
 def test_can_add_and_update_reply_to(driver):
     do_user_can_add_reply_to_email_to_service(driver)
     do_user_can_update_reply_to_email_to_service(driver)
@@ -58,6 +60,7 @@ def test_can_add_and_update_reply_to(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="registration-flow")
+@pytest.mark.dev
 def test_can_add_and_update_sms_sender_of_service(driver):
     dashboard_page = DashboardPage(driver)
     sms_sender_page = SmsSenderPage(driver)
@@ -90,6 +93,7 @@ def test_can_add_and_update_sms_sender_of_service(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="registration-flow")
+@pytest.mark.dev
 def test_change_service_name(driver):
     old_name = config["service_name"]
     new_name = f"{old_name} (renamed)"

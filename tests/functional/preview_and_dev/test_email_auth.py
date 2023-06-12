@@ -13,6 +13,7 @@ from tests.test_utils import do_email_verification, recordtime
 
 @recordtime
 @pytest.mark.xdist_group(name="seeded-email")
+@pytest.mark.dev
 def test_email_auth(driver):
     # login email auth user
     sign_in_email_auth(driver)
@@ -24,6 +25,7 @@ def test_email_auth(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="seeded-user")
+@pytest.mark.dev
 def test_reset_forgotten_password(driver):
     email, password = get_email_and_password(account_type="seeded")
     sign_in_page = SignInPage(driver)

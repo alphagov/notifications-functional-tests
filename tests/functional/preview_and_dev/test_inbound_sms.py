@@ -53,12 +53,14 @@ def inbound_sms():
 
 
 @pytest.mark.xdist_group(name="api-client")
+@pytest.mark.dev
 def test_inbound_api(inbound_sms, client_live_key):
     # this'll raise if the message isn't in the list.
     next(x for x in client_live_key.get_received_texts()["received_text_messages"] if x["content"] == inbound_sms)
 
 
 @pytest.mark.xdist_group(name="seeded-user")
+@pytest.mark.dev
 def test_inbox_page(inbound_sms, driver, login_seeded_user):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config["service"]["id"])

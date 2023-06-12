@@ -357,6 +357,7 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(driver, login_see
 
 
 @pytest.mark.xdist_group(name="seeded-user")
+@pytest.mark.dev
 def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user):
     # create new template
     template_name = "template-for-folder-test {}".format(uuid.uuid4())
@@ -420,6 +421,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 
 
 @pytest.mark.xdist_group(name="seeded-user")
+@pytest.mark.dev
 def test_template_folder_permissions(driver, login_seeded_user):
     family_id = uuid.uuid4()
     folder_names = [
