@@ -25,12 +25,14 @@ from tests.pages import (
     GovUkAlertsPage,
     InviteUserPage,
     MainPage,
+    ManageAttachmentPage,
     RegisterFromInvite,
     RegistrationPage,
     SendOneRecipient,
     ShowTemplatesPage,
     SmsSenderPage,
     TeamMembersPage,
+    UploadAttachmentPage,
     VerifyPage,
     ViewLetterTemplatePage,
     ViewTemplatePage,
@@ -287,6 +289,32 @@ def delete_template(driver, template_name, service="service"):
         show_templates_page.click_template_by_link_text(template_name)
     template_page = EditEmailTemplatePage(driver)
     template_page.click_delete()
+
+
+def add_letter_attachment_for_template(driver, name, service="service"):
+
+    show_templates_page = ShowTemplatesPage(driver)
+    try:
+        show_templates_page.click_template_by_link_text(name)
+    except TimeoutException:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.go_to_dashboard_for_service(config[service]["id"])
+        dashboard_page.click_templates()
+        show_templates_page.click_template_by_link_text(name)
+    template_page = ViewLetterTemplatePage(driver)
+    template_page.click_attachment_button()
+    upload_page = UploadAttachmentPage(driver)
+    upload_page.upload_attachment(os.path.join(os.getcwd(), "tests/test_files/blank_page.pdf"))
+
+
+def manage_letter_attachment(driver):
+    template_page = ViewLetterTemplatePage(driver)
+    template_page.click_attachment_button()
+
+
+def delete_letter_attachment(driver):
+    template_page = ManageAttachmentPage(driver)
+    template_page.delete_attachment()
 
 
 def get_verify_code_from_api(mobile_number):
