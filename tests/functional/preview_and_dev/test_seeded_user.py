@@ -181,7 +181,7 @@ def test_add_and_delete_letter_attachment(driver, login_seeded_user, client_live
     add_letter_attachment_for_template(driver, name=test_name)
     assert driver.find_element(By.CLASS_NAME, "edit-template-link-attachment").text == "Manage attachment"
     manage_letter_attachment(driver)
-    assert driver.find_element(By.ID, "filename").text == "blank_page.pdf"
+    assert driver.find_element(By.TAG_NAME, "h1").text == "blank_page.pdf"
     delete_letter_attachment(driver)
     go_to_templates_page(driver)
     delete_template(driver, test_name)
