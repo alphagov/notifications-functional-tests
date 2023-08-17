@@ -11,3 +11,6 @@ pytest-xdist==3.0.2
 black==22.10.0  # Also update `.pre-commit-config.yaml` if this changes
 ruff==0.0.261  # Also update `.pre-commit-config.yaml` if this changes
 jinja2-cli==0.8.2
+pillow==10.0.0
+pyzbar==0.1.9
+pdf2image==1.16.3
