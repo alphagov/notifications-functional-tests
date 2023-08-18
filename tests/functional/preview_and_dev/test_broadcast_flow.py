@@ -103,7 +103,7 @@ def test_prepare_broadcast_with_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     go_to_templates_page(driver, service="broadcast_service")
-    template_name = "test broadcast" + str(uuid.uuid4())
+    template_name = f"test broadcast {uuid.uuid4()}"
     content = "This is a test only."
     create_broadcast_template(driver, name=template_name, content=content)
 

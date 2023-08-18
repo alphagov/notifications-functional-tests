@@ -117,11 +117,10 @@ class InviteUserPageLocators(object):
 
 
 class ApiIntegrationPageLocators(object):
-    MESSAGE_LOG = (By.CSS_SELECTOR, "div.api-notifications > details:nth-child(1)")
+    MESSAGE_LOG = (By.CSS_SELECTOR, "div.api-notifications details")
     HEADING_BUTTON = (By.CSS_SELECTOR, ".govuk-details__summary")
-    CLIENT_REFERENCE = (By.CSS_SELECTOR, ".api-notifications-item__data-value")
-    MESSAGE_LIST = (By.CSS_SELECTOR, ".api-notifications-item__data-value")
-    STATUS = (By.CSS_SELECTOR, ".api-notifications-item__data-value:last-of-type")
+    CLIENT_REFERENCE = (By.CSS_SELECTOR, ".govuk-details__text .api-notifications-item__data-value:nth-of-type(2)")
+    STATUS = (By.CSS_SELECTOR, ".govuk-details__text .api-notifications-item__data-value:last-of-type")
     VIEW_LETTER_LINK = (By.LINK_TEXT, "View letter")
 
 

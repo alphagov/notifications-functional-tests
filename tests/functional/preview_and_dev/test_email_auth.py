@@ -23,9 +23,8 @@ def test_email_auth(driver):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
-def test_reset_forgotten_password(driver):
-    email, password = get_email_and_password(account_type="seeded")
+def test_reset_forgotten_password(driver, request):
+    email, password = get_email_and_password(account_type="seeded", test_name=request.node.name)
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()

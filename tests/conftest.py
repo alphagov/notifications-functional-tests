@@ -89,9 +89,10 @@ def login_user(_driver):
     sign_in_email_auth(_driver)
 
 
-@pytest.fixture(scope="module")
-def login_seeded_user(_driver):
-    sign_in(_driver, account_type="seeded")
+@pytest.fixture(scope="function")
+def login_seeded_user(_driver, request: pytest.FixtureRequest):
+    _driver.delete_all_cookies()
+    sign_in(_driver, account_type="seeded", test_name=request.node.name)
 
 
 @pytest.fixture(scope="module")
