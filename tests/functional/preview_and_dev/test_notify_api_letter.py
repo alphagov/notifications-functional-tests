@@ -49,7 +49,6 @@ def test_send_letter_notification_via_api(client_test_key):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="api-letters")
 def test_send_letter_notification_with_qr_code_via_api(client_test_key):
     qr_code_data = (
         # 499 bytes of data
@@ -84,7 +83,6 @@ def test_send_letter_notification_with_qr_code_via_api(client_test_key):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="api-letters")
 @pytest.mark.antivirus
 def test_send_precompiled_letter_notification_via_api(client_test_key):
 
@@ -111,7 +109,6 @@ def test_send_precompiled_letter_notification_via_api(client_test_key):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="api-letters")
 @pytest.mark.antivirus
 def test_send_precompiled_letter_with_virus_notification_via_api(
     client_test_key,
