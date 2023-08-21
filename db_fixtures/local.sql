@@ -11,8 +11,8 @@ e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.
 \.
 
 COPY services (id, name, created_at, updated_at, active, restricted, email_from, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
-34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	t	\N	\N	\N	\N	\N	\N	\N	\N	10	1000	1000	f
-8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	f	functional.tests.broadcast.service	0d2e9b87-9c54-448c-b549-f764231ee599	2	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N	10	1000	1000	f
+34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	t	\N	\N	\N	\N	\N	\N	\N	\N	1000	1000	1000	f
+8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	f	functional.tests.broadcast.service	0d2e9b87-9c54-448c-b549-f764231ee599	2	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N	1000	1000	1000	f
 \.
 
 COPY annual_billing (id, service_id, financial_year_start, free_sms_fragment_limit, updated_at, created_at) FROM stdin;
