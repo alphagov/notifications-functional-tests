@@ -41,9 +41,9 @@ config = {
 
 urls = {
     "dev": {
-        "api": "http://localhost:6011",
-        "admin": "http://localhost:6012",
-        "govuk_alerts": "http://localhost:6017/alerts",
+        "api": os.environ.get("FUNCTIONAL_TESTS_LOCAL_API_HOST", "http://localhost:6011"),
+        "admin": os.environ.get("FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST", "http://localhost:6012"),
+        "govuk_alerts": os.environ.get("FUNCTIONAL_TESTS_LOCAL_ALERTS_HOST", "http://localhost:6017/alerts"),
     },
     "preview": {
         "api": "https://api.notify.works",

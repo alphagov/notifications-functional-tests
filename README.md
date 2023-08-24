@@ -33,6 +33,14 @@ Note, there is an order dependency in the main tests. The registration test must
 
 **Note: this is currently only supported for `functional/` and `document_download/` tests.** See the next section if you want to run the `provider_delivery/` tests locally.
 
+If you are running Notify locally using docker-compose via [notifications-local](https://www.github.com/alphagov/notifications-local), then you need to set the following environment variables:
+
+```
+FUNCTIONAL_TESTS_LOCAL_API_HOST=http://notify-api.localhost:6011
+FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST=http://notify.localhost:6012
+FUNCTIONAL_TESTS_LOCAL_ALERTS_HOST=http://notify.localhost:6017/alerts
+```
+
 Populate the local database with fixture data:
 
 ```shell
