@@ -1,12 +1,20 @@
-from config import config
+import hashlib
+import os
+import tempfile
+
+from filelock import FileLock
+
+from config import config, generate_unique_email
 from tests.pages import SignInPage
 from tests.test_utils import do_email_auth_verify, do_verify
 
 
-def sign_in(driver, account_type="normal"):
-    _sign_in(driver, account_type)
-    mobile_number = get_mobile_number(account_type=account_type)
-    do_verify(driver, mobile_number)
+def sign_in(driver, account_type="normal", test_name=None):
+    lockfile = os.path.join(tempfile.gettempdir(), "signin.lock")
+    with FileLock(lockfile):
+        _sign_in(driver, account_type, test_name=test_name)
+        mobile_number = get_mobile_number(account_type=account_type)
+        do_verify(driver, mobile_number)
 
 
 def sign_in_email_auth(driver):
@@ -15,18 +23,30 @@ def sign_in_email_auth(driver):
     do_email_auth_verify(driver)
 
 
-def _sign_in(driver, account_type):
+def _sign_in(driver, account_type, test_name=None):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    email, password = get_email_and_password(account_type=account_type)
+    email, password = get_email_and_password(account_type=account_type, test_name=test_name)
     sign_in_page.login(email, password)
 
 
-def get_email_and_password(account_type):
+def get_email_and_password(account_type, test_name=None):
     if account_type == "normal":
         return config["user"]["email"], config["user"]["password"]
     elif account_type == "seeded":
+        if test_name:
+            # If the test is parameterised, test_name is eg `test_name[param1, param2]`, which doesn't work
+            # for email addresses. Let's strip the parameterisation and generate a short hash to retain uniqueness.
+            test_name, _, params = test_name.partition("[")
+            if params:
+                test_name = test_name + "-" + hashlib.md5(params[:-1].encode()).hexdigest()[:8]
+
+            return (
+                generate_unique_email(config["service"]["seeded_user"]["email"], test_name),
+                config["service"]["seeded_user"]["password"],
+            )
+
         return (
             config["service"]["seeded_user"]["email"],
             config["service"]["seeded_user"]["password"],

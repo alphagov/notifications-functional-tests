@@ -111,7 +111,6 @@ Parallel tests executed using the same user type can cause race conditions and i
 We use the following annotations on test methods to define the groups:
 
 ```python
-@pytest.mark.xdist_group(name="seeded-user")
 @pytest.mark.xdist_group(name="registration-flow")
 @pytest.mark.xdist_group(name="api-client")
 @pytest.mark.xdist_group(name="seeded-email")

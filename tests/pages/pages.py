@@ -806,38 +806,49 @@ class ApiIntegrationPage(BasePage):
     message_log = ApiIntegrationPageLocators.MESSAGE_LOG
     heading_button = ApiIntegrationPageLocators.HEADING_BUTTON
     client_reference = ApiIntegrationPageLocators.CLIENT_REFERENCE
-    message_list = ApiIntegrationPageLocators.MESSAGE_LIST
     status = ApiIntegrationPageLocators.STATUS
     view_letter_link = ApiIntegrationPageLocators.VIEW_LETTER_LINK
 
-    def get_notification_id(self):
-        element = self.wait_for_elements(ApiIntegrationPage.message_list)[0]
-        return element.text
+    def _get_message_log_record_element(self, idx: int):
+        return self.wait_for_elements(ApiIntegrationPage.message_log)[idx]
 
     def expand_all_messages(self):
         buttons = self.wait_for_elements(ApiIntegrationPage.heading_button)
         for index in range(len(buttons)):
             buttons[index].click()
 
-    def get_client_reference(self):
-        element = self.wait_for_elements(ApiIntegrationPage.client_reference)[1]
-        return element.text
+    def find_notification_offset_for_client_reference(self, client_reference):
+        elements = self.wait_for_elements(ApiIntegrationPage.client_reference)
+
+        # Can't iterate over `AntiStaleElementList` directly =(
+        for i in range(len(elements)):
+            if elements[i].text == client_reference:
+                return i
+
+        raise ValueError(f"Could not find notification for client reference {client_reference}")
+
+    def get_notification_status_for_log_offset(self, notification_offset):
+        elements = self.wait_for_elements(ApiIntegrationPage.status)
+        return elements[notification_offset].text
 
     def go_to_api_integration_for_service(self, service_id):
         url = "{}/services/{}/api".format(self.base_url, service_id)
         self.driver.get(url)
 
-    def get_status_from_message(self):
-        element = self.wait_for_elements(ApiIntegrationPage.status)[0]
-        return element.text
+    def get_view_letter_link(self, client_reference):
+        notification_offset = self.find_notification_offset_for_client_reference(client_reference)
+        record = self._get_message_log_record_element(notification_offset)
 
-    def get_view_letter_link(self):
-        link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
-        return link.get_attribute("href")
+        try:
+            return record.find_element(*self.view_letter_link).get_attribute("href")
+        except NoSuchElementException:
+            return None
 
-    def go_to_preview_letter(self):
-        link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
-        self.driver.get(link.get_attribute("href"))
+    def go_to_preview_letter(self, client_reference):
+        notification_offset = self.find_notification_offset_for_client_reference(client_reference)
+        record = self._get_message_log_record_element(notification_offset)
+        preview_link = record.find_element(*self.view_letter_link).get_attribute("href")
+        self.driver.get(preview_link)
 
 
 class PreviewLetterPage(BasePage):

@@ -52,7 +52,6 @@ from tests.test_utils import (
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
 @pytest.mark.parametrize(
     "message_type",
     ["sms", "email", pytest.param("letter", marks=pytest.mark.template_preview)],
@@ -101,97 +100,87 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
 def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_key):
-    test_name = "edit/delete email template test"
+    template_name = f"edit/delete email template test {uuid.uuid4()}"
     go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(existing_templates) == 0:
-        existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
-    create_email_template(driver, name=test_name, content=None)
+    create_email_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
-    assert test_name in current_templates
+    assert template_name in current_templates
 
-    delete_template(driver, test_name)
+    delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
-    assert current_templates == existing_templates
+
+    assert template_name not in current_templates
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
 def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key):
-    test_name = "edit/delete sms template test"
+    template_name = f"edit/delete sms template test {uuid.uuid4()}"
     go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(existing_templates) == 0:
-        existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
-    create_sms_template(driver, name=test_name, content=None)
+    create_sms_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
-    assert test_name in current_templates
+    assert template_name in current_templates
 
-    delete_template(driver, test_name)
+    delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
-    assert current_templates == existing_templates
+
+    assert template_name not in current_templates
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
 def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_key):
-    test_name = "edit/delete letter template test"
+    template_name = f"edit/delete letter template test {uuid.uuid4()}"
     go_to_templates_page(driver)
-    existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(existing_templates) == 0:
-        existing_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
-    create_letter_template(driver, name=test_name, content=None)
+    create_letter_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
-    assert test_name in current_templates
+    assert template_name in current_templates
 
-    delete_template(driver, test_name)
+    delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
-    assert current_templates == existing_templates
+
+    assert template_name not in current_templates
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
 def test_add_and_delete_letter_attachment(driver, login_seeded_user, client_live_key):
-    test_name = "edit/delete letter attachment test"
+    template_name = f"edit/delete letter attachment test {uuid.uuid4()}"
     go_to_templates_page(driver)
-    create_letter_template(driver, name=test_name, content=None)
+    create_letter_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
-    add_letter_attachment_for_template(driver, name=test_name)
+    add_letter_attachment_for_template(driver, name=template_name)
     assert driver.find_element(By.CLASS_NAME, "edit-template-link-attachment").text == "Manage attachment"
     manage_letter_attachment(driver)
     assert driver.find_element(By.TAG_NAME, "h1").text == "blank_page.pdf"
     delete_letter_attachment(driver)
     go_to_templates_page(driver)
-    delete_template(driver, test_name)
+    delete_template(driver, template_name)
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
-def test_send_email_with_placeholders_to_one_recipient(driver, client_live_key, login_seeded_user):
+def test_send_email_with_placeholders_to_one_recipient(request, driver, client_live_key, login_seeded_user):
+    test_name = request.node.name
     go_to_templates_page(driver)
-    template_name = "email with placeholders" + str(uuid.uuid4())
+    template_name = f"email with placeholders {uuid.uuid4()}"
     content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
     template_id = create_email_template(driver, name=template_name, content=content)
 
@@ -213,14 +202,14 @@ def test_send_email_with_placeholders_to_one_recipient(driver, client_live_key, 
     dashboard_page.click_continue()
     notification_id = dashboard_page.get_notification_id()
     one_off_email = client_live_key.get_notification_by_id(notification_id)
-    assert one_off_email.get("created_by_name") == "Preview admin tests user"
+    assert one_off_email.get("created_by_name") == f"Preview admin tests user - {test_name}"
 
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
     dashboard_stats_after = get_dashboard_stats(dashboard_page, "email", template_id)
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
     placeholders_test = send_notification_to_one_recipient(
-        driver, template_name, "email", test=True, placeholders_number=2
+        driver, template_name, "email", test=True, placeholders_number=2, test_name=test_name
     )
     assert list(placeholders_test[0].keys()) == ["name"]
     assert list(placeholders_test[1].keys()) == ["things"]
@@ -229,10 +218,9 @@ def test_send_email_with_placeholders_to_one_recipient(driver, client_live_key, 
 
 
 @recordtime
-@pytest.mark.xdist_group(name="seeded-user")
 def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, login_seeded_user):
     go_to_templates_page(driver)
-    template_name = "sms with placeholders" + str(uuid.uuid4())
+    template_name = f"sms with placeholders {uuid.uuid4()}"
     content = "Hi ((name)), Is ((phone number)) your mobile number? We want to send you some ((things))"
     template_id = create_sms_template(driver, name=template_name, content=content)
 
@@ -241,12 +229,7 @@ def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, lo
     dashboard_stats_before = get_dashboard_stats(dashboard_page, "sms", template_id)
 
     placeholders = send_notification_to_one_recipient(
-        driver,
-        template_name,
-        "sms",
-        test=False,
-        recipient_data=os.environ["TEST_NUMBER"],
-        placeholders_number=2,
+        driver, template_name, "sms", test=False, recipient_data=os.environ["TEST_NUMBER"], placeholders_number=2
     )
     assert list(placeholders[0].keys()) == ["name"]
     assert list(placeholders[1].keys()) == ["things"]
@@ -272,36 +255,9 @@ def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, lo
 
 
 @pytest.mark.template_preview
-@pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_message_log_delivered(driver, login_seeded_user, client_test_key):
 
-    reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_delivered"
-
-    send_precompiled_letter_via_api(
-        reference,
-        client_test_key,
-        BytesIO(base64.b64decode(correct_letter)),
-    )
-
-    api_integration_page = ApiIntegrationPage(driver)
-
-    retry_call(
-        _check_status_of_notification,
-        fargs=[api_integration_page, config["service"]["id"], reference, "received"],
-        tries=config["notification_retry_times"],
-        delay=config["notification_retry_interval"],
-    )
-
-    ref_link = config["service"]["id"] + "/notification/" + api_integration_page.get_notification_id()
-    link = api_integration_page.get_view_letter_link()
-    assert ref_link in link
-
-
-@pytest.mark.template_preview
-@pytest.mark.xdist_group(name="seeded-user")
-def test_view_precompiled_letter_preview_delivered(driver, login_seeded_user, client_test_key):
-
-    reference = "functional_tests_precompiled_letter_preview_" + str(uuid.uuid1()) + "_delivered"
+    reference = f"functional_tests_precompiled_{uuid.uuid4()}_delivered"
 
     notification_id = send_precompiled_letter_via_api(
         reference,
@@ -318,7 +274,32 @@ def test_view_precompiled_letter_preview_delivered(driver, login_seeded_user, cl
         delay=config["notification_retry_interval"],
     )
 
-    api_integration_page.go_to_preview_letter()
+    ref_link = config["notify_admin_url"] + "/services/" + config["service"]["id"] + "/notification/" + notification_id
+    link = api_integration_page.get_view_letter_link(reference)
+    assert link == ref_link
+
+
+@pytest.mark.template_preview
+def test_view_precompiled_letter_preview_delivered(driver, login_seeded_user, client_test_key):
+
+    reference = f"functional_tests_precompiled_letter_preview_{uuid.uuid4()}_delivered"
+
+    notification_id = send_precompiled_letter_via_api(
+        reference,
+        client_test_key,
+        BytesIO(base64.b64decode(correct_letter)),
+    )
+
+    api_integration_page = ApiIntegrationPage(driver)
+
+    retry_call(
+        _check_status_of_notification,
+        fargs=[api_integration_page, config["service"]["id"], reference, "received"],
+        tries=config["notification_retry_times"],
+        delay=config["notification_retry_interval"],
+    )
+
+    api_integration_page.go_to_preview_letter(reference)
 
     letter_preview_page = PreviewLetterPage(driver)
     assert letter_preview_page.is_text_present_on_page("Provided as PDF")
@@ -326,7 +307,14 @@ def test_view_precompiled_letter_preview_delivered(driver, login_seeded_user, cl
     # Check the pdf link looks valid
     pdf_download_link = letter_preview_page.get_download_pdf_link()
 
-    link = config["service"]["id"] + "/notification/" + notification_id + ".pdf"
+    link = (
+        config["notify_admin_url"]
+        + "/services/"
+        + config["service"]["id"]
+        + "/notification/"
+        + notification_id
+        + ".pdf"
+    )
 
     assert link in pdf_download_link
 
@@ -345,7 +333,6 @@ def test_view_precompiled_letter_preview_delivered(driver, login_seeded_user, cl
 
 
 @pytest.mark.antivirus
-@pytest.mark.xdist_group(name="seeded-user")
 def test_view_precompiled_letter_message_log_virus_scan_failed(driver, login_seeded_user, client_test_key):
 
     reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_virus_scan_failed"
@@ -370,16 +357,13 @@ def test_view_precompiled_letter_message_log_virus_scan_failed(driver, login_see
         delay=config["notification_retry_interval"],
     )
 
-    ref_link = config["service"]["id"] + "/notification/" + api_integration_page.get_notification_id()
-    link = api_integration_page.get_view_letter_link()
-    assert ref_link not in link
+    assert api_integration_page.get_view_letter_link(reference) is None
 
 
-@pytest.mark.xdist_group(name="seeded-user")
 def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user):
     # create new template
-    template_name = "template-for-folder-test {}".format(uuid.uuid4())
-    folder_name = "test-folder {}".format(uuid.uuid4())
+    template_name = f"template-for-folder-test {uuid.uuid4()}"
+    folder_name = f"test-folder {uuid.uuid4()}"
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
@@ -438,8 +422,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     assert template_name not in [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
 
-@pytest.mark.xdist_group(name="seeded-user")
-def test_template_folder_permissions(driver, login_seeded_user):
+def test_template_folder_permissions(driver, request, login_seeded_user):
     family_id = uuid.uuid4()
     folder_names = [
         "test-parent-folder {}".format(family_id),
@@ -497,7 +480,7 @@ def test_template_folder_permissions(driver, login_seeded_user):
     show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
     dashboard_page.sign_out()
     # delete everything
-    sign_in(driver, account_type="seeded")
+    sign_in(driver, account_type="seeded", test_name=request.node.name)
     dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
     dashboard_page.click_templates()
     show_templates_page = ShowTemplatesPage(driver)
@@ -521,9 +504,8 @@ def test_template_folder_permissions(driver, login_seeded_user):
 def _check_status_of_notification(page, functional_tests_service_id, reference_to_check, status_to_check):
     page.go_to_api_integration_for_service(service_id=functional_tests_service_id)
     page.expand_all_messages()
-    client_reference = page.get_client_reference()
-    assert reference_to_check == client_reference
-    assert status_to_check == page.get_status_from_message()
+    notification_offset = page.find_notification_offset_for_client_reference(reference_to_check)
+    assert status_to_check == page.get_notification_status_for_log_offset(notification_offset)
 
 
 @retry_on_stale_element_exception
@@ -536,7 +518,7 @@ def get_dashboard_stats(dashboard_page, message_type, template_id):
 
 def assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after):
     for k in dashboard_stats_before.keys():
-        assert dashboard_stats_after[k] == dashboard_stats_before[k] + 1
+        assert dashboard_stats_after[k] > dashboard_stats_before[k]
 
 
 def _get_template_count(dashboard_page, template_id):

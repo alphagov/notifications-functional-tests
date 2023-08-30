@@ -94,6 +94,10 @@ def setup_preview_dev_config():
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
                 "mobile": os.environ["TEST_NUMBER"],
             },
+            "api_auth": {
+                "client_id": "notify-functional-tests",
+                "secret": os.environ["FUNCTIONAL_TESTS_API_AUTH_SECRET"],
+            },
             "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
             "broadcast_service": {
                 "id": os.environ["BROADCAST_SERVICE_ID"],

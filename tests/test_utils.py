@@ -7,6 +7,7 @@ import tempfile
 import uuid
 from datetime import datetime
 
+from filelock import FileLock
 from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
@@ -223,7 +224,7 @@ def is_view_for_all_permissions(page):
     assert page.driver.current_url == expected
 
 
-def create_email_template(driver, name="test template", content=None):
+def create_email_template(driver, name, content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
@@ -234,7 +235,7 @@ def create_email_template(driver, name="test template", content=None):
     return template_page.get_template_id()
 
 
-def create_sms_template(driver, name="test template", content=None):
+def create_sms_template(driver, name, content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
@@ -245,25 +246,30 @@ def create_sms_template(driver, name="test template", content=None):
     return template_page.get_template_id()
 
 
-def create_letter_template(driver, name="test template", content=None):
+def create_letter_template(driver, name, content=None):
     show_templates_page = ShowTemplatesPage(driver)
-    show_templates_page.click_add_new_template()
 
-    show_templates_page.select_letter()
+    # Letter templates are created with a generic name 'Untitled letter template' - so if two tests create a
+    # template at the same time they might get their wires crossed.
+    lockfile = os.path.join(tempfile.gettempdir(), "create-letter-template.lock")
+    with FileLock(lockfile):
+        show_templates_page.click_add_new_template()
 
-    view_template_page = ViewLetterTemplatePage(driver)
-    view_template_page.click_edit_body()
+        show_templates_page.select_letter()
 
-    edit_template_page = EditLetterTemplatePage(driver)
-    edit_template_page.create_template(name=name, content=content)
+        view_template_page = ViewLetterTemplatePage(driver)
+        view_template_page.click_edit_body()
 
-    confirm_edit_template_page = ConfirmEditLetterTemplatePage(driver)
-    confirm_edit_template_page.click_save()
+        edit_template_page = EditLetterTemplatePage(driver)
+        edit_template_page.create_template(name=name, content=content)
+
+        confirm_edit_template_page = ConfirmEditLetterTemplatePage(driver)
+        confirm_edit_template_page.click_save()
 
     return confirm_edit_template_page.get_template_id()
 
 
-def create_broadcast_template(driver, name="test template", content=None):
+def create_broadcast_template(driver, name, content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
@@ -340,6 +346,7 @@ def send_notification_to_one_recipient(
     test=False,
     recipient_data=None,
     placeholders_number=None,
+    test_name=None,
 ):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
@@ -375,7 +382,7 @@ def send_notification_to_one_recipient(
     for placeholder in placeholders:
         assert send_to_one_recipient_page.is_text_present_on_page(list(placeholder.values())[0])
     if message_type == "email":
-        _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_data)
+        _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_data, test_name=test_name)
     else:
         _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_data)
     return placeholders
@@ -391,7 +398,9 @@ def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipien
     assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
 
 
-def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_email):
+def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_email, test_name=None):
+    from tests.pages.rollups import get_email_and_password
+
     send_to_one_recipient_page = SendOneRecipient(driver)
     preview_rows = send_to_one_recipient_page.get_preview_contents()
     assert "From" in str(preview_rows[0].text)
@@ -400,7 +409,8 @@ def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipi
     assert config["service"]["email_reply_to"] in str(preview_rows[1].text)
     assert "To" in str(preview_rows[2].text)
     if test is True:
-        assert config["service"]["seeded_user"]["email"] in str(preview_rows[2].text)
+        email_address, _ = get_email_and_password("seeded", test_name=test_name)
+        assert email_address in str(preview_rows[2].text)
     else:
         assert recipient_email in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)

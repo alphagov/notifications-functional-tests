@@ -16,6 +16,7 @@ export FUNCTIONAL_TESTS_SERVICE_NAME='Functional Tests'
 export FUNCTIONAL_TESTS_ORGANISATION_ID='e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5'
 export FUNCTIONAL_TESTS_SERVICE_API_KEY='functional_tests_research_live_key-34b725f0-1f47-49bc-a9f5-aa2a84587c53-846a8975-9e37-4530-ba2b-6ed53819b78d'
 export FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY='functional_tests_research_test_key-34b725f0-1f47-49bc-a9f5-aa2a84587c53-ffaf2dec-e7da-4fbe-bcc7-ce6ad51e3b5e'
+export FUNCTIONAL_TESTS_API_AUTH_SECRET='functional-tests-secret-key'
 
 export FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO='notify-tests-preview+local-reply-to@digital.cabinet-office.gov.uk'
 export FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER=07700900500
