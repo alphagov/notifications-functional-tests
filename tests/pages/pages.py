@@ -38,6 +38,7 @@ from tests.pages.locators import (
     MainPageLocators,
     ManageLetterAttachPageLocators,
     NavigationLocators,
+    SendLetterPreviewPageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
     SingleRecipientLocators,
@@ -570,6 +571,7 @@ class EditSmsTemplatePage(BasePage):
 class ViewLetterTemplatePage(BasePage):
     edit_body = ViewLetterTemplatePageLocators.EDIT_BODY
     attach_button = ViewLetterTemplatePageLocators.ATTACH_BUTTON
+    send_button = ViewLetterTemplatePageLocators.SEND_BUTTON
 
     def click_edit_body(self):
         element = self.wait_for_element(ViewLetterTemplatePage.edit_body)
@@ -577,6 +579,10 @@ class ViewLetterTemplatePage(BasePage):
 
     def click_attachment_button(self):
         element = self.wait_for_element(ViewLetterTemplatePage.attach_button)
+        element.click()
+
+    def click_send_button(self):
+        element = self.wait_for_element(ViewLetterTemplatePage.send_button)
         element.click()
 
 
@@ -864,6 +870,14 @@ class PreviewLetterPage(BasePage):
         return link.get_attribute("src")
 
 
+class SendLetterPreviewPage(PreviewLetterPage):
+    send_button = SendLetterPreviewPageLocators.SEND_BUTTON
+
+    def click_send(self):
+        button = self.wait_for_element(SendLetterPreviewPage.send_button)
+        button.click()
+
+
 class SendOneRecipient(BasePage):
     def is_placeholder_a_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
@@ -895,6 +909,13 @@ class SendOneRecipient(BasePage):
         else:
             element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
         element.click()
+
+    def send_to_address(self, address):
+        element = self.wait_for_element(SingleRecipientLocators.ADDRESS_INPUT)
+        element.send_keys(address)
+
+        button = self.wait_for_element(SingleRecipientLocators.CONTINUE_BUTTON)
+        button.click()
 
 
 class ServiceSettingsPage(BasePage):

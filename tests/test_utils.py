@@ -29,6 +29,7 @@ from tests.pages import (
     ManageAttachmentPage,
     RegisterFromInvite,
     RegistrationPage,
+    SendLetterPreviewPage,
     SendOneRecipient,
     ShowTemplatesPage,
     SmsSenderPage,
@@ -386,6 +387,25 @@ def send_notification_to_one_recipient(
     else:
         _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_data)
     return placeholders
+
+
+def send_letter_to_one_recipient(driver, template_name, address, build_id):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
+    dashboard_page.click_templates()
+
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_template_by_link_text(template_name)
+    view_template_page = ViewTemplatePage(driver)
+    view_template_page.click_send()
+
+    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page.send_to_address(address)
+    send_to_one_recipient_page.enter_placeholder_value(build_id)
+    send_to_one_recipient_page.click_continue()
+
+    send_letter_preview_page = SendLetterPreviewPage(driver)
+    send_letter_preview_page.click_send()
 
 
 def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_number):
