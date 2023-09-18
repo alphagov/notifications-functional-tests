@@ -310,7 +310,7 @@ def add_letter_attachment_for_template(driver, name, service="service"):
     template_page = ViewLetterTemplatePage(driver)
     template_page.click_attachment_button()
     upload_page = UploadAttachmentPage(driver)
-    upload_page.upload_attachment(os.path.join(os.getcwd(), "tests/test_files/blank_page.pdf"))
+    upload_page.upload_attachment(os.path.join(os.getcwd(), "tests/test_files/attachment.pdf"))
 
 
 def manage_letter_attachment(driver):
