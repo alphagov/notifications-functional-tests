@@ -18,8 +18,8 @@ from tests.pages import (
 from tests.test_utils import RetryException
 
 
-def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs):
-    file = prepare_upload(BytesIO("foo-bar-baz".encode("utf-8")), **prepare_upload_kwargs)
+def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs, filedata: str = "foo-bar-baz"):
+    file = prepare_upload(BytesIO(filedata.encode("utf-8")), **prepare_upload_kwargs)
     personalisation = {"build_id": file}
     email_address = config["service"]["seeded_user"]["email"]
     template_id = config["service"]["templates"]["email"]
@@ -72,6 +72,22 @@ def test_document_upload_and_download(driver, client_live_key):
     downloaded_document = requests.get(document_url, headers=headers)
 
     assert downloaded_document.text == "foo-bar-baz"
+
+
+@pytest.mark.antivirus
+def test_can_send_json_files_via_doc_dl(driver, client_live_key):
+    """When we're running on AWS ECS via docker containers - and importantly testing via those same docker containers
+    - we can turn this into a unit test.
+
+    However, for now we need to make sure that we're actually testing the deployed artifact - including OS level
+    things like libmagic. So we need to be hitting the actual app, rather than just the code running inside some
+    non-representative custom test docker container.
+    """
+    _get_test_doc_dl_url(
+        client_live_key,
+        {"confirm_email_before_download": False},
+        filedata='{"hi": "json", "document": "download", "supports": ["arbitrary", "json", "data"]}',
+    )
 
 
 @pytest.mark.antivirus
