@@ -10,7 +10,7 @@ COPY organisation (id, name, active, created_at, updated_at, email_branding_id, 
 e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.500149	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t
 \.
 
-COPY services (id, name, created_at, updated_at, active, restricted, email_from, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
+COPY services (id, name, created_at, updated_at, active, restricted, normalised_service_name, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
 34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	f	functional.tests	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	5	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	\N	\N	\N	\N	t	\N	\N	\N	\N	\N	\N	\N	\N	1000	1000	1000	f
 8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	f	functional.tests.broadcast.service	0d2e9b87-9c54-448c-b549-f764231ee599	2	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N	1000	1000	1000	f
 \.
@@ -34,20 +34,20 @@ c1d8e17f-3abe-4858-913e-d88f689ca430	functional_tests_service_live_key	Ijg0NmE4O
 22404b3f-779c-49d5-9c3f-46464fb37a62	func_tests_broadcast_service_live_key	ImMzZTZiNjhmLWJkNDMtNGUzMy04ZmJhLTY3YThjMWJhZDRhMyI.58oYXhsespJeQQ0zolZUdfyTnPw	8e1d56fa-12a8-4d00-bed2-db47180bed0a	\N	2019-03-25 15:07:44.583174	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	normal
 \.
 
-COPY templates_history (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, service_letter_contact_id, hidden, postage, broadcast_data) FROM stdin;
-75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N
+COPY templates_history (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, service_letter_contact_id, hidden, postage, broadcast_data, letter_languages) FROM stdin;
+75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N	\N
+63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N	\N
+c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N	english
 \.
 
 COPY inbound_numbers (id, number, provider, service_id, active, created_at, updated_at) FROM stdin;
 7d79137b-eb13-45f9-a5ec-8c2a27e00178	07700900500	mmg	34b725f0-1f47-49bc-a9f5-aa2a84587c53	t	2019-03-25 00:00:00	2019-03-25 15:20:26.028625
 \.
 
-COPY templates (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, service_letter_contact_id, hidden, postage, broadcast_data) FROM stdin;
-75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N
-c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N
+COPY templates (id, name, template_type, created_at, updated_at, content, service_id, subject, created_by_id, version, archived, process_type, service_letter_contact_id, hidden, postage, broadcast_data, letter_languages) FROM stdin;
+75a02fb0-177a-4d10-89f8-e28e48ede6e5	Functional Tests - CSV Email Template with Build ID	email	2019-03-25 15:23:07.172674	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Email	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N	\N
+63d41316-1c0a-415b-968b-8211a71ab7f1	Functional Tests - CSV SMS Template with Build ID	sms	2019-03-25 15:24:14.907439	\N	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	\N	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	f	normal	\N	f	\N	\N	\N
+c3caccab-b066-4a43-8340-cae8b2887e86	Functional Tests - CSV Letter Template with Build ID	letter	2019-03-25 15:24:40.689266	2019-03-25 15:26:51.614382	The quick brown fox jumped over the lazy dog. Build id: ((build_id)).	34b725f0-1f47-49bc-a9f5-aa2a84587c53	Functional Tests - CSV Letter	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	f	normal	\N	f	second	\N	english
 \.
 
 COPY permissions (id, service_id, user_id, permission, created_at) FROM stdin;
@@ -103,7 +103,7 @@ bdf151d6-2fd7-4c7f-96e5-4a23a373d13a	func tests	34b725f0-1f47-49bc-a9f5-aa2a8458
 1f54be97-48f5-4a57-afdb-b548dbba477a	development	8e1d56fa-12a8-4d00-bed2-db47180bed0a	t	\N	2021-07-14 14:36:03.457803	\N	f
 \.
 
-COPY services_history (id, name, created_at, updated_at, active, letter_message_limit, restricted, email_from, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
+COPY services_history (id, name, created_at, updated_at, active, letter_message_limit, restricted, normalised_service_name, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, consent_to_research, volume_email, volume_letter, volume_sms, count_as_live, go_live_at, go_live_user_id, organisation_id, notes, billing_contact_email_addresses, billing_contact_names, billing_reference, purchase_order_number, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
 8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	\N	t	50	t	functional.tests.broadcast.service	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1	central	t	\N	3000	\N	\N	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	5000	5000	f
 8e1d56fa-12a8-4d00-bed2-db47180bed0a	Functional Tests Broadcast Service	2021-07-14 14:36:03.423486	2021-07-14 14:37:35.234642	t	50	f	functional.tests.broadcast.service	c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	2	central	t	\N	3000	\N	\N	\N	\N	\N	f	2021-07-14 14:37:35.122431	\N	38e4bf69-93b0-445d-acee-53ea53fe02df	\N	\N	\N	\N	\N	5000	5000	f
 \.

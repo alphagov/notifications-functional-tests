@@ -35,16 +35,20 @@ Note, there is an order dependency in the main tests. The registration test must
 
 If you are running Notify locally using docker-compose via [notifications-local](https://www.github.com/alphagov/notifications-local), then you need to set the following environment variables:
 
-```
-FUNCTIONAL_TESTS_LOCAL_API_HOST=http://notify-api.localhost:6011
-FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST=http://notify.localhost:6012
-FUNCTIONAL_TESTS_LOCAL_ALERTS_HOST=http://notify.localhost:6017/alerts
+```shell
+export FUNCTIONAL_TESTS_LOCAL_API_HOST=http://notify-api.localhost:6011
+export FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST=http://notify.localhost:6012
+export FUNCTIONAL_TESTS_LOCAL_ALERTS_HOST=http://notify.localhost:6017/alerts
 ```
 
 Populate the local database with fixture data:
 
 ```shell
 psql notification_api -f db_fixtures/local.sql
+
+# or for dockerised through notifications-local
+
+psql postgresql://notify:notify@localhost:5433/notification_api -f db_fixtures/local.sql
 ```
 
 Note: If you see any errors (for example a `duplicate key value violates unique constraint` line or similar), that table will not be saved but other following table inserts will still attempt. You'll need to fix the errors for that table (either in your local database or in the fixture script) and run the script again, or open `psql` and just copy-paste the lines from the script that you need.
