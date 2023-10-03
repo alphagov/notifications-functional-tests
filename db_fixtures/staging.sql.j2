@@ -10,7 +10,7 @@ COPY organisation (id, name, active, created_at, can_approve_own_go_live_request
 e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	Functional Tests Org	t	2019-03-25 15:04:27.500149	f
 \.
 
-COPY services (id, name, created_at, updated_at, active, restricted, email_from, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, count_as_live, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
+COPY services (id, name, created_at, updated_at, active, restricted, normalised_service_name, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, count_as_live, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
 1e7226d5-e216-4eb0-ae4b-3caa9febd4c4	Functional Tests - CSV & Notify API Staging	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	t	functional.tests	ff336294-a59e-46a6-a339-dd23a0635a0e	5	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	t	50	50	50	f
 \.
 
@@ -111,7 +111,7 @@ COPY users (id, name, email_address, created_at, updated_at, _password, mobile_n
 cc2fe4d4-df6a-4a3b-82db-98fdcc54ea67	Functional Tests - Providers	notify-tests-staging+provider-tests@digital.cabinet-office.gov.uk	2019-03-25 14:48:38.719334	2019-03-25 14:50:58.826605	{{ sms_auth_user_password_hash }}	+447481342436	2019-03-25 14:48:38.71801	2019-03-25 14:50:58.796995	0	active	f	23ca4bbf-347f-44a7-b998-142bca2fa991	sms_auth	NOW()
 \.
 
-COPY services (id, name, created_at, updated_at, active, restricted, email_from, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, count_as_live, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
+COPY services (id, name, created_at, updated_at, active, restricted, normalised_service_name, created_by_id, version, organisation_type, prefix_sms, crown, rate_limit, contact_link, count_as_live, letter_message_limit, sms_message_limit, email_message_limit, has_active_go_live_request) FROM stdin;
 8035fcbf-f064-4dda-b8f7-3fffa3478f30	Functional Tests - Providers Staging	2019-03-25 15:02:40.869192	2019-03-25 15:35:17.203589	t	t	functional.tests.provider	cc2fe4d4-df6a-4a3b-82db-98fdcc54ea67	5	central	t	t	3000	e6e6ce48-f634-4ebf-af7b-c70fdf16cbd5	t	50	50	50	f
 \.
 
