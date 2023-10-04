@@ -170,6 +170,7 @@ class ChangeNameLocators(object):
 
 
 class ViewTemplatePageLocators(object):
+    EDIT_BUTTON = (By.PARTIAL_LINK_TEXT, "Edit")
     SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
 
 

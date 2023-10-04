@@ -44,6 +44,8 @@ from tests.test_utils import (
     create_sms_template,
     delete_letter_attachment,
     delete_template,
+    edit_email_template,
+    edit_sms_template,
     go_to_templates_page,
     manage_letter_attachment,
     recordtime,
@@ -111,12 +113,30 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_k
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
     assert template_name in current_templates
 
+    new_template_name = f"{template_name} v2"
+    edit_email_template(
+        driver,
+        template_name=template_name,
+        new_template_name=new_template_name,
+        subject="my new email subject",
+        content="my new template content. Job id: ((build_id))",
+    )
+
+    go_to_templates_page(driver)
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
+
+    assert template_name not in current_templates
+    assert new_template_name in current_templates
+
     delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
+    assert new_template_name not in current_templates
 
 
 @recordtime
@@ -132,12 +152,29 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key
 
     assert template_name in current_templates
 
-    delete_template(driver, template_name)
+    new_template_name = f"{template_name} v2"
+    edit_sms_template(
+        driver,
+        template_name=template_name,
+        new_template_name=new_template_name,
+        content="my new template content. Job id: ((build_id))",
+    )
+
+    go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
+    assert new_template_name in current_templates
+
+    delete_template(driver, new_template_name)
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
+
+    assert template_name not in current_templates
+    assert new_template_name not in current_templates
 
 
 @recordtime
@@ -374,7 +411,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     show_templates_page.select_email()
 
     edit_template_page = EditEmailTemplatePage(driver)
-    edit_template_page.create_template(name=template_name)
+    edit_template_page.fill_template(name=template_name)
     template_id = edit_template_page.get_template_id()
     edit_template_page.click_templates()
 
@@ -445,7 +482,7 @@ def test_template_folder_permissions(driver, request, login_seeded_user):
         show_templates_page.select_email()
 
         edit_template_page = EditEmailTemplatePage(driver)
-        edit_template_page.create_template(name=(folder_name + "_template"))
+        edit_template_page.fill_template(name=(folder_name + "_template"))
         # go back to view folder page
         edit_template_page.click_folder_path(folder_name)
 

@@ -231,7 +231,7 @@ def create_email_template(driver, name, content=None):
     show_templates_page.select_email()
 
     template_page = EditEmailTemplatePage(driver)
-    template_page.create_template(name=name, content=content)
+    template_page.fill_template(name=name, content=content)
     return template_page.get_template_id()
 
 
@@ -242,7 +242,7 @@ def create_sms_template(driver, name, content=None):
     show_templates_page.select_text_message()
 
     template_page = EditSmsTemplatePage(driver)
-    template_page.create_template(name=name, content=content)
+    template_page.fill_template(name=name, content=content)
     return template_page.get_template_id()
 
 
@@ -274,7 +274,7 @@ def create_broadcast_template(driver, name, content=None):
     show_templates_page.click_add_new_template()
 
     template_page = EditBroadcastTemplatePage(driver)
-    template_page.create_template(name=name, content=content)
+    template_page.fill_template(name=name, content=content)
     return template_page.get_template_id()
 
 
@@ -282,6 +282,40 @@ def go_to_templates_page(driver, service="service"):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config[service]["id"])
     dashboard_page.click_templates()
+
+
+def edit_sms_template(driver, template_name, new_template_name, content, service="service"):
+    show_templates_page = ShowTemplatesPage(driver)
+    try:
+        show_templates_page.click_template_by_link_text(template_name)
+    except TimeoutException:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.go_to_dashboard_for_service(config[service]["id"])
+        dashboard_page.click_templates()
+        show_templates_page.click_template_by_link_text(template_name)
+
+    template_page = ViewTemplatePage(driver)
+    template_page.click_edit()
+
+    edit_sms_template_page = EditSmsTemplatePage(driver)
+    edit_sms_template_page.fill_template(name=new_template_name, content=content)
+
+
+def edit_email_template(driver, template_name, new_template_name, subject, content, service="service"):
+    show_templates_page = ShowTemplatesPage(driver)
+    try:
+        show_templates_page.click_template_by_link_text(template_name)
+    except TimeoutException:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.go_to_dashboard_for_service(config[service]["id"])
+        dashboard_page.click_templates()
+        show_templates_page.click_template_by_link_text(template_name)
+
+    template_page = ViewTemplatePage(driver)
+    template_page.click_edit()
+
+    edit_email_template_page = EditEmailTemplatePage(driver)
+    edit_email_template_page.fill_template(name=new_template_name, subject=subject, content=content)
 
 
 def delete_template(driver, template_name, service="service"):
