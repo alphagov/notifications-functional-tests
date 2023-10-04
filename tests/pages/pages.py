@@ -550,15 +550,15 @@ class SendSmsTemplatePage(BasePage):
 
 
 class EditSmsTemplatePage(BasePage):
-    name_input = NameInputElement()
-    template_content_input = TemplateContentElement()
+    name_input = NameInputElement(clear=True)
+    template_content_input = TemplateContentElement(clear=True)
     save_button = EditTemplatePageLocators.SAVE_BUTTON
 
     def click_save(self):
         element = self.wait_for_element(EditSmsTemplatePage.save_button)
         element.click()
 
-    def create_template(self, name="Test sms template", content=None):
+    def fill_template(self, name="Test sms template", content=None):
         self.name_input = name
         if content:
             self.template_content_input = content
@@ -627,15 +627,19 @@ class SendEmailTemplatePage(BasePage):
 
 
 class ViewTemplatePage(BasePage):
+    def click_edit(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.EDIT_BUTTON)
+        element.click()
+
     def click_send(self):
         element = self.wait_for_element(ViewTemplatePageLocators.SEND_BUTTON)
         element.click()
 
 
 class EditEmailTemplatePage(BasePage):
-    name_input = NameInputElement()
-    subject_input = SubjectInputElement()
-    template_content_input = TemplateContentElement()
+    name_input = NameInputElement(clear=True)
+    subject_input = SubjectInputElement(clear=True)
+    template_content_input = TemplateContentElement(clear=True)
     save_button = EditTemplatePageLocators.SAVE_BUTTON
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
@@ -657,9 +661,9 @@ class EditEmailTemplatePage(BasePage):
         element = self.wait_for_element(EditEmailTemplatePage.confirm_delete_button)
         element.click()
 
-    def create_template(self, name="Test email template", content=None):
+    def fill_template(self, name="Test email template", subject="Test email from functional tests", content=None):
         self.name_input = name
-        self.subject_input = "Test email from functional tests"
+        self.subject_input = subject
         if content:
             self.template_content_input = content
         else:
