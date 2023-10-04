@@ -63,6 +63,7 @@ class EditTemplatePageLocators(object):
 class ViewLetterTemplatePageLocators(object):
     EDIT_BODY = (By.CLASS_NAME, "edit-template-link-letter-body")
     ATTACH_BUTTON = (By.CLASS_NAME, "edit-template-link-attachment")
+    SEND_BUTTON = (By.CLASS_NAME, "edit-template-link-get-ready-to-send")
 
 
 class ManageLetterAttachPageLocators(object):
@@ -129,6 +130,10 @@ class LetterPreviewPageLocators(object):
     PDF_IMAGE = (By.CSS_SELECTOR, ".letter img")
 
 
+class SendLetterPreviewPageLocators(LetterPreviewPageLocators):
+    SEND_BUTTON = (By.XPATH, "//button[contains(text(), 'Send 1 letter')]")
+
+
 class SingleRecipientLocators(object):
     USE_MY_EMAIL = (By.LINK_TEXT, "Use my email address")
     USE_MY_NUMBER = (By.LINK_TEXT, "Use my phone number")
@@ -136,6 +141,11 @@ class SingleRecipientLocators(object):
     PLACEHOLDER_VALUE_INPUT = (By.NAME, "placeholder_value")
     PREVIEW_TABLE = (By.CLASS_NAME, "email-message-meta")
     ALTERNATIVE_SENDER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
+    ADDRESS_INPUT = (By.ID, "address")
+    CONTINUE_BUTTON = (
+        By.XPATH,
+        "//button[contains(text(),'Continue')]",
+    )
 
 
 class EmailReplyToLocators(object):

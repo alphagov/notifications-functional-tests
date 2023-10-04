@@ -5,6 +5,7 @@ import uuid
 from io import BytesIO
 
 import pytest
+from pypdf import PdfReader
 from retry.api import retry_call
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -49,6 +50,7 @@ from tests.test_utils import (
     go_to_templates_page,
     manage_letter_attachment,
     recordtime,
+    send_letter_to_one_recipient,
     send_notification_to_one_recipient,
 )
 
@@ -199,15 +201,49 @@ def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_
 
 
 @recordtime
-def test_add_and_delete_letter_attachment(driver, login_seeded_user, client_live_key):
-    template_name = f"edit/delete letter attachment test {uuid.uuid4()}"
+def test_add_letter_attachment_then_send_letter_then_delete_attachment(driver, login_seeded_user, client_live_key):
+    test_id = uuid.uuid4()
+    template_name = f"edit/delete letter attachment test {test_id}"
     go_to_templates_page(driver)
     create_letter_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     add_letter_attachment_for_template(driver, name=template_name)
     assert driver.find_element(By.CLASS_NAME, "edit-template-link-attachment").text == "Manage attachment"
+
+    send_letter_to_one_recipient(
+        driver, template_name, address=f"{test_id}\nTest street\nSW1 1AA", build_id=str(test_id)
+    )
+
+    letter_preview_page = PreviewLetterPage(driver)
+    notification_id = letter_preview_page.get_notification_id()
+
+    # wait until notification is in ACCEPTED state
+    retry_call(
+        get_notification_by_id_via_api,
+        fargs=[
+            client_live_key,
+            notification_id,
+            NotificationStatuses.ACCEPTED,
+        ],
+        tries=config["notification_retry_times"],
+        delay=config["notification_retry_interval"],
+    )
+
+    letter_pdf = get_pdf_for_letter_via_api(client_live_key, notification_id)
+    pdf_reader = PdfReader(letter_pdf)
+    assert len(pdf_reader.pages) == 2
+    attachment_page = pdf_reader.pages[1]
+    assert "This is an attachment" in attachment_page.extract_text()
+
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
+    dashboard_page.click_templates()
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_template_by_link_text(template_name)
+
     manage_letter_attachment(driver)
-    assert driver.find_element(By.TAG_NAME, "h1").text == "blank_page.pdf"
+    assert driver.find_element(By.TAG_NAME, "h1").text == "attachment.pdf"
+
     delete_letter_attachment(driver)
     go_to_templates_page(driver)
     delete_template(driver, template_name)
