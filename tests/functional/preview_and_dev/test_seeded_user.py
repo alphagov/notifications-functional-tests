@@ -178,9 +178,9 @@ def test_add_letter_attachment_then_send_letter_then_delete_attachment(driver, l
     )
 
     letter_preview_page = PreviewLetterPage(driver)
-    pdf_download_link = letter_preview_page.get_download_pdf_link()
-    notification_id = pdf_download_link.split("/")[-1].replace(".pdf", "")
+    notification_id = letter_preview_page.get_notification_id()
 
+    # wait until notification is in ACCEPTED state
     retry_call(
         get_notification_by_id_via_api,
         fargs=[

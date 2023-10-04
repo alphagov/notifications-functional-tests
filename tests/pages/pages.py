@@ -869,6 +869,10 @@ class PreviewLetterPage(BasePage):
         link = self.wait_for_element(PreviewLetterPage.pdf_image)
         return link.get_attribute("src")
 
+    def get_notification_id(self):
+        link = self.get_download_pdf_link()
+        return link.split("/")[-1].replace(".pdf", "")
+
 
 class SendLetterPreviewPage(PreviewLetterPage):
     send_button = SendLetterPreviewPageLocators.SEND_BUTTON
