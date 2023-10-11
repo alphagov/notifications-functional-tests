@@ -144,7 +144,7 @@ def do_user_registration(driver):
     main_page.click_set_up_account()
 
     registration_page = RegistrationPage(driver)
-    assert registration_page.is_current()
+    registration_page.wait_until_current()
 
     registration_page.register()
 
@@ -157,7 +157,7 @@ def do_user_registration(driver):
     do_verify(driver, config["user"]["mobile"])
 
     add_service_page = AddServicePage(driver)
-    assert add_service_page.is_current()
+    add_service_page.wait_until_current()
     add_service_page.add_service(config["service_name"])
 
     dashboard_page = DashboardPage(driver)
@@ -168,7 +168,6 @@ def do_user_registration(driver):
 
 
 def do_user_can_invite_someone_to_notify(driver, basic_view):
-
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
 
@@ -298,7 +297,6 @@ def delete_template(driver, template_name, service="service"):
 
 
 def add_letter_attachment_for_template(driver, name, service="service"):
-
     show_templates_page = ShowTemplatesPage(driver)
     try:
         show_templates_page.click_template_by_link_text(name)

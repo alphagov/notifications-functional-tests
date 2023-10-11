@@ -29,7 +29,7 @@ def _sign_in(driver, account_type, test_name=None):
     sign_in_page.get()
 
     try:
-        sign_in_page.is_current()
+        sign_in_page.wait_until_current()
     except TimeoutException:
         # if we didn't get to the sign_in_page, it's probably because we're already logged in.
         # try logging out before proceeding

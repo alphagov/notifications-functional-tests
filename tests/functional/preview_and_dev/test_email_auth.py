@@ -27,7 +27,7 @@ def test_reset_forgotten_password(driver, request):
     email, password = get_email_and_password(account_type="seeded", test_name=request.node.name)
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
-    assert sign_in_page.is_current()
+    sign_in_page.wait_until_current()
     sign_in_page.click_forgot_password_link()
 
     forgot_password_page = ForgotPasswordPage(driver)
