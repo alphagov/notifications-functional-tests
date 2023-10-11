@@ -3,6 +3,7 @@ import os
 import tempfile
 
 from filelock import FileLock
+from selenium.common.exceptions import TimeoutException
 
 from config import config, generate_unique_email
 from tests.pages import SignInPage
@@ -26,7 +27,15 @@ def sign_in_email_auth(driver):
 def _sign_in(driver, account_type, test_name=None):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
-    assert sign_in_page.is_current()
+
+    try:
+        sign_in_page.wait_until_current()
+    except TimeoutException:
+        # if we didn't get to the sign_in_page, it's probably because we're already logged in.
+        # try logging out before proceeding
+        sign_in_page.sign_out()
+        sign_in_page.get()
+
     email, password = get_email_and_password(account_type=account_type, test_name=test_name)
     sign_in_page.login(email, password)
 

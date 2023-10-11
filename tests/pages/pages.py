@@ -277,7 +277,7 @@ class RegistrationPage(BasePage):
     mobile_input = MobileInputElement()
     password_input = PasswordInputElement()
 
-    def is_current(self):
+    def wait_until_current(self):
         return self.wait_until_url_is(self.base_url + "/register")
 
     def register(self):
@@ -293,7 +293,7 @@ class AddServicePage(BasePage):
     org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
-    def is_current(self):
+    def wait_until_current(self):
         return self.wait_until_url_is(self.base_url + "/add-service?first=first")
 
     def add_service(self, name):
@@ -339,7 +339,7 @@ class SignInPage(BasePage):
     def get(self):
         self.driver.get(self.base_url + "/sign-in")
 
-    def is_current(self):
+    def wait_until_current(self):
         return self.wait_until_url_is(self.base_url + "/sign-in")
 
     def fill_login_form(self, email, password):
