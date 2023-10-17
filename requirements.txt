@@ -1,19 +1,16 @@
-Flask>=0.11.1
-Flask-Cache==0.13.1
 requests==2.31.0
-beautifulsoup4>=4.5.1
-pytest==7.1.3
+pytest==7.4.2
 retry==0.9.2
-selenium==4.6.0
+selenium==4.14.0
 selenium-wire==5.1.0
-notifications-python-client==6.4.1
-pytest-xdist==3.0.2
+notifications-python-client==8.1.0
+pytest-xdist==3.3.1
 pytest-rerunfailures==12.0
-black==22.10.0  # Also update `.pre-commit-config.yaml` if this changes
-ruff==0.0.261  # Also update `.pre-commit-config.yaml` if this changes
+black==23.9.1 # Also update `.pre-commit-config.yaml` if this changes
+ruff==0.1.0 # Also update `.pre-commit-config.yaml` if this changes
 jinja2-cli==0.8.2
-pillow==10.0.1
+pillow==10.1.0
 pyzbar==0.1.9
-pypdf==3.16.1
+pypdf==3.16.4
 pdf2image==1.16.3
-filelock==3.12.2
+filelock==3.12.4
