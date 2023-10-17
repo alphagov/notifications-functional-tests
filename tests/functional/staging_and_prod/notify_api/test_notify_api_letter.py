@@ -14,7 +14,6 @@ from tests.test_utils import NotificationStatuses, recordtime
 
 @recordtime
 def test_send_precompiled_letter_notification_via_api(client_test_key):
-
     reference = config["name"].replace(" ", "_") + "_delivered"
 
     notification_id = send_precompiled_letter_via_api(
