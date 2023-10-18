@@ -329,7 +329,6 @@ def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, lo
 
 @pytest.mark.template_preview
 def test_view_precompiled_letter_message_log_delivered(driver, login_seeded_user, client_test_key):
-
     reference = f"functional_tests_precompiled_{uuid.uuid4()}_delivered"
 
     notification_id = send_precompiled_letter_via_api(
@@ -354,7 +353,6 @@ def test_view_precompiled_letter_message_log_delivered(driver, login_seeded_user
 
 @pytest.mark.template_preview
 def test_view_precompiled_letter_preview_delivered(driver, login_seeded_user, client_test_key):
-
     reference = f"functional_tests_precompiled_letter_preview_{uuid.uuid4()}_delivered"
 
     notification_id = send_precompiled_letter_via_api(
@@ -407,7 +405,6 @@ def test_view_precompiled_letter_preview_delivered(driver, login_seeded_user, cl
 
 @pytest.mark.antivirus
 def test_view_precompiled_letter_message_log_virus_scan_failed(driver, login_seeded_user, client_test_key):
-
     reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_virus_scan_failed"
 
     send_precompiled_letter_via_api(

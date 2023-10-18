@@ -85,7 +85,6 @@ def test_send_letter_notification_with_qr_code_via_api(client_test_key):
 @recordtime
 @pytest.mark.antivirus
 def test_send_precompiled_letter_notification_via_api(client_test_key):
-
     reference = config["service_name"].replace(" ", "_") + "_delivered"
 
     notification_id = send_precompiled_letter_via_api(
@@ -113,7 +112,6 @@ def test_send_precompiled_letter_notification_via_api(client_test_key):
 def test_send_precompiled_letter_with_virus_notification_via_api(
     client_test_key,
 ):
-
     # This uses a file which drops the Eicar test virus into the temp directory
     # The dropper code _should_ be detected before the eicar virus
 
