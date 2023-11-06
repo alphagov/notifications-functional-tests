@@ -20,6 +20,10 @@ These tests are not intended to be used for load testing.
 brew install --cask chromedriver # needs to be >= v2.32
 brew install zbar  # Used for QR code reading
 
+# https://github.com/npinchot/zbar/issues/3
+mkdir -p ~/lib
+ln -s $(brew --prefix zbar)/lib/libzbar.dylib ~/lib/libzbar.dylib
+
 make bootstrap # install dependencies, etc.
 ```
 
