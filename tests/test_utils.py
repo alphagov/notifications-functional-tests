@@ -39,6 +39,7 @@ from tests.pages import (
     ViewLetterTemplatePage,
     ViewTemplatePage,
 )
+from tests.pages.pages import RenameLetterTemplatePage
 
 logging.basicConfig(filename="./logs/test_run_{}.log".format(datetime.utcnow()), level=logging.INFO)
 
@@ -261,10 +262,16 @@ def create_letter_template(driver, name, content=None):
         view_template_page.click_edit_body()
 
         edit_template_page = EditLetterTemplatePage(driver)
-        edit_template_page.create_template(name=name, content=content)
+        edit_template_page.create_template(content=content)
 
         confirm_edit_template_page = ConfirmEditLetterTemplatePage(driver)
         confirm_edit_template_page.click_save()
+
+        view_template_page = ViewLetterTemplatePage(driver)
+        view_template_page.click_rename_link()
+
+        rename_template_page = RenameLetterTemplatePage(driver)
+        rename_template_page.rename_template(name)
 
     return confirm_edit_template_page.get_template_id()
 

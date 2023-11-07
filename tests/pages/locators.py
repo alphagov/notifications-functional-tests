@@ -60,7 +60,12 @@ class EditTemplatePageLocators(object):
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
 
 
+class RenameTemplatePageLocators(object):
+    SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+
+
 class ViewLetterTemplatePageLocators(object):
+    RENAME_LINK = (By.CLASS_NAME, "folder-heading-manage-link")
     EDIT_BODY = (By.CLASS_NAME, "edit-template-link-letter-body")
     ATTACH_BUTTON = (By.CLASS_NAME, "edit-template-link-attachment")
     SEND_BUTTON = (By.CLASS_NAME, "edit-template-link-get-ready-to-send")
