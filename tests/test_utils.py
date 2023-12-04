@@ -576,3 +576,18 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.click_element_by_link_text(page_title)
 
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+
+
+@retry(
+    RetryException,
+    tries=10,
+    delay=1,
+)
+def get_downloaded_document(download_directory, filename):
+    """
+    Wait up to ten seconds for the file to be downloaded, checking every second
+    """
+    for file in download_directory.iterdir():
+        if file.is_file() and file.name == filename:
+            return file
+    raise RetryException(f"{filename} not found in downloads folder")
