@@ -67,8 +67,11 @@ class RenameTemplatePageLocators(object):
 class ViewLetterTemplatePageLocators(object):
     RENAME_LINK = (By.CLASS_NAME, "folder-heading-manage-link")
     EDIT_BODY = (By.CLASS_NAME, "edit-template-link-letter-body")
+    EDIT_WELSH_BODY = (By.XPATH, "//a/span[contains(text(), 'Welsh pages')]/..")
+    EDIT_ENGLISH_BODY = (By.XPATH, "//a/span[contains(text(), 'English pages')]/..")
     ATTACH_BUTTON = (By.CLASS_NAME, "edit-template-link-attachment")
     SEND_BUTTON = (By.CLASS_NAME, "edit-template-link-get-ready-to-send")
+    CHANGE_LANGUAGE = (By.LINK_TEXT, "Change language")
 
 
 class ManageLetterAttachPageLocators(object):

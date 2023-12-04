@@ -19,15 +19,19 @@ from tests.functional.preview_and_dev.consts import (
 )
 from tests.pages import (
     ApiIntegrationPage,
+    ChangeLetterLanguagePage,
     DashboardPage,
     EditEmailTemplatePage,
+    EditLetterTemplatePage,
     InviteUserPage,
     ManageFolderPage,
     PreviewLetterPage,
+    SendLetterPreviewPage,
     ShowTemplatesPage,
     TeamMembersPage,
     UploadCsvPage,
     ViewFolderPage,
+    ViewLetterTemplatePage,
 )
 from tests.pages.rollups import sign_in, sign_in_email_auth
 from tests.postman import (
@@ -47,9 +51,12 @@ from tests.test_utils import (
     delete_template,
     edit_email_template,
     edit_sms_template,
+    get_downloaded_document,
     go_to_templates_page,
     manage_letter_attachment,
+    pdf_page_has_text,
     recordtime,
+    send_bilingual_letter_to_one_recipient,
     send_letter_to_one_recipient,
     send_notification_to_one_recipient,
 )
@@ -192,6 +199,71 @@ def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_
 
     assert template_name in current_templates
 
+    delete_template(driver, template_name)
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+    if len(current_templates) == 0:
+        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
+
+    assert template_name not in current_templates
+
+
+@recordtime
+def test_send_bilingual_letter(driver, login_seeded_user, client_live_key, download_directory):
+    template_name = f"send bilingual letter template test {uuid.uuid4()}"
+    go_to_templates_page(driver)
+
+    create_letter_template(driver, name=template_name, content=None)
+
+    assert len(driver.find_elements("css selector", ".letter")) == 1, "There should only be a single (English) page"
+
+    view_template_page = ViewLetterTemplatePage(driver)
+    view_template_page.click_change_language()
+
+    change_language_page = ChangeLetterLanguagePage(driver)
+    change_language_page.change_language("welsh_then_english")
+    change_language_page.click_save()
+
+    assert (
+        len(driver.find_elements("css selector", ".letter")) == 2
+    ), "The letter should have two pages - Welsh then English"
+
+    view_template_page.click_edit_welsh_body()
+
+    edit_template_page = EditLetterTemplatePage(driver)
+    edit_template_page.template_content_input = "My Welsh body ((welsh_var))"
+    edit_template_page.click_save()
+    edit_template_page.click_save()  # Confirm 'breaking' template change.
+
+    view_template_page.click_edit_english_body()
+
+    edit_template_page = EditLetterTemplatePage(driver)
+    edit_template_page.template_content_input = "My English body ((english_var))"
+    edit_template_page.click_save()
+    edit_template_page.click_save()  # Confirm 'breaking' template change.
+
+    placeholders = {
+        "welsh_var": "Mae pwy bynnag a ysgrifennodd y prawf hwn yn berson gwych",
+        "english_var": "Some boring placeholder text for a normal letter.",
+    }
+    send_bilingual_letter_to_one_recipient(
+        driver,
+        template_name,
+        address="notify developer\nTest street\nSW1 1AA",
+        placeholders=placeholders,
+    )
+
+    send_letter_preview_page = SendLetterPreviewPage(driver)
+    filename = send_letter_preview_page.click_download_pdf_link()
+
+    letter_pdf = get_downloaded_document(download_directory, filename)
+    pdf = PdfReader(letter_pdf)
+
+    assert pdf_page_has_text(pdf.pages[0], placeholders["welsh_var"]), "Couldn't find Welsh placeholder on first page"
+    assert pdf_page_has_text(
+        pdf.pages[1], placeholders["english_var"]
+    ), "Couldn't find English placeholder on first page"
+
+    change_language_page.click_templates()
     delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:

@@ -1,5 +1,7 @@
 import os
 import shutil
+from typing import Literal
+from urllib.parse import urlparse
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -572,8 +574,11 @@ class EditSmsTemplatePage(BasePage):
 class ViewLetterTemplatePage(BasePage):
     rename_link = ViewLetterTemplatePageLocators.RENAME_LINK
     edit_body = ViewLetterTemplatePageLocators.EDIT_BODY
+    edit_welsh_body = ViewLetterTemplatePageLocators.EDIT_WELSH_BODY
+    edit_english_body = ViewLetterTemplatePageLocators.EDIT_ENGLISH_BODY
     attach_button = ViewLetterTemplatePageLocators.ATTACH_BUTTON
     send_button = ViewLetterTemplatePageLocators.SEND_BUTTON
+    change_language_button = ViewLetterTemplatePageLocators.CHANGE_LANGUAGE
 
     def click_rename_link(self):
         element = self.wait_for_element(ViewLetterTemplatePage.rename_link)
@@ -583,12 +588,24 @@ class ViewLetterTemplatePage(BasePage):
         element = self.wait_for_element(ViewLetterTemplatePage.edit_body)
         element.click()
 
+    def click_edit_welsh_body(self):
+        element = self.wait_for_element(ViewLetterTemplatePage.edit_welsh_body)
+        element.click()
+
+    def click_edit_english_body(self):
+        element = self.wait_for_element(ViewLetterTemplatePage.edit_english_body)
+        element.click()
+
     def click_attachment_button(self):
         element = self.wait_for_element(ViewLetterTemplatePage.attach_button)
         element.click()
 
     def click_send_button(self):
         element = self.wait_for_element(ViewLetterTemplatePage.send_button)
+        element.click()
+
+    def click_change_language(self):
+        element = self.wait_for_element(self.change_language_button)
         element.click()
 
 
@@ -609,6 +626,20 @@ class EditLetterTemplatePage(BasePage):
                 "The quick brown fox jumped over the lazy dog. I'm a letter. Job id: ((build_id))"
             )
         self.click_save()
+
+
+class ChangeLetterLanguagePage(BasePage):
+    english_radio = (By.CSS_SELECTOR, "input[type=radio][value=english]")
+    welsh_then_english_radio = (By.CSS_SELECTOR, "input[type=radio][value=welsh_then_english]")
+
+    def change_language(self, language: Literal["english", "welsh_then_english"]):
+        locator = self.english_radio if language == "english" else self.welsh_then_english_radio
+
+        # FIXME: Should use self.wait_for_element ... but that's broken for me?
+        # element = self.wait_for_element(locator)
+        element = self.driver.find_element(locator[0], locator[1])
+
+        element.click()
 
 
 class RenameLetterTemplatePage(BasePage):
@@ -886,6 +917,12 @@ class PreviewLetterPage(BasePage):
     def get_download_pdf_link(self):
         link = self.wait_for_element(PreviewLetterPage.download_pdf_link)
         return link.get_attribute("href")
+
+    def click_download_pdf_link(self):
+        """Returns the filename of the downloaded file"""
+        file_href = self.get_download_pdf_link()
+        self.wait_for_element(PreviewLetterPage.download_pdf_link).click()
+        return urlparse(file_href).path.split("/")[-1]
 
     def get_image_src(self):
         link = self.wait_for_element(PreviewLetterPage.pdf_image)
