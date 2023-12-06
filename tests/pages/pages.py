@@ -134,7 +134,11 @@ class BasePage(object):
     def current_url(self):
         return self.driver.current_url
 
-    def wait_for_invisible_element(self, locator):
+    def wait_for_design_system_checkbox_or_radio(self, locator):
+        """GOV.UK Design System 'hides' the original HTML input for checkboxes/radios to provide more accessible
+        visual alternatives. These end up making a `visibility_of_element_located` check fail, so for these specific
+        elements lets bypass that condition.
+        """
         return AntiStaleElement(
             self.driver,
             locator,
@@ -182,7 +186,7 @@ class BasePage(object):
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
-            element = self.wait_for_invisible_element(locator)
+            element = self.wait_for_design_system_checkbox_or_radio(locator)
         if not element.get_attribute("checked"):
             element.click()
             assert element.get_attribute("checked")
@@ -314,7 +318,7 @@ class AddServicePage(BasePage):
 
     def click_org_type_input(self):
         try:
-            element = self.wait_for_invisible_element(AddServicePage.org_type_input)
+            element = self.wait_for_design_system_checkbox_or_radio(AddServicePage.org_type_input)
             element.click()
         except TimeoutException:
             pass
@@ -499,7 +503,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def _select_template_type(self, type):
         # wait for continue button to be displayed - sticky nav has rendered properly
         # we've seen issues
-        radio_element = self.wait_for_invisible_element(type)
+        radio_element = self.wait_for_design_system_checkbox_or_radio(type)
         self.select_checkbox_or_radio(radio_element)
 
         self.click_continue()
@@ -514,7 +518,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self._select_template_type(self.letter_radio)
 
     def select_template_checkbox(self, template_id):
-        element = self.wait_for_invisible_element(self.template_checkbox(template_id))
+        element = self.wait_for_design_system_checkbox_or_radio(self.template_checkbox(template_id))
         self.select_checkbox_or_radio(element)
 
     def add_to_new_folder(self, folder_name):
@@ -532,14 +536,14 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         move_button.click()
         # wait for continue button to be displayed - sticky nav has rendered properly
         # we've seen issues
-        radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
+        radio_element = self.wait_for_design_system_checkbox_or_radio(self.root_template_folder_radio)
 
         self.select_checkbox_or_radio(radio_element)
         self.click_continue()
 
     def get_folder_by_name(self, folder_name):
         try:
-            return self.wait_for_invisible_element(self.template_link_text(folder_name))
+            return self.wait_for_design_system_checkbox_or_radio(self.template_link_text(folder_name))
         except TimeoutException:
             return None
 
@@ -637,7 +641,7 @@ class ChangeLetterLanguagePage(BasePage):
 
         # Our selector is an input, which is hidden by GOV.UK Design System stuff, so we need to wait for an 'invisible'
         # element.
-        element = self.wait_for_invisible_element(locator)
+        element = self.wait_for_design_system_checkbox_or_radio(locator)
 
         element.click()
 
@@ -807,18 +811,18 @@ class InviteUserPage(BasePage):
     def fill_invitation_form(self, email, send_messages_only):
         self.email_input = email
         if send_messages_only:
-            element = self.wait_for_invisible_element(InviteUserPage.send_messages_checkbox)
+            element = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.send_messages_checkbox)
             self.select_checkbox_or_radio(element)
         else:
-            element = self.wait_for_invisible_element(InviteUserPage.see_dashboard_check_box)
+            element = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.see_dashboard_check_box)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(InviteUserPage.send_messages_checkbox)
+            element = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.send_messages_checkbox)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(InviteUserPage.manage_templates_checkbox)
+            element = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.manage_templates_checkbox)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(InviteUserPage.manage_services_checkbox)
+            element = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.manage_services_checkbox)
             self.select_checkbox_or_radio(element)
-            element = self.wait_for_invisible_element(InviteUserPage.manage_api_keys_checkbox)
+            element = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.manage_api_keys_checkbox)
             self.select_checkbox_or_radio(element)
 
     def send_invitation(self):
@@ -831,22 +835,22 @@ class InviteUserPage(BasePage):
 
     def uncheck_folder_permission_checkbox(self, folder_name):
         try:
-            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
+            choose_folders_button = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.choose_folders_button)
             choose_folders_button.click()
         except (NoSuchElementException, TimeoutException):
             pass
 
-        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
+        checkbox = self.wait_for_design_system_checkbox_or_radio(self.get_folder_checkbox(folder_name))
         self.unselect_checkbox(checkbox)
 
     def is_checkbox_checked(self, folder_name):
         try:
-            choose_folders_button = self.wait_for_invisible_element(InviteUserPage.choose_folders_button)
+            choose_folders_button = self.wait_for_design_system_checkbox_or_radio(InviteUserPage.choose_folders_button)
             choose_folders_button.click()
         except (NoSuchElementException, TimeoutException):
             pass
 
-        checkbox = self.wait_for_invisible_element(self.get_folder_checkbox(folder_name))
+        checkbox = self.wait_for_design_system_checkbox_or_radio(self.get_folder_checkbox(folder_name))
         return checkbox.get_attribute("checked")
 
 
@@ -963,7 +967,7 @@ class SendOneRecipient(BasePage):
         return rows
 
     def choose_alternative_sender(self):
-        radio = self.wait_for_invisible_element(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
+        radio = self.wait_for_design_system_checkbox_or_radio(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
         radio.click()
 
     def send_to_myself(self, message_type):
@@ -1026,7 +1030,7 @@ class EmailReplyTo(BasePage):
         self.driver.get(url)
 
     def check_is_default_check_box(self):
-        radio = self.wait_for_invisible_element(EmailReplyToLocators.IS_DEFAULT_CHECKBOX)
+        radio = self.wait_for_design_system_checkbox_or_radio(EmailReplyToLocators.IS_DEFAULT_CHECKBOX)
         radio.click()
 
 
