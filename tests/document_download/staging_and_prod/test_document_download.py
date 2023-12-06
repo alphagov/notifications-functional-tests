@@ -3,7 +3,6 @@ from io import BytesIO
 from urllib.parse import urlparse
 
 from notifications_python_client import prepare_upload
-from retry import retry
 from selenium.webdriver.common.by import By
 
 from config import config
@@ -12,7 +11,7 @@ from tests.pages import (
     DocumentDownloadLandingPage,
     DocumentDownloadPage,
 )
-from tests.test_utils import RetryException
+from tests.test_utils import get_downloaded_document
 
 
 def _get_test_doc_dl_url(client_test_key, prepare_upload_kwargs):
@@ -28,21 +27,6 @@ def _get_test_doc_dl_url(client_test_key, prepare_upload_kwargs):
     assert download_link
 
     return download_link.group(0)
-
-
-@retry(
-    RetryException,
-    tries=10,
-    delay=1,
-)
-def get_downloaded_document(download_directory, filename):
-    """
-    Wait up to ten seconds for the file to be downloaded, checking every second
-    """
-    for file in download_directory.iterdir():
-        if file.is_file() and file.name == filename:
-            return file
-    raise RetryException(f"{filename} not found in downloads folder")
 
 
 def test_document_download_with_email_confirmation(driver, client_test_key, download_directory):

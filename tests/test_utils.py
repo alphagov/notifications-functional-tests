@@ -447,6 +447,28 @@ def send_letter_to_one_recipient(driver, template_name, address, build_id):
     send_letter_preview_page.click_send()
 
 
+def send_bilingual_letter_to_one_recipient(driver, template_name, address, placeholders: dict):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
+    dashboard_page.click_templates()
+
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_template_by_link_text(template_name)
+    view_template_page = ViewTemplatePage(driver)
+    view_template_page.click_send()
+
+    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page.send_to_address(address)
+    for _ in range(len(placeholders)):
+        send_to_one_recipient_page.enter_placeholder_value(
+            placeholders[send_to_one_recipient_page.get_placeholder_name()]
+        )
+        send_to_one_recipient_page.click_continue()
+
+    send_letter_preview_page = SendLetterPreviewPage(driver)
+    send_letter_preview_page.click_send()
+
+
 def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipient_number):
     sms_sender_page = SmsSenderPage(driver)
     sms_sender = sms_sender_page.get_sms_sender()
@@ -576,3 +598,27 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.click_element_by_link_text(page_title)
 
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+
+
+@retry(
+    RetryException,
+    tries=10,
+    delay=1,
+)
+def get_downloaded_document(download_directory, filename):
+    """
+    Wait up to ten seconds for the file to be downloaded, checking every second
+    """
+    for file in download_directory.iterdir():
+        if file.is_file() and file.name == filename:
+            return file
+    raise RetryException(f"{filename} not found in downloads folder")
+
+
+def pdf_page_has_text(pdf_page, expected_text, normalise_whitespace=True):
+    page_text = pdf_page.extract_text()
+
+    if normalise_whitespace:
+        page_text = re.sub(r"\s+", " ", page_text.replace("\n", " "))
+
+    return expected_text in page_text
