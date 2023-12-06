@@ -635,9 +635,9 @@ class ChangeLetterLanguagePage(BasePage):
     def change_language(self, language: Literal["english", "welsh_then_english"]):
         locator = self.english_radio if language == "english" else self.welsh_then_english_radio
 
-        # FIXME: Should use self.wait_for_element ... but that's broken for me?
-        # element = self.wait_for_element(locator)
-        element = self.driver.find_element(locator[0], locator[1])
+        # Our selector is an input, which is hidden by GOV.UK Design System stuff, so we need to wait for an 'invisible'
+        # element.
+        element = self.wait_for_invisible_element(locator)
 
         element.click()
 
