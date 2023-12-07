@@ -122,7 +122,6 @@ We use the following annotations on test methods to define the groups:
 @pytest.mark.xdist_group(name="registration-flow")
 @pytest.mark.xdist_group(name="api-client")
 @pytest.mark.xdist_group(name="seeded-email")
-@pytest.mark.xdist_group(name="broadcasts")
 @pytest.mark.xdist_group(name="api-letters")
 ```
 
