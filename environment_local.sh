@@ -28,12 +28,3 @@ export FUNCTIONAL_TEST_LETTER_TEMPLATE_ID=c3caccab-b066-4a43-8340-cae8b2887e86
 export MMG_INBOUND_SMS_USERNAME=username
 export MMG_INBOUND_SMS_AUTH=testkey
 
-export BROADCAST_USER_1_EMAIL='notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk'
-export BROADCAST_USER_1_NUMBER=07700900002
-
-export BROADCAST_USER_2_EMAIL='notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk'
-export BROADCAST_USER_2_NUMBER=07700900003
-
-export BROADCAST_SERVICE_ID='8e1d56fa-12a8-4d00-bed2-db47180bed0a'
-export BROADCAST_SERVICE_LIVE_API_KEY='func_tests_broadcast_service_live_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-c3e6b68f-bd43-4e33-8fba-67a8c1bad4a3'
-

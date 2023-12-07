@@ -42,7 +42,6 @@ If you are running Notify locally using docker-compose via [notifications-local]
 ```shell
 export FUNCTIONAL_TESTS_LOCAL_API_HOST=http://notify-api.localhost:6011
 export FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST=http://notify.localhost:6012
-export FUNCTIONAL_TESTS_LOCAL_ALERTS_HOST=http://notify.localhost:6017/alerts
 ```
 
 Populate the local database with fixture data:
