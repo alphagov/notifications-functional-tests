@@ -667,10 +667,6 @@ class ConfirmEditLetterTemplatePage(BasePage):
         element.click()
 
 
-class EditBroadcastTemplatePage(EditSmsTemplatePage):
-    pass
-
-
 class SendEmailTemplatePage(BasePage):
     add_a_new_email_template_link = TemplatePageLocators.ADD_A_NEW_TEMPLATE_LINK
     add_new_email_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
@@ -1197,34 +1193,6 @@ class ManageFolderPage(BasePage):
     def confirm_delete_folder(self):
         link = self.wait_for_element(self.delete_button)
         link.click()
-
-
-class BroadcastFreeformPage(BasePage):
-    title_input = NameInputElement()
-    content_input = TemplateContentElement()
-
-    def create_broadcast_content(self, title, content):
-        self.title_input = title
-        self.content_input = content
-
-
-class GovUkAlertsPage(BasePage):
-    def __init__(self, driver):
-        self.gov_uk_alerts_url = config["govuk_alerts_url"]
-        self.driver = driver
-
-    def get(self):
-        self.driver.get(self.gov_uk_alerts_url)
-
-    @retry(
-        RetryException,
-        tries=config["govuk_alerts_wait_retry_times"],
-        delay=config["govuk_alerts_wait_retry_interval"],
-    )
-    def check_alert_is_published(self, broadcast_content):
-        if not self.is_text_present_on_page(broadcast_content):
-            self.driver.refresh()
-            raise RetryException(f'Could not find alert with content "{broadcast_content}"')
 
 
 class UploadAttachmentPage(BasePage):
