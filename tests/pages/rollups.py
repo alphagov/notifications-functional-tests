@@ -66,16 +66,6 @@ def get_email_and_password(account_type, test_name=None):
             config["service"]["email_auth_account"],
             config["service"]["seeded_user"]["password"],
         )
-    elif account_type == "broadcast_create_user":
-        return (
-            config["broadcast_service"]["broadcast_user_1"]["email"],
-            config["broadcast_service"]["broadcast_user_1"]["password"],
-        )
-    elif account_type == "broadcast_approve_user":
-        return (
-            config["broadcast_service"]["broadcast_user_2"]["email"],
-            config["broadcast_service"]["broadcast_user_2"]["password"],
-        )
     raise Exception("unknown account_type {}".format(account_type))
 
 
@@ -86,8 +76,4 @@ def get_mobile_number(account_type):
         return config["service"]["seeded_user"]["mobile"]
     elif account_type == "email_auth":
         return config["user"]["mobile"]
-    elif account_type == "broadcast_create_user":
-        return config["broadcast_service"]["broadcast_user_1"]["mobile"]
-    elif account_type == "broadcast_approve_user":
-        return config["broadcast_service"]["broadcast_user_2"]["mobile"]
     raise Exception("unknown account_type {}".format(account_type))

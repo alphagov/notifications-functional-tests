@@ -18,12 +18,10 @@ from tests.pages import (
     AddServicePage,
     ConfirmEditLetterTemplatePage,
     DashboardPage,
-    EditBroadcastTemplatePage,
     EditEmailTemplatePage,
     EditLetterTemplatePage,
     EditSmsTemplatePage,
     EmailReplyTo,
-    GovUkAlertsPage,
     InviteUserPage,
     MainPage,
     ManageAttachmentPage,
@@ -274,15 +272,6 @@ def create_letter_template(driver, name, content=None):
         rename_template_page.rename_template(name)
 
     return confirm_edit_template_page.get_template_id()
-
-
-def create_broadcast_template(driver, name, content=None):
-    show_templates_page = ShowTemplatesPage(driver)
-    show_templates_page.click_add_new_template()
-
-    template_page = EditBroadcastTemplatePage(driver)
-    template_page.fill_template(name=name, content=content)
-    return template_page.get_template_id()
 
 
 def go_to_templates_page(driver, service="service"):
@@ -589,15 +578,6 @@ def do_user_can_update_reply_to_email_to_service(driver):
     assert email_address2 + default in body.text
 
     dashboard_page.go_to_dashboard_for_service(service_id)
-
-
-def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_content):
-    gov_uk_alerts_page = GovUkAlertsPage(driver)
-    gov_uk_alerts_page.get()
-
-    gov_uk_alerts_page.click_element_by_link_text(page_title)
-
-    gov_uk_alerts_page.check_alert_is_published(broadcast_content)
 
 
 @retry(

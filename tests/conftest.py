@@ -7,7 +7,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from seleniumwire import webdriver as selenium_wire_webdriver
 
-from broadcast_client.broadcast_client import BroadcastClient
 from config import config, setup_shared_config
 from tests.client import FunctionalTestsAPIClient
 from tests.pages.pages import HomePage
@@ -104,13 +103,4 @@ def client_live_key():
 @pytest.fixture(scope="module")
 def client_test_key():
     client = FunctionalTestsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"])
-    return client
-
-
-@pytest.fixture(scope="module")
-def broadcast_client():
-    client = BroadcastClient(
-        api_key=config["broadcast_service"]["api_key_live"],
-        base_url=config["notify_api_url"],
-    )
     return client

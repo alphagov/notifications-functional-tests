@@ -42,7 +42,6 @@ If you are running Notify locally using docker-compose via [notifications-local]
 ```shell
 export FUNCTIONAL_TESTS_LOCAL_API_HOST=http://notify-api.localhost:6011
 export FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST=http://notify.localhost:6012
-export FUNCTIONAL_TESTS_LOCAL_ALERTS_HOST=http://notify.localhost:6017/alerts
 ```
 
 Populate the local database with fixture data:
@@ -122,7 +121,6 @@ We use the following annotations on test methods to define the groups:
 @pytest.mark.xdist_group(name="registration-flow")
 @pytest.mark.xdist_group(name="api-client")
 @pytest.mark.xdist_group(name="seeded-email")
-@pytest.mark.xdist_group(name="broadcasts")
 @pytest.mark.xdist_group(name="api-letters")
 ```
 
