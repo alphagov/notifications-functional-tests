@@ -9,9 +9,10 @@ RUN apt-get -y update
 RUN apt-get install -y google-chrome-stable
 
 # install chromedriver
-RUN apt-get install -yqq unzip
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+RUN apt-get install -yqq unzip jq
+RUN curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -rc '.channels.Stable.downloads.chromedriver[] | select(.platform == "linux64").url' > /tmp/chromedriver_url
+RUN wget -O /tmp/chromedriver.zip `cat /tmp/chromedriver_url`
+RUN unzip -j /tmp/chromedriver.zip chromedriver-linux64/chromedriver -d /usr/local/bin/
 
 # set display port to avoid crash
 ENV DISPLAY=:99
