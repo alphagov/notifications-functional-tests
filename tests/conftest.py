@@ -56,10 +56,12 @@ def _driver(request, download_directory):
     driver.set_window_size(1280, 720)
 
     def interceptor(request):
-        request.headers["x-notify-ecs-origin"] = "true"
+        if os.getenv("NOTIFY_ECS_ORIGIN"):
+            request.headers["x-notify-ecs-origin"] = "true"
+        else:
+            request.headers["x-notify-paas-origin"] = "true"
 
-    if os.getenv("NOTIFY_ECS_ORIGIN"):
-        driver.request_interceptor = interceptor
+    driver.request_interceptor = interceptor
 
     driver.delete_all_cookies()
 
