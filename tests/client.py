@@ -13,6 +13,8 @@ def ecs_override_generate_headers(self, api_token):
     headers = self.original_generate_headers(api_token)
     if os.getenv("NOTIFY_ECS_ORIGIN"):
         headers["x-notify-ecs-origin"] = "true"
+    else:
+        headers["x-notify-paas-origin"] = "true"
     return headers
 
 
