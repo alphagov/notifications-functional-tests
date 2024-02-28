@@ -301,7 +301,14 @@ def test_add_letter_attachment_then_send_letter_then_delete_attachment(driver, l
         delay=config["notification_retry_interval"],
     )
 
-    letter_pdf = get_pdf_for_letter_via_api(client_live_key, notification_id)
+    # wait until the PDF for the letter is generated
+    letter_pdf = retry_call(
+        get_pdf_for_letter_via_api,
+        fargs=[client_live_key, notification_id],
+        tries=config["pdf_generation_retry_times"],
+        delay=config["pdf_generation_retry_interval"],
+    )
+
     pdf_reader = PdfReader(letter_pdf)
     assert len(pdf_reader.pages) == 2
     attachment_page = pdf_reader.pages[1]
