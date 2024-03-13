@@ -7,13 +7,13 @@ import tempfile
 import uuid
 from datetime import datetime
 
+from notifications_python_client.notifications import NotificationsAPIClient
 from filelock import FileLock
 from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 
 from config import config, generate_unique_email
-from tests.client import FunctionalTestsAPIClient
 from tests.pages import (
     AddServicePage,
     ConfirmEditLetterTemplatePage,
@@ -488,7 +488,7 @@ def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipi
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
-    client = FunctionalTestsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
+    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
     resp = client.get("v2/notifications")
     for notification in resp["notifications"]:
         t_id = notification["template"]["id"]
