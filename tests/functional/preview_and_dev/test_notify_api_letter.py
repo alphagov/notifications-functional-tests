@@ -74,7 +74,14 @@ def test_send_letter_notification_with_qr_code_via_api(client_test_key):
         delay=config["notification_retry_interval"],
     )
 
-    letter_pdf = get_pdf_for_letter_via_api(client_test_key, notification_id)
+    # wait until the PDF for the letter is generated
+    letter_pdf = retry_call(
+        get_pdf_for_letter_via_api,
+        fargs=[client_test_key, notification_id],
+        tries=config["pdf_generation_retry_times"],
+        delay=config["pdf_generation_retry_interval"],
+    )
+
     image = pdf2image.convert_from_bytes(letter_pdf.read())
     qr_codes = pyzbar.pyzbar.decode(image[0])
 
