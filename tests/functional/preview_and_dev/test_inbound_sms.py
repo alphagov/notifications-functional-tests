@@ -9,7 +9,6 @@ Test:
 Test:
     look at inbox page - assert that the new message is in the conversation
 """
-import os
 from datetime import datetime
 from urllib.parse import quote_plus
 
@@ -34,11 +33,6 @@ def inbound_sms():
         "DateRecieved": quote_plus(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
     }
 
-    if os.getenv("NOTIFY_ECS_ORIGIN"):
-        headers = {"x-notify-ecs-origin": "true"}
-    else:
-        headers = {"x-notify-paas-origin": "true"}
-
     response = requests.post(
         config["notify_api_url"] + "/notifications/sms/receive/mmg",
         json=mmg_inbound_body,
@@ -46,7 +40,6 @@ def inbound_sms():
             config["mmg_inbound_sms"]["username"],
             config["mmg_inbound_sms"]["password"],
         ),
-        headers=headers,
     )
     response.raise_for_status()
 

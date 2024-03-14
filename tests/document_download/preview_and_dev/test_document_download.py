@@ -1,4 +1,3 @@
-import os
 import re
 from io import BytesIO
 from urllib.parse import urlparse
@@ -65,12 +64,7 @@ def test_document_upload_and_download(driver, client_live_key):
     download_page = DocumentDownloadPage(driver)
     document_url = download_page.get_download_link()
 
-    if os.getenv("NOTIFY_ECS_ORIGIN"):
-        headers = {"x-notify-ecs-origin": "true"}
-    else:
-        headers = {"x-notify-paas-origin": "true"}
-
-    downloaded_document = requests.get(document_url, headers=headers)
+    downloaded_document = requests.get(document_url)
 
     assert downloaded_document.text == "foo-bar-baz"
 
