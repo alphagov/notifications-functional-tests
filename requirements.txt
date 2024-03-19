@@ -2,7 +2,6 @@ requests==2.31.0
 pytest==7.4.2
 retry==0.9.2
 selenium==4.14.0
-selenium-wire==5.1.0
 notifications-python-client==8.1.0
 pytest-xdist==3.3.1
 pytest-rerunfailures==12.0
