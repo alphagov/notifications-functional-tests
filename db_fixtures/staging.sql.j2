@@ -3,7 +3,7 @@ These fixtures cover the core functional tests and the document download functio
 */
 
 COPY users (id, name, email_address, created_at, updated_at, _password, mobile_number, password_changed_at, logged_in_at, failed_login_count, state, platform_admin, current_session_id, auth_type, email_access_validated_at) FROM stdin;
-ff336294-a59e-46a6-a339-dd23a0635a0e	Functional Tests - CSV & Notify API	notify-tests-staging+email-auth@digital.cabinet-office.gov.uk	2019-03-25 14:48:38.719334	2019-03-25 14:50:58.826605	{{ email_auth_user_password_hash }}	+447481342436	2019-03-25 14:48:38.71801	2019-03-25 14:50:58.796995	0	active	f	23ca4bbf-347f-44a7-b998-142bca2fa991	email_auth	NOW()
+ff336294-a59e-46a6-a339-dd23a0635a0e	Functional Tests - CSV & Notify API	notify-tests-staging+email-auth@digital.cabinet-office.gov.uk	2019-03-25 14:48:38.719334	2019-03-25 14:50:58.826605	{{ email_auth_user_password_hash }}	+447700900502	2019-03-25 14:48:38.71801	2019-03-25 14:50:58.796995	0	active	f	23ca4bbf-347f-44a7-b998-142bca2fa991	email_auth	NOW()
 \.
 
 COPY organisation (id, name, active, created_at, can_approve_own_go_live_requests) FROM stdin;
@@ -85,7 +85,7 @@ The following user is created as the functional tests currently send this user a
 */
 
 COPY users (id, name, email_address, created_at, updated_at, _password, mobile_number, password_changed_at, logged_in_at, failed_login_count, state, platform_admin, current_session_id, auth_type, email_access_validated_at) FROM stdin;
-19c5f2e9-c36e-4ebe-b575-917389281e74	Functional Tests - CSV & Notify API	notify-tests-staging@digital.cabinet-office.gov.uk	2019-03-25 14:48:38.719334	2019-03-25 14:50:58.826605	{{ sms_auth_user_password_hash }}	+447481342436	2019-03-25 14:48:38.71801	2019-03-25 14:50:58.796995	0	active	f	23ca4bbf-347f-44a7-b998-142bca2fa991	sms_auth	NOW()
+19c5f2e9-c36e-4ebe-b575-917389281e74	Functional Tests - CSV & Notify API	notify-tests-staging@digital.cabinet-office.gov.uk	2019-03-25 14:48:38.719334	2019-03-25 14:50:58.826605	{{ sms_auth_user_password_hash }}	+447700900502	2019-03-25 14:48:38.71801	2019-03-25 14:50:58.796995	0	active	f	23ca4bbf-347f-44a7-b998-142bca2fa991	sms_auth	NOW()
 \.
 
 COPY user_to_service (user_id, service_id) FROM stdin;
