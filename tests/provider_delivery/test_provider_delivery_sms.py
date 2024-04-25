@@ -12,7 +12,10 @@ def test_provider_sms_delivery_via_api(client_live_key):
     notification_id = send_notification_via_api(
         client_live_key,
         config["service"]["templates"]["sms"],
-        config["user"]["mobile"],
+        # we can't reliably use the user test number, as this is set to a TV number. TV numbers often don't reliably
+        # report delivery. Instead, if we send to the inbound provider test number, that returns a delivery receipt
+        # promptly so we check for that instead.
+        config["service"]["inbound_number"],
         "sms",
     )
 
