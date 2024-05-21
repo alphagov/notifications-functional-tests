@@ -1,4 +1,4 @@
-requests==2.31.0
+requests==2.32.0
 pytest==7.4.2
 retry==0.9.2
 selenium==4.14.0
