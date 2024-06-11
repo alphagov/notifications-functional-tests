@@ -65,6 +65,10 @@ COPY service_email_reply_to (id, service_id, email_address, is_default, created_
 47843c11-471e-446a-94ca-f783b6201078	34b725f0-1f47-49bc-a9f5-aa2a84587c53	notify-tests-preview+local-reply-to-default@digital.cabinet-office.gov.uk	t	2019-03-25 15:09:35.04979	\N	f
 \.
 
+COPY service_inbound_api (id, service_id, url, bearer_token, created_at, updated_by_id, version) FROM stdin;
+151a1294-6919-4461-a257-d746e63903e5	34b725f0-1f47-49bc-a9f5-aa2a84587c53	https://5c6b93352e82dab5d82d02e5178c2d57.m.pipedream.net	IjAwMDAwMDAwMDAi.TqN6hllHs3GaxDFnUgdsOHvZ5os	2024-06-11 15:00:06.678529		c76a2961-08dc-4ec5-ac07-57ec9d7cef1b	1
+\.
+
 COPY service_permissions (service_id, permission, created_at) FROM stdin;
 34b725f0-1f47-49bc-a9f5-aa2a84587c53	sms	2019-03-25 15:02:40.883347
 34b725f0-1f47-49bc-a9f5-aa2a84587c53	email	2019-03-25 15:02:40.883352

@@ -122,6 +122,10 @@ def setup_preview_dev_config():
                 "username": os.environ["MMG_INBOUND_SMS_USERNAME"],
                 "password": os.environ["MMG_INBOUND_SMS_AUTH"],
             },
+            "pipedream": {
+                "api_token": os.environ["REQUEST_BIN_API_TOKEN"],
+                "source_id": "dc_bPuNxED",
+            },
         }
     )
 

@@ -11,6 +11,7 @@ Test:
 """
 
 from datetime import datetime
+from time import sleep
 from urllib.parse import quote_plus
 
 import pytest
@@ -51,6 +52,21 @@ def inbound_sms():
 def test_inbound_api(inbound_sms, client_live_key):
     # this'll raise if the message isn't in the list.
     next(x for x in client_live_key.get_received_texts()["received_text_messages"] if x["content"] == inbound_sms)
+
+
+def test_inbound_sms_callbacks(inbound_sms):
+    sleep(0.2)  # Allow time for the callback to be sent
+
+    source_id = config["pipedream"]["source_id"]
+    api_token = config["pipedream"]["api_token"]
+
+    response = requests.get(
+        f"https://api.pipedream.com/v1/sources/{source_id}/event_summaries?expand=event&limit=10",
+        headers={"Authorization": f"Bearer {api_token}"},
+    )
+    requests_received_by_callback_url = [item["event"] for item in response.json()["data"]]
+
+    next(request for request in requests_received_by_callback_url if request["body"]["message"] == inbound_sms)
 
 
 def test_inbox_page(inbound_sms, driver, login_seeded_user):
