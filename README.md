@@ -78,7 +78,13 @@ Now run the following in other tabs / windows:
   - [document-download-api](https://github.com/alphagov/document-download-api)
   - [document-download-frontend](https://github.com/alphagov/document-download-frontend)
 
-Then source the environment and run the tests:
+Fetch the required environment variables from `notifications-credentials`:
+
+```
+pass credentials/functional-tests/local-functional > environment_local.sh
+```
+
+Then source this script and run the tests:
 
 ```
 source environment_local.sh

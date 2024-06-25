@@ -15,6 +15,7 @@ from urllib.parse import quote_plus
 
 import pytest
 import requests
+from retry import retry
 
 from config import config
 from tests.pages import ConversationPage, DashboardPage, InboxPage
@@ -51,6 +52,31 @@ def inbound_sms():
 def test_inbound_api(inbound_sms, client_live_key):
     # this'll raise if the message isn't in the list.
     next(x for x in client_live_key.get_received_texts()["received_text_messages"] if x["content"] == inbound_sms)
+
+
+@retry(
+    AssertionError,
+    tries=5,
+    delay=0.5,
+)
+def assert_callback_received(inbound_sms):
+    source_id = config["pipedream"]["source_id"]
+    api_token = config["pipedream"]["api_token"]
+
+    response = requests.get(
+        f"https://api.pipedream.com/v1/sources/{source_id}/event_summaries?expand=event&limit=10",
+        headers={"Authorization": f"Bearer {api_token}"},
+    )
+    recent_callback_requests = [item["event"] for item in response.json()["data"]]
+    matching_callback_requests = [
+        request for request in recent_callback_requests if request["body"]["message"] == inbound_sms
+    ]
+
+    assert len(matching_callback_requests) == 1
+
+
+def test_inbound_sms_callbacks(inbound_sms):
+    assert_callback_received(inbound_sms)
 
 
 def test_inbox_page(inbound_sms, driver, login_seeded_user):
