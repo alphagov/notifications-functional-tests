@@ -56,8 +56,8 @@ def test_inbound_api(inbound_sms, client_live_key):
 
 @retry(
     AssertionError,
-    tries=5,
-    delay=0.5,
+    tries=config["verify_callback_retry_times"],
+    delay=config["verify_callback_retry_interval"],
 )
 def assert_callback_received(inbound_sms):
     source_id = config["pipedream"]["source_id"]
