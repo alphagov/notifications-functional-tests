@@ -23,7 +23,7 @@ def test_email_auth(driver):
 
 
 @recordtime
-def test_reset_forgotten_password(driver, request):
+def test_reset_forgotten_password(driver, request, create_seeded_user):
     email, password = get_email_and_password(account_type="seeded", test_name=request.node.name)
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
