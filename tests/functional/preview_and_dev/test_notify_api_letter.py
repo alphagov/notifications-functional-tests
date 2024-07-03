@@ -50,9 +50,21 @@ def test_send_letter_notification_via_api(client_test_key):
 
 @recordtime
 def test_send_letter_notification_with_qr_code_via_api(client_test_key):
+
+    # Static parts length: prefix + suffix + 2 UUIDs (36*2) + 4 slashes + 6 for '?code='
+    static_parts_length = len("prefix ///?code= suffix")
+    notify_admin_url_length = len(config["notify_admin_url"])
+    uuid_length = 36 * 2  # Length of two UUIDs
+
+    # Calculate remaining length for '0123456789' part
+    remaining_length = 499 - (static_parts_length + notify_admin_url_length + uuid_length)
+
+    # Generate a string of '0123456789' repeated enough times, then slice it to fit the exact remaining length
+    numbers_part = ("0123456789" * ((remaining_length // 10) + 1))[:remaining_length]
+
     qr_code_data = (
         # 499 bytes of data
-        f"prefix {config['notify_admin_url']}/{'0123456789' * 38}/{uuid.uuid4()}/?code={uuid.uuid4()} suffix"
+        f"prefix {config['notify_admin_url']}/{numbers_part}/{uuid.uuid4()}/?code={uuid.uuid4()} suffix"
     )
 
     # Re-use the letter template, but we need a new paragraph for the QR code to be generated so put some newlines up
