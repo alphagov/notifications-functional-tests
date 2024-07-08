@@ -16,6 +16,8 @@ config = {
     "notification_retry_interval": 5,
     "pdf_generation_retry_times": 5,
     "pdf_generation_retry_interval": 1,
+    "verify_callback_retry_times": 5,
+    "verify_callback_retry_interval": 0.5,
     "letter_retry_times": 48,
     "provider_retry_times": 12,
     "provider_retry_interval": 22,
@@ -66,15 +68,37 @@ def setup_shared_config():
     env = os.environ["ENVIRONMENT"].lower()
 
     if env not in {"dev", "preview", "staging", "live"}:
-        pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
+        if not os.environ.get("FUNCTIONAL_TESTS_API_HOST") or not os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"):
+            pytest.fail(
+                'env "{}" not one of dev, preview, staging, live, '
+                "so you need to set the environment variables FUNCTIONAL_TESTS_API_HOST "
+                "and FUNCTIONAL_TESTS_ADMIN_HOST".format(env)
+            )
+        config.update(
+            {
+                "env": env,
+                "notify_api_url": os.environ.get("FUNCTIONAL_TESTS_API_HOST"),
+                "notify_admin_url": os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"),
+            }
+        )
 
-    config.update(
-        {
-            "env": env,
-            "notify_api_url": urls[env]["api"],
-            "notify_admin_url": urls[env]["admin"],
-        }
-    )
+        if env.startswith("dev-"):
+            # dev environments may be slow, so increase retries
+            config.update(
+                {
+                    "pdf_generation_retry_times": 40,
+                    "verify_callback_retry_times": 40,
+                    "verify_callback_retry_interval": 1,
+                }
+            )
+    else:
+        config.update(
+            {
+                "env": env,
+                "notify_api_url": urls[env]["api"],
+                "notify_admin_url": urls[env]["admin"],
+            }
+        )
 
 
 def setup_preview_dev_config():

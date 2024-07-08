@@ -60,6 +60,13 @@ def _create_seeded_users_via_notify_api(test_names):
     assert response.status_code == 201
 
 
+@pytest.fixture(scope="function")
+def create_seeded_user():
+    # Fixure just added to flag test as needing a seeded user created.
+    # See session create_seeded_users fixture for actual creation.
+    pass
+
+
 @pytest.fixture(scope="session", autouse=True)
 def create_seeded_users(request: pytest.FixtureRequest, preview_dev_config, tmp_path_factory, worker_id):
     """Finds all tests that use the `login_seeded_user` fixture, and (if necessary) creates seeded users
@@ -71,7 +78,10 @@ def create_seeded_users(request: pytest.FixtureRequest, preview_dev_config, tmp_
     unique_seeder_user_tests = {
         node.name
         for node in request.session.items
-        if any(fixturename == "login_seeded_user" for fixturename in node.fixturenames)
+        if any(
+            fixturename == "login_seeded_user" or fixturename == "create_seeded_user"
+            for fixturename in node.fixturenames
+        )
     }
 
     if worker_id == "master":
