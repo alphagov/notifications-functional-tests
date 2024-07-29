@@ -387,7 +387,10 @@ def send_notification_to_one_recipient(
     view_template_page.click_send()
 
     send_to_one_recipient_page = SendOneRecipient(driver)
-    send_to_one_recipient_page.choose_alternative_sender()
+    if message_type == "sms":
+        send_to_one_recipient_page.choose_alternative_sms_sender()
+    else:
+        send_to_one_recipient_page.choose_alternative_sender()
     send_to_one_recipient_page.click_continue()
     if test is True:
         send_to_one_recipient_page.send_to_myself(message_type)

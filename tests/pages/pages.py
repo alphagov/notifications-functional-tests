@@ -966,6 +966,10 @@ class SendOneRecipient(BasePage):
         radio = self.wait_for_design_system_checkbox_or_radio(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
         radio.click()
 
+    def choose_alternative_sms_sender(self):
+        radio = self.wait_for_design_system_checkbox_or_radio(SingleRecipientLocators.ALTERNATIVE_SENDER_SMS_RADIO)
+        radio.click()
+
     def send_to_myself(self, message_type):
         if message_type == "email":
             element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
