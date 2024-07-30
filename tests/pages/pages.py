@@ -796,7 +796,6 @@ class InviteUserPage(BasePage):
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
-    choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_invitation_button = InviteUserPageLocators.SEND_INVITATION_BUTTON
 
     def get_folder_checkbox(self, folder_name):
