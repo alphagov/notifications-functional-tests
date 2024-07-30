@@ -574,9 +574,9 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 def test_template_folder_permissions(driver, request, login_seeded_user):
     family_id = uuid.uuid4()
     folder_names = [
-        "test-parent-folder {}".format(family_id),
-        "test-child-folder {}".format(family_id),
-        "test-grandchild-folder {}".format(family_id),
+        f"test-parent-folder {family_id}",
+        f"test-child-folder {family_id}",
+        f"test-grandchild-folder {family_id}",
     ]
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config["service"]["id"])

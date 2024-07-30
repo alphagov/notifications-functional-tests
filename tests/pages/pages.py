@@ -80,7 +80,7 @@ class AntiStale:
     def reset_element(self):
         self.element = self.webdriverwait_func(self.locator)
 
-        raise RetryException("StaleElement {}".format(self.locator))
+        raise RetryException(f"StaleElement {self.locator}")
 
 
 class AntiStaleElement(AntiStale):
@@ -116,7 +116,7 @@ class AntiStaleElementList(AntiStale):
         return len(self.element)
 
 
-class BasePage(object):
+class BasePage:
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
     profile_page_link = NavigationLocators.PROFILE_LINK
 
@@ -388,7 +388,7 @@ class DashboardPage(BasePage):
         return (By.ID, template_id)
 
     def is_current(self, service_id):
-        expected = "{}/services/{}/dashboard".format(self.base_url, service_id)
+        expected = f"{self.base_url}/services/{service_id}/dashboard"
         return self.driver.current_url == expected
 
     def get_service_name(self):
@@ -424,7 +424,7 @@ class DashboardPage(BasePage):
     def go_to_dashboard_for_service(self, service_id=None):
         if not service_id:
             service_id = self.get_service_id()
-        url = "{}/services/{}/dashboard".format(self.base_url, service_id)
+        url = f"{self.base_url}/services/{service_id}/dashboard"
         self.driver.get(url)
 
     def get_total_message_count(self, message_type):
@@ -471,14 +471,14 @@ class ShowTemplatesPage(BasePage):
     def template_link_text(link_text):
         return (
             By.XPATH,
-            "//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{}')]".format(link_text),
+            f"//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{link_text}')]",
         )
 
     @staticmethod
     def template_checkbox(template_id):
         return (
             By.CSS_SELECTOR,
-            "input[type='checkbox'][value='{}']".format(template_id),
+            f"input[type='checkbox'][value='{template_id}']",
         )
 
     def click_add_new_template(self):
@@ -702,7 +702,7 @@ class EditEmailTemplatePage(BasePage):
     def folder_path_item(folder_name):
         return (
             By.XPATH,
-            "//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{}')]/..".format(folder_name),
+            f"//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{folder_name}')]/..",
         )
 
     def click_save(self):
@@ -751,14 +751,14 @@ class UploadCsvPage(BasePage):
             element = self.wait_for_element(UploadCsvPage.first_notification)
             notification_id = element.get_attribute("id")
             if not notification_id:
-                raise RetryException("No notification id yet {}".format(notification_id))
+                raise RetryException(f"No notification id yet {notification_id}")
             else:
                 return notification_id
         except StaleElementReferenceException as e:
             raise RetryException("Could not find element...") from e
 
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
-        url = "{}/services/{}/send/{}/csv".format(self.base_url, service_id, template_id)
+        url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
         self.driver.get(url)
 
 
@@ -771,7 +771,7 @@ class TeamMembersPage(BasePage):
         return self.wait_for_element(
             (
                 By.XPATH,
-                "//h2[@title='{}']/ancestor::div[contains(@class, 'user-list-item')]//a".format(email),
+                f"//h2[@title='{email}']/ancestor::div[contains(@class, 'user-list-item')]//a",
             )
         )
 
@@ -890,7 +890,7 @@ class ApiIntegrationPage(BasePage):
         return elements[notification_offset].text
 
     def go_to_api_integration_for_service(self, service_id):
-        url = "{}/services/{}/api".format(self.base_url, service_id)
+        url = f"{self.base_url}/services/{service_id}/api"
         self.driver.get(url)
 
     def get_view_letter_link(self, client_reference):
@@ -992,7 +992,7 @@ class ServiceSettingsPage(BasePage):
 
 class ChangeName(BasePage):
     def go_to_change_service_name(self, service_id):
-        url = "{}/services/{}/service-settings/name".format(self.base_url, service_id)
+        url = f"{self.base_url}/services/{service_id}/service-settings/name"
         self.driver.get(url)
 
     def enter_new_name(self, new_name):
@@ -1003,7 +1003,7 @@ class ChangeName(BasePage):
 
 class EmailReplyTo(BasePage):
     def go_to_add_email_reply_to_address(self, service_id):
-        url = "{}/services/{}/service-settings/email-reply-to/add".format(self.base_url, service_id)
+        url = f"{self.base_url}/services/{service_id}/service-settings/email-reply-to/add"
         self.driver.get(url)
 
     def click_add_email_reply_to(self):
@@ -1023,9 +1023,7 @@ class EmailReplyTo(BasePage):
         return elements
 
     def go_to_edit_email_reply_to_address(self, service_id, email_reply_to_id):
-        url = "{}/services/{}/service-settings/email-reply-to/{}/edit".format(
-            self.base_url, service_id, email_reply_to_id
-        )
+        url = f"{self.base_url}/services/{service_id}/service-settings/email-reply-to/{email_reply_to_id}/edit"
         self.driver.get(url)
 
     def check_is_default_check_box(self):
@@ -1035,11 +1033,11 @@ class EmailReplyTo(BasePage):
 
 class SmsSenderPage(BasePage):
     def go_to_text_message_senders(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender".format(self.base_url, service_id)
+        url = f"{self.base_url}/services/{service_id}/service-settings/sms-sender"
         self.driver.get(url)
 
     def go_to_add_text_message_sender(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender/add".format(self.base_url, service_id)
+        url = f"{self.base_url}/services/{service_id}/service-settings/sms-sender/add"
         self.driver.get(url)
 
     def insert_sms_sender(self, sender):
@@ -1072,7 +1070,7 @@ class OrganisationDashboardPage(BasePage):
     service_list = (By.CSS_SELECTOR, "main .browse-list-item")
 
     def is_current(self, org_id):
-        expected = "{}/organisations/{}".format(self.base_url, org_id)
+        expected = f"{self.base_url}/organisations/{org_id}"
         return self.driver.current_url == expected
 
     def click_team_members_link(self):
@@ -1080,7 +1078,7 @@ class OrganisationDashboardPage(BasePage):
         element.click()
 
     def go_to_dashboard_for_org(self, org_id):
-        url = "{}/organisations/{}".format(self.base_url, org_id)
+        url = f"{self.base_url}/organisations/{org_id}"
         self.driver.get(url)
 
 
@@ -1098,13 +1096,13 @@ class InviteUserToOrgPage(BasePage):
 
 class InboxPage(BasePage):
     def is_current(self, service_id):
-        expected = "{}/services/{}/inbox".format(self.base_url, service_id)
+        expected = f"{self.base_url}/services/{service_id}/inbox"
         return self.driver.current_url == expected
 
     def go_to_conversation(self, user_number):
         # link looks like "07123 456789". because i don't know if user_number starts with +44, just get the last 10
         # digits. (so this'll look for partial link text of "123 456789")
-        formatted_phone_number = "{} {}".format(user_number[-10:-6], user_number[-6:])
+        formatted_phone_number = f"{user_number[-10:-6]} {user_number[-6:]}"
         element = self.wait_for_element((By.PARTIAL_LINK_TEXT, formatted_phone_number))
         element.click()
 

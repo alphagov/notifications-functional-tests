@@ -12,7 +12,7 @@ from tests.pages.locators import (
 )
 
 
-class BasePageElement(object):
+class BasePageElement:
     def __init__(self, name=None, clear=False):
         if name:
             self.name = name

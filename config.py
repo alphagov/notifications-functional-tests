@@ -6,7 +6,7 @@ import pytest
 
 def generate_unique_email(email, uuid):
     parts = email.split("@")
-    return "{}+{}@{}".format(parts[0], uuid, parts[1])
+    return f"{parts[0]}+{uuid}@{parts[1]}"
 
 
 # global variable
@@ -70,9 +70,9 @@ def setup_shared_config():
     if env not in {"dev", "preview", "staging", "live"}:
         if not os.environ.get("FUNCTIONAL_TESTS_API_HOST") or not os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"):
             pytest.fail(
-                'env "{}" not one of dev, preview, staging, live, '
+                f'env "{env}" not one of dev, preview, staging, live, '
                 "so you need to set the environment variables FUNCTIONAL_TESTS_API_HOST "
-                "and FUNCTIONAL_TESTS_ADMIN_HOST".format(env)
+                "and FUNCTIONAL_TESTS_ADMIN_HOST"
             )
         config.update(
             {
@@ -107,7 +107,7 @@ def setup_preview_dev_config():
     config.update(
         {
             "name": "{} Functional Tests".format(config["env"]),
-            "service_name": "Functional Test_{}".format(uuid_for_test_run),
+            "service_name": f"Functional Test_{uuid_for_test_run}",
             "user": {
                 "name": "{}_Functional Test_{}".format(config["env"], uuid_for_test_run),
                 "email": generate_unique_email(os.environ["FUNCTIONAL_TEST_EMAIL"], uuid_for_test_run),

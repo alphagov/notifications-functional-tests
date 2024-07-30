@@ -39,7 +39,7 @@ from tests.pages import (
 )
 from tests.pages.pages import RenameLetterTemplatePage
 
-logging.basicConfig(filename="./logs/test_run_{}.log".format(datetime.utcnow()), level=logging.INFO)
+logging.basicConfig(filename=f"./logs/test_run_{datetime.utcnow()}.log", level=logging.INFO)
 
 default = " (default)"
 
@@ -54,7 +54,7 @@ class NotificationStatuses:
 
 def create_temp_csv(fields):
     directory_name = tempfile.mkdtemp()
-    csv_filename = "{}-sample.csv".format(uuid.uuid4())
+    csv_filename = f"{uuid.uuid4()}-sample.csv"
     csv_file_path = os.path.join(directory_name, csv_filename)
     fields.update({"build_id": "No build id"})
     with open(csv_file_path, "w") as csv_file:
@@ -87,7 +87,7 @@ def get_link(template_id, email):
     email_body = get_notification_by_to_field(template_id, config["notify_service_api_key"], email)
     m = re.search(r"http[s]?://\S+", email_body, re.MULTILINE)
     if not m:
-        raise RetryException("Could not find a verify email code for template {} sent to {}".format(template_id, email))
+        raise RetryException(f"Could not find a verify email code for template {template_id} sent to {email}")
     return m.group(0)
 
 
@@ -213,13 +213,13 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
 def is_basic_view(dashboard_page):
     assert dashboard_page.get_navigation_list() == "Templates\nSent messages\nUploads\nTeam members"
-    expected = "{}/services/{}/templates".format(dashboard_page.base_url, dashboard_page.get_service_id())
+    expected = f"{dashboard_page.base_url}/services/{dashboard_page.get_service_id()}/templates"
     assert dashboard_page.driver.current_url == expected
 
 
 def is_view_for_all_permissions(page):
     assert page.get_navigation_list() == "Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"
-    expected = "{}/services/{}".format(page.base_url, page.get_service_id())
+    expected = f"{page.base_url}/services/{page.get_service_id()}"
     assert page.driver.current_url == expected
 
 
@@ -467,7 +467,7 @@ def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipien
     sms_recipient = sms_sender_page.get_sms_recipient()
 
     assert sms_sender.text == "From: {}".format(config["service"]["sms_sender_text"])
-    assert sms_recipient.text == "To: {}".format(recipient_number)
+    assert sms_recipient.text == f"To: {recipient_number}"
     assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
 
 
