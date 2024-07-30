@@ -35,3 +35,7 @@ generate-staging-db-fixtures: ## Generates DB fixtures for the staging database
 	    --format=json \
 	    -o db_fixtures/staging.sql \
 	    <(${DECRYPT_CMD} ${NOTIFY_CREDENTIALS}/credentials/functional-tests/staging-functional-db-fixtures.gpg) 2>&1
+
+.PHONY: bump-utils
+bump-utils:  # Bump notifications-utils package to latest version
+	${PYTHON_EXECUTABLE_PREFIX}python -c "from notifications_utils.version_tools import upgrade_version; upgrade_version()"
