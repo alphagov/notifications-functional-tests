@@ -12,6 +12,7 @@ bootstrap: ## Install build dependencies
 	mkdir -p logs screenshots
 	pip install -r requirements.txt
 	python -c "from notifications_utils.version_tools import copy_pyproject_toml; copy_pyproject_toml()"
+	pip install -r requirements_for_test.txt
 
 .PHONY: clean
 clean: ## Remove temporary files
