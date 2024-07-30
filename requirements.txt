@@ -1,1 +1,1 @@
-notifications-utils @ git+https://github.com/alphagov/notifications-utils.git@77.1.1
+notifications-utils @ git+https://github.com/alphagov/notifications-utils.git@82.1.2
