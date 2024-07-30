@@ -74,3 +74,7 @@ generate-staging-db-fixtures: ## Generates DB fixtures for the staging database
 .PHONY: generate-local-dev-db-fixtures
 generate-local-dev-db-fixtures:
 	$(MAKE) -C ../notifications-local generate-local-dev-db-fixtures
+
+.PHONY: bump-utils
+bump-utils:  # Bump notifications-utils package to latest version
+	${PYTHON_EXECUTABLE_PREFIX}python -c "from notifications_utils.version_tools import upgrade_version; upgrade_version()"
