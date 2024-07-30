@@ -66,7 +66,7 @@ def get_email_and_password(account_type, test_name=None):
             config["service"]["email_auth_account"],
             config["service"]["seeded_user"]["password"],
         )
-    raise Exception("unknown account_type {}".format(account_type))
+    raise Exception(f"unknown account_type {account_type}")
 
 
 def get_mobile_number(account_type):
@@ -76,4 +76,4 @@ def get_mobile_number(account_type):
         return config["service"]["seeded_user"]["mobile"]
     elif account_type == "email_auth":
         return config["user"]["mobile"]
-    raise Exception("unknown account_type {}".format(account_type))
+    raise Exception(f"unknown account_type {account_type}")
