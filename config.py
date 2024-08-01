@@ -106,6 +106,7 @@ def setup_preview_dev_config():
 
     config.update(
         {
+            "name": "{} Functional Tests".format(config["env"]),
             "service_name": "Functional Test_{}".format(uuid_for_test_run),
             "user": {
                 "name": "{}_Functional Test_{}".format(config["env"], uuid_for_test_run),
