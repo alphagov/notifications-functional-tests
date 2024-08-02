@@ -15,7 +15,7 @@ from tests.test_utils import get_downloaded_document
 
 
 def _get_test_doc_dl_url(client_test_key, prepare_upload_kwargs):
-    file = prepare_upload(BytesIO("foo-bar-baz".encode("utf-8")), **prepare_upload_kwargs)
+    file = prepare_upload(BytesIO(b"foo-bar-baz"), **prepare_upload_kwargs)
     personalisation = {"build_id": file}
     email_address = config["user"]["email"]
     template_id = config["service"]["templates"]["email"]
