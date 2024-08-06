@@ -18,6 +18,41 @@ clean: ## Remove temporary files
 	rm -rf screenshots/*
 	rm -rf logs/*
 
+.PHONY: $(filter-out dev%,$(MAKECMDGOALS))
+dev%:
+	$(eval export ENVIRONMENT=$@)
+	@true
+
+.PHONY: preview
+preview:
+	$(eval export ENVIRONMENT=preview)
+	@true
+
+.PHONY: staging
+staging:
+	$(eval export ENVIRONMENT=staging)
+	@true
+
+.PHONY: prod
+prod:
+	$(eval export ENVIRONMENT=prod)
+	@true
+
+env-environment-check:
+	@test -n "${ENVIRONMENT}" || (echo "ENVIRONMENT variable is not set"; exit 1)
+
+.PHONY: env-functional-tests
+env-functional-tests: env-environment-check
+	@./scripts/env-test.sh "${ENVIRONMENT}" tests/functional/preview_and_dev tests/document_download/preview_and_dev
+
+.PHONY: env-smoke-tests
+env-smoke-tests: env-environment-check
+	@./scripts/env-test.sh "${ENVIRONMENT}" tests/functional/staging_and_prod tests/document_download/staging_and_prod
+
+.PHONY: env-provider-tests
+env-provider-tests: env-environment-check
+	@./scripts/env-test.sh "${ENVIRONMENT}" tests/provider_delivery/test_provider_delivery_email.py tests/provider_delivery/test_provider_delivery_sms.py
+
 .PHONY: test
 test: clean ## Run functional tests against local environment
 	ruff check .
