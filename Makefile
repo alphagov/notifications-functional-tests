@@ -69,3 +69,7 @@ generate-staging-db-fixtures: ## Generates DB fixtures for the staging database
 	    --format=json \
 	    -o db_fixtures/staging.sql \
 	    <(${DECRYPT_CMD} ${NOTIFY_CREDENTIALS}/credentials/functional-tests/staging-functional-db-fixtures.gpg) 2>&1
+
+.PHONY: generate-local-dev-db-fixtures
+generate-local-dev-db-fixtures:
+	$(MAKE) -C ../notifications-local generate-local-dev-db-fixtures
