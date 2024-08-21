@@ -40,7 +40,7 @@ RUN pip install selenium
 
 FROM python-chromedriver-copy AS functional-tests-image
 
-RUN apt install -y poppler-utils libzbar0
+RUN apt install -y awscli poppler-utils libzbar0
 
 WORKDIR /var/project
 COPY . .
