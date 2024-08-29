@@ -20,5 +20,5 @@ export API_FIXTURE_APPLIED="true"
 # loop through each of our args after the environment
 for arg in "${@:2}";
 do
-    pytest -v $arg -n 4 --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
+    pytest -v $arg -n auto --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
 done
