@@ -44,7 +44,7 @@ def _driver(request, download_directory):
     )
 
     if not request.config.getoption("--no-headless"):
-        options.add_argument("--headless")
+        options.add_argument("--headless=new")
 
     service = ChromeService(log_path="./logs/chrome_browser.log", service_args=["--verbose"])
 
