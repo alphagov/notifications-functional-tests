@@ -3,8 +3,9 @@ from pathlib import Path
 
 import pytest
 from notifications_python_client import NotificationsAPIClient
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.webdriver import WebDriver as FirefoxDriver
 
 from config import config, setup_shared_config
 from tests.pages.pages import HomePage
@@ -30,25 +31,19 @@ def download_directory(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
-    options = webdriver.chrome.options.Options()
-    options.add_argument("--no-sandbox")
-    options.add_argument("user-agent=Selenium")
-    options.add_experimental_option(
-        "prefs",
-        {
-            "download.default_directory": str(download_directory),
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing.enabled": False,
-        },
-    )
+    options = FirefoxOptions()
+    options.set_preference("general.useragent.override", "Selenium")
+    options.set_preference("browser.download.folderList", 2)
+    options.set_preference("browser.download.manager.showWhenStarting", False)
+    options.set_preference("browser.download.dir", str(download_directory))
+    options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/pdf")
 
     if not request.config.getoption("--no-headless"):
         options.add_argument("--headless")
 
-    service = ChromeService(log_path="./logs/chrome_browser.log", service_args=["--verbose"])
+    service = FirefoxService()
 
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = FirefoxDriver(service=service, options=options)
     driver.set_window_size(1280, 720)
 
     driver.delete_all_cookies()

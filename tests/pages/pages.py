@@ -8,7 +8,6 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
     TimeoutException,
-    WebDriverException,
 )
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -88,12 +87,8 @@ class AntiStaleElement(AntiStale):
         def _click():
             # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
             # the scrollIntoView function to bring it to the top of the page
-            self.driver.execute_script("arguments[0].scrollIntoViewIfNeeded()", self.element)
-            try:
-                self.element.click()
-            except WebDriverException:
-                self.driver.execute_script("arguments[0].scrollIntoView()", self.element)
-                self.element.click()
+            self.driver.execute_script("arguments[0].scrollIntoView()", self.element)
+            self.element.click()
 
         return self.retry_on_stale(_click)
 

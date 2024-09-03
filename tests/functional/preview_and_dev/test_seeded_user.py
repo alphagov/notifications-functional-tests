@@ -280,7 +280,9 @@ def test_add_letter_attachment_then_send_letter_then_delete_attachment(driver, l
     create_letter_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     add_letter_attachment_for_template(driver, name=template_name)
-    assert driver.find_element(By.CLASS_NAME, "edit-template-link-attachment").text == "Manage attachment"
+
+    attach_button = ViewLetterTemplatePage(driver).wait_for_element(ViewLetterTemplatePage.attach_button)
+    assert attach_button.text == "Manage attachment"
 
     send_letter_to_one_recipient(
         driver, template_name, address=f"{test_id}\nTest street\nSW1 1AA", build_id=str(test_id)
