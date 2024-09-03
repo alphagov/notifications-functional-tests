@@ -117,7 +117,7 @@ class InviteUserPageLocators(object):
     )
     CHOOSE_FOLDERS_BUTTON = (
         By.CSS_SELECTOR,
-        "button[aria-controls=folder_permissions]",
+        "button.notify-button--with-chevron",
     )
     SEND_INVITATION_BUTTON = (
         By.CSS_SELECTOR,
