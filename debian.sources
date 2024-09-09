@@ -1,12 +1,12 @@
 Types: deb
-URIs: https://snapshot.debian.org/archive/debian/20240718T055647Z
+URIs: https://snapshot.debian.org/archive/debian/20240718T055647Z/
 Suites: bookworm bookworm-updates
 Components: main
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 Check-Valid-Until: false
 
 Types: deb
-URIs: http://snapshot.debian.org/archive/debian-security/20240718T055647Z
+URIs: http://snapshot.debian.org/archive/debian-security/20240718T055647Z/
 Suites: bookworm-security
 Components: main
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
