@@ -11,7 +11,8 @@ help:
 bootstrap: ## Install build dependencies
 	mkdir -p logs screenshots
 	pip install -r requirements.txt
-	python -c "from notifications_utils.version_tools import copy_pyproject_toml; copy_pyproject_toml()"
+	python -c "from notifications_utils.version_tools import copy_config; copy_config()"
+	pip install -r requirements_for_test.txt
 
 .PHONY: clean
 clean: ## Remove temporary files
@@ -73,3 +74,7 @@ generate-staging-db-fixtures: ## Generates DB fixtures for the staging database
 .PHONY: generate-local-dev-db-fixtures
 generate-local-dev-db-fixtures:
 	$(MAKE) -C ../notifications-local generate-local-dev-db-fixtures
+
+.PHONY: bump-utils
+bump-utils:  # Bump notifications-utils package to latest version
+	${PYTHON_EXECUTABLE_PREFIX}python -c "from notifications_utils.version_tools import upgrade_version; upgrade_version()"

@@ -6,7 +6,7 @@ from config import config
 
 
 def test_provider_inbound_sms_delivery_via_api(client_live_key):
-    unique_content = "inbound test {}".format(uuid.uuid4())
+    unique_content = f"inbound test {uuid.uuid4()}"
     client_live_key.send_sms_notification(
         phone_number=config["service"]["inbound_number"],
         template_id=config["service"]["templates"]["sms"],

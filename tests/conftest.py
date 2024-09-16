@@ -68,7 +68,7 @@ def driver(_driver, request):
     if prev_failed_tests != request.session.testsfailed:
         print("URL at time of failure:", _driver.current_url)  # noqa: T201
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        filename = str(Path.cwd() / "screenshots" / "{}_{}.png".format(filename_datetime, request.function.__name__))
+        filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
         _driver.save_screenshot(str(filename))
         print("Error screenshot saved to " + filename)  # noqa: T201
 

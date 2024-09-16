@@ -65,7 +65,7 @@ def get_notification_by_id_via_api(client, notification_id, expected_statuses):
         return resp
     except HTTPError as e:
         if e.status_code == 404:
-            message = "Notification not created yet for id: {}".format(notification_id)
+            message = f"Notification not created yet for id: {notification_id}"
             raise RetryException(message) from e
         else:
             raise
