@@ -44,17 +44,11 @@ export FUNCTIONAL_TESTS_LOCAL_API_HOST=http://notify-api.localhost:6011
 export FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST=http://notify.localhost:6012
 ```
 
-Populate the local database with fixture data:
+Populate the local database with fixture data using the make target, this will call database fixtures located in notifications-api:
 
 ```shell
-psql notification_api -f db_fixtures/local.sql
-
-# or for dockerised through notifications-local
-
-psql postgresql://notify:notify@localhost:5433/notification_api -f db_fixtures/local.sql
+make generate-local-dev-db-fixtures
 ```
-
-Note: If you see any errors (for example a `duplicate key value violates unique constraint` line or similar), that table will not be saved but other following table inserts will still attempt. You'll need to fix the errors for that table (either in your local database or in the fixture script) and run the script again, or open `psql` and just copy-paste the lines from the script that you need.
 
 Now run the following in other tabs / windows:
 
@@ -136,7 +130,7 @@ More groups generally equals better parallelisation (limited by test runner coun
 
 For the functional tests to pass in any environment, they require certain database fixtures to exist.
 
-For your local environment, these fixtures are found in db_fixtures/local.sql. There are [instructions on how to update the local database fixtures](docs/update-local-db-fixtures.md).
+For your local environment, these fixtures are now generated using the custom flask command functional-test-fixtures (defined in [notifications-api/app/functional_tests_fixtures/__init__.py](https://github.com/alphagov/notifications-api/blob/main/app/functional_tests_fixtures/__init__.py)). The command will create all the database rows required for the funcitonal tests in an idempotent way and output an environment file the functional tests can use to execute against the environment. There are [instructions on how to update the local database fixtures](docs/update-local-db-fixtures.md).
 
 For our preview environment, these fixtures are not yet stored in code, but will be similar to (but not the same as) the local fixtures.
 
