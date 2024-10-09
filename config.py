@@ -18,7 +18,7 @@ config = {
     "pdf_generation_retry_interval": 1,
     "verify_callback_retry_times": 5,
     "verify_callback_retry_interval": 0.5,
-    "letter_retry_times": 48,
+    "letter_retry_times": 108,
     "provider_retry_times": 12,
     "provider_retry_interval": 22,
     "verify_code_retry_times": 8,
