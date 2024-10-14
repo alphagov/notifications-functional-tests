@@ -693,10 +693,12 @@ class ViewTemplatePage(BasePage):
 class EditEmailTemplatePage(BasePage):
     name_input = NameInputElement(clear=True)
     subject_input = SubjectInputElement(clear=True)
+    add_unsubscribe_link = EditTemplatePageLocators.ADD_UNSUBSCRIBE_LINK_CHECKBOX
     template_content_input = TemplateContentElement(clear=True)
     save_button = EditTemplatePageLocators.SAVE_BUTTON
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
+
 
     @staticmethod
     def folder_path_item(folder_name):
@@ -704,6 +706,10 @@ class EditEmailTemplatePage(BasePage):
             By.XPATH,
             f"//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{folder_name}')]/..",
         )
+
+    def select_add_an_usubscribe_link_checkbox(self):
+        element = self.wait_for_design_system_checkbox_or_radio(self.add_unsubscribe_link)
+        self.select_checkbox_or_radio(element)
 
     def click_save(self):
         element = self.wait_for_element(EditEmailTemplatePage.save_button)
@@ -715,9 +721,12 @@ class EditEmailTemplatePage(BasePage):
         element = self.wait_for_element(EditEmailTemplatePage.confirm_delete_button)
         element.click()
 
-    def fill_template(self, name="Test email template", subject="Test email from functional tests", content=None):
+    def fill_template(self, name="Test email template", subject="Test email from functional tests", content=None,
+                      has_unsubscribe_link=False):
         self.name_input = name
         self.subject_input = subject
+        if has_unsubscribe_link:
+            self.select_add_an_usubscribe_link_checkbox()
         if content:
             self.template_content_input = content
         else:
@@ -973,6 +982,10 @@ class SendOneRecipient(BasePage):
             element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
         else:
             element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
+        element.click()
+
+    def click_send_one_email_button(self):
+        element = self.wait_for_element(SingleRecipientLocators.SEND_ONE_EMAIL_BUTTON)
         element.click()
 
     def send_to_address(self, address):

@@ -55,6 +55,7 @@ class TemplatePageLocators:
 class EditTemplatePageLocators:
     TEMPLATE_SUBJECT_INPUT = (By.NAME, "subject")
     TEMPLATE_CONTENT_INPUT = (By.NAME, "template_content")
+    ADD_UNSUBSCRIBE_LINK_CHECKBOX = (By.CSS_SELECTOR, "input[type=checkbox]")
     SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     DELETE_BUTTON = (By.LINK_TEXT, "Delete this template")
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
@@ -158,6 +159,7 @@ class SingleRecipientLocators:
         By.XPATH,
         "//button[contains(text(),'Continue')]",
     )
+    SEND_ONE_EMAIL_BUTTON = (By.XPATH, "//button[contains(text(),'Send 1 email')]")
 
 
 class EmailReplyToLocators:
