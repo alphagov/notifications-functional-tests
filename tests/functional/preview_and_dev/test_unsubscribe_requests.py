@@ -43,6 +43,13 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
     dashboard_stats_after = get_dashboard_stats(dashboard_page, "email", template_id)
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
-    # simulate an unsubscribe request via the one-click-unsubscribe email header
+    # simulate an unsubscribe request via the one click unsubscribe email header
+    resp = client_live_key.post(generated_one_click_unsubscribe_url, data={})
+    assert resp == {
+        "result": "success",
+        "message": "Unsubscribe successful"
+    }
+
+    dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 
 
