@@ -10,10 +10,10 @@ from tests.test_utils import recordtime, go_to_templates_page, create_email_temp
 
 
 @recordtime
-def test_unsubscribe_request_flow(driver, login_seeded_user, client_live_key):
+def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_live_key):
     # Create a subscription template and assert that the template was created
     go_to_templates_page(driver)
-    test_name = "subscription functional test"
+    test_name = request.node.name
     template_name = f"functional subscription email template {uuid.uuid4()}"
     content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
     template_id = create_email_template(driver, name=template_name, content=content, has_unsubscribe_link=True)
@@ -34,19 +34,15 @@ def test_unsubscribe_request_flow(driver, login_seeded_user, client_live_key):
 
     dashboard_page.click_continue()
     notification_id = dashboard_page.get_notification_id()
-    one_off_email = client_live_key.get_notification_by_id(notification_id)
-    assert one_off_email.get("created_by_name") == f"Preview admin tests user - {test_name}"
+    one_off_email_data = client_live_key.get_notification_by_id(notification_id)
+    generated_one_click_unsubscribe_url = one_off_email_data["one_click_unsubscribe_url"]
+
+    assert one_off_email_data["template"]["id"] == template_id
 
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
     dashboard_stats_after = get_dashboard_stats(dashboard_page, "email", template_id)
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
 
-    # go_to_templates_page(driver)
-    # current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    # if len(current_templates) == 0:
-    #     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
-    # assert template_name in current_templates
+    # simulate an unsubscribe request via the one-click-unsubscribe email header
 
 
-    # one_click_unsubscribe_url = data.get("one_click_unsubscribe_url")
-    # assert one_click_unsubscribe_url is None
