@@ -383,6 +383,7 @@ class DashboardPage(BasePage):
     total_letter_div = (By.CSS_SELECTOR, "#total-letters .big-number-number")
     inbox_link = (By.CSS_SELECTOR, "#total-received")
     navigation = (By.CLASS_NAME, "navigation")
+    email_unsubscribe_requests_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests")
 
     def _message_count_for_template_div(self, template_id):
         return (By.ID, template_id)
@@ -409,6 +410,10 @@ class DashboardPage(BasePage):
 
     def click_inbox_link(self):
         element = self.wait_for_element(DashboardPage.inbox_link)
+        element.click()
+
+    def click_email_unsubscribe_requests(self):
+        element = self.wait_for_element(DashboardPage.email_unsubscribe_requests_link)
         element.click()
 
     def get_service_id(self):
@@ -1224,3 +1229,18 @@ class ManageAttachmentPage(BasePage):
         delete_button.click()
         confirm_button = self.wait_for_element(self.confirm_button)
         confirm_button.click()
+
+
+class UnsubscribeRequestConfirmationPage(BasePage):
+    confirm_unsubscription_button = (By.CSS_SELECTOR, "button[type=submit]")
+
+    def click_confirm(self):
+        element = self.wait_for_element(UnsubscribeRequestConfirmationPage.confirm_unsubscription_button)
+        element.click()
+
+
+class UnsubscribeRequestReportsSummaryPage(BasePage):
+    unsubscribe_request_report_link = (By.CSS_SELECTOR, "th ")
+    def click_latest_unsubscribe_request_report_by_link(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.EDIT_BUTTON)
+        element.click()
