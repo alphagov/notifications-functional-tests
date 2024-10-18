@@ -384,6 +384,9 @@ class DashboardPage(BasePage):
     inbox_link = (By.CSS_SELECTOR, "#total-received")
     navigation = (By.CLASS_NAME, "navigation")
     email_unsubscribe_requests_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests")
+    total_email_unsubscribe_requests_count = (
+        By.CSS_SELECTOR, "a[id=total-unsubscribe-requests] span[class=banner-dashboard-count "
+    )
 
     def _message_count_for_template_div(self, template_id):
         return (By.ID, template_id)
@@ -713,7 +716,7 @@ class EditEmailTemplatePage(BasePage):
         )
 
     def select_add_an_usubscribe_link_checkbox(self):
-        element = self.wait_for_design_system_checkbox_or_radio(self.add_unsubscribe_link)
+        element = self.wait_for_design_system_checkbox_or_radio(EditEmailTemplatePage.add_unsubscribe_link)
         self.select_checkbox_or_radio(element)
 
     def click_save(self):
@@ -1240,7 +1243,33 @@ class UnsubscribeRequestConfirmationPage(BasePage):
 
 
 class UnsubscribeRequestReportsSummaryPage(BasePage):
-    unsubscribe_request_report_link = (By.CSS_SELECTOR, "th ")
+    unsubscribe_request_report_link = (By.CSS_SELECTOR, "th a")
+
     def click_latest_unsubscribe_request_report_by_link(self):
-        element = self.wait_for_element(ViewTemplatePageLocators.EDIT_BUTTON)
+        element = self.wait_for_element(UnsubscribeRequestReportsSummaryPage.unsubscribe_request_report_link)
+        element.click()
+
+
+class UnsubscribeRequestReportPage(BasePage):
+    download_report_link = (By.LINK_TEXT, "Download the report")
+    back_link = (By.LINK_TEXT, "Back")
+    mark_report_as_complete_checkbox = (By.CSS_SELECTOR, "input[type=checkbox]")
+    update_report_button = (By.CSS_SELECTOR, "button[type=submit]")
+
+    def click_download_report_link(self):
+        element = self.wait_for_element(UnsubscribeRequestReportPage.download_report_link)
+        element.click()
+
+    def click_back_link(self):
+        element = self.wait_for_element(UnsubscribeRequestReportPage.back_link)
+        element.click()
+
+    def select_mark_as_complete_checkbox(self):
+        element = self.wait_for_design_system_checkbox_or_radio(
+            UnsubscribeRequestReportPage.mark_report_as_complete_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+
+    def click_update_button(self):
+        element = self.wait_for_element(UnsubscribeRequestReportPage.update_report_button)
         element.click()
