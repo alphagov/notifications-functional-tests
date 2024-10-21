@@ -1224,3 +1224,11 @@ class ManageAttachmentPage(BasePage):
         delete_button.click()
         confirm_button = self.wait_for_element(self.confirm_button)
         confirm_button.click()
+
+
+class UnsubscribeRequestConfirmationPage(BasePage):
+    confirm_unsubscription_button = (By.CSS_SELECTOR, "button[type=submit]")
+
+    def click_confirm(self):
+        element = self.wait_for_element(UnsubscribeRequestConfirmationPage.confirm_unsubscription_button)
+        element.click()
