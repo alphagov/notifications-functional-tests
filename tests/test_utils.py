@@ -223,14 +223,14 @@ def is_view_for_all_permissions(page):
     assert page.driver.current_url == expected
 
 
-def create_email_template(driver, name, content=None):
+def create_email_template(driver, name, content=None, has_unsubscribe_link=False):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
     show_templates_page.select_email()
 
     template_page = EditEmailTemplatePage(driver)
-    template_page.fill_template(name=name, content=content)
+    template_page.fill_template(name=name, content=content, has_unsubscribe_link=has_unsubscribe_link)
     return template_page.get_template_id()
 
 
