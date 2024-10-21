@@ -2,8 +2,15 @@ import os
 import uuid
 from urllib.parse import urljoin, urlparse
 
+from selenium.webdriver.common.by import By
+
 from config import config, urls
-from tests.pages import DashboardPage, UnsubscribeRequestConfirmationPage
+from tests.pages import (
+    DashboardPage,
+    UnsubscribeRequestConfirmationPage,
+    UnsubscribeRequestReportPage,
+    UnsubscribeRequestReportsSummaryPage,
+)
 from tests.test_utils import create_email_template, go_to_templates_page, recordtime, send_notification_to_one_recipient
 
 
@@ -18,7 +25,7 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 
-    # Send the notification
+    # Send the notification via api
     send_notification_to_one_recipient(
         driver,
         template_name,
@@ -46,3 +53,22 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
     unsubscribe_request_confirmation_page = UnsubscribeRequestConfirmationPage(driver)
     unsubscribe_request_confirmation_page.click_confirm()
     assert urlparse(driver.current_url).path == "/unsubscribe/confirmed"
+
+    # Go to Email unsubscribe requests summary page
+    dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+    dashboard_page.click_email_unsubscribe_requests()
+
+    # Go to email unsubscribe request report page
+    unsubscribe_request_reports_summary_page = UnsubscribeRequestReportsSummaryPage(driver)
+    unsubscribe_request_reports_summary_page.click_latest_unsubscribe_request_report_by_link()
+
+    # Download email unsubscribe request report
+    report_page = UnsubscribeRequestReportPage(driver)
+    report_page.click_download_report_link()
+    report_page.click_back_link()
+
+    # Mark a report as completed
+    unsubscribe_request_reports_summary_page.click_latest_unsubscribe_request_report_by_link()
+    report_page.select_mark_as_complete_checkbox()
+    report_page.click_continue()
+    assert driver.find_element(By.CSS_SELECTOR, "tr td span").text == "Completed"

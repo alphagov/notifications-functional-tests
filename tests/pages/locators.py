@@ -8,6 +8,7 @@ class CommonPageLocators:
     CONTINUE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
     H1 = (By.TAG_NAME, "H1")
+    BACK_LINK = (By.LINK_TEXT, "Back")
 
 
 class MainPageLocators:
