@@ -159,6 +159,7 @@ class SingleRecipientLocators:
         By.XPATH,
         "//button[contains(text(),'Continue')]",
     )
+    SEND_ONE_EMAIL_BUTTON = (By.XPATH, "//button[contains(text(),'Send 1 email')]")
 
 
 class EmailReplyToLocators:
