@@ -72,7 +72,7 @@ def assert_callback_received(inbound_sms):
 
     recent_callback_requests = [item["event"] for item in response.json()["data"]]
     matching_callback_requests = [
-        request for request in recent_callback_requests if request["body"]["message"] == inbound_sms
+        request for request in recent_callback_requests if request.get("body", {}).get("message") == inbound_sms
     ]
 
     assert len(matching_callback_requests) == 1
