@@ -24,6 +24,7 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+    dashboard_email_unsubscribe_stats_before = dashboard_page.get_email_unsubscribe_requests_count()
 
     # Send the notification via api
     send_notification_to_one_recipient(
@@ -56,6 +57,8 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     # Go to Email unsubscribe requests summary page
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+    dashboard_email_unsubscribe_stats_after = dashboard_page.get_email_unsubscribe_requests_count()
+    assert dashboard_email_unsubscribe_stats_after > dashboard_email_unsubscribe_stats_before
     dashboard_page.click_email_unsubscribe_requests()
 
     # Go to email unsubscribe request report page
