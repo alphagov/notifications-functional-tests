@@ -957,7 +957,7 @@ class SendOneRecipient(BasePage):
 
     def get_preview_contents(self):
         table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
-        rows = table.find_elements(By.TAG_NAME, "tr")  # get all of the rows in the table
+        rows = table.find_elements(By.CSS_SELECTOR, ".govuk-summary-list__row")  # get all of the rows in the table
         return rows
 
     def choose_alternative_sender(self):
