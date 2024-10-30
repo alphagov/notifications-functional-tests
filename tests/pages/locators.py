@@ -8,6 +8,7 @@ class CommonPageLocators:
     CONTINUE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
     H1 = (By.TAG_NAME, "H1")
+    BACK_LINK = (By.LINK_TEXT, "Back")
 
 
 class MainPageLocators:
@@ -55,6 +56,7 @@ class TemplatePageLocators:
 class EditTemplatePageLocators:
     TEMPLATE_SUBJECT_INPUT = (By.NAME, "subject")
     TEMPLATE_CONTENT_INPUT = (By.NAME, "template_content")
+    ADD_UNSUBSCRIBE_LINK_CHECKBOX = (By.CSS_SELECTOR, "input[type=checkbox]")
     SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     DELETE_BUTTON = (By.LINK_TEXT, "Delete this template")
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")

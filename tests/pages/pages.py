@@ -236,6 +236,10 @@ class BasePage:
         errors = self.wait_for_element(error_message)
         return errors.text.strip()
 
+    def click_back_link(self):
+        element = self.wait_for_element(CommonPageLocators.BACK_LINK)
+        element.click()
+
 
 class PageWithStickyNavMixin:
     def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
@@ -383,6 +387,8 @@ class DashboardPage(BasePage):
     total_letter_div = (By.CSS_SELECTOR, "#total-letters .big-number-number")
     inbox_link = (By.CSS_SELECTOR, "#total-received")
     navigation = (By.CLASS_NAME, "navigation")
+    email_unsubscribe_requests_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests")
+    email_unsubscribe_requests_count_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests .banner-dashboard-count")
 
     def _message_count_for_template_div(self, template_id):
         return (By.ID, template_id)
@@ -409,6 +415,10 @@ class DashboardPage(BasePage):
 
     def click_inbox_link(self):
         element = self.wait_for_element(DashboardPage.inbox_link)
+        element.click()
+
+    def click_email_unsubscribe_requests(self):
+        element = self.wait_for_element(DashboardPage.email_unsubscribe_requests_link)
         element.click()
 
     def get_service_id(self):
@@ -441,6 +451,11 @@ class DashboardPage(BasePage):
     def get_template_message_count(self, template_id):
         messages_sent_count_for_template_div = self._message_count_for_template_div(template_id)
         element = self.wait_for_element(messages_sent_count_for_template_div)
+
+        return int(element.text)
+
+    def get_email_unsubscribe_requests_count(self):
+        element = self.wait_for_element(DashboardPage.email_unsubscribe_requests_count_link)
 
         return int(element.text)
 
@@ -694,6 +709,7 @@ class ViewTemplatePage(BasePage):
 class EditEmailTemplatePage(BasePage):
     name_input = NameInputElement(clear=True)
     subject_input = SubjectInputElement(clear=True)
+    add_unsubscribe_link = EditTemplatePageLocators.ADD_UNSUBSCRIBE_LINK_CHECKBOX
     template_content_input = TemplateContentElement(clear=True)
     save_button = EditTemplatePageLocators.SAVE_BUTTON
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
@@ -706,6 +722,10 @@ class EditEmailTemplatePage(BasePage):
             f"//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{folder_name}')]/..",
         )
 
+    def select_add_an_usubscribe_link_checkbox(self):
+        element = self.wait_for_design_system_checkbox_or_radio(EditEmailTemplatePage.add_unsubscribe_link)
+        self.select_checkbox_or_radio(element)
+
     def click_save(self):
         element = self.wait_for_element(EditEmailTemplatePage.save_button)
         element.click()
@@ -716,9 +736,17 @@ class EditEmailTemplatePage(BasePage):
         element = self.wait_for_element(EditEmailTemplatePage.confirm_delete_button)
         element.click()
 
-    def fill_template(self, name="Test email template", subject="Test email from functional tests", content=None):
+    def fill_template(
+        self,
+        name="Test email template",
+        subject="Test email from functional tests",
+        content=None,
+        has_unsubscribe_link=False,
+    ):
         self.name_input = name
         self.subject_input = subject
+        if has_unsubscribe_link:
+            self.select_add_an_usubscribe_link_checkbox()
         if content:
             self.template_content_input = content
         else:
@@ -1212,3 +1240,39 @@ class ManageAttachmentPage(BasePage):
         delete_button.click()
         confirm_button = self.wait_for_element(self.confirm_button)
         confirm_button.click()
+
+
+class UnsubscribeRequestConfirmationPage(BasePage):
+    confirm_unsubscription_button = (By.CSS_SELECTOR, "button[type=submit]")
+
+    def click_confirm(self):
+        element = self.wait_for_element(UnsubscribeRequestConfirmationPage.confirm_unsubscription_button)
+        element.click()
+
+
+class UnsubscribeRequestReportsSummaryPage(BasePage):
+    unsubscribe_request_report_link = (By.CSS_SELECTOR, "th a")
+
+    def click_latest_unsubscribe_request_report_by_link(self):
+        element = self.wait_for_element(UnsubscribeRequestReportsSummaryPage.unsubscribe_request_report_link)
+        element.click()
+
+
+class UnsubscribeRequestReportPage(BasePage):
+    download_report_link = (By.LINK_TEXT, "Download the report")
+    mark_report_as_complete_checkbox = (By.CSS_SELECTOR, "input[type=checkbox]")
+    update_report_button = (By.CSS_SELECTOR, "button[type=submit]")
+
+    def click_download_report_link(self):
+        element = self.wait_for_element(UnsubscribeRequestReportPage.download_report_link)
+        element.click()
+
+    def select_mark_as_complete_checkbox(self):
+        element = self.wait_for_design_system_checkbox_or_radio(
+            UnsubscribeRequestReportPage.mark_report_as_complete_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+
+    def click_update_button(self):
+        element = self.wait_for_element(UnsubscribeRequestReportPage.update_report_button)
+        element.click()
