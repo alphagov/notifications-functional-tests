@@ -455,7 +455,10 @@ class DashboardPage(BasePage):
         return int(element.text)
 
     def get_email_unsubscribe_requests_count(self):
-        element = self.wait_for_element(DashboardPage.email_unsubscribe_requests_count_link)
+        try:
+            element = self.wait_for_element(DashboardPage.email_unsubscribe_requests_count_link)
+        except (NoSuchElementException, TimeoutException):
+            return 0
 
         return int(element.text)
 
