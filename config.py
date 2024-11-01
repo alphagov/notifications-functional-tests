@@ -41,31 +41,29 @@ config = {
 }
 
 
-urls = {
-    "dev": {
-        "api": os.environ.get("FUNCTIONAL_TESTS_LOCAL_API_HOST", "http://localhost:6011"),
-        "admin": os.environ.get("FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST", "http://localhost:6012"),
-    },
-    "preview": {
-        "api": "https://api.notify.works",
-        "admin": "https://www.notify.works",
-    },
-    "staging": {
-        "api": "https://api.staging-notify.works",
-        "admin": "https://www.staging-notify.works",
-    },
-    "live": {
-        "api": "https://api.notifications.service.gov.uk",
-        "admin": "https://www.notifications.service.gov.uk",
-    },
-}
-
-
 def setup_shared_config():
     """
     Used by all tests
     """
     env = os.environ["ENVIRONMENT"].lower()
+    urls = {
+        "dev": {
+            "api": os.environ.get("FUNCTIONAL_TESTS_LOCAL_API_HOST", "http://localhost:6011"),
+            "admin": os.environ.get("FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST", "http://localhost:6012"),
+        },
+        "preview": {
+            "api": "https://api.notify.works",
+            "admin": "https://www.notify.works",
+        },
+        "staging": {
+            "api": "https://api.staging-notify.works",
+            "admin": "https://www.staging-notify.works",
+        },
+        "live": {
+            "api": "https://api.notifications.service.gov.uk",
+            "admin": "https://www.notifications.service.gov.uk",
+        },
+    }
 
     if env not in {"dev", "preview", "staging", "live"}:
         if not os.environ.get("FUNCTIONAL_TESTS_API_HOST") or not os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"):
