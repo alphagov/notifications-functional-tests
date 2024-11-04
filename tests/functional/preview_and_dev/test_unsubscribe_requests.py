@@ -4,7 +4,7 @@ from urllib.parse import urljoin, urlparse
 
 from selenium.webdriver.common.by import By
 
-from config import config, urls
+from config import config
 from tests.pages import (
     DashboardPage,
     UnsubscribeRequestConfirmationPage,
@@ -48,7 +48,7 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     # simulate an unsubscribe request via the one click unsubscribe url in the body of the email
     path = urlparse(generated_one_click_unsubscribe_url).path
-    admin_url = urljoin(urls[os.environ["ENVIRONMENT"]]["admin"], path)
+    admin_url = urljoin(config["notify_admin_url"], path)
     driver.get(admin_url)
 
     unsubscribe_request_confirmation_page = UnsubscribeRequestConfirmationPage(driver)
