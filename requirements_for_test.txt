@@ -12,9 +12,9 @@ attrs==24.2.0
 awscrt==0.22.0
     # via botocore
 beautifulsoup4==4.11.1
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 black==24.4.0
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 blinker==1.9.0
     # via flask
 boto3[crt]==1.35.60
@@ -60,7 +60,7 @@ flask==3.1.0
 flask-redis==0.4.0
     # via notifications-utils
 freezegun==1.2.2
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 govuk-bank-holidays==0.15
     # via notifications-utils
 greenlet==3.1.1
@@ -100,7 +100,7 @@ mypy-extensions==1.0.0
     # via black
 notifications-python-client==8.1.0
     # via -r requirements_for_test.in
-notifications-utils @ git+https://github.com/alphagov/notifications-utils.git@82.1.2
+notifications-utils @ git+https://github.com/alphagov/notifications-utils.git@89.2.0
     # via -r requirements.txt
 ordered-set==4.1.0
     # via notifications-utils
@@ -138,7 +138,7 @@ pysocks==1.7.1
     # via urllib3
 pytest==7.2.0
     # via
-    #   -r requirements_for_test_common.txt
+    #   -r requirements_for_test_common.in
     #   pytest-env
     #   pytest-mock
     #   pytest-rerunfailures
@@ -146,17 +146,17 @@ pytest==7.2.0
     #   pytest-watch
     #   pytest-xdist
 pytest-env==0.8.1
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 pytest-mock==3.9.0
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 pytest-rerunfailures==12.0
     # via -r requirements_for_test.in
 pytest-testmon==2.1.0
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 pytest-watch==4.2.0
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 pytest-xdist==3.0.2
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 python-dateutil==2.9.0.post0
     # via
     #   botocore
@@ -179,11 +179,11 @@ requests==2.32.0
     #   notifications-utils
     #   requests-mock
 requests-mock==1.10.0
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 retry==0.9.2
     # via -r requirements_for_test.in
 ruff==0.3.7
-    # via -r requirements_for_test_common.txt
+    # via -r requirements_for_test_common.in
 s3transfer==0.10.3
     # via boto3
 segno==1.6.1
