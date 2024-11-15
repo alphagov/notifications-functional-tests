@@ -305,7 +305,7 @@ class AddServicePage(BasePage):
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def wait_until_current(self):
-        return self.wait_until_url_is(self.base_url + "/add-service?first=first")
+        return self.wait_until_url_is(self.base_url + "/add-service")
 
     def add_service(self, name):
         self.service_input = name
