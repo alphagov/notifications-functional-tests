@@ -5,7 +5,7 @@ from tests.test_utils import RetryException, create_temp_csv
 
 
 def send_notification_via_api(client, template_id, to, message_type):
-    personalisation = {"build_id": "No build id"}
+    personalisation = {"name": "Testy McTesterson", "content": "The quick brown fox jumped over the lazy dog."}
 
     if message_type == "sms":
         resp_json = client.send_sms_notification(to, template_id, personalisation)

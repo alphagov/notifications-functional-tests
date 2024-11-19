@@ -19,7 +19,7 @@ from tests.test_utils import RetryException
 
 def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs, filedata: str = "foo-bar-baz"):
     file = prepare_upload(BytesIO(filedata.encode("utf-8")), **prepare_upload_kwargs)
-    personalisation = {"build_id": file}
+    personalisation = {"name": "Testy McTesterson", "content": file}
     email_address = config["service"]["seeded_user"]["email"]
     template_id = config["service"]["templates"]["email"]
 

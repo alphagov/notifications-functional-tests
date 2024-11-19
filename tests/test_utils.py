@@ -56,7 +56,7 @@ def create_temp_csv(fields):
     directory_name = tempfile.mkdtemp()
     csv_filename = f"{uuid.uuid4()}-sample.csv"
     csv_file_path = os.path.join(directory_name, csv_filename)
-    fields.update({"build_id": "No build id"})
+    fields.update({"name": "Testy McTesterson"})
     with open(csv_file_path, "w") as csv_file:
         csv_writer = csv.DictWriter(csv_file, fieldnames=fields.keys())
         csv_writer.writeheader()
@@ -420,7 +420,7 @@ def send_notification_to_one_recipient(
     return placeholders
 
 
-def send_letter_to_one_recipient(driver, template_name, address, build_id):
+def send_letter_to_one_recipient(driver, template_name, address, content):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
     dashboard_page.click_templates()
@@ -432,7 +432,7 @@ def send_letter_to_one_recipient(driver, template_name, address, build_id):
 
     send_to_one_recipient_page = SendOneRecipient(driver)
     send_to_one_recipient_page.send_to_address(address)
-    send_to_one_recipient_page.enter_placeholder_value(build_id)
+    send_to_one_recipient_page.enter_placeholder_value(content)
     send_to_one_recipient_page.click_continue()
 
     send_letter_preview_page = SendLetterPreviewPage(driver)

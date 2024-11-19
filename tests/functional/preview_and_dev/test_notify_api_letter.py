@@ -71,7 +71,7 @@ def test_send_letter_notification_with_qr_code_via_api(client_test_key):
     # front. Newlines at the end move the fullstop which is part of the template out of the QR code data.
     notification = client_test_key.send_letter_notification(
         config["service"]["templates"]["letter"],
-        {**config["letter_contact_data"], "build_id": f"\n\nqr: {qr_code_data}\n\n"},
+        {**config["letter_contact_data"], "content": f"\n\nqr: {qr_code_data}\n\n"},
     )
     notification_id = notification["id"]
 

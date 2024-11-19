@@ -10,7 +10,7 @@ def test_provider_inbound_sms_delivery_via_api(client_live_key):
     client_live_key.send_sms_notification(
         phone_number=config["service"]["inbound_number"],
         template_id=config["service"]["templates"]["sms"],
-        personalisation={"build_id": unique_content},
+        personalisation={"name": "Testy McTesterson", "content": unique_content},
     )
 
     retry_call(

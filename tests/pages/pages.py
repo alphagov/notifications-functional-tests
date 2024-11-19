@@ -589,7 +589,7 @@ class EditSmsTemplatePage(BasePage):
         if content:
             self.template_content_input = content
         else:
-            self.template_content_input = "The quick brown fox jumped over the lazy dog. Job id: ((build_id))"
+            self.template_content_input = "The quick brown fox jumped over the lazy dog."
         self.click_save()
 
 
@@ -645,7 +645,7 @@ class EditLetterTemplatePage(BasePage):
             self.template_content_input = content
         else:
             self.template_content_input = (
-                "The quick brown fox jumped over the lazy dog. I'm a letter. Job id: ((build_id))"
+                "The quick brown fox jumped over the lazy dog. I'm a letter."
             )
         self.click_save()
 
@@ -753,7 +753,7 @@ class EditEmailTemplatePage(BasePage):
         if content:
             self.template_content_input = content
         else:
-            self.template_content_input = "The quick brown fox jumped over the lazy dog. Job id: ((build_id))"
+            self.template_content_input = "The quick brown fox jumped over the lazy dog."
         self.click_save()
 
     def click_folder_path(self, folder_name):

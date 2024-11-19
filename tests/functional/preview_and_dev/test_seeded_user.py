@@ -128,7 +128,7 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_k
         template_name=template_name,
         new_template_name=new_template_name,
         subject="my new email subject",
-        content="my new template content. Job id: ((build_id))",
+        content="my new template content.",
     )
 
     go_to_templates_page(driver)
@@ -166,7 +166,7 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key
         driver,
         template_name=template_name,
         new_template_name=new_template_name,
-        content="my new template content. Job id: ((build_id))",
+        content="my new template content.",
     )
 
     go_to_templates_page(driver)
@@ -283,7 +283,7 @@ def test_add_letter_attachment_then_send_letter_then_delete_attachment(driver, l
     assert driver.find_element(By.CLASS_NAME, "edit-template-link-attachment").text == "Manage attachment"
 
     send_letter_to_one_recipient(
-        driver, template_name, address=f"{test_id}\nTest street\nSW1 1AA", build_id=str(test_id)
+        driver, template_name, address=f"{test_id}\nTest street\nSW1 1AA", content=str(test_id)
     )
 
     letter_preview_page = PreviewLetterPage(driver)
