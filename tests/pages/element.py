@@ -6,6 +6,8 @@ from tests.pages.locators import (
     CommonPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
+    ServiceJoinRequestChooseServicePageLocators,
+    ServiceJoinRequestJoinAskPageLocators,
     SignUpPageLocators,
     UploadCsvLocators,
     VerifyPageLocators,
@@ -78,3 +80,11 @@ class FileInputElement(BasePageElement):
 
 class SubjectInputElement(BasePageElement):
     name = EditTemplatePageLocators.TEMPLATE_SUBJECT_INPUT[1]
+
+
+class ServiceJoinRequestChooseServiceInputElement(BasePageElement):
+    name = ServiceJoinRequestChooseServicePageLocators.SEARCH_SERVICE_INPUT[1]
+
+
+class ServiceJoinRequestJoinAskReasonTextAreaElement(BasePageElement):
+    name = ServiceJoinRequestJoinAskPageLocators.REQUEST_REASON_TEXTAREA[1]

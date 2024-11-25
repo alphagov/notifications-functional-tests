@@ -42,6 +42,35 @@ class YourServicesPageLocators:
     ADD_A_NEW_SERVICE_BUTTON = (By.LINK_TEXT, "Add a new service")
 
 
+class ServiceJoinRequestChooseServicePageLocators:
+    SEARCH_SERVICE_INPUT = (By.ID, "search")
+    SELECT_SERVICE_NAME_LINK = (By.LINK_TEXT, "Functional Tests")
+
+
+class ServiceJoinRequestJoinAskPageLocators:
+    APPROVER_USER_CHECKBOX = (By.XPATH, "//label[normalize-space(text())='Preview admin tests user']")
+    REQUEST_REASON_TEXTAREA = (By.ID, "reason")
+    ASK_TO_JOIN_SERVICE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+
+
+class ServiceJoinRequestApprovePageLocators:
+    CONTINUE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+    APPROVED_RADIO = (By.CSS_SELECTOR, "join_service_approve_request-0")
+    REJECTED_RADIO = (By.ID, "join_service_approve_request-1")
+
+
+class ServiceJoinRequestChoosePermissionsPageLocators:
+    SEND_MESSAGES_CHECKBOX = (By.CSS_SELECTOR, "[value=send_messages], [name=send_messages]")
+    SEE_DASHBOARD_CHECKBOX = (By.CSS_SELECTOR, "[value=view_activity], [name=view_activity]")
+    MANAGE_SERVICES_CHECKBOX = (By.CSS_SELECTOR, "[value=manage_service], [name=manage_service]")
+    MANAGE_API_KEYS_CHECKBOX = (By.CSS_SELECTOR, "[value=manage_api_keys], [name=manage_api_keys]")
+    MANAGE_TEMPLATES_CHECKBOX = (By.CSS_SELECTOR, "[value=manage_templates], [name=manage_templates]")
+    CHOOSE_FOLDERS_BUTTON = (By.CSS_SELECTOR, "button.notify-button--with-chevron")
+    LOGIN_SMS_AUTH_RADIO = (By.CSS_SELECTOR, "[value=sms_auth], [name=login_authentication]")
+    LOGIN_EMAIL_AUTH_RADIO = (By.CSS_SELECTOR, "[value=email_auth], [name=login_authentication]")
+    SAVE_PERMISSIONS_BUTTON = (By.XPATH, "//button[contains(text(),'Save')]")
+
+
 class NavigationLocators:
     SIGN_OUT_LINK = (By.LINK_TEXT, "Sign out")
     TEMPLATES_LINK = (By.LINK_TEXT, "Templates")
