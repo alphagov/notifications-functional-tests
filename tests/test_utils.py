@@ -36,6 +36,7 @@ from tests.pages import (
     VerifyPage,
     ViewLetterTemplatePage,
     ViewTemplatePage,
+    YourServicesPage,
 )
 from tests.pages.pages import RenameLetterTemplatePage
 
@@ -138,6 +139,23 @@ def do_email_verification(driver, template_id, email_address):
         return True
 
 
+def do_user_add_new_service(driver):
+    if driver.current_url == config["notify_admin_url"] + "/your-services":
+        your_service_page = YourServicesPage(driver)
+        your_service_page.wait_until_current()
+        your_service_page.add_new_service()
+
+    add_service_page = AddServicePage(driver)
+    add_service_page.wait_until_current()
+    add_service_page.add_service(config["service_name"])
+
+    dashboard_page = DashboardPage(driver)
+    service_id = dashboard_page.get_service_id()
+    dashboard_page.go_to_dashboard_for_service(service_id)
+
+    assert dashboard_page.get_service_name() == config["service_name"]
+
+
 def do_user_registration(driver):
     main_page = MainPage(driver)
     main_page.get()
@@ -155,16 +173,6 @@ def do_user_registration(driver):
     driver.get(registration_link)
 
     do_verify(driver, config["user"]["mobile"])
-
-    add_service_page = AddServicePage(driver)
-    add_service_page.wait_until_current()
-    add_service_page.add_service(config["service_name"])
-
-    dashboard_page = DashboardPage(driver)
-    service_id = dashboard_page.get_service_id()
-    dashboard_page.go_to_dashboard_for_service(service_id)
-
-    assert dashboard_page.get_service_name() == config["service_name"]
 
 
 def do_user_can_invite_someone_to_notify(driver, basic_view):

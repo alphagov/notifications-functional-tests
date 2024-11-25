@@ -9,6 +9,7 @@ from tests.pages import (
 )
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
+    do_user_add_new_service,
     do_user_can_add_reply_to_email_to_service,
     do_user_can_invite_someone_to_notify,
     do_user_can_update_reply_to_email_to_service,
@@ -23,6 +24,7 @@ def register_user(_driver):
     # has to use _driver as this is at module level (`driver` fixture is at function level, and just handles taking
     # the screenshot on failure)
     do_user_registration(_driver)
+    do_user_add_new_service(_driver)
 
 
 def _sign_in_again(driver):

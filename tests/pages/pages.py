@@ -52,6 +52,7 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
+    YourServicesPageLocators,
 )
 
 
@@ -326,6 +327,22 @@ class AddServicePage(BasePage):
             element.click()
         except TimeoutException:
             pass
+
+
+class YourServicesPage(BasePage):
+    join_live_service_button = YourServicesPageLocators.JOIN_LIVE_SERVICE_BUTTON
+    add_a_new_service_button = YourServicesPageLocators.ADD_A_NEW_SERVICE_BUTTON
+
+    def wait_until_current(self):
+        return self.wait_until_url_is(self.base_url + "/your-service")
+
+    def join_live_service(self):
+        element = self.wait_for_element(YourServicesPage.join_live_service_button)
+        element.click()
+
+    def add_new_service(self):
+        element = self.wait_for_element(YourServicesPage.add_a_new_service_button)
+        element.click()
 
 
 class ForgotPasswordPage(BasePage):

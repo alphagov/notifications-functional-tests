@@ -37,6 +37,11 @@ class AddServicePageLocators:
     ADD_SERVICE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
 
 
+class YourServicesPageLocators:
+    JOIN_LIVE_SERVICE_BUTTON = (By.LINK_TEXT, "Join a live service")
+    ADD_A_NEW_SERVICE_BUTTON = (By.LINK_TEXT, "Add a new service")
+
+
 class NavigationLocators:
     SIGN_OUT_LINK = (By.LINK_TEXT, "Sign out")
     TEMPLATES_LINK = (By.LINK_TEXT, "Templates")
