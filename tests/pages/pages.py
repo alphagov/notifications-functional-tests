@@ -134,6 +134,9 @@ class BasePage:
     def current_url(self):
         return self.driver.current_url
 
+    def no_element_error_msg(self, locator):
+        return f"Could not locate element {locator} on URL {self.current_url}"
+
     def wait_for_design_system_checkbox_or_radio(self, locator):
         """GOV.UK Design System 'hides' the original HTML input for checkboxes/radios to provide more accessible
         visual alternatives. These end up making a `visibility_of_element_located` check fail, so for these specific
@@ -142,7 +145,10 @@ class BasePage:
         return AntiStaleElement(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(locator)),
+            lambda locator: WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(locator),
+                self.no_element_error_msg(locator),
+            ),
         )
 
     def wait_for_element(self, locator, time=10):
@@ -151,7 +157,7 @@ class BasePage:
             locator,
             lambda locator: WebDriverWait(self.driver, time).until(
                 EC.visibility_of_element_located(locator),
-                EC.presence_of_element_located(locator),
+                self.no_element_error_msg(locator),
             ),
         )
 
@@ -161,7 +167,7 @@ class BasePage:
             locator,
             lambda locator: WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_all_elements_located(locator),
-                EC.presence_of_all_elements_located(locator),
+                self.no_element_error_msg(locator),
             ),
         )
 
