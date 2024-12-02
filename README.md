@@ -138,12 +138,19 @@ For our staging environment, these fixtures are found in db_fixtures/staging.sql
 
 For our production environment, these fixtures are not yet stored in code, but will be similar to (but not the same as) the staging fixtures.
 
+### uv
+
+We use [uv](https://github.com/astral-sh/uv) for Python dependency management. Follow the [install instructions](https://github.com/astral-sh/uv?tab=readme-ov-file#installation) or run:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
 ## Pre-commit
 
 We use [pre-commit](https://pre-commit.com/) to ensure that committed code meets basic standards for formatting, and will make basic fixes for you to save time and aggravation.
 
 Install pre-commit system-wide with, eg `brew install pre-commit`. Then, install the hooks in this repository with `pre-commit install --install-hooks`.
-
 
 ## Further documentation
 

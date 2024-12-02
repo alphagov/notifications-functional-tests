@@ -19,6 +19,7 @@ WORKDIR /var/project
 
 COPY . .
 
+RUN pip install uv
 RUN make bootstrap
 
 ENTRYPOINT ["bash"]
