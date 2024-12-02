@@ -1,4 +1,4 @@
-# This file was automatically copied from notifications-utils@89.1.0
+# This file was automatically copied from notifications-utils@89.2.0
 
 [tool.black]
 line-length = 120
