@@ -88,6 +88,9 @@ make test
 
 # run a specific test
 pytest tests/functional/preview_and_dev/test_seeded_user.py
+
+# run a specific test without headless
+pytest tests/functional/preview_and_dev/test_seeded_user.py --no-headless
 ```
 
 ### Running the tests against preview, staging or production

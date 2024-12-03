@@ -37,6 +37,7 @@ config = {
         "password_reset_template_id": "474e9242-823b-4f99-813d-ed392e7f1201",
         "registration_template_id": "ece42649-22a8-4d06-b87f-d52d5d3f0a27",
         "verify_code_template_id": "36fb0730-6259-4da1-8a80-c8de22ad4246",
+        "request_invite_to_service_template_id": "77677459-f862-44ee-96d9-b8cb2323d407",
     },
 }
 

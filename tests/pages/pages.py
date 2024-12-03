@@ -24,6 +24,8 @@ from tests.pages.element import (
     NewPasswordInputElement,
     PasswordInputElement,
     ServiceInputElement,
+    ServiceJoinRequestChooseServiceInputElement,
+    ServiceJoinRequestJoinAskReasonTextAreaElement,
     SmsInputElement,
     SubjectInputElement,
     TemplateContentElement,
@@ -42,6 +44,10 @@ from tests.pages.locators import (
     NavigationLocators,
     RenameTemplatePageLocators,
     SendLetterPreviewPageLocators,
+    ServiceJoinRequestApprovePageLocators,
+    ServiceJoinRequestChoosePermissionsPageLocators,
+    ServiceJoinRequestChooseServicePageLocators,
+    ServiceJoinRequestJoinAskPageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
     SingleRecipientLocators,
@@ -52,6 +58,7 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
+    YourServicesPageLocators,
 )
 
 
@@ -332,6 +339,102 @@ class AddServicePage(BasePage):
             element.click()
         except TimeoutException:
             pass
+
+
+class YourServicesPage(BasePage):
+    join_live_service_button = YourServicesPageLocators.JOIN_LIVE_SERVICE_BUTTON
+    add_a_new_service_button = YourServicesPageLocators.ADD_A_NEW_SERVICE_BUTTON
+
+    def wait_until_current(self):
+        return self.wait_until_url_is(self.base_url + "/your-service")
+
+    def join_live_service(self):
+        element = self.wait_for_element(YourServicesPage.join_live_service_button)
+        element.click()
+
+    def add_new_service(self):
+        element = self.wait_for_element(YourServicesPage.add_a_new_service_button)
+        element.click()
+
+
+class ServiceJoinRequestChooseServicePage(BasePage):
+    search_service_input = ServiceJoinRequestChooseServiceInputElement(clear=True)
+    select_service_name_link = ServiceJoinRequestChooseServicePageLocators.SELECT_SERVICE_NAME_LINK
+
+    def go_to_selected_service(self):
+        element = self.wait_for_element(ServiceJoinRequestChooseServicePage.select_service_name_link)
+        element.click()
+
+    def check_if_search_input_exists(self):
+        try:
+            self.wait_for_element(ServiceJoinRequestChooseServicePageLocators.SEARCH_SERVICE_INPUT)
+            return True
+        except TimeoutException:
+            return False
+
+
+class ServiceJoinRequestJoinAskPage(BasePage):
+    request_reason_input = ServiceJoinRequestJoinAskReasonTextAreaElement(clear=True)
+    select_approver_user = ServiceJoinRequestJoinAskPageLocators.APPROVER_USER_CHECKBOX
+    ask_to_join_service_button = ServiceJoinRequestJoinAskPageLocators.ASK_TO_JOIN_SERVICE_BUTTON
+
+    def select_approver_user_checkbox(self):
+        element = self.wait_for_element(ServiceJoinRequestJoinAskPage.select_approver_user)
+        element.click()
+
+    def ask_to_join_service(self):
+        element = self.wait_for_element(ServiceJoinRequestJoinAskPage.ask_to_join_service_button)
+        element.click()
+
+
+class ServiceJoinRequestApprovePage(BasePage):
+    continue_button = ServiceJoinRequestApprovePageLocators.CONTINUE_BUTTON
+    rejected_radio = ServiceJoinRequestApprovePageLocators.REJECTED_RADIO
+
+    def continue_to_next_step(self):
+        element = self.wait_for_element(ServiceJoinRequestApprovePage.continue_button)
+        element.click()
+
+    def select_rejected_option(self):
+        element = self.wait_for_design_system_checkbox_or_radio(ServiceJoinRequestApprovePage.rejected_radio)
+        self.select_checkbox_or_radio(element)
+
+
+class ServiceJoinRequestChoosePermissionsPage(BasePage):
+    see_dashboard_check_box = ServiceJoinRequestChoosePermissionsPageLocators.SEE_DASHBOARD_CHECKBOX
+    send_messages_checkbox = ServiceJoinRequestChoosePermissionsPageLocators.SEND_MESSAGES_CHECKBOX
+    manage_services_checkbox = ServiceJoinRequestChoosePermissionsPageLocators.MANAGE_SERVICES_CHECKBOX
+    manage_api_keys_checkbox = ServiceJoinRequestChoosePermissionsPageLocators.MANAGE_API_KEYS_CHECKBOX
+    login_sms_auth_radio = ServiceJoinRequestChoosePermissionsPageLocators.LOGIN_SMS_AUTH_RADIO
+    save_permissions_button = ServiceJoinRequestChoosePermissionsPageLocators.SAVE_PERMISSIONS_BUTTON
+
+    def fill_invitation_form(self):
+        element = self.wait_for_design_system_checkbox_or_radio(
+            ServiceJoinRequestChoosePermissionsPage.see_dashboard_check_box
+        )
+        self.select_checkbox_or_radio(element)
+        element = self.wait_for_design_system_checkbox_or_radio(
+            ServiceJoinRequestChoosePermissionsPage.send_messages_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+        element = self.wait_for_design_system_checkbox_or_radio(
+            ServiceJoinRequestChoosePermissionsPage.manage_services_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+        element = self.wait_for_design_system_checkbox_or_radio(
+            ServiceJoinRequestChoosePermissionsPage.manage_api_keys_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+
+    def select_sms_auth_form(self):
+        element = self.wait_for_design_system_checkbox_or_radio(
+            ServiceJoinRequestChoosePermissionsPage.login_sms_auth_radio
+        )
+        self.select_checkbox_or_radio(element)
+
+    def save_permissions(self):
+        element = self.wait_for_element(ServiceJoinRequestChoosePermissionsPage.save_permissions_button)
+        element.click()
 
 
 class ForgotPasswordPage(BasePage):
