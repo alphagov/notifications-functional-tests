@@ -19,6 +19,7 @@ WORKDIR /var/project
 
 COPY . .
 
+ENV UV_COMPILE_BYTECODE=1
 RUN pip install uv
 RUN make bootstrap
 
