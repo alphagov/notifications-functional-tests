@@ -21,11 +21,20 @@ class Event:
     event_type: EventType
     current_url: str
     data: Any
+    attempts: int = 1
 
     def __repr__(self):
         # remove https:// and domain as visual noise
         url = urlunsplit(urlsplit(self.current_url)._replace(scheme="", netloc=""))
-        return f"Event({self.event_type}, {url=}, {self.data=})"
+        return (
+            f"Event({self.event_type}, {url=}, {self.data=}"
+            # only print num tries if there was more than 1
+            + (f", {self.attempts=}" if self.attempts != 1 else "")
+            + ")"
+        )
+
+    def __eq__(self, other):
+        return self.event_type == other.event_type and self.current_url == other.current_url and self.data == other.data
 
 
 class LoggingEventListener(AbstractEventListener):
@@ -51,7 +60,13 @@ class LoggingEventListener(AbstractEventListener):
         print("===========================================" + ("=" * len(str(num_to_print))))
 
     def _add_event(self, event_type: EventType, current_url: str, data: Any):
-        self._events.append(Event(event_type=event_type, current_url=current_url, data=data))
+        new_event = Event(event_type=event_type, current_url=current_url, data=data)
+
+        # if the last event was the same thing, then just record how many attempts we did
+        if len(self._events) != 0 and self._events[-1] == new_event:
+            self._events[-1].attempts += 1
+        else:
+            self._events.append(new_event)
 
         # if url has changed since last time, then add to the record book
         if len(self._url_history) == 0 or current_url != self._url_history[-1]:
