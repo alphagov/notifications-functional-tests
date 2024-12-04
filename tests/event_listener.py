@@ -62,9 +62,16 @@ class LoggingEventListener(AbstractEventListener):
         """
         elements as reported on in click/change value are a web element that will be stale by the time we print in logs
 
-        just grab the HTML when the element's still in the DOM for printing out later
+        just grab the HTML when the element's still in the DOM for printing out later.
+        Truncate to 250 characters to avoid absolutely filling the logs if someone is searching for a huge element like
+        the entire body or a table or something
         """
-        return element.get_attribute("outerHTML")
+        outer_html = element.get_attribute("outerHTML")
+
+        MAX_HTML_LEN = 250
+        if len(outer_html) > MAX_HTML_LEN:
+            outer_html = outer_html[:MAX_HTML_LEN] + "... <truncated>"
+        return outer_html
 
     # --------- event hooks --------- #
 
