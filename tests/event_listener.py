@@ -4,6 +4,7 @@ from enum import StrEnum
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.events import AbstractEventListener
 
 
@@ -56,6 +57,15 @@ class LoggingEventListener(AbstractEventListener):
         if len(self._url_history) == 0 or current_url != self._url_history[-1]:
             self._url_history.append(current_url)
 
+    @staticmethod
+    def _format_element(element: WebElement) -> str:
+        """
+        elements as reported on in click/change value are a web element that will be stale by the time we print in logs
+
+        just grab the HTML when the element's still in the DOM for printing out later
+        """
+        return element.get_attribute("outerHTML")
+
     # --------- event hooks --------- #
 
     def before_navigate_to(self, url: str, driver) -> None:
@@ -65,10 +75,10 @@ class LoggingEventListener(AbstractEventListener):
         self._add_event(EventType.FIND, driver.current_url, (by, value))
 
     def before_click(self, element, driver) -> None:
-        self._add_event(EventType.CLICK, driver.current_url, element)
+        self._add_event(EventType.CLICK, driver.current_url, self._format_element(element))
 
     def before_change_value_of(self, element, driver) -> None:
-        self._add_event(EventType.CHANGE_VALUE_OF, driver.current_url, element)
+        self._add_event(EventType.CHANGE_VALUE_OF, driver.current_url, self._format_element(element))
 
     def before_execute_script(self, script, driver) -> None:
         self._add_event(EventType.EXECUTE_SCRIPT, driver.current_url, script)
