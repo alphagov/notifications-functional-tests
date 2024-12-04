@@ -5,8 +5,10 @@ import pytest
 from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.support.events import EventFiringWebDriver
 
 from config import config, setup_shared_config
+from tests.event_listener import LoggingEventListener
 from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in, sign_in_email_auth
 
@@ -51,6 +53,8 @@ def _driver(request, download_directory):
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
 
+    driver = EventFiringWebDriver(driver, LoggingEventListener())
+
     driver.delete_all_cookies()
 
     # go to root page and accept analytics cookies to hide banner in all pages
@@ -67,6 +71,12 @@ def driver(_driver, request):
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
         print("URL at time of failure:", _driver.current_url)  # noqa: T201
+
+        # print last 20 events
+        _driver._listener.print_events(num_to_print=20)
+        # wipe down for next test
+        _driver._listener.clear_events()
+
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
         _driver.save_screenshot(str(filename))
