@@ -14,8 +14,8 @@ config = {
     # static
     "notification_retry_times": 15,
     "notification_retry_interval": 5,
-    "pdf_generation_retry_times": 5,
-    "pdf_generation_retry_interval": 1,
+    "pdf_generation_retry_times": 10,
+    "pdf_generation_retry_interval": 2,
     "verify_callback_retry_times": 5,
     "verify_callback_retry_interval": 0.5,
     "letter_retry_times": 108,
