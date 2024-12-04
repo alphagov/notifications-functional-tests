@@ -33,18 +33,28 @@ class LoggingEventListener(AbstractEventListener):
     """
 
     _events: list[Event] = []
+    _url_history = []
 
     def clear_events(self):
         self._events = []
+        self._url_history = []
 
     def print_events(self, num_to_print: int = 20):
         print(f"===== Last {num_to_print} events before test finish =====")
         for event in self._events[-num_to_print:]:
             print(event)
+        print("")
+        print(f"====== Last {num_to_print} URLs before test finish ======")
+        for url in self._url_history[-num_to_print:]:
+            print(url)
         print("===========================================" + ("=" * len(str(num_to_print))))
 
     def _add_event(self, event_type: EventType, current_url: str, data: Any):
         self._events.append(Event(event_type=event_type, current_url=current_url, data=data))
+
+        # if url has changed since last time, then add to the record book
+        if len(self._url_history) == 0 or current_url != self._url_history[-1]:
+            self._url_history.append(current_url)
 
     # --------- event hooks --------- #
 
