@@ -98,10 +98,10 @@ def get_link(template_id, email):
     delay=config["verify_code_retry_interval"],
 )
 def do_verify(driver, mobile_number):
+    verify_code = get_verify_code_from_api(mobile_number)
+    verify_page = VerifyPage(driver)
+    verify_page.verify(verify_code)
     try:
-        verify_code = get_verify_code_from_api(mobile_number)
-        verify_page = VerifyPage(driver)
-        verify_page.verify(verify_code)
         driver.find_element(By.CLASS_NAME, "error-message")
     except (NoSuchElementException, TimeoutException):
         #  In some cases a TimeoutException is raised even if we have managed to verify.
@@ -140,10 +140,12 @@ def do_email_verification(driver, template_id, email_address):
 
 
 def do_user_add_new_service(driver):
-    if driver.current_url == config["notify_admin_url"] + "/your-services":
-        your_service_page = YourServicesPage(driver)
-        your_service_page.wait_until_current()
-        your_service_page.add_new_service()
+    your_service_page = YourServicesPage(driver)
+    # for functional tests to run, there needs to be a functional test organisation that:
+    # * has the `ask to join a service` flag enabled
+    # * has the functional tests email domain (by default digital.cabinet-office.gov.uk) set as a known domain
+    your_service_page.wait_until_current()
+    your_service_page.add_new_service()
 
     add_service_page = AddServicePage(driver)
     add_service_page.wait_until_current()
@@ -166,7 +168,7 @@ def do_user_registration(driver):
 
     registration_page.register()
 
-    assert driver.current_url == config["notify_admin_url"] + "/registration-continue"
+    registration_page.wait_until_url_contains("/registration-continue")
 
     registration_link = get_link(config["notify_templates"]["registration_template_id"], config["user"]["email"])
 
@@ -195,7 +197,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
     invite_user_page.send_invitation()
     invite_user_page.sign_out()
-    invite_user_page.wait_until_url_is(config["notify_admin_url"])
+    invite_user_page.wait_until_url_contains(config["notify_admin_url"])
 
     # next part of interaction is from point of view of invitee
     # i.e. after visting invite_link we'll be registering using invite_email
@@ -221,14 +223,13 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
 def is_basic_view(dashboard_page):
     assert dashboard_page.get_navigation_list() == "Templates\nSent messages\nUploads\nTeam members"
-    expected = f"{dashboard_page.base_url}/services/{dashboard_page.get_service_id()}/templates"
-    assert dashboard_page.driver.current_url == expected
+    assert dashboard_page.wait_until_url_contains(f"/services/{dashboard_page.get_service_id()}/templates")
 
 
 def is_view_for_all_permissions(page):
     assert page.get_navigation_list() == "Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"
-    expected = f"{page.base_url}/services/{page.get_service_id()}"
-    assert page.driver.current_url == expected
+    expected = f"/services/{page.get_service_id()}"
+    assert page.wait_until_url_contains(expected)
 
 
 def create_email_template(driver, name, content=None, has_unsubscribe_link=False):

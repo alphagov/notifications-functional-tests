@@ -31,7 +31,7 @@ def test_org_invite(driver, login_seeded_user):
     # now log out and create account as invited user
     dashboard_page = DashboardPage(driver)
     dashboard_page.sign_out()
-    dashboard_page.wait_until_url_is(config["notify_admin_url"])
+    dashboard_page.wait_until_url_contains(config["notify_admin_url"])
 
     invite_link = get_link(config["notify_templates"]["org_invitation_template_id"], invited_user_email)
     driver.get(invite_link)

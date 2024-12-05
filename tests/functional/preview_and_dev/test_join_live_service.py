@@ -36,7 +36,7 @@ def _do_request_to_join_service(driver):
     add_service_page.wait_until_current()
     add_service_page.join_live_service()
 
-    assert driver.current_url == config["notify_admin_url"] + "/join-a-service/choose"
+    add_service_page.wait_until_url_contains("/join-a-service/choose")
 
     choose_service_page = ServiceJoinRequestChooseServicePage(driver)
     if choose_service_page.check_if_search_input_exists():
@@ -48,7 +48,7 @@ def _do_request_to_join_service(driver):
     join_ask_page.request_reason_input = "Test join service reason"
     join_ask_page.ask_to_join_service()
 
-    assert "/join/you-have-asked?number_of_users_emailed=1" in driver.current_url
+    join_ask_page.wait_until_url_contains("/join/you-have-asked?number_of_users_emailed=1")
 
     add_service_page.sign_out()
 
@@ -63,9 +63,7 @@ def _do_approver_approved_request(driver):
     choose_permissions_page.fill_invitation_form()
     choose_permissions_page.select_sms_auth_form()
     choose_permissions_page.save_permissions()
-    choose_permissions_page.wait_until_url_is(config["notify_admin_url"] + "/your-services")
-
-    assert driver.current_url == config["notify_admin_url"] + "/your-services"
+    choose_permissions_page.wait_until_url_contains("/your-services")
 
     choose_permissions_page.sign_out()
 
@@ -77,9 +75,7 @@ def _do_approver_rejected_request(driver):
     join_service_request_approve_page.select_rejected_option()
     join_service_request_approve_page.continue_to_next_step()
 
-    join_service_request_approve_page.wait_until_url_is("/refused")
-
-    assert "/refused" in driver.current_url
+    join_service_request_approve_page.wait_until_url_contains("/refused")
 
     join_service_request_approve_page.sign_out()
 

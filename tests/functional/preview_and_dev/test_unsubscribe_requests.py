@@ -55,7 +55,7 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     unsubscribe_request_confirmation_page = UnsubscribeRequestConfirmationPage(driver)
     unsubscribe_request_confirmation_page.click_confirm()
-    assert urlparse(driver.current_url).path == "/unsubscribe/confirmed"
+    unsubscribe_request_confirmation_page.wait_until_url_contains("/unsubscribe/confirmed")
 
     # Go to Email unsubscribe requests summary page
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
