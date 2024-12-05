@@ -16,9 +16,9 @@ from tests.test_utils import do_email_verification, recordtime
 def test_email_auth(driver):
     # login email auth user
     sign_in_email_auth(driver)
-    # assert url is FUNCTIONAL_TESTS_SERVICE's dashboard
-    assert driver.current_url == config["notify_admin_url"] + "/services/{}".format(config["service"]["id"])
     base_page = BasePage(driver)
+    # assert url is FUNCTIONAL_TESTS_SERVICE's dashboard
+    base_page.wait_until_url_contains(f"/services/{config['service']['id']}")
     base_page.sign_out()
 
 

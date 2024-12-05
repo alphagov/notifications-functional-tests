@@ -187,7 +187,7 @@ class BasePage:
 
         self.driver.delete_all_cookies()
 
-    def wait_until_url_is(self, url):
+    def wait_until_url_contains(self, url):
         return WebDriverWait(self.driver, 10).until(self.url_contains(url))
 
     def url_contains(self, url):
@@ -238,6 +238,7 @@ class BasePage:
         # e.g.
         # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
         # circle back and do better
+        self.wait_until_url_contains("/templates/")
         return self.driver.current_url.split("/templates/")[1].split("/")[0]
 
     def click_element_by_link_text(self, link_text):
@@ -302,7 +303,7 @@ class RegistrationPage(BasePage):
     password_input = PasswordInputElement()
 
     def wait_until_current(self):
-        return self.wait_until_url_is(self.base_url + "/register")
+        return self.wait_until_url_contains(self.base_url + "/register")
 
     def register(self):
         self.name_input = config["user"]["name"]
@@ -318,7 +319,7 @@ class AddServicePage(BasePage):
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def wait_until_current(self):
-        return self.wait_until_url_is(self.base_url + "/add-service")
+        return self.wait_until_url_contains(self.base_url + "/add-service")
 
     def add_service(self, name):
         self.service_input = name
@@ -346,7 +347,7 @@ class YourServicesPage(BasePage):
     add_a_new_service_button = YourServicesPageLocators.ADD_A_NEW_SERVICE_BUTTON
 
     def wait_until_current(self):
-        return self.wait_until_url_is(self.base_url + "/your-service")
+        return self.wait_until_url_contains(self.base_url + "/your-service")
 
     def join_live_service(self):
         element = self.wait_for_element(YourServicesPage.join_live_service_button)
@@ -460,7 +461,7 @@ class SignInPage(BasePage):
         self.driver.get(self.base_url + "/sign-in")
 
     def wait_until_current(self):
-        return self.wait_until_url_is(self.base_url + "/sign-in")
+        return self.wait_until_url_contains(self.base_url + "/sign-in")
 
     def fill_login_form(self, email, password):
         self.email_input = email
@@ -503,8 +504,9 @@ class DashboardPage(BasePage):
         return (By.ID, template_id)
 
     def is_current(self, service_id):
-        expected = f"{self.base_url}/services/{service_id}/dashboard"
-        return self.driver.current_url == expected
+        expected = f"/services/{service_id}/dashboard"
+        self.wait_until_url_contains(expected)
+        return True
 
     def get_service_name(self):
         element = self.wait_for_element(DashboardPage.h2)
@@ -531,6 +533,7 @@ class DashboardPage(BasePage):
         element.click()
 
     def get_service_id(self):
+        self.wait_until_url_contains("/services/")
         return self.driver.current_url.split("/services/")[1].split("/")[0]
 
     def get_navigation_list(self):
@@ -538,6 +541,7 @@ class DashboardPage(BasePage):
         return element.text
 
     def get_notification_id(self):
+        self.wait_until_url_contains("/notification/")
         return self.driver.current_url.split("notification/")[1].split("?")[0]
 
     def go_to_dashboard_for_service(self, service_id=None):
@@ -1211,7 +1215,8 @@ class OrganisationDashboardPage(BasePage):
 
     def is_current(self, org_id):
         expected = f"{self.base_url}/organisations/{org_id}"
-        return self.driver.current_url == expected
+        self.wait_until_url_contains(expected)
+        return True
 
     def click_team_members_link(self):
         element = self.wait_for_element(DashboardPage.team_members_link)
@@ -1237,7 +1242,8 @@ class InviteUserToOrgPage(BasePage):
 class InboxPage(BasePage):
     def is_current(self, service_id):
         expected = f"{self.base_url}/services/{service_id}/inbox"
-        return self.driver.current_url == expected
+        self.wait_until_url_contains(expected)
+        return True
 
     def go_to_conversation(self, user_number):
         # link looks like "07123 456789". because i don't know if user_number starts with +44, just get the last 10
