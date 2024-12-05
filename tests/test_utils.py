@@ -140,12 +140,12 @@ def do_email_verification(driver, template_id, email_address):
 
 
 def do_user_add_new_service(driver):
-    # TODO: Check which one of these we expect to happen - your-services or add service page?
-    # we should only have one on all envs ideally
-    if driver.current_url == config["notify_admin_url"] + "/your-services":
-        your_service_page = YourServicesPage(driver)
-        your_service_page.wait_until_current()
-        your_service_page.add_new_service()
+    your_service_page = YourServicesPage(driver)
+    # for functional tests to run, there needs to be a functional test organisation that:
+    # * has the `ask to join a service` flag enabled
+    # * has the functional tests email domain (by default digital.cabinet-office.gov.uk) set as a known domain
+    your_service_page.wait_until_current()
+    your_service_page.add_new_service()
 
     add_service_page = AddServicePage(driver)
     add_service_page.wait_until_current()
