@@ -31,7 +31,7 @@ def _sign_in_again(driver):
     # sign back in as the original service user
     dashboard_page = DashboardPage(driver)
     dashboard_page.sign_out()
-    dashboard_page.wait_until_url_is(config["notify_admin_url"])
+    dashboard_page.wait_until_url_contains(config["notify_admin_url"])
 
     sign_in(driver, account_type="normal")
 
