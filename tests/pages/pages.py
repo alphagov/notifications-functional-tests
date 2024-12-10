@@ -482,6 +482,22 @@ class VerifyPage(BasePage):
         self.sms_input = code
         self.click_continue()
 
+    def verify_code_successful(self) -> bool:
+        try:
+            # override the default 10 seconds to keep things a bit snappier
+            self.wait_for_element((By.CLASS_NAME, "error-message"), time=2)
+        except (NoSuchElementException, TimeoutException):
+            # if we cant find the error message, it's probs because we succesfully redirected! but lets double check
+            try:
+                self.wait_until_url_doesnt_contain("/verify")  # times out if we were unsuccesful
+                return True
+            except TimeoutException:
+                # we expect to have been redirected away from the `/verify` URL, so we should retry
+                return False
+        else:
+            # found an error message on the page, so should retry
+            return False
+
 
 class DashboardPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")

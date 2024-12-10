@@ -101,14 +101,7 @@ def do_verify(driver, mobile_number):
     verify_code = get_verify_code_from_api(mobile_number)
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
-    try:
-        driver.find_element(By.CLASS_NAME, "error-message")
-    except (NoSuchElementException, TimeoutException):
-        #  In some cases a TimeoutException is raised even if we have managed to verify.
-        #  For now, check explicitly if we 'have verified' and if so move on.
-        return True
-    else:
-        #  There was an error message so let's retry
+    if not verify_page.verify_code_successful():
         raise RetryException
 
 
