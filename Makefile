@@ -62,8 +62,8 @@ env-provider-tests: env-environment-check
 test: clean ## Run functional tests against local environment
 	ruff check .
 	black --check .
-	pytest -v tests/functional/preview_and_dev -n auto --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
-	pytest -v tests/document_download/preview_and_dev ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
+	pytest tests/functional/preview_and_dev -n auto --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
+	pytest tests/document_download/preview_and_dev ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
 
 .PHONY: generate-staging-db-fixtures
 generate-staging-db-fixtures: ## Generates DB fixtures for the staging database
