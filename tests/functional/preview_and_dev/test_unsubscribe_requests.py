@@ -16,7 +16,7 @@ from tests.test_utils import create_email_template, go_to_templates_page, record
 
 @recordtime
 def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_live_key):
-    # Create a subscription template
+    # Create subscription template
     go_to_templates_page(driver)
     template_name = f"functional subscription email template {uuid.uuid4()}"
     content = "Hi ((name)), Is ((email address)) your email address? We want to send you some ((things))"
@@ -24,8 +24,9 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+    dashboard_email_unsubscribe_stats_before = dashboard_page.get_email_unsubscribe_requests_count()
 
-    # Send the notification via api
+    # Send first notification via api
     send_notification_to_one_recipient(
         driver,
         template_name,
@@ -35,21 +36,36 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
         placeholders_number=2,
     )
 
+    # Extract the generated unsubscribe link
     dashboard_page.click_continue()
     notification_id = dashboard_page.get_notification_id()
     one_off_email_data = client_live_key.get_notification_by_id(notification_id)
-    generated_one_click_unsubscribe_url = one_off_email_data["one_click_unsubscribe_url"]
+    generated_one_click_unsubscribe_url_1 = one_off_email_data["one_click_unsubscribe_url"]
     assert one_off_email_data["template"]["id"] == template_id
 
     # simulate an unsubscribe request via the one click unsubscribe email header
-    resp = client_live_key.post(generated_one_click_unsubscribe_url, data={})
+    resp = client_live_key.post(generated_one_click_unsubscribe_url_1, data={})
     assert resp == {"result": "success", "message": "Unsubscribe successful"}
 
-    dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-    dashboard_email_unsubscribe_stats_1 = dashboard_page.get_email_unsubscribe_requests_count()
+    # Send a second notification via api
+    send_notification_to_one_recipient(
+        driver,
+        template_name,
+        "email",
+        test=False,
+        recipient_data=os.environ["FUNCTIONAL_TEST_EMAIL"],
+        placeholders_number=2,
+    )
 
-    # simulate an unsubscribe request via the one click unsubscribe url in the body of the email
-    path = urlparse(generated_one_click_unsubscribe_url).path
+    # Extract the generated unsubscribe link
+    dashboard_page.click_continue()
+    notification_id = dashboard_page.get_notification_id()
+    one_off_email_data = client_live_key.get_notification_by_id(notification_id)
+    generated_one_click_unsubscribe_url_2 = one_off_email_data["one_click_unsubscribe_url"]
+    assert one_off_email_data["template"]["id"] == template_id
+
+    # simulate a second unsubscribe request via the one click unsubscribe url in the body of the email
+    path = urlparse(generated_one_click_unsubscribe_url_2).path
     admin_url = urljoin(config["notify_admin_url"], path)
     driver.get(admin_url)
 
@@ -59,8 +75,8 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     # Go to Email unsubscribe requests summary page
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-    dashboard_email_unsubscribe_stats_2 = dashboard_page.get_email_unsubscribe_requests_count()
-    assert dashboard_email_unsubscribe_stats_2 > dashboard_email_unsubscribe_stats_1
+    dashboard_email_unsubscribe_stats_after = dashboard_page.get_email_unsubscribe_requests_count()
+    assert dashboard_email_unsubscribe_stats_after > dashboard_email_unsubscribe_stats_before
     dashboard_page.click_email_unsubscribe_requests()
 
     # Go to email unsubscribe request report page
