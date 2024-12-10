@@ -188,13 +188,10 @@ class BasePage:
         self.driver.delete_all_cookies()
 
     def wait_until_url_contains(self, url):
-        return WebDriverWait(self.driver, 10).until(self.url_contains(url))
+        return WebDriverWait(self.driver, 10).until(lambda _: url in self.driver.current_url)
 
-    def url_contains(self, url):
-        def check_contains_url(driver):
-            return url in self.driver.current_url
-
-        return check_contains_url
+    def wait_until_url_doesnt_contain(self, url):
+        return WebDriverWait(self.driver, 10).until(lambda _: url not in self.driver.current_url)
 
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
