@@ -25,7 +25,7 @@ def test_admin(driver, client_live_key, login_user):
             csv_sms_notification_id,
             NotificationStatuses.SENT,
         ],
-        tries=config["notification_retry_times"],
+        tries=config["smoke_test_csv_notification_retry_time"],
         delay=config["notification_retry_interval"],
     )
     assert_notification_body(csv_sms_notification_id, csv_sms_notification)
@@ -38,7 +38,7 @@ def test_admin(driver, client_live_key, login_user):
             csv_email_notification_id,
             NotificationStatuses.SENT,
         ],
-        tries=config["notification_retry_times"],
+        tries=config["smoke_test_csv_notification_retry_time"],
         delay=config["notification_retry_interval"],
     )
 

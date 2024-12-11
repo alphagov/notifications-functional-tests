@@ -158,6 +158,9 @@ def setup_staging_prod_config():
     # staging and prod run the same simple smoke tests
     config.update(
         {
+            # the smoke tests send a CSV which might get stuck behind other jobs we allow
+            # these notifications to take longer (2m30s rather than the normal wait of 1m15s)
+            "smoke_test_csv_notification_retry_time": 30,
             "name": "{} Functional Tests".format(config["env"]),
             "user": {
                 "email": os.environ["FUNCTIONAL_TEST_EMAIL"],
