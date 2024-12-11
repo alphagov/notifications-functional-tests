@@ -1,7 +1,7 @@
 import os
 import shutil
 from typing import Literal
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -489,7 +489,7 @@ class VerifyPage(BasePage):
         except (NoSuchElementException, TimeoutException):
             # if we cant find the error message, it's probs because we succesfully redirected! but lets double check
             try:
-                self.wait_until_url_doesnt_contain("/verify")  # times out if we were unsuccesful
+                self.url_not_a_2fa_sms_page()  # times out if we were unsuccesful
                 return True
             except TimeoutException:
                 # we expect to have been redirected away from the `/verify` URL, so we should retry
@@ -497,6 +497,14 @@ class VerifyPage(BasePage):
         else:
             # found an error message on the page, so should retry
             return False
+
+    def url_not_a_2fa_sms_page(self):
+        # the page where you enter a 2fa code is one of two URLs:
+        # /verify for user registration, or /two-factor-sms for sign-in
+        current_path = urlsplit(self.driver.current_url)
+        WebDriverWait(self.driver, 10).until(
+            lambda _: not (current_path == "/verify" or current_path == "/two-factor-sms")
+        )
 
 
 class DashboardPage(BasePage):
