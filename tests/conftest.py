@@ -74,13 +74,14 @@ def driver(_driver, request):
 
         # print last 20 events
         _driver._listener.print_events(num_to_print=20)
-        # wipe down for next test
-        _driver._listener.clear_events()
 
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
         _driver.save_screenshot(str(filename))
         print("Error screenshot saved to " + filename)  # noqa: T201
+
+    # clear old events/urls regardless of failure
+    _driver._listener.clear_events()
 
 
 @pytest.fixture(scope="module")
