@@ -188,13 +188,10 @@ class BasePage:
         self.driver.delete_all_cookies()
 
     def wait_until_url_contains(self, url):
-        return WebDriverWait(self.driver, 10).until(self.url_contains(url))
+        return WebDriverWait(self.driver, 10).until(lambda _: url in self.driver.current_url)
 
-    def url_contains(self, url):
-        def check_contains_url(driver):
-            return url in self.driver.current_url
-
-        return check_contains_url
+    def wait_until_url_doesnt_contain(self, url):
+        return WebDriverWait(self.driver, 10).until(lambda _: url not in self.driver.current_url)
 
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
@@ -484,6 +481,22 @@ class VerifyPage(BasePage):
         element.clear()
         self.sms_input = code
         self.click_continue()
+
+    def verify_code_successful(self) -> bool:
+        try:
+            # override the default 10 seconds to keep things a bit snappier
+            self.wait_for_element((By.CLASS_NAME, "error-message"), time=2)
+        except (NoSuchElementException, TimeoutException):
+            # if we cant find the error message, it's probs because we succesfully redirected! but lets double check
+            try:
+                self.wait_until_url_doesnt_contain("/verify")  # times out if we were unsuccesful
+                return True
+            except TimeoutException:
+                # we expect to have been redirected away from the `/verify` URL, so we should retry
+                return False
+        else:
+            # found an error message on the page, so should retry
+            return False
 
 
 class DashboardPage(BasePage):
