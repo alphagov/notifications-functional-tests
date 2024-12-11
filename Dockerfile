@@ -17,8 +17,17 @@ RUN apt-get update && \
 
 WORKDIR /var/project
 
-COPY . .
+RUN pip install uv
+
+COPY requirements_for_test.txt Makefile ./
+
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_CACHE_DIR='/tmp/uv-cache/'
+RUN uv venv
+ENV PATH="/var/project/.venv/bin:$PATH"
 
 RUN make bootstrap
+
+COPY . .
 
 ENTRYPOINT ["bash"]
