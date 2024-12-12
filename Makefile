@@ -10,13 +10,12 @@ help:
 .PHONY: bootstrap
 bootstrap: ## Install build dependencies
 	mkdir -p logs screenshots
-	pip install -r requirements_for_test.txt
+	uv pip install -r requirements_for_test.txt
 
 .PHONY: freeze-requirements
 freeze-requirements: ## create static requirements_for_test.txt
-	pip install --upgrade pip-tools
 	python -c "from notifications_utils.version_tools import copy_config; copy_config()"
-	pip-compile requirements_for_test.in
+	uv pip compile requirements_for_test.in -o requirements_for_test.txt
 
 .PHONY: clean
 clean: ## Remove temporary files
@@ -81,4 +80,4 @@ generate-local-dev-db-fixtures:
 
 .PHONY: bump-utils
 bump-utils:  # Bump notifications-utils package to latest version
-	${PYTHON_EXECUTABLE_PREFIX}python -c "from notifications_utils.version_tools import upgrade_version; upgrade_version()"
+	python -c "from notifications_utils.version_tools import upgrade_version; upgrade_version()"

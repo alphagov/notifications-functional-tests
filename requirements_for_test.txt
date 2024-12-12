@@ -109,7 +109,7 @@ pdf2image==1.16.3
     # via -r requirements_for_test.in
 phonenumbers==8.13.51
     # via notifications-utils
-pillow==10.3.0
+pillow==11.0.0
     # via
     #   -r requirements_for_test.in
     #   pdf2image
