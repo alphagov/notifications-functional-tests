@@ -60,7 +60,11 @@ def _driver(request, download_directory):
     # go to root page and accept analytics cookies to hide banner in all pages
     driver.get(config["notify_admin_url"])
     HomePage(driver).accept_cookie_warning()
+    prev_failed_tests = request.session.testsfailed
     yield driver
+    if prev_failed_tests != request.session.testsfailed:
+        _log_events_and_save_screenshot(driver, request)
+
     driver.delete_all_cookies()
     driver.close()
 
@@ -70,15 +74,7 @@ def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
-        print("URL at time of failure:", _driver.current_url)  # noqa: T201
-
-        # print last 20 events
-        _driver._listener.print_events(num_to_print=20)
-
-        filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
-        _driver.save_screenshot(str(filename))
-        print("Error screenshot saved to " + filename)  # noqa: T201
+        _log_events_and_save_screenshot(_driver, request)
 
     # clear old events/urls regardless of failure
     _driver._listener.clear_events()
@@ -105,3 +101,15 @@ def client_live_key():
 def client_test_key():
     client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"])
     return client
+
+
+def _log_events_and_save_screenshot(driver, request):
+    print("URL at time of failure:", driver.current_url)  # noqa: T201
+
+    # print last 20 events
+    driver._listener.print_events(num_to_print=20)
+
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{getattr(request, request.scope).__name__}.png")
+    driver.save_screenshot(str(filename))
+    print("Error screenshot saved to " + filename)  # noqa: T201
