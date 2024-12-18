@@ -53,7 +53,7 @@ def _driver(request, download_directory, worker_id):
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
 
-    driver = EventFiringWebDriver(driver, LoggingEventListener(worker_id))
+    driver = EventFiringWebDriver(driver, LoggingEventListener(request.node.name))
 
     driver.delete_all_cookies()
 
@@ -66,7 +66,7 @@ def _driver(request, download_directory, worker_id):
         print("URL at time of failure:", driver.current_url)  # noqa: T201
 
         # print last 20 events
-        driver._listener.print_events(node=worker_id, num_to_print=20)
+        driver._listener.print_events(node=request.node.name, num_to_print=20)
 
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.module.__name__}.png")
@@ -80,12 +80,13 @@ def _driver(request, download_directory, worker_id):
 @pytest.fixture(scope="function")
 def driver(_driver, request, worker_id):
     prev_failed_tests = request.session.testsfailed
+    _driver = EventFiringWebDriver(_driver, LoggingEventListener(request.node.name))
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
         print("URL at time of failure:", _driver.current_url)  # noqa: T201
 
         # print last 20 events
-        _driver._listener.print_events(node=worker_id, num_to_print=20)
+        _driver._listener.print_events(node=request.node.name, num_to_print=20)
 
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
