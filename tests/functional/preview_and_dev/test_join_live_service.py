@@ -12,14 +12,6 @@ from tests.pages.rollups import sign_in
 from tests.test_utils import do_user_registration, get_link, recordtime
 
 
-@pytest.fixture(scope="module", autouse=True)
-@recordtime
-def register_user(_driver):
-    # has to use _driver as this is at module level (`driver` fixture is at function level, and just handles taking
-    # the screenshot on failure)
-    do_user_registration(_driver)
-
-
 def _do_approver_sign_in(driver):
     requested_user_email = config["service"]["seeded_user"]["email"]
     sign_in(driver, account_type="seeded")
@@ -83,6 +75,7 @@ def _do_approver_rejected_request(driver):
 @recordtime
 @pytest.mark.xdist_group(name="join-service-request-flow")
 def test_join_live_service_rejected_flow(driver):
+    do_user_registration(driver)
     _do_request_to_join_service(driver)
     _do_approver_rejected_request(driver)
 

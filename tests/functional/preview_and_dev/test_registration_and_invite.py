@@ -18,15 +18,6 @@ from tests.test_utils import (
 )
 
 
-@pytest.fixture(scope="module", autouse=True)
-@recordtime
-def register_user(_driver):
-    # has to use _driver as this is at module level (`driver` fixture is at function level, and just handles taking
-    # the screenshot on failure)
-    do_user_registration(_driver)
-    do_user_add_new_service(_driver)
-
-
 def _sign_in_again(driver):
     # sign back in as the original service user
     dashboard_page = DashboardPage(driver)
@@ -42,6 +33,8 @@ def _sign_in_again(driver):
 @recordtime
 @pytest.mark.xdist_group(name="registration-flow")
 def test_invite_flow(driver):
+    do_user_registration(driver)
+    do_user_add_new_service(driver)
     do_user_can_invite_someone_to_notify(driver, basic_view=False)
 
     _sign_in_again(driver)
