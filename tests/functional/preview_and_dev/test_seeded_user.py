@@ -199,7 +199,7 @@ def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_
 
     assert template_name in current_templates
 
-    delete_template(driver, template_name)
+    # delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
     if len(current_templates) == 0:
         current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
