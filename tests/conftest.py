@@ -31,7 +31,7 @@ def download_directory(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def _driver(request, download_directory):
+def _driver(request, download_directory, worker_id):
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
     options.add_argument("user-agent=Selenium")
@@ -53,7 +53,7 @@ def _driver(request, download_directory):
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
 
-    driver = EventFiringWebDriver(driver, LoggingEventListener())
+    driver = EventFiringWebDriver(driver, LoggingEventListener(worker_id))
 
     driver.delete_all_cookies()
 
@@ -63,18 +63,34 @@ def _driver(request, download_directory):
     prev_failed_tests = request.session.testsfailed
     yield driver
     if prev_failed_tests != request.session.testsfailed:
-        _log_events_and_save_screenshot(driver, request)
+        print("URL at time of failure:", driver.current_url)  # noqa: T201
+
+        # print last 20 events
+        driver._listener.print_events(node=worker_id, num_to_print=20)
+
+        filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.module.__name__}.png")
+        driver.save_screenshot(str(filename))
+        print("Error screenshot saved to " + filename)  # noqa: T201
 
     driver.delete_all_cookies()
     driver.close()
 
 
 @pytest.fixture(scope="function")
-def driver(_driver, request):
+def driver(_driver, request, worker_id):
     prev_failed_tests = request.session.testsfailed
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
-        _log_events_and_save_screenshot(_driver, request)
+        print("URL at time of failure:", _driver.current_url)  # noqa: T201
+
+        # print last 20 events
+        _driver._listener.print_events(node=worker_id, num_to_print=20)
+
+        filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
+        _driver.save_screenshot(str(filename))
+        print("Error screenshot saved to " + filename)  # noqa: T201
 
     # clear old events/urls regardless of failure
     _driver._listener.clear_events()
@@ -101,15 +117,3 @@ def client_live_key():
 def client_test_key():
     client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"])
     return client
-
-
-def _log_events_and_save_screenshot(driver, request):
-    print("URL at time of failure:", driver.current_url)  # noqa: T201
-
-    # print last 20 events
-    driver._listener.print_events(num_to_print=20)
-
-    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{getattr(request, request.scope).__name__}.png")
-    driver.save_screenshot(str(filename))
-    print("Error screenshot saved to " + filename)  # noqa: T201
