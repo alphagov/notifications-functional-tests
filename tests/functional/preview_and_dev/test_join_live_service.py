@@ -1,4 +1,5 @@
 import pytest
+from selenium.common.exceptions import TimeoutException
 
 from config import config
 from tests.pages import (
@@ -6,18 +7,35 @@ from tests.pages import (
     ServiceJoinRequestChoosePermissionsPage,
     ServiceJoinRequestChooseServicePage,
     ServiceJoinRequestJoinAskPage,
+    SignInPage,
     YourServicesPage,
 )
 from tests.pages.rollups import sign_in
 from tests.test_utils import do_user_registration, get_link, recordtime
 
 
-@pytest.fixture(scope="module", autouse=True)
-@recordtime
-def register_user(_driver):
-    # has to use _driver as this is at module level (`driver` fixture is at function level, and just handles taking
-    # the screenshot on failure)
-    do_user_registration(_driver)
+@pytest.fixture(autouse=True)
+def user_register_or_sign_in(driver):
+    sign_in_page = SignInPage(driver)
+    sign_in_page.get()
+
+    try:
+        sign_in_page.wait_until_current()
+    except TimeoutException:
+        # if we didn't get to the sign_in_page, it's probably because we're already logged in.
+        # try logging out before proceeding
+        _do_requester_sign_in(driver)
+    else:
+        do_user_registration(driver)
+
+
+def _do_requester_sign_in(driver):
+    # sign back in as requester (normal user)
+    dashboard_page = YourServicesPage(driver)
+    dashboard_page.sign_out()
+    dashboard_page.wait_until_url_contains(config["notify_admin_url"])
+
+    sign_in(driver, account_type="normal")
 
 
 def _do_approver_sign_in(driver):
@@ -25,10 +43,6 @@ def _do_approver_sign_in(driver):
     sign_in(driver, account_type="seeded")
     invite_link = get_link(config["notify_templates"]["request_invite_to_service_template_id"], requested_user_email)
     driver.get(invite_link)
-
-
-def _do_requester_sign_in(driver):
-    sign_in(driver, account_type="normal")
 
 
 def _do_request_to_join_service(driver):
@@ -65,8 +79,6 @@ def _do_approver_approved_request(driver):
     choose_permissions_page.save_permissions()
     choose_permissions_page.wait_until_url_contains("/users")
 
-    choose_permissions_page.sign_out()
-
 
 def _do_approver_rejected_request(driver):
     _do_approver_sign_in(driver)
@@ -76,8 +88,6 @@ def _do_approver_rejected_request(driver):
     join_service_request_approve_page.continue_to_next_step()
 
     join_service_request_approve_page.wait_until_url_contains("/refused")
-
-    join_service_request_approve_page.sign_out()
 
 
 @recordtime
@@ -90,6 +100,5 @@ def test_join_live_service_rejected_flow(driver):
 @recordtime
 @pytest.mark.xdist_group(name="join-service-request-flow")
 def test_join_live_service_approved_flow(driver):
-    _do_requester_sign_in(driver)
     _do_request_to_join_service(driver)
     _do_approver_approved_request(driver)

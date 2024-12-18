@@ -54,12 +54,14 @@ def _driver(request, download_directory):
     driver.set_window_size(1280, 720)
 
     driver = EventFiringWebDriver(driver, LoggingEventListener())
+    driver._listener.set_node(request.node.name)
 
     driver.delete_all_cookies()
 
     # go to root page and accept analytics cookies to hide banner in all pages
     driver.get(config["notify_admin_url"])
     HomePage(driver).accept_cookie_warning()
+
     yield driver
     driver.delete_all_cookies()
     driver.close()
@@ -68,12 +70,13 @@ def _driver(request, download_directory):
 @pytest.fixture(scope="function")
 def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
+    _driver._listener.set_node(request.node.name)
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
         print("URL at time of failure:", _driver.current_url)  # noqa: T201
 
         # print last 20 events
-        _driver._listener.print_events(num_to_print=20)
+        _driver._listener.print_events(node=request.node.name, num_to_print=20)
 
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
