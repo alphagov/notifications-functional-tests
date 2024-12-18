@@ -53,7 +53,8 @@ def _driver(request, download_directory, worker_id):
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
 
-    driver = EventFiringWebDriver(driver, LoggingEventListener(request.node.name))
+    driver = EventFiringWebDriver(driver, LoggingEventListener())
+    driver._listener.set_node(request.node.name)
 
     driver.delete_all_cookies()
 
@@ -80,7 +81,7 @@ def _driver(request, download_directory, worker_id):
 @pytest.fixture(scope="function")
 def driver(_driver, request, worker_id):
     prev_failed_tests = request.session.testsfailed
-    _driver = EventFiringWebDriver(_driver, LoggingEventListener(request.node.name))
+    _driver._listener.set_node(request.node.name)
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
         print("URL at time of failure:", _driver.current_url)  # noqa: T201

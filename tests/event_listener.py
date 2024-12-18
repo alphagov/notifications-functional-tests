@@ -52,7 +52,7 @@ class LoggingEventListener(AbstractEventListener):
     _url_history = []
     node: str = ""
 
-    def __init__(self, node):
+    def set_node(self, node):
         self.node = node
 
     def clear_events(self):
