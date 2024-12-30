@@ -1,4 +1,5 @@
 import os
+import random
 import uuid
 
 import pytest
@@ -7,6 +8,10 @@ import pytest
 def generate_unique_email(email, uuid):
     parts = email.split("@")
     return f"{parts[0]}+{uuid}@{parts[1]}"
+
+
+def get_ofcom_test_number():
+    return f"07700{random.randrange(900002,900999,1)}"
 
 
 # global variable
@@ -111,7 +116,7 @@ def setup_preview_dev_config():
                 "name": "{}_Functional Test_{}".format(config["env"], uuid_for_test_run),
                 "email": generate_unique_email(os.environ["FUNCTIONAL_TEST_EMAIL"], uuid_for_test_run),
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
-                "mobile": os.environ["TEST_NUMBER"],
+                "mobile": get_ofcom_test_number(),
             },
             "api_auth": {
                 "client_id": "notify-functional-tests",
@@ -165,7 +170,7 @@ def setup_staging_prod_config():
             "user": {
                 "email": os.environ["FUNCTIONAL_TEST_EMAIL"],
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
-                "mobile": os.environ["TEST_NUMBER"],
+                "mobile": get_ofcom_test_number(),
             },
             "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
             "service": {
