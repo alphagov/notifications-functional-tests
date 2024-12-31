@@ -762,6 +762,7 @@ class ViewLetterTemplatePage(BasePage):
 
     def click_change_language(self):
         element = self.wait_for_element(self.change_language_button)
+        self.driver.execute_script("window.scrollTo(0, 50)")
         element.click()
 
 
