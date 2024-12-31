@@ -92,7 +92,7 @@ def setup_shared_config():
                 {
                     "pdf_generation_retry_times": 40,
                     "verify_callback_retry_times": 40,
-                    "verify_callback_retry_interval": 1,
+                    "verify_callback_retry_interval": 5,
                 }
             )
     else:

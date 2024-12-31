@@ -64,7 +64,7 @@ def assert_callback_received(inbound_sms):
     api_token = config["pipedream"]["api_token"]
 
     response = requests.get(
-        f"https://api.pipedream.com/v1/sources/{source_id}/event_summaries?expand=event&limit=10",
+        f"https://api.pipedream.com/v1/sources/{source_id}/event_summaries?expand=event&limit=50",
         headers={"Authorization": f"Bearer {api_token}"},
     )
 
