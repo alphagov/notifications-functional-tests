@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 from urllib.parse import urljoin, urlparse
 
@@ -85,6 +86,7 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     # Download email unsubscribe request report
     report_page = UnsubscribeRequestReportPage(driver)
+    time.sleep(10)
     report_page.click_download_report_link()
     report_page.click_back_link()
 
