@@ -63,7 +63,7 @@ def _do_approver_approved_request(driver):
     choose_permissions_page.fill_invitation_form()
     choose_permissions_page.select_sms_auth_form()
     choose_permissions_page.save_permissions()
-    choose_permissions_page.wait_until_url_contains("/your-services")
+    choose_permissions_page.wait_until_url_contains("/users")
 
     choose_permissions_page.sign_out()
 
