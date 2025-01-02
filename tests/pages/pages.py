@@ -1328,14 +1328,14 @@ class DocumentDownloadConfirmEmailPage(DocumentDownloadBasePage):
 
 class ViewFolderPage(ShowTemplatesPage):
     manage_link = (By.CSS_SELECTOR, ".folder-heading-manage-link")
-    template_path_and_name = (By.TAG_NAME, "h1")
+    template_name = (By.TAG_NAME, "h1")
 
     def click_manage_folder(self):
         link = self.wait_for_element(self.manage_link)
         link.click()
 
     def assert_name_equals(self, expected_name):
-        h1 = self.wait_for_element(self.template_path_and_name)
+        h1 = self.wait_for_element(self.template_name)
         assert expected_name in h1.text
 
 
