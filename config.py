@@ -170,7 +170,7 @@ def setup_staging_prod_config():
             "user": {
                 "email": os.environ["FUNCTIONAL_TEST_EMAIL"],
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
-                "mobile": get_ofcom_test_number(),
+                "mobile": os.environ["TEST_NUMBER"],
             },
             "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
             "service": {
