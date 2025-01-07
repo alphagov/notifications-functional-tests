@@ -344,7 +344,7 @@ class YourServicesPage(BasePage):
     add_a_new_service_button = YourServicesPageLocators.ADD_A_NEW_SERVICE_BUTTON
 
     def wait_until_current(self):
-        return self.wait_until_url_contains(self.base_url + "/your-service")
+        return self.wait_until_url_contains(self.base_url + "/your-services")
 
     def join_live_service(self):
         element = self.wait_for_element(YourServicesPage.join_live_service_button)

@@ -1,10 +1,12 @@
 import pytest
+from selenium.common.exceptions import TimeoutException
 
 from config import config
 from tests.pages import (
     ChangeName,
     DashboardPage,
     ServiceSettingsPage,
+    SignInPage,
     SmsSenderPage,
 )
 from tests.pages.rollups import sign_in
@@ -18,13 +20,20 @@ from tests.test_utils import (
 )
 
 
-@pytest.fixture(scope="module", autouse=True)
-@recordtime
-def register_user(_driver):
-    # has to use _driver as this is at module level (`driver` fixture is at function level, and just handles taking
-    # the screenshot on failure)
-    do_user_registration(_driver)
-    do_user_add_new_service(_driver)
+@pytest.fixture(autouse=True)
+def user_register_or_sign_in(driver):
+    sign_in_page = SignInPage(driver)
+    sign_in_page.get()
+
+    try:
+        sign_in_page.wait_until_current()
+    except TimeoutException:
+        # if we didn't get to the sign_in_page, it's probably because we're already logged in.
+        # try logging out before proceeding
+        _sign_in_again(driver)
+    else:
+        do_user_registration(driver)
+        do_user_add_new_service(driver)
 
 
 def _sign_in_again(driver):
@@ -47,8 +56,6 @@ def test_invite_flow(driver):
     _sign_in_again(driver)
 
     do_user_can_invite_someone_to_notify(driver, basic_view=True)
-
-    _sign_in_again(driver)
 
 
 @recordtime
