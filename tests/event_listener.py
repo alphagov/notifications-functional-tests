@@ -1,4 +1,5 @@
 # ruff: noqa: T201
+from collections import defaultdict
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any
@@ -48,42 +49,42 @@ class LoggingEventListener(AbstractEventListener):
     Captures all `before_` selenium events and stores them in an array so that they can be printed out for debugging
     """
 
-    _events: list[Event] = []
-    _url_history = []
+    _events: dict[str, list[Event]] = defaultdict(list)
+    _url_history: dict[str, list[str]] = defaultdict(list)
     node: str = ""
 
     def set_node(self, node):
         self.node = node
 
     def clear_events(self):
-        self._events = []
-        self._url_history = []
-
-    def _get_node_events(self, node):
-        return list(filter(lambda event: node == event.node, self._events))
+        self._events = defaultdict(list)
+        self._url_history = defaultdict(list)
 
     def print_events(self, node, num_to_print: int = 20):
         print(f"===== Last {num_to_print} events before test finish =====")
-        for event in self._get_node_events(node)[-num_to_print:]:
+        for event in self._events[node][-num_to_print:]:
             print(event)
         print("")
         print(f"====== Last {num_to_print} URLs before test finish ======")
-        for url in list(filter(lambda url: node in url, self._url_history))[-num_to_print:]:
+        for url in self._url_history[node][-num_to_print:]:
             print(url)
         print("===========================================" + ("=" * len(str(num_to_print))))
 
     def _add_event(self, event_type: EventType, current_url: str, data: Any):
         new_event = Event(node=self.node, event_type=event_type, current_url=current_url, data=data)
 
+        events_for_current_node = self._events[self.node]
+        urls_for_current_node = self._url_history[self.node]
+
         # if the last event was the same thing, then just record how many attempts we did
-        if len(self._events) != 0 and self._events[-1] == new_event:
-            self._events[-1].attempts += 1
+        if len(events_for_current_node) != 0 and events_for_current_node[-1] == new_event:
+            events_for_current_node[-1].attempts += 1
         else:
-            self._events.append(new_event)
+            events_for_current_node.append(new_event)
 
         # if url has changed since last time, then add to the record book
-        if len(self._url_history) == 0 or current_url != self._url_history[-1]:
-            self._url_history.append(f"{self.node}: {current_url}")
+        if len(urls_for_current_node) == 0 or current_url != urls_for_current_node[-1]:
+            urls_for_current_node.append(current_url)
 
     @staticmethod
     def _format_element(element: WebElement) -> str:
