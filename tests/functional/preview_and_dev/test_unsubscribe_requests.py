@@ -2,6 +2,7 @@ import os
 import uuid
 from urllib.parse import urljoin, urlparse
 
+from retry.api import retry_call
 from selenium.webdriver.common.by import By
 
 from config import config
@@ -11,7 +12,14 @@ from tests.pages import (
     UnsubscribeRequestReportPage,
     UnsubscribeRequestReportsSummaryPage,
 )
-from tests.test_utils import create_email_template, go_to_templates_page, recordtime, send_notification_to_one_recipient
+from tests.postman import get_notification_by_id_via_api
+from tests.test_utils import (
+    NotificationStatuses,
+    create_email_template,
+    go_to_templates_page,
+    recordtime,
+    send_notification_to_one_recipient,
+)
 
 
 @recordtime
@@ -39,7 +47,14 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
     # Extract the generated unsubscribe link
     dashboard_page.click_continue()
     notification_id = dashboard_page.get_notification_id()
-    one_off_email_data = client_live_key.get_notification_by_id(notification_id)
+    # wait til its in sending/delivered/etc to make sure fields are populated that unsubscribe report expects
+    one_off_email_data = retry_call(
+        get_notification_by_id_via_api,
+        fargs=[client_live_key, notification_id, NotificationStatuses.SENT],
+        tries=config["notification_retry_times"],
+        delay=config["notification_retry_interval"],
+    )
+
     generated_one_click_unsubscribe_url_1 = one_off_email_data["one_click_unsubscribe_url"]
     assert one_off_email_data["template"]["id"] == template_id
 
@@ -60,7 +75,13 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
     # Extract the generated unsubscribe link
     dashboard_page.click_continue()
     notification_id = dashboard_page.get_notification_id()
-    one_off_email_data = client_live_key.get_notification_by_id(notification_id)
+    # wait til its in sending/delivered/etc to make sure fields are populated that unsubscribe report expects
+    one_off_email_data = retry_call(
+        get_notification_by_id_via_api,
+        fargs=[client_live_key, notification_id, NotificationStatuses.SENT],
+        tries=config["notification_retry_times"],
+        delay=config["notification_retry_interval"],
+    )
     generated_one_click_unsubscribe_url_2 = one_off_email_data["one_click_unsubscribe_url"]
     assert one_off_email_data["template"]["id"] == template_id
 
