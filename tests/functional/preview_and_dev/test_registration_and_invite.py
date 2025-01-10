@@ -60,6 +60,7 @@ def test_invite_flow(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="registration-flow")
+@pytest.mark.skipif("not config['enable_edit_reply_to']")  # condition as string for deferred evaluation
 def test_can_add_and_update_reply_to(driver):
     do_user_can_add_reply_to_email_to_service(driver)
     do_user_can_update_reply_to_email_to_service(driver)

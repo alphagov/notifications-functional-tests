@@ -518,8 +518,6 @@ def recordtime(func):
 
 
 def do_user_can_add_reply_to_email_to_service(driver):
-    if config["env"] != "preview":
-        return True
     email_address = config["service"]["email_reply_to"]
     email_address2 = config["service"]["email_reply_to_2"]
     email_address3 = config["service"]["email_reply_to_3"]
@@ -546,8 +544,6 @@ def do_user_can_add_reply_to_email_to_service(driver):
 
 
 def do_user_can_update_reply_to_email_to_service(driver):
-    if config["env"] != "preview":
-        return True
     email_address = config["service"]["email_reply_to"]
     email_address2 = config["service"]["email_reply_to_2"]
     dashboard_page = DashboardPage(driver)
