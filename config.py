@@ -51,7 +51,7 @@ def setup_shared_config():
     """
     Used by all tests
     """
-    env = os.environ["ENVIRONMENT"].lower()
+    config["env"] = env = os.environ["ENVIRONMENT"].lower()
     urls = {
         "dev": {
             "api": os.environ.get("FUNCTIONAL_TESTS_LOCAL_API_HOST", "http://localhost:6011"),
@@ -71,6 +71,10 @@ def setup_shared_config():
         },
     }
 
+    config["enable_edit_reply_to"] = os.environ.get(
+        "FUNCTIONAL_TESTS_ENABLE_EDIT_REPLY_TO", "1" if env == "preview" else "0"
+    ) not in ("", "0")
+
     if env not in {"dev", "preview", "staging", "live"}:
         if not os.environ.get("FUNCTIONAL_TESTS_API_HOST") or not os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"):
             pytest.fail(
@@ -80,7 +84,6 @@ def setup_shared_config():
             )
         config.update(
             {
-                "env": env,
                 "notify_api_url": os.environ.get("FUNCTIONAL_TESTS_API_HOST"),
                 "notify_admin_url": os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"),
             }
@@ -98,7 +101,6 @@ def setup_shared_config():
     else:
         config.update(
             {
-                "env": env,
                 "notify_api_url": urls[env]["api"],
                 "notify_admin_url": urls[env]["admin"],
             }
