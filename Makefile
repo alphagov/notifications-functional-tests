@@ -15,6 +15,7 @@ bootstrap: ## Install build dependencies
 .PHONY: freeze-requirements
 freeze-requirements: ## create static requirements_for_test.txt
 	pip install --upgrade pip-tools
+	pip install -r requirements.txt
 	python -c "from notifications_utils.version_tools import copy_config; copy_config()"
 	pip-compile requirements_for_test.in
 
@@ -61,7 +62,7 @@ env-provider-tests: env-environment-check
 .PHONY: test
 test: clean ## Run functional tests against local environment
 	ruff check .
-	black --check .
+	ruff format --check .
 	pytest tests/functional/preview_and_dev -n auto --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
 	pytest tests/document_download/preview_and_dev ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
 

@@ -50,7 +50,6 @@ def test_send_letter_notification_via_api(client_test_key):
 
 @recordtime
 def test_send_letter_notification_with_qr_code_via_api(client_test_key):
-
     # Static parts length: prefix + suffix + 2 UUIDs (36*2) + 4 slashes + 6 for '?code='
     static_parts_length = len("prefix ///?code= suffix")
     notify_admin_url_length = len(config["notify_admin_url"])

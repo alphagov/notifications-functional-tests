@@ -223,9 +223,9 @@ def test_send_bilingual_letter(driver, login_seeded_user, client_live_key, downl
     change_language_page.change_language("welsh_then_english")
     change_language_page.click_save()
 
-    assert (
-        len(driver.find_elements("css selector", ".letter")) == 2
-    ), "The letter should have two pages - Welsh then English"
+    assert len(driver.find_elements("css selector", ".letter")) == 2, (
+        "The letter should have two pages - Welsh then English"
+    )
 
     view_template_page.click_edit_welsh_body()
 
@@ -259,9 +259,9 @@ def test_send_bilingual_letter(driver, login_seeded_user, client_live_key, downl
     pdf = PdfReader(letter_pdf)
 
     assert pdf_page_has_text(pdf.pages[0], placeholders["welsh_var"]), "Couldn't find Welsh placeholder on first page"
-    assert pdf_page_has_text(
-        pdf.pages[1], placeholders["english_var"]
-    ), "Couldn't find English placeholder on first page"
+    assert pdf_page_has_text(pdf.pages[1], placeholders["english_var"]), (
+        "Couldn't find English placeholder on first page"
+    )
 
     change_language_page.click_templates()
     delete_template(driver, template_name)

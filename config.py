@@ -11,7 +11,7 @@ def generate_unique_email(email, uuid):
 
 
 def get_ofcom_test_number():
-    return f"07700{random.randrange(900002,900999,1)}"
+    return f"07700{random.randrange(900002, 900999, 1)}"
 
 
 # global variable
