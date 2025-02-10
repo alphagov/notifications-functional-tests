@@ -15,6 +15,7 @@ from tests.pages.rollups import sign_in, sign_in_email_auth
 
 def pytest_addoption(parser):
     parser.addoption("--no-headless", action="store_true", default=False)
+    parser.addoption("--unique-screenshot-filenames", action="store_true", default=False)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -73,13 +74,18 @@ def driver(_driver, request):
     _driver._listener.set_node(request.node.name)
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
-        print("URL at time of failure:", _driver.current_url)  # noqa: T201
+        print("URL at time of failure:", datetime.now().isoformat(), _driver.current_url)  # noqa: T201
 
         # print last 20 events
         _driver._listener.print_events(node=request.node.name, num_to_print=20)
 
-        filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        filename = str(Path.cwd() / "screenshots" / f"{filename_datetime}_{request.function.__name__}.png")
+        file = (
+            f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}_{request.function.__name__}.png"
+            if request.config.getoption("--unique-screenshot-filenames")
+            else "test_failure.png"
+        )
+
+        filename = str(Path.cwd() / "screenshots" / file)
         _driver.save_screenshot(str(filename))
         print("Error screenshot saved to " + filename)  # noqa: T201
 
