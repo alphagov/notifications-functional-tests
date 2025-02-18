@@ -141,6 +141,29 @@ For our staging environment, these fixtures are found in db_fixtures/staging.sql
 
 For our production environment, these fixtures are not yet stored in code, but will be similar to (but not the same as) the staging fixtures.
 
+
+## Database cleanup in non-production environment
+Steps to removing the test data in preview (non-production) environment: 
+1. Take the snapshot of notify-db in rds and also take database dump locally. See [DB-Commands](https://github.com/alphagov/notifications-manuals/wiki/DB-Commands) for the database dump and restore.
+2. Pause all the deployment pipelines for the preview environment.
+3. ssh into ecs `api-web` service.
+4. Run `flask command purge-functional-test-data -u notify-tests-preview` to delete user data objects. 
+  * note: takes a while! multiple hours!
+5. Manually delete organisation 'Functional Test Org'.
+6. Run flask command functional-test-fixtures to create fixture data, this will create tmp environment file for functional-test service.
+7. `cd /tmp` and `cat functional_test_env.sh` to get the new environment file.
+8. On your local, `notify-pass edit credentials/functional-tests/preview-functional` and update the new environment file. This will auto commit and require manual PR process.
+  * Before updating the new environment copy the `REQUEST_BIN_API_TOKEN` from the existing credentials. Set `REQUEST_BIN_API_TOKEN` in the environment when editing credentials.
+9. After merging the credentials PR, run `notifications-aws/scripts/upload-credentials/upload-credentials.sh` preview locally to push new environment file to SSM. (If the script is failing because of the missing config then comment the rest of lines an re-run.)
+10. Trigger the functional-test-preview pipeline.
+
+
+In case of reverting the process:
+1. Revert the PR for credentials.
+2. Rollback db from local dump, if local dump does not work then follow [these steps](https://docs.publishing.service.gov.uk/manual/howto-backup-and-restore-in-aws-rds.html) to restore from snapshot. Or restore the database dump.
+3. Trigger admin functional-test-preview pipeline.
+
+
 ## Pre-commit
 
 We use [pre-commit](https://pre-commit.com/) to ensure that committed code meets basic standards for formatting, and will make basic fixes for you to save time and aggravation.
