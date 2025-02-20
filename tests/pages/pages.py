@@ -515,7 +515,7 @@ class DashboardPage(BasePage):
     total_email_div = (By.CSS_SELECTOR, "#total-email .big-number-number")
     total_sms_div = (By.CSS_SELECTOR, "#total-sms .big-number-number")
     total_letter_div = (By.CSS_SELECTOR, "#total-letters .big-number-number")
-    inbox_link = (By.CSS_SELECTOR, "#total-received")
+    inbox_link = (By.ID, "total-received")
     navigation = (By.CLASS_NAME, "navigation")
     email_unsubscribe_requests_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests")
     email_unsubscribe_requests_count_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests .banner-dashboard-count")
