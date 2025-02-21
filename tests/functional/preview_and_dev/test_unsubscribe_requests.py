@@ -2,6 +2,7 @@ import os
 import uuid
 from urllib.parse import urljoin, urlparse
 
+import pytest
 from retry.api import retry_call
 from selenium.webdriver.common.by import By
 
@@ -23,6 +24,7 @@ from tests.test_utils import (
 
 
 @recordtime
+@pytest.mark.xdist_group(name="login_seeded_user_group")
 def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_live_key):
     # Create subscription template
     go_to_templates_page(driver)
