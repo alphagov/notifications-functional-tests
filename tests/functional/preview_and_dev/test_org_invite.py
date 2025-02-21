@@ -14,7 +14,7 @@ from tests.test_utils import do_verify, get_link, recordtime
 
 
 @recordtime
-@pytest.mark.xdist_group(name="login_seeded_user_group")
+@pytest.mark.order(after="test_inbox_page")
 def test_org_invite(driver, login_seeded_user):
     org_dashboard_page = OrganisationDashboardPage(driver)
     org_dashboard_page.go_to_dashboard_for_org(config["service"]["organisation_id"])

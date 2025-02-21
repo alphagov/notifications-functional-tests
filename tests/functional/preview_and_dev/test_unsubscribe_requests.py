@@ -24,7 +24,7 @@ from tests.test_utils import (
 
 
 @recordtime
-@pytest.mark.xdist_group(name="login_seeded_user_group")
+@pytest.mark.order(after="test_template_folder_permissions")
 def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_live_key):
     # Create subscription template
     go_to_templates_page(driver)

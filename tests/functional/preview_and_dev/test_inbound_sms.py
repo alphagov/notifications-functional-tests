@@ -82,7 +82,6 @@ def test_inbound_sms_callbacks(inbound_sms):
     assert_callback_received(inbound_sms)
 
 
-@pytest.mark.xdist_group(name="login_seeded_user_group")
 def test_inbox_page(inbound_sms, driver, login_seeded_user):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config["service"]["id"])
