@@ -67,6 +67,7 @@ from tests.test_utils import (
     "message_type",
     ["sms", "email", pytest.param("letter", marks=pytest.mark.template_preview)],
 )
+@pytest.mark.order(after="test_org_invite")
 def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
