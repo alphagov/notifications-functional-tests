@@ -11,7 +11,24 @@ def generate_unique_email(email, uuid):
 
 
 def get_ofcom_test_number():
-    return f"07700{random.randrange(900002, 900999, 1)}"
+    return f"07700{random.randrange(900002, 900899, 1)}"
+
+
+def get_seeded_users_number_range():
+    return range(7700900900, 7700901000, 1)
+
+
+def get_all_unique_seeder_user_tests(request: pytest.FixtureRequest):
+    return sorted(
+        [
+            node.name
+            for node in request.session.items
+            if any(
+                fixture_name == "login_seeded_user" or fixture_name == "create_seeded_user"
+                for fixture_name in node.fixturenames
+            )
+        ]
+    )
 
 
 # global variable
@@ -107,7 +124,7 @@ def setup_shared_config():
         )
 
 
-def setup_preview_dev_config():
+def setup_preview_dev_config(unique_seeder_user_tests=None):
     uuid_for_test_run = str(uuid.uuid4())
 
     config.update(
@@ -157,6 +174,7 @@ def setup_preview_dev_config():
                 "api_token": os.environ["REQUEST_BIN_API_TOKEN"],
                 "source_id": "dc_bPuNxED",
             },
+            "unique_seeder_user_tests": unique_seeder_user_tests or [],
         }
     )
 

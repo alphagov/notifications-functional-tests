@@ -3,15 +3,15 @@ import requests
 from filelock import FileLock
 from notifications_python_client.authentication import create_jwt_token
 
-from config import config, setup_preview_dev_config
+from config import config, get_all_unique_seeder_user_tests, setup_preview_dev_config
 
 
 @pytest.fixture(scope="session", autouse=True)
-def preview_dev_config():
+def preview_dev_config(request: pytest.FixtureRequest):
     """
     Setup
     """
-    setup_preview_dev_config()
+    setup_preview_dev_config(get_all_unique_seeder_user_tests(request))
 
 
 def _create_seeded_users_via_notify_api(test_names):
@@ -22,7 +22,7 @@ def _create_seeded_users_via_notify_api(test_names):
         service_id = config["service"]["id"]
         organisation_id = config["service"]["organisation_id"]
         email_address, password = get_email_and_password(account_type="seeded", test_name=test_name)
-        mobile_number = get_mobile_number(account_type="seeded")
+        mobile_number = get_mobile_number(account_type="seeded", test_name=test_name)
         auth_type = "sms_auth"
         state = "active"
         permissions = [
@@ -75,15 +75,7 @@ def create_seeded_users(request: pytest.FixtureRequest, preview_dev_config, tmp_
     # get the temp directory shared by all workers
     root_tmp_dir = tmp_path_factory.getbasetemp().parent
 
-    unique_seeder_user_tests = {
-        node.name
-        for node in request.session.items
-        if any(
-            fixturename == "login_seeded_user" or fixturename == "create_seeded_user"
-            for fixturename in node.fixturenames
-        )
-    }
-
+    unique_seeder_user_tests = get_all_unique_seeder_user_tests(request)
     if worker_id == "master":
         _create_seeded_users_via_notify_api(test_names=unique_seeder_user_tests)
 

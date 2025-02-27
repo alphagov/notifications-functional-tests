@@ -33,7 +33,7 @@ from tests.pages import (
     ViewFolderPage,
     ViewLetterTemplatePage,
 )
-from tests.pages.rollups import sign_in, sign_in_email_auth
+from tests.pages.rollups import get_mobile_number, sign_in, sign_in_email_auth
 from tests.postman import (
     get_notification_by_id_via_api,
     get_pdf_for_letter_via_api,
@@ -397,7 +397,9 @@ def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, lo
         template_name,
         "sms",
         test=True,
-        recipient_data=config["service"]["seeded_user"]["mobile"],
+        recipient_data=get_mobile_number(
+            account_type="seeded", test_name="test_send_sms_with_placeholders_to_one_recipient"
+        ),
         placeholders_number=2,
     )
     assert list(placeholders_test[0].keys()) == ["name"]
