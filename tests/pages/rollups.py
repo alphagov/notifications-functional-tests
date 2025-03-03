@@ -5,7 +5,7 @@ import tempfile
 from filelock import FileLock
 from selenium.common.exceptions import TimeoutException
 
-from config import config, generate_unique_email
+from config import config, generate_unique_email, get_seeded_users_number_range
 from tests.pages import SignInPage
 from tests.test_utils import do_email_auth_verify, do_verify
 
@@ -14,7 +14,7 @@ def sign_in(driver, account_type="normal", test_name=None):
     lockfile = os.path.join(tempfile.gettempdir(), "signin.lock")
     with FileLock(lockfile):
         _sign_in(driver, account_type, test_name=test_name)
-        mobile_number = get_mobile_number(account_type=account_type)
+        mobile_number = get_mobile_number(account_type=account_type, test_name=test_name)
         do_verify(driver, mobile_number)
 
 
@@ -69,7 +69,15 @@ def get_email_and_password(account_type, test_name=None):
     raise Exception(f"unknown account_type {account_type}")
 
 
-def get_mobile_number(account_type):
+def get_mobile_number_by_test_name(test_name):
+    seeder_user_tests = config["unique_seeder_user_tests"]
+    numbers = get_seeded_users_number_range()
+    return f"0{numbers[seeder_user_tests.index(test_name)]}"
+
+
+def get_mobile_number(account_type, test_name=None):
+    if test_name:
+        return get_mobile_number_by_test_name(test_name)
     if account_type == "normal":
         return config["user"]["mobile"]
     elif account_type == "seeded":
