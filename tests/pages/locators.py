@@ -75,7 +75,8 @@ class NavigationLocators:
     SIGN_OUT_LINK = (By.LINK_TEXT, "Sign out")
     TEMPLATES_LINK = (By.LINK_TEXT, "Templates")
     SETTINGS_LINK = (By.LINK_TEXT, "Settings")
-    PROFILE_LINK = (By.LINK_TEXT, "Your profile")
+    PROFILE_LINK = (By.LINK_TEXT, "Your account")
+    OLD_PROFILE_LINK = (By.LINK_TEXT, "Your profile")
 
 
 class TemplatePageLocators:
