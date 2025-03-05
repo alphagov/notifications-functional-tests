@@ -126,7 +126,6 @@ class AntiStaleElementList(AntiStale):
 class BasePage:
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
     profile_page_link = NavigationLocators.PROFILE_LINK
-    old_profile_page_link = NavigationLocators.OLD_PROFILE_LINK
 
     def __init__(self, driver):
         self.base_url = config["notify_admin_url"]
@@ -180,10 +179,7 @@ class BasePage:
         )
 
     def sign_out(self):
-        try:
-            profile_page_link = self.wait_for_element(BasePage.profile_page_link)
-        except (NoSuchElementException, TimeoutException):
-            profile_page_link = self.wait_for_element(BasePage.old_profile_page_link)
+        profile_page_link = self.wait_for_element(BasePage.profile_page_link)
         profile_page_link.click()
 
         sign_out_link = self.wait_for_element(BasePage.sign_out_link)
