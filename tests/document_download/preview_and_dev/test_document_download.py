@@ -17,6 +17,8 @@ from tests.pages import (
 from tests.test_utils import RetryException
 
 
+REPEATS = 16
+
 def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs, filedata: str = "foo-bar-baz"):
     file = prepare_upload(BytesIO(filedata.encode("utf-8")), **prepare_upload_kwargs)
     personalisation = {"build_id": file}
@@ -46,9 +48,9 @@ def get_downloaded_document(download_directory, filename):
             return file
     raise RetryException(f"{filename} not found in downloads folder")
 
-
+@pytest.mark.parametrize("i", list(range(REPEATS)))
 @pytest.mark.antivirus
-def test_document_upload_and_download(driver, client_live_key):
+def test_document_upload_and_download(i, driver, client_live_key):
     download_link = _get_test_doc_dl_url(
         client_live_key,
         {"confirm_email_before_download": False},
@@ -69,8 +71,9 @@ def test_document_upload_and_download(driver, client_live_key):
     assert downloaded_document.text == "foo-bar-baz"
 
 
+@pytest.mark.parametrize("i", list(range(REPEATS)))
 @pytest.mark.antivirus
-def test_can_send_json_files_via_doc_dl(driver, client_live_key):
+def test_can_send_json_files_via_doc_dl(i, driver, client_live_key):
     """When we're running on AWS ECS via docker containers - and importantly testing via those same docker containers
     - we can turn this into a unit test.
 
@@ -85,8 +88,9 @@ def test_can_send_json_files_via_doc_dl(driver, client_live_key):
     )
 
 
+@pytest.mark.parametrize("i", list(range(REPEATS)))
 @pytest.mark.antivirus
-def test_document_download_with_email_confirmation(driver, client_live_key, download_directory):
+def test_document_download_with_email_confirmation(i, driver, client_live_key, download_directory):
     download_link = _get_test_doc_dl_url(
         client_live_key,
         {"confirm_email_before_download": True},
@@ -125,7 +129,8 @@ def test_document_download_with_email_confirmation(driver, client_live_key, down
             assert f.read() == "foo-bar-baz"
 
 
-def test_document_download_with_email_confirmation_rejects_bad_email(driver, client_live_key):
+@pytest.mark.parametrize("i", list(range(REPEATS)))
+def test_document_download_with_email_confirmation_rejects_bad_email(i, driver, client_live_key):
     download_link = _get_test_doc_dl_url(
         client_live_key,
         {"confirm_email_before_download": True},
