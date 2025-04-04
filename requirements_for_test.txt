@@ -121,6 +121,7 @@ pytest==8.3.4
     #   -r requirements_for_test_common.in
     #   pytest-env
     #   pytest-mock
+    #   pytest-randomly
     #   pytest-rerunfailures
     #   pytest-testmon
     #   pytest-xdist
@@ -128,6 +129,8 @@ pytest-env==1.1.5
     # via -r requirements_for_test_common.in
 pytest-mock==3.14.0
     # via -r requirements_for_test_common.in
+pytest-randomly==3.16.0
+    # via -r requirements_for_test.in
 pytest-rerunfailures==12.0
     # via -r requirements_for_test.in
 pytest-testmon==2.1.1
