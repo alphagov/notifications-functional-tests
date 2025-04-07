@@ -43,9 +43,16 @@ def get_downloaded_document(download_directory, filename):
     """
     Wait up to ten seconds for the file to be downloaded, checking every second
     """
-    for file in download_directory.iterdir():
-        if file.is_file() and file.name == filename:
-            return file
+    found = False
+    for file_ in download_directory.iterdir():
+        if file_.is_file() and file_.name == filename:
+            found = True
+            if file_.stat().st_size != 0:
+                return file_
+
+    if found:
+        raise RetryException(f"{filename} in downloads folder is empty")
+
     raise RetryException(f"{filename} not found in downloads folder")
 
 @pytest.mark.parametrize("i", list(range(REPEATS)))
