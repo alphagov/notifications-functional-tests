@@ -1,6 +1,8 @@
 import re
+import os
 from io import BytesIO
 from urllib.parse import urlparse
+from time import sleep
 
 import pytest
 import requests
@@ -18,6 +20,7 @@ from tests.test_utils import RetryException
 
 
 REPEATS = 64
+SLEEP_TIME = float(os.environ.get("AFTER_UPLOAD_SLEEP_TIME") or 0)
 
 def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs, filedata: str = "foo-bar-baz"):
     file = prepare_upload(BytesIO(filedata.encode("utf-8")), **prepare_upload_kwargs)
@@ -30,6 +33,8 @@ def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs, filedata: str =
     download_link = re.search(r"(https?://\S+)", resp_json["content"]["body"])
 
     assert download_link
+
+    sleep(SLEEP_TIME)
 
     return download_link.group(0)
 
