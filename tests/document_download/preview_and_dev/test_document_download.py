@@ -37,13 +37,20 @@ def _get_test_doc_dl_url(client_live_key, prepare_upload_kwargs, filedata: str =
     tries=10,
     delay=1,
 )
-def get_downloaded_document(download_directory, filename):
+def get_downloaded_document(download_directory, filename, accept_empty=False):
     """
     Wait up to ten seconds for the file to be downloaded, checking every second
     """
-    for file in download_directory.iterdir():
-        if file.is_file() and file.name == filename:
-            return file
+    found = False
+    for file_ in download_directory.iterdir():
+        if file_.is_file() and file_.name == filename:
+            found = True
+            if accept_empty or file_.stat().st_size != 0:
+                return file_
+
+    if found:
+        raise RetryException(f"{filename} in downloads folder is empty")
+
     raise RetryException(f"{filename} not found in downloads folder")
 
 
