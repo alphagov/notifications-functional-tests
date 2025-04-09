@@ -16,6 +16,14 @@ These tests are not intended to be used for load testing.
 
 ## Installation
 
+We use [uv](https://github.com/astral-sh/uv) for Python dependency management. Follow the [install instructions](https://github.com/astral-sh/uv?tab=readme-ov-file#installation) or run:
+
+```shell
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Then for other dependencies run:
+
 ```shell
 brew install --cask chromedriver # needs to be >= v2.32
 brew install zbar  # Used for QR code reading
