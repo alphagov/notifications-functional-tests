@@ -19,9 +19,6 @@ WORKDIR /var/project
 
 COPY . .
 
-# TODO: remove this once base python image no longer has issues with bdist_wheel https://github.com/docker-library/official-images/issues/18808
-RUN pip install --upgrade pip setuptools
-
 RUN make bootstrap
 
 ENTRYPOINT ["bash"]
