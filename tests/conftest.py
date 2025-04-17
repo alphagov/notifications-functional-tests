@@ -52,7 +52,7 @@ def _driver(request, download_directory):
     service = ChromeService(log_path="./logs/chrome_browser.log", service_args=["--verbose"])
 
     driver = webdriver.Chrome(service=service, options=options)
-    driver.set_window_size(1280, 720)
+    driver.set_window_size(1280, 1200)
 
     driver = EventFiringWebDriver(driver, LoggingEventListener())
     driver._listener.set_node(request.node.name)
