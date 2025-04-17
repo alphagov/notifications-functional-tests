@@ -118,8 +118,6 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_k
     create_email_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
     assert template_name in current_templates
 
     new_template_name = f"{template_name} v2"
@@ -133,16 +131,12 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_k
 
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
     assert new_template_name in current_templates
 
     delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
     assert new_template_name not in current_templates
@@ -156,8 +150,6 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key
     create_sms_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name in current_templates
 
@@ -171,16 +163,12 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key
 
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
     assert new_template_name in current_templates
 
     delete_template(driver, new_template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
     assert new_template_name not in current_templates
@@ -194,15 +182,11 @@ def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_
     create_letter_template(driver, name=template_name, content=None)
     go_to_templates_page(driver)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name in current_templates
 
     delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
 
@@ -266,8 +250,6 @@ def test_send_bilingual_letter(driver, login_seeded_user, client_live_key, downl
     change_language_page.click_templates()
     delete_template(driver, template_name)
     current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-    if len(current_templates) == 0:
-        current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")]
 
     assert template_name not in current_templates
 
