@@ -340,17 +340,13 @@ class AddServicePage(BasePage):
 
 class YourServicesPage(BasePage):
     join_existing_service_button = YourServicesPageLocators.JOIN_EXISTING_SERVICE_BUTTON
-    join_live_service_button = YourServicesPageLocators.JOIN_LIVE_SERVICE_BUTTON
     add_a_new_service_button = YourServicesPageLocators.ADD_A_NEW_SERVICE_BUTTON
 
     def wait_until_current(self):
         return self.wait_until_url_contains(self.base_url + "/your-services")
 
-    def join_live_service(self):
-        try:
-            element = self.wait_for_element(YourServicesPage.join_live_service_button)
-        except (NoSuchElementException, TimeoutException):
-            element = self.wait_for_element(YourServicesPage.join_existing_service_button)
+    def join_existing_service(self):
+        element = self.wait_for_element(YourServicesPage.join_existing_service_button)
         element.click()
 
     def add_new_service(self):
