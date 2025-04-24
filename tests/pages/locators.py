@@ -39,7 +39,6 @@ class AddServicePageLocators:
 
 class YourServicesPageLocators:
     JOIN_EXISTING_SERVICE_BUTTON = (By.LINK_TEXT, "Join an existing service")
-    JOIN_LIVE_SERVICE_BUTTON = (By.LINK_TEXT, "Join a live service")
     ADD_A_NEW_SERVICE_BUTTON = (By.LINK_TEXT, "Add a new service")
 
 

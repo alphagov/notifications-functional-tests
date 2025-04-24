@@ -48,7 +48,7 @@ def _do_approver_sign_in(driver):
 def _do_request_to_join_service(driver):
     add_service_page = YourServicesPage(driver)
     add_service_page.wait_until_current()
-    add_service_page.join_live_service()
+    add_service_page.join_existing_service()
 
     add_service_page.wait_until_url_contains("/join-a-service/choose")
 
@@ -92,13 +92,13 @@ def _do_approver_rejected_request(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="join-service-request-flow")
-def test_join_live_service_rejected_flow(driver):
+def test_join_existing_service_rejected_flow(driver):
     _do_request_to_join_service(driver)
     _do_approver_rejected_request(driver)
 
 
 @recordtime
 @pytest.mark.xdist_group(name="join-service-request-flow")
-def test_join_live_service_approved_flow(driver):
+def test_join_existing_service_approved_flow(driver):
     _do_request_to_join_service(driver)
     _do_approver_approved_request(driver)
