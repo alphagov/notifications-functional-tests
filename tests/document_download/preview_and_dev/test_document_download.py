@@ -1,3 +1,4 @@
+import datetime
 import re
 from io import BytesIO
 from urllib.parse import urlparse
@@ -69,6 +70,8 @@ def test_document_upload_and_download(driver, client_live_key):
     landing_page.go_to_download_page()
 
     download_page = DocumentDownloadPage(driver)
+    assert download_page.get_expiration_date() >= datetime.date.today()
+
     document_url = download_page.get_download_link()
 
     downloaded_document = requests.get(document_url)

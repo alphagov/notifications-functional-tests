@@ -1,4 +1,6 @@
+import datetime
 import os
+import re
 import shutil
 from typing import Literal
 from urllib.parse import urlparse, urlsplit
@@ -1304,11 +1306,18 @@ class DocumentDownloadLandingPage(DocumentDownloadBasePage):
 
 class DocumentDownloadPage(DocumentDownloadBasePage):
     download_link = (By.PARTIAL_LINK_TEXT, "Download this ")
+    expiration_p = (By.XPATH, "//p[contains(normalize-space(.), 'This file is available until')]")
 
     def _get_download_link_element(self):
         link = self.wait_for_element(self.download_link)
 
         return link.element
+
+    def get_expiration_date(self):
+        p = self.wait_for_element(self.expiration_p)
+        date_str = re.search(r"[0-9].+[0-9]", p.text).group(0)
+        expiry_dt = datetime.datetime.strptime(date_str, "%d %B %Y")
+        return expiry_dt.date()
 
     def click_download_link(self):
         return self._get_download_link_element().click()
