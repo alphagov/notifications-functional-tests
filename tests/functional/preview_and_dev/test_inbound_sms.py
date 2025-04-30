@@ -54,28 +54,31 @@ def test_inbound_api(inbound_sms, client_live_key):
     next(x for x in client_live_key.get_received_texts()["received_text_messages"] if x["content"] == inbound_sms)
 
 
-@retry(
-    AssertionError,
-    tries=config["verify_callback_retry_times"],
-    delay=config["verify_callback_retry_interval"],
-)
 def assert_callback_received(inbound_sms):
-    source_id = config["pipedream"]["source_id"]
-    api_token = config["pipedream"]["api_token"]
-
-    response = requests.get(
-        f"https://api.pipedream.com/v1/sources/{source_id}/event_summaries?expand=event&limit=10",
-        headers={"Authorization": f"Bearer {api_token}"},
+    @retry(
+        AssertionError,
+        tries=config["verify_callback_retry_times"],
+        delay=config["verify_callback_retry_interval"],
     )
+    def _assert_callback():
+        source_id = config["pipedream"]["source_id"]
+        api_token = config["pipedream"]["api_token"]
 
-    response.raise_for_status()
+        response = requests.get(
+            f"https://api.pipedream.com/v1/sources/{source_id}/event_summaries?expand=event&limit=10",
+            headers={"Authorization": f"Bearer {api_token}"},
+        )
 
-    recent_callback_requests = [item["event"] for item in response.json()["data"]]
-    matching_callback_requests = [
-        request for request in recent_callback_requests if request.get("body", {}).get("message") == inbound_sms
-    ]
+        response.raise_for_status()
 
-    assert len(matching_callback_requests) == 1
+        recent_callback_requests = [item["event"] for item in response.json()["data"]]
+        matching_callback_requests = [
+            request for request in recent_callback_requests if request.get("body", {}).get("message") == inbound_sms
+        ]
+
+        assert len(matching_callback_requests) == 1
+
+    _assert_callback()
 
 
 def test_inbound_sms_callbacks(inbound_sms):
