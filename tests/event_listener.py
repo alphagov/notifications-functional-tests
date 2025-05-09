@@ -1,6 +1,7 @@
 # ruff: noqa: T201
 from collections import defaultdict
 from dataclasses import dataclass
+from datetime import datetime
 from enum import StrEnum
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
@@ -19,6 +20,8 @@ class EventType(StrEnum):
 
 @dataclass
 class Event:
+    last_timestamp: datetime
+    first_timestamp: datetime
     event_type: EventType
     current_url: str
     data: Any
@@ -29,13 +32,20 @@ class Event:
         # remove https:// and domain as visual noise
         url = urlunsplit(urlsplit(self.current_url)._replace(scheme="", netloc=""))
         return (
-            f"Event({self.event_type}, {url=}, {self.data=}"
+            f"Event({self.last_timestamp.time().isoformat()}, {self.event_type}, {url=}, {self.data=}"
             # only print num tries if there was more than 1
             + (f", {self.attempts=}" if self.attempts != 1 else "")
+            # only print first_timestamp if it != last_timestamp
+            + (
+                f", self.first_timestamp={self.first_timestamp.time().isoformat()}"
+                if self.last_timestamp != self.first_timestamp
+                else ""
+            )
             + ")"
         )
 
     def __eq__(self, other):
+        # timestamps ignored for equality
         return (
             self.event_type == other.event_type
             and self.current_url == other.current_url
@@ -71,7 +81,15 @@ class LoggingEventListener(AbstractEventListener):
         print("===========================================" + ("=" * len(str(num_to_print))))
 
     def _add_event(self, event_type: EventType, current_url: str, data: Any):
-        new_event = Event(node=self.node, event_type=event_type, current_url=current_url, data=data)
+        uniform_now = datetime.now()
+        new_event = Event(
+            last_timestamp=uniform_now,
+            first_timestamp=uniform_now,
+            node=self.node,
+            event_type=event_type,
+            current_url=current_url,
+            data=data,
+        )
 
         events_for_current_node = self._events[self.node]
         urls_for_current_node = self._url_history[self.node]
@@ -79,6 +97,7 @@ class LoggingEventListener(AbstractEventListener):
         # if the last event was the same thing, then just record how many attempts we did
         if len(events_for_current_node) != 0 and events_for_current_node[-1] == new_event:
             events_for_current_node[-1].attempts += 1
+            events_for_current_node[-1].last_timestamp = uniform_now
         else:
             events_for_current_node.append(new_event)
 
