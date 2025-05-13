@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -33,9 +34,11 @@ def download_directory(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
+    driver_id = uuid.uuid4()
+
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
-    options.add_argument("user-agent=Selenium")
+    options.add_argument(f"user-agent=Selenium/driver-{driver_id}")
     options.add_experimental_option(
         "prefs",
         {
@@ -56,6 +59,7 @@ def _driver(request, download_directory):
 
     driver = EventFiringWebDriver(driver, LoggingEventListener())
     driver._listener.set_node(request.node.name)
+    driver._driver_id = driver_id
 
     driver.delete_all_cookies()
 
@@ -74,6 +78,7 @@ def driver(_driver, request):
     _driver._listener.set_node(request.node.name)
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
+        print("driver_id:", getattr(_driver, "_driver_id", None))  # noqa: T201
         print("URL at time of failure:", datetime.now().isoformat(), _driver.current_url)  # noqa: T201
 
         # print last 20 events
