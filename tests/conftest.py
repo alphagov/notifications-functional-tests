@@ -17,6 +17,7 @@ from tests.pages.rollups import sign_in, sign_in_email_auth
 def pytest_addoption(parser):
     parser.addoption("--no-headless", action="store_true", default=False)
     parser.addoption("--unique-screenshot-filenames", action="store_true", default=False)
+    parser.addoption("--unique-domdump-filenames", action="store_true", default=False)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -84,15 +85,27 @@ def driver(_driver, request):
         # print last 20 events
         _driver._listener.print_events(node=request.node.name, num_to_print=20)
 
-        file = (
-            f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}_{request.function.__name__}.png"
-            if request.config.getoption("--unique-screenshot-filenames")
-            else "test_failure.png"
-        )
+        unique_filename_base = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}_{request.function.__name__}"
 
-        filename = str(Path.cwd() / "screenshots" / file)
-        _driver.save_screenshot(str(filename))
-        print("Error screenshot saved to " + filename)  # noqa: T201
+        screenshot_filename = (
+            unique_filename_base if request.config.getoption("--unique-screenshot-filenames") else "test_failure"
+        ) + ".png"
+        screenshot_path = Path.cwd() / "screenshots" / screenshot_filename
+
+        _driver.save_screenshot(str(screenshot_path))
+        print("Error screenshot saved to ", screenshot_path)  # noqa: T201
+
+        domdump_filename = (
+            unique_filename_base if request.config.getoption("--unique-domdump-filenames") else "test_failure"
+        ) + ".dom.html"
+        domdump_dir = Path.cwd() / "domdumps"
+        domdump_dir.mkdir(parents=True, exist_ok=True)
+        domdump_path = domdump_dir / domdump_filename
+
+        with open(domdump_path, "w") as f:
+            f.write(_driver.execute_script("return document.documentElement.outerHTML"))
+
+        print("DOM dump saved to ", domdump_path)  # noqa: T201
 
     # clear old events/urls regardless of failure
     _driver._listener.clear_events()
