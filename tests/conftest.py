@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from tests.pages.rollups import sign_in, sign_in_email_auth
 def pytest_addoption(parser):
     parser.addoption("--no-headless", action="store_true", default=False)
     parser.addoption("--unique-screenshot-filenames", action="store_true", default=False)
+    parser.addoption("--unique-domdump-filenames", action="store_true", default=False)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -33,9 +35,11 @@ def download_directory(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
+    driver_id = uuid.uuid4()
+
     options = webdriver.chrome.options.Options()
     options.add_argument("--no-sandbox")
-    options.add_argument("user-agent=Selenium")
+    options.add_argument(f"user-agent=Selenium/driver-{driver_id}")
     options.add_experimental_option(
         "prefs",
         {
@@ -56,6 +60,7 @@ def _driver(request, download_directory):
 
     driver = EventFiringWebDriver(driver, LoggingEventListener())
     driver._listener.set_node(request.node.name)
+    driver._driver_id = driver_id
 
     driver.delete_all_cookies()
 
@@ -74,20 +79,33 @@ def driver(_driver, request):
     _driver._listener.set_node(request.node.name)
     yield _driver
     if prev_failed_tests != request.session.testsfailed:
+        print("driver_id:", getattr(_driver, "_driver_id", None))  # noqa: T201
         print("URL at time of failure:", datetime.now().isoformat(), _driver.current_url)  # noqa: T201
 
         # print last 20 events
         _driver._listener.print_events(node=request.node.name, num_to_print=20)
 
-        file = (
-            f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}_{request.function.__name__}.png"
-            if request.config.getoption("--unique-screenshot-filenames")
-            else "test_failure.png"
-        )
+        unique_filename_base = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}_{request.function.__name__}"
 
-        filename = str(Path.cwd() / "screenshots" / file)
-        _driver.save_screenshot(str(filename))
-        print("Error screenshot saved to " + filename)  # noqa: T201
+        screenshot_filename = (
+            unique_filename_base if request.config.getoption("--unique-screenshot-filenames") else "test_failure"
+        ) + ".png"
+        screenshot_path = Path.cwd() / "screenshots" / screenshot_filename
+
+        _driver.save_screenshot(str(screenshot_path))
+        print("Error screenshot saved to ", screenshot_path)  # noqa: T201
+
+        domdump_filename = (
+            unique_filename_base if request.config.getoption("--unique-domdump-filenames") else "test_failure"
+        ) + ".dom.html"
+        domdump_dir = Path.cwd() / "domdumps"
+        domdump_dir.mkdir(parents=True, exist_ok=True)
+        domdump_path = domdump_dir / domdump_filename
+
+        with open(domdump_path, "w") as f:
+            f.write(_driver.execute_script("return document.documentElement.outerHTML"))
+
+        print("DOM dump saved to ", domdump_path)  # noqa: T201
 
     # clear old events/urls regardless of failure
     _driver._listener.clear_events()
