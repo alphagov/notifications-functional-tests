@@ -53,7 +53,7 @@ def _driver(request, download_directory):
     if not request.config.getoption("--no-headless"):
         options.add_argument("--headless")
 
-    service = ChromeService(log_path="./logs/chrome_browser.log", service_args=["--verbose"])
+    service = ChromeService(log_path=f"./logs/chrome_browser.{driver_id}.log", service_args=["--verbose"])
 
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 1200)
