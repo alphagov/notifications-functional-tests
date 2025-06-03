@@ -92,13 +92,13 @@ def _do_approver_rejected_request(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="join-service-request-flow")
-def test_join_existing_service_rejected_flow(driver):
+def test_join_existing_service_rejected_flow(driver, create_seeded_user):
     _do_request_to_join_service(driver)
     _do_approver_rejected_request(driver)
 
 
 @recordtime
 @pytest.mark.xdist_group(name="join-service-request-flow")
-def test_join_existing_service_approved_flow(driver):
+def test_join_existing_service_approved_flow(driver, create_seeded_user):
     _do_request_to_join_service(driver)
     _do_approver_approved_request(driver)
