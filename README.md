@@ -2,7 +2,7 @@
 
 The tests are:
 
-- `functional/`: tests of the Notify user interface and API (notifications.service.gov.uk)
+- `notifications/`: tests of the Notify user interface and API (notifications.service.gov.uk)
 - `document_download/`: tests of the Documents user interface and API (documents.service.gov.uk)
 - `provider_delivery/`: tests for delivery of notifications (Staging and Production only)
 
@@ -35,7 +35,7 @@ Note, there is an order dependency in the main tests. The registration test must
 
 ### Running the tests against your local development environment
 
-**Note: this is currently only supported for `functional/` and `document_download/` tests.** See the next section if you want to run the `provider_delivery/` tests locally.
+**Note: this is currently only supported for `notifications/` and `document_download/` tests.** See the next section if you want to run the `provider_delivery/` tests locally.
 
 If you are running Notify locally using docker-compose via [notifications-local](https://www.github.com/alphagov/notifications-local), then you need to set the following environment variables:
 
@@ -87,10 +87,10 @@ source environment_local.sh
 make test
 
 # run a specific test
-pytest tests/functional/preview_and_dev/test_seeded_user.py
+pytest tests/notifications/functional_tests/test_seeded_user.py
 
 # run a specific test without headless
-pytest tests/functional/preview_and_dev/test_seeded_user.py --no-headless
+pytest tests/notifications/functional_tests/test_seeded_user.py --no-headless
 ```
 
 ### Running the tests against preview, staging or production
@@ -101,7 +101,7 @@ Users with the required services and templates have already been set up for each
 source environment_{env_name}.sh
 
 # run specific tests, for example:
-pytest tests/document_download/preview_and_dev
+pytest tests/document_download/functional_tests
 ```
 
 ### Running tests in parallel
