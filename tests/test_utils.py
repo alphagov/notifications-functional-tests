@@ -220,7 +220,9 @@ def is_basic_view(dashboard_page):
 
 
 def is_view_for_all_permissions(page):
-    assert page.get_navigation_list() == "Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration"
+    assert page.get_navigation_list() == (
+        "Dashboard\nTemplates\nUploads\nTeam members\nUsage\nSettings\nAPI integration\nMake your service live"
+    )
     expected = f"/services/{page.get_service_id()}"
     assert page.wait_until_url_contains(expected)
 
