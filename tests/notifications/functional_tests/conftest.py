@@ -3,15 +3,15 @@ import requests
 from filelock import FileLock
 from notifications_python_client.authentication import create_jwt_token
 
-from config import config, get_all_unique_seeder_user_tests, setup_preview_dev_config
+from config import config, get_all_unique_seeder_user_tests, setup_functional_tests_config
 
 
 @pytest.fixture(scope="session", autouse=True)
-def preview_dev_config(request: pytest.FixtureRequest):
+def functional_tests_config(request: pytest.FixtureRequest):
     """
     Setup
     """
-    setup_preview_dev_config(get_all_unique_seeder_user_tests(request))
+    setup_functional_tests_config(get_all_unique_seeder_user_tests(request))
 
 
 def _create_seeded_users_via_notify_api(test_names):
@@ -68,7 +68,7 @@ def create_seeded_user():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def create_seeded_users(request: pytest.FixtureRequest, preview_dev_config, tmp_path_factory, worker_id):
+def create_seeded_users(request: pytest.FixtureRequest, functional_tests_config, tmp_path_factory, worker_id):
     """Finds all tests that use the `login_seeded_user` fixture, and (if necessary) creates seeded users
     for those tests.
     """

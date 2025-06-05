@@ -124,7 +124,7 @@ def setup_shared_config():
         )
 
 
-def setup_preview_dev_config(unique_seeder_user_tests=None):
+def setup_functional_tests_config(unique_seeder_user_tests=None):
     uuid_for_test_run = str(uuid.uuid4())
 
     config.update(
@@ -179,7 +179,7 @@ def setup_preview_dev_config(unique_seeder_user_tests=None):
     )
 
 
-def setup_staging_prod_config():
+def setup_smoke_tests_config():
     # staging and prod run the same simple smoke tests
     config.update(
         {
