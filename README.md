@@ -40,8 +40,8 @@ Note, there is an order dependency in the main tests. The registration test must
 If you are running Notify locally using docker-compose via [notifications-local](https://www.github.com/alphagov/notifications-local), then you need to set the following environment variables:
 
 ```shell
-export FUNCTIONAL_TESTS_LOCAL_API_HOST=http://notify-api.localhost:6011
-export FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST=http://notify.localhost:6012
+export FUNCTIONAL_TESTS_API_HOST=http://notify-api.localhost:6011
+export FUNCTIONAL_TESTS_ADMIN_HOST=http://notify.localhost:6012
 ```
 
 Populate the local database with fixture data using the make target, this will call database fixtures located in notifications-api:

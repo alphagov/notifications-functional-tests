@@ -36,9 +36,9 @@ config = {
     # static
     "notification_retry_times": 15,
     "notification_retry_interval": 5,
-    "pdf_generation_retry_times": 10,
+    "pdf_generation_retry_times": 40,
     "pdf_generation_retry_interval": 2,
-    "verify_callback_retry_times": 20,
+    "verify_callback_retry_times": 40,
     "verify_callback_retry_interval": 1,
     "letter_retry_times": 108,
     "provider_retry_times": 12,
@@ -68,60 +68,15 @@ def setup_shared_config():
     """
     Used by all tests
     """
-    config["env"] = env = os.environ["ENVIRONMENT"].lower()
-    urls = {
-        "dev": {
-            "api": os.environ.get("FUNCTIONAL_TESTS_LOCAL_API_HOST", "http://localhost:6011"),
-            "admin": os.environ.get("FUNCTIONAL_TESTS_LOCAL_ADMIN_HOST", "http://localhost:6012"),
-        },
-        "preview": {
-            "api": "https://api.notify.works",
-            "admin": "https://www.notify.works",
-        },
-        "staging": {
-            "api": "https://api.staging-notify.works",
-            "admin": "https://www.staging-notify.works",
-        },
-        "live": {
-            "api": "https://api.notifications.service.gov.uk",
-            "admin": "https://www.notifications.service.gov.uk",
-        },
-    }
-
-    config["enable_edit_reply_to"] = os.environ.get(
-        "FUNCTIONAL_TESTS_ENABLE_EDIT_REPLY_TO", "1" if env == "preview" else "0"
-    ) not in ("", "0")
-
-    if env not in {"dev", "preview", "staging", "live"}:
-        if not os.environ.get("FUNCTIONAL_TESTS_API_HOST") or not os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"):
-            pytest.fail(
-                f'env "{env}" not one of dev, preview, staging, live, '
-                "so you need to set the environment variables FUNCTIONAL_TESTS_API_HOST "
-                "and FUNCTIONAL_TESTS_ADMIN_HOST"
-            )
-        config.update(
-            {
-                "notify_api_url": os.environ.get("FUNCTIONAL_TESTS_API_HOST"),
-                "notify_admin_url": os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST"),
-            }
-        )
-
-        if env.startswith("dev-"):
-            # dev environments may be slow, so increase retries
-            config.update(
-                {
-                    "pdf_generation_retry_times": 40,
-                    "verify_callback_retry_times": 40,
-                    "verify_callback_retry_interval": 1,
-                }
-            )
-    else:
-        config.update(
-            {
-                "notify_api_url": urls[env]["api"],
-                "notify_admin_url": urls[env]["admin"],
-            }
-        )
+    config.update(
+        {
+            "env": os.environ["ENVIRONMENT"].lower(),
+            "notify_api_url": os.environ.get("FUNCTIONAL_TESTS_API_HOST", "http://localhost:6011"),
+            "notify_admin_url": os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST", "http://localhost:6012"),
+            "name": "{} Functional Tests".format(os.environ["ENVIRONMENT"].lower()),
+            "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
+        }
+    )
 
 
 def setup_functional_tests_config(unique_seeder_user_tests=None):
@@ -129,8 +84,8 @@ def setup_functional_tests_config(unique_seeder_user_tests=None):
 
     config.update(
         {
-            "name": "{} Functional Tests".format(config["env"]),
             "service_name": f"Functional Test_{uuid_for_test_run}",
+            "enable_edit_reply_to": os.environ.get("FUNCTIONAL_TESTS_ENABLE_EDIT_REPLY_TO", "0"),
             "user": {
                 "name": "{}_Functional Test_{}".format(config["env"], uuid_for_test_run),
                 "email": generate_unique_email(os.environ["FUNCTIONAL_TEST_EMAIL"], uuid_for_test_run),
@@ -141,7 +96,6 @@ def setup_functional_tests_config(unique_seeder_user_tests=None):
                 "client_id": "notify-functional-tests",
                 "secret": os.environ["FUNCTIONAL_TESTS_API_AUTH_SECRET"],
             },
-            "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
             "service": {
                 "id": os.environ["FUNCTIONAL_TESTS_SERVICE_ID"],
                 "name": os.environ["FUNCTIONAL_TESTS_SERVICE_NAME"],
@@ -180,29 +134,26 @@ def setup_functional_tests_config(unique_seeder_user_tests=None):
 
 
 def setup_smoke_tests_config():
-    # staging and prod run the same simple smoke tests
     config.update(
         {
             # the smoke tests send a CSV which might get stuck behind other jobs we allow
             # these notifications to take longer (2m30s rather than the normal wait of 1m15s)
             "smoke_test_csv_notification_retry_time": 30,
-            "name": "{} Functional Tests".format(config["env"]),
             "user": {
                 "email": os.environ["FUNCTIONAL_TEST_EMAIL"],
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
                 "mobile": os.environ["TEST_NUMBER"],
             },
-            "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
             "service": {
-                "id": os.environ["SERVICE_ID"],
-                "api_live_key": os.environ["API_KEY"],
-                "api_test_key": os.environ["API_TEST_KEY"],
-                "email_auth_account": os.environ["FUNCTIONAL_TEST_EMAIL_AUTH"],
+                "id": os.environ["FUNCTIONAL_TESTS_SERVICE_ID"],
+                "api_live_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_KEY"],
+                "api_test_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY"],
+                "email_auth_account": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT"],
                 "seeded_user": {"password": os.environ["FUNCTIONAL_TEST_PASSWORD"]},
                 "templates": {
                     "email": os.environ["FUNCTIONAL_TEST_EMAIL_TEMPLATE_ID"],
                     "sms": os.environ["FUNCTIONAL_TEST_SMS_TEMPLATE_ID"],
-                    # letter template not set up on staging and prod
+                    # letter template not set up for smoke tests
                 },
                 "inbound_number": os.environ["PROVIDER_TEST_INBOUND_NUMBER"],
             },
