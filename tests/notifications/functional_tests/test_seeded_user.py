@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 
 from config import config
 from tests.decorators import retry_on_stale_element_exception
-from tests.functional.preview_and_dev.consts import (
+from tests.notifications.functional_tests.consts import (
     correct_letter,
     pdf_with_virus,
     preview_error,
