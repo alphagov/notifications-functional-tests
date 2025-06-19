@@ -49,11 +49,11 @@ env-environment-check:
 
 .PHONY: env-functional-tests
 env-functional-tests: env-environment-check
-	@./scripts/env-test.sh "${ENVIRONMENT}" tests/functional/preview_and_dev tests/document_download/preview_and_dev
+	@./scripts/env-test.sh "${ENVIRONMENT}" tests/notifications/functional_tests tests/document_download/functional_tests
 
 .PHONY: env-smoke-tests
 env-smoke-tests: env-environment-check
-	@./scripts/env-test.sh "${ENVIRONMENT}" tests/functional/staging_and_prod tests/document_download/staging_and_prod
+	@./scripts/env-test.sh "${ENVIRONMENT}" tests/notifications/smoke_tests tests/document_download/smoke_tests
 
 .PHONY: env-provider-tests
 env-provider-tests: env-environment-check
@@ -63,8 +63,8 @@ env-provider-tests: env-environment-check
 test: clean ## Run functional tests against local environment
 	ruff check .
 	ruff format --check .
-	pytest tests/functional/preview_and_dev -n auto --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
-	pytest tests/document_download/preview_and_dev ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
+	pytest tests/notifications/functional_tests -n auto --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
+	pytest tests/document_download/functional_tests ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
 
 .PHONY: generate-staging-db-fixtures
 generate-staging-db-fixtures: ## Generates DB fixtures for the staging database

@@ -8,7 +8,7 @@ import pyzbar.pyzbar
 from retry.api import retry_call
 
 from config import config
-from tests.functional.preview_and_dev.consts import (
+from tests.notifications.functional_tests.consts import (
     correct_letter,
     pdf_with_virus,
 )

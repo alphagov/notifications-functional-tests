@@ -4,7 +4,7 @@ from io import BytesIO
 from retry.api import retry_call
 
 from config import config
-from tests.functional.preview_and_dev.consts import correct_letter
+from tests.notifications.functional_tests.consts import correct_letter
 from tests.postman import (
     get_notification_by_id_via_api,
     send_precompiled_letter_via_api,
