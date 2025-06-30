@@ -75,6 +75,7 @@ def setup_shared_config():
             "notify_admin_url": os.environ.get("FUNCTIONAL_TESTS_ADMIN_HOST", "http://localhost:6012"),
             "name": "{} Functional Tests".format(os.environ["ENVIRONMENT"].lower()),
             "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
+            "smoke_test_csv_notification_retry_time": 30,
         }
     )
 
@@ -138,7 +139,6 @@ def setup_smoke_tests_config():
         {
             # the smoke tests send a CSV which might get stuck behind other jobs we allow
             # these notifications to take longer (2m30s rather than the normal wait of 1m15s)
-            "smoke_test_csv_notification_retry_time": 30,
             "user": {
                 "email": os.environ["FUNCTIONAL_TEST_EMAIL"],
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
