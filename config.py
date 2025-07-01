@@ -137,8 +137,8 @@ def setup_smoke_tests_config():
     config.update(
         {
             # the smoke tests send a CSV which might get stuck behind other jobs we allow
-            # these notifications to take longer (2m30s rather than the normal wait of 1m15s)
-            "smoke_test_csv_notification_retry_time": 30,
+            # these notifications to take longer (8m rather than the normal wait of 1m15s)
+            "smoke_test_csv_notification_retry_time": 96,
             "user": {
                 "email": os.environ["FUNCTIONAL_TEST_EMAIL"],
                 "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
