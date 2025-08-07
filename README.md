@@ -6,7 +6,7 @@ The tests are:
 - `document_download/`: tests of the Documents user interface and API (documents.service.gov.uk)
 - `provider_delivery/`: tests for delivery of notifications (Staging and Production only)
 
-These tests are run against preview, staging and production using Concourse. We run a full set of tests on preview but only a smaller set of tests, also known as smoke tests, on staging and production.
+These tests are run against staging and production using Concourse. We run a full set of tests on staging but only a smaller set of tests, also known as smoke tests, on production.
 
 The Concourse jobs are defined in our [infrastructure repo](https://github.com/alphagov/notifications-aws/blob/master/concourse/templates/functional-tests.yml.j2).
 
@@ -93,16 +93,31 @@ pytest tests/notifications/functional_tests/test_seeded_user.py
 pytest tests/notifications/functional_tests/test_seeded_user.py --no-headless
 ```
 
-### Running the tests against preview, staging or production
+### Running the tests from your local machine against a dev environment or staging
 
-Users with the required services and templates have already been set up for each of these environments. The details for these are found in our credentials repo, under `credentials/functional-tests`. There are different sets of credentials depending on the tests you want to run e.g. `staging-provider`, `staging-functional` . Decrypt the credentials you need and paste them locally in a separate file e.g. `environment_staging.sh`. Then:
+- Choose a target environment:
+  ```sh
+  ENVIRONMENT="staging" # or dev-a, etc.
+  ```
+- Find the AWS account ID of the target account, either with `gds aws notify-${ENVIRONMENT} -d` or:
+  ```sh
+  AWS_ACCOUNT_ID=$(gds aws notify-${ENVIRONMENT} -- aws sts get-caller-identity --query Account --output text)
+  ```
+- Fetch the environment setup script from SSM:
+  ```sh
+  gds aws notify-${ENVIRONMENT}-admin -- aws ssm get-parameter \
+    --with-decryption \
+    --name "arn:aws:ssm:eu-west-1:${AWS_ACCOUNT_ID}:parameter/notify/${ENVIRONMENT}/functional-tests/generated/environment" | \
+  jq -r .Parameter.Value > \
+  environment_${ENVIRONMENT}.sh
+  ```
+- Source the environment setup script, then run the tests:
+  ```sh
+  source environment_${ENVIRONMENT}.sh
 
-```
-source environment_{env_name}.sh
-
-# run specific tests, for example:
-pytest tests/document_download/functional_tests
-```
+  # run specific tests, for example:
+  pytest tests/document_download/functional_tests
+  ```
 
 ### Running tests in parallel
 
@@ -133,35 +148,26 @@ More groups generally equals better parallelisation (limited by test runner coun
 
 For the functional tests to pass in any environment, they require certain database fixtures to exist.
 
-For your local environment, these fixtures are now generated using the custom flask command functional-test-fixtures (defined in [notifications-api/app/functional_tests_fixtures/__init__.py](https://github.com/alphagov/notifications-api/blob/main/app/functional_tests_fixtures/__init__.py)). The command will create all the database rows required for the funcitonal tests in an idempotent way and output an environment file the functional tests can use to execute against the environment. There are [instructions on how to update the local database fixtures](docs/update-local-db-fixtures.md).
+For your local environment, dev environments, and staging, these fixtures are now generated using the custom flask command functional-test-fixtures (defined in [notifications-api/app/functional_tests_fixtures/__init__.py](https://github.com/alphagov/notifications-api/blob/main/app/functional_tests_fixtures/__init__.py)). The command will create all the database rows required for the funcitonal tests in an idempotent way and output an environment file the functional tests can use to execute against the environment. There are [instructions on how to update the local database fixtures](docs/update-local-db-fixtures.md).
 
-For our preview environment, these fixtures are not yet stored in code, but will be similar to (but not the same as) the local fixtures.
-
-For our staging environment, these fixtures are found in db_fixtures/staging.sql.j2. You'll need to generate the actual fixtures by populating the jinja template with some secrets from the credentials repo. You can do this using `make generate-staging-db-fixtures`. You should only need to do this in the very rare case that our staging database has lost the fixtures that exist in there already.
-
-For our production environment, these fixtures are not yet stored in code, but will be similar to (but not the same as) the staging fixtures.
+For our production environment, these fixtures are not yet stored in code, but were put in place manually by our developers.
 
 
-## Database cleanup in non-production environment
-Steps to removing the test data in preview (non-production) environment: 
+## Database cleanup in non-production environments
+
+> **Warning**: These steps were originally designed to be run in preview. They have been updated to theoretically be suitable to run against staging or a dev environment, but have **not yet been tested**.
+
+To purge test data from a non-production environment (i.e. staging):
+
 1. Take the snapshot of notify-db in rds and also take database dump locally. See [DB-Commands](https://github.com/alphagov/notifications-manuals/wiki/DB-Commands) for the database dump and restore.
-2. Pause all the deployment pipelines for the preview environment.
+2. Pause deployment pipeline for the environment.
 3. ssh into ecs `api-web` service.
 4. Run `flask command purge-functional-test-data -u notify-tests-preview` to delete user data objects. 
   * note: takes a while! multiple hours!
 5. Manually delete organisation 'Functional Test Org'.
-6. Get the `REQUEST_BIN_API_TOKEN` from the existing credentials and set `export REQUEST_BIN_API_TOKEN=existing-token` on the ecs instance, this will be included in the new environment file on ecs during the next step.\
-Then run `flask command functional-test-fixtures` on the ecs instance to create fixture data, this will create an environment file in /tmp for functional-test service.
-7. `cd /tmp` and `cat functional_test_env.sh` to get the new environment file.
-8. On your local, `notify-pass edit credentials/functional-tests/preview-functional` and update the new environment file. This will auto commit and require manual PR process.
-9. After merging the credentials PR, run `notifications-aws/scripts/upload-credentials/upload-credentials.sh` preview locally to push new environment file to SSM. (If the script is failing because of the missing config then comment the rest of lines an re-run.)
-10. Trigger the functional-test-preview pipeline.
+6. Unpause the pipeline and manually trigger `start-deploy` - as part of the deploy, the functional test fixtures should be recreated.
 
-
-In case of reverting the process:
-1. Revert the PR for credentials.
-2. Rollback db from local dump, if local dump does not work then follow [these steps](https://docs.publishing.service.gov.uk/manual/howto-backup-and-restore-in-aws-rds.html) to restore from snapshot. Or restore the database dump.
-3. Trigger admin functional-test-preview pipeline.
+To revert the process, restore the database from your local dump. If that does not work then follow [these steps](https://docs.publishing.service.gov.uk/manual/howto-backup-and-restore-in-aws-rds.html) to restore from an RDS snapshot.
 
 
 ## Pre-commit

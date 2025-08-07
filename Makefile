@@ -29,11 +29,6 @@ dev%:
 	$(eval export ENVIRONMENT=$@)
 	@true
 
-.PHONY: preview
-preview:
-	$(eval export ENVIRONMENT=preview)
-	@true
-
 .PHONY: staging
 staging:
 	$(eval export ENVIRONMENT=staging)
