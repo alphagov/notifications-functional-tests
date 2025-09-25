@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.11-bookworm
 
 # Ensure we're using Chromium v126.x
 # (Remove this if/when the performance regression in v127+ is resolved)
