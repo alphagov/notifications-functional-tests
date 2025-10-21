@@ -48,7 +48,7 @@ flask-redis==0.4.0
     # via notifications-utils
 freezegun==1.5.1
     # via -r requirements_for_test_common.in
-govuk-bank-holidays==0.15
+govuk-bank-holidays==0.17
     # via notifications-utils
 greenlet==3.1.1
     # via eventlet
@@ -86,7 +86,7 @@ mistune==0.8.4
     # via notifications-utils
 notifications-python-client==8.1.0
     # via -r requirements_for_test.in
-notifications-utils @ git+https://github.com/alphagov/notifications-utils.git@d669a9544cc87372a10af8786d3bb172593261fa
+notifications-utils @ git+https://github.com/alphagov/notifications-utils.git@5c030d51f30cebf7800787fb68d8789b5f9757ef
     # via -r requirements.txt
 ordered-set==4.1.0
     # via notifications-utils
@@ -99,7 +99,7 @@ packaging==24.2
     #   pytest-rerunfailures
 pdf2image==1.16.3
     # via -r requirements_for_test.in
-phonenumbers==8.13.51
+phonenumbers==9.0.16
     # via notifications-utils
 pillow==11.3.0
     # via
@@ -139,9 +139,8 @@ python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   freezegun
+    #   notifications-utils
 python-json-logger==3.3.0
-    # via notifications-utils
-pytz==2024.2
     # via notifications-utils
 pyyaml==6.0.2
     # via notifications-utils
