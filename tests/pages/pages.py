@@ -574,9 +574,11 @@ class DashboardPage(BasePage):
 
     @staticmethod
     def _assert_strip_thousands_commas(s):
-        assert re.match(r"\s*\d{1,3}(,\d{3})*\s*$", s), "Thousands separator pattern not matched"
+        if not re.match(r"\s*\d{1,3}(,\d{3})*\s*$", s):
+            raise ValueError("Thousands separator pattern not matched")
         return s.replace(",", "")
 
+    @retry(RetryException, tries=10, delay=3)
     def get_total_message_count(self, message_type):
         if message_type == "email":
             target_div = DashboardPage.total_email_div
@@ -586,7 +588,11 @@ class DashboardPage(BasePage):
             target_div = DashboardPage.total_sms_div
         element = self.wait_for_element(target_div)
 
-        return int(self._assert_strip_thousands_commas(element.text))
+        try:
+            return int(self._assert_strip_thousands_commas(element.text))
+        except ValueError as e:
+            raise RetryException("Count of messages on dashboard not loaded yet") from e
+
 
     def get_template_message_count(self, template_id):
         messages_sent_count_for_template_div = self._message_count_for_template_div(template_id)
