@@ -10,7 +10,7 @@ Test:
     look at inbox page - assert that the new message is in the conversation
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from urllib.parse import quote_plus
 
 import pytest
@@ -32,7 +32,7 @@ def inbound_sms():
         "Number": config["service"]["inbound_number"],  # service inbound number
         "Message": quote_plus(message),
         "ID": "SOME-MMG-SPECIFIC-ID",
-        "DateRecieved": quote_plus(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
+        "DateRecieved": quote_plus(datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")),
     }
 
     response = requests.post(
