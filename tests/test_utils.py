@@ -5,7 +5,7 @@ import os
 import re
 import tempfile
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from filelock import FileLock
 from notifications_python_client.notifications import NotificationsAPIClient
@@ -40,7 +40,7 @@ from tests.pages import (
 )
 from tests.pages.pages import RenameLetterTemplatePage
 
-logging.basicConfig(filename=f"./logs/test_run_{datetime.utcnow()}.log", level=logging.INFO)
+logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
 
 default = " (default)"
 
@@ -510,11 +510,11 @@ def recordtime(func):
     def wrapper(*args, **kwargs):
         try:
             logging.info("Starting Test: %s", func.__name__)
-            logging.info("Start Time: %s", str(datetime.utcnow()))
+            logging.info("Start Time: %s", str(datetime.now(UTC)))
             result = func(*args, **kwargs)
             return result
         finally:
-            logging.info("End Time: %s", str(datetime.utcnow()))
+            logging.info("End Time: %s", str(datetime.now(UTC)))
 
     return wrapper
 
