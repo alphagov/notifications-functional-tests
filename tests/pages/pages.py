@@ -1317,7 +1317,7 @@ class DocumentDownloadLandingPage(DocumentDownloadBasePage):
 
 class DocumentDownloadPage(DocumentDownloadBasePage):
     download_link = (By.PARTIAL_LINK_TEXT, "Download this ")
-    expiration_p = (By.XPATH, "//p[contains(normalize-space(.), 'This file is available until')]")
+    expiration_p = (By.XPATH, "//p[contains(normalize-space(.), 'This file is available to download until')]")
 
     def _get_download_link_element(self):
         link = self.wait_for_element(self.download_link)
