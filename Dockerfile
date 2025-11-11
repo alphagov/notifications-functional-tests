@@ -1,11 +1,7 @@
 FROM python:3.13-bookworm
 
-# Ensure we're using Chromium v126.x
-# (Remove this if/when the performance regression in v127+ is resolved)
-COPY ./debian.sources /etc/apt/sources.list.d/debian.sources
-
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends --allow-downgrades\
+    apt-get install -y --no-install-recommends \
         awscli \
         chromium \
         chromium-driver \
