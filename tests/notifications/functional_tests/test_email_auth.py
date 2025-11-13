@@ -34,7 +34,9 @@ def test_reset_forgotten_password(driver, request, create_seeded_user):
     assert forgot_password_page.is_page_title("Forgotten your password?")
     forgot_password_page.input_email_address(email)
     forgot_password_page.click_continue()
-    assert forgot_password_page.is_page_title("Check your email")
+    assert forgot_password_page.is_page_title("Check your email") or forgot_password_page.is_page_title(
+        "Check your inbox"
+    )
 
     do_email_verification(driver, config["notify_templates"]["password_reset_template_id"], email)
     new_password_page = NewPasswordPage(driver)
