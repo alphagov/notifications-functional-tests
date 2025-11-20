@@ -12,6 +12,10 @@ bootstrap: ## Install build dependencies
 	mkdir -p logs screenshots
 	pip install -r requirements_for_test.txt
 
+.PHONY: bootstrap-with-docker
+bootstrap-with-docker: ## Install build dependencies with Docker
+	docker build -f Dockerfile -t notifications-functional-tests .
+
 .PHONY: freeze-requirements
 freeze-requirements: ## create static requirements_for_test.txt
 	uv pip install -r requirements.txt
