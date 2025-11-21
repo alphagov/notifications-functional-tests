@@ -181,3 +181,7 @@ Install pre-commit system-wide with, eg `brew install pre-commit`. Then, install
 
 - [Updating local database fixtures](docs/update-local-db-fixtures.md)
 - [Style guide](docs/style-guide.md)
+
+## Licence
+
+Unless stated otherwise, the codebase is released under [the MIT License](LICENSE). This covers both the codebase and any sample code in the documentation.
