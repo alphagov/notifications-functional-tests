@@ -6,6 +6,7 @@ import re
 import tempfile
 import uuid
 from datetime import UTC, datetime
+import time
 
 from filelock import FileLock
 from notifications_python_client.notifications import NotificationsAPIClient
@@ -98,12 +99,16 @@ def get_link(template_id, email):
     delay=config["verify_code_retry_interval"],
 )
 def do_verify(driver, mobile_number):
-    verify_code = get_verify_code_from_api(mobile_number)
     verify_page = VerifyPage(driver)
+
+    # wait for SMS to arrive
+    # without this, sometimes expired code is retrieved from the database
+    time.sleep(2)
+
+    verify_code = get_verify_code_from_api(mobile_number)
     verify_page.verify(verify_code)
     if not verify_page.verify_code_successful():
         raise RetryException
-
 
 def do_email_auth_verify(driver):
     do_email_verification(

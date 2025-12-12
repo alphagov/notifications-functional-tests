@@ -189,8 +189,8 @@ class BasePage:
 
         self.driver.delete_all_cookies()
 
-    def wait_until_url_contains(self, url):
-        return WebDriverWait(self.driver, 10).until(lambda _: url in self.driver.current_url)
+    def wait_until_url_contains(self, url, time=10):
+        return WebDriverWait(self.driver, time).until(lambda _: url in self.driver.current_url)
 
     def wait_until_url_doesnt_contain(self, url):
         return WebDriverWait(self.driver, 10).until(lambda _: url not in self.driver.current_url)
