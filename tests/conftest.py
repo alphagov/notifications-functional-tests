@@ -57,6 +57,7 @@ def _driver(request, download_directory):
 
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 1200)
+    driver.implicitly_wait(3)  # seconds
 
     driver = EventFiringWebDriver(driver, LoggingEventListener())
     driver._listener.set_node(request.node.name)
