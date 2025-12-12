@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import tempfile
+import time
 import uuid
 from datetime import UTC, datetime
 
@@ -98,11 +99,19 @@ def get_link(template_id, email):
     delay=config["verify_code_retry_interval"],
 )
 def do_verify(driver, mobile_number):
-    verify_code = get_verify_code_from_api(mobile_number)
     verify_page = VerifyPage(driver)
-    verify_page.verify(verify_code)
-    if not verify_page.verify_code_successful():
-        raise RetryException
+
+    # Retry verification up to 3 times
+    for i in range(3):
+        time.sleep(1) # wait a moment for the code to arrive
+        verify_code = get_verify_code_from_api(mobile_number)
+        verify_page.verify(verify_code)
+
+        if verify_page.verify_code_successful():
+            return
+
+    # If all 3 attempts failed, raise an exception
+    raise RetryException("Verification failed after 3 attempts")
 
 
 def do_email_auth_verify(driver):
