@@ -334,6 +334,8 @@ def test_send_email_with_placeholders_to_one_recipient(request, driver, client_l
     assert list(placeholders[1].keys()) == ["things"]
 
     dashboard_page.click_continue()
+    dashboard_page.wait_until_url_contains("/notification")
+
     notification_id = dashboard_page.get_notification_id()
     one_off_email = client_live_key.get_notification_by_id(notification_id)
     assert one_off_email.get("created_by_name") == f"Preview admin tests user - {test_name}"
@@ -508,6 +510,8 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 
     edit_template_page = EditEmailTemplatePage(driver)
     edit_template_page.fill_template(name=template_name)
+    edit_template_page.wait_until_url_contains("/templates/", time=20)
+
     template_id = edit_template_page.get_template_id()
     edit_template_page.click_templates()
 
@@ -525,6 +529,8 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     manage_folder_page = ManageFolderPage(driver)
     new_folder_name = folder_name + "-new"
     manage_folder_page.set_name(new_folder_name)
+
+    view_folder_page.wait_until_url_contains("/templates/all/folders/")
     view_folder_page.assert_name_equals(new_folder_name)
 
     # try to delete folder
