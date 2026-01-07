@@ -180,6 +180,12 @@ class BasePage:
             ),
         )
 
+    def wait_until_element_is_not_present(self, locator, time=10):
+        return WebDriverWait(self.driver, time).until(
+            EC.invisibility_of_element_located(locator),
+            f"Element {locator} still present on URL {self.current_url} after {time} seconds",
+        )
+
     def sign_out(self):
         profile_page_link = self.wait_for_element(BasePage.profile_page_link)
         profile_page_link.click()

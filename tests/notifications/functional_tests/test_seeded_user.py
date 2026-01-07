@@ -649,6 +649,10 @@ def _check_status_of_notification(page, functional_tests_service_id, reference_t
 
 @retry_on_stale_element_exception
 def get_dashboard_stats(dashboard_page, message_type, template_id):
+    # Wait until loading indicator disappears
+    loading_indicator_locator = (By.CSS_SELECTOR, ".big-number-with-status .big-number-smaller .loading-indicator")
+    dashboard_page.wait_until_element_is_not_present(loading_indicator_locator)
+
     return {
         "total_messages_sent": dashboard_page.get_total_message_count(message_type),
         "template_messages_sent": _get_template_count(dashboard_page, template_id),
