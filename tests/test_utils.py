@@ -240,6 +240,8 @@ def create_email_template(driver, name, content=None, has_unsubscribe_link=False
 
     template_page = EditEmailTemplatePage(driver)
     template_page.fill_template(name=name, content=content, has_unsubscribe_link=has_unsubscribe_link)
+    template_page.wait_until_url_doesnt_contain("/templates/add-email")
+
     return template_page.get_template_id()
 
 
