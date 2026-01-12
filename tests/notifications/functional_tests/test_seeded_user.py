@@ -334,6 +334,8 @@ def test_send_email_with_placeholders_to_one_recipient(request, driver, client_l
     assert list(placeholders[1].keys()) == ["things"]
 
     dashboard_page.click_continue()
+    dashboard_page.wait_until_url_contains("/notification")
+
     notification_id = dashboard_page.get_notification_id()
     one_off_email = client_live_key.get_notification_by_id(notification_id)
     assert one_off_email.get("created_by_name") == f"Preview admin tests user - {test_name}"
@@ -508,6 +510,8 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
 
     edit_template_page = EditEmailTemplatePage(driver)
     edit_template_page.fill_template(name=template_name)
+    edit_template_page.wait_until_url_contains("/templates/", time=20)
+
     template_id = edit_template_page.get_template_id()
     edit_template_page.click_templates()
 
@@ -525,6 +529,8 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     manage_folder_page = ManageFolderPage(driver)
     new_folder_name = folder_name + "-new"
     manage_folder_page.set_name(new_folder_name)
+
+    view_folder_page.wait_until_url_contains("/templates/all/folders/")
     view_folder_page.assert_name_equals(new_folder_name)
 
     # try to delete folder
@@ -643,6 +649,10 @@ def _check_status_of_notification(page, functional_tests_service_id, reference_t
 
 @retry_on_stale_element_exception
 def get_dashboard_stats(dashboard_page, message_type, template_id):
+    # Wait until loading indicator disappears
+    loading_indicator_locator = (By.CSS_SELECTOR, ".big-number-with-status .big-number-smaller .loading-indicator")
+    dashboard_page.wait_until_element_is_not_present(loading_indicator_locator)
+
     return {
         "total_messages_sent": dashboard_page.get_total_message_count(message_type),
         "template_messages_sent": _get_template_count(dashboard_page, template_id),

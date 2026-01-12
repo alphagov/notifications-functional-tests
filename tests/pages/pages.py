@@ -180,6 +180,12 @@ class BasePage:
             ),
         )
 
+    def wait_until_element_is_not_present(self, locator, time=10):
+        return WebDriverWait(self.driver, time).until(
+            EC.invisibility_of_element_located(locator),
+            f"Element {locator} still present on URL {self.current_url} after {time} seconds",
+        )
+
     def sign_out(self):
         profile_page_link = self.wait_for_element(BasePage.profile_page_link)
         profile_page_link.click()
@@ -189,11 +195,11 @@ class BasePage:
 
         self.driver.delete_all_cookies()
 
-    def wait_until_url_contains(self, url):
-        return WebDriverWait(self.driver, 10).until(lambda _: url in self.driver.current_url)
+    def wait_until_url_contains(self, url, time=10):
+        return WebDriverWait(self.driver, time).until(lambda _: url in self.driver.current_url)
 
-    def wait_until_url_doesnt_contain(self, url):
-        return WebDriverWait(self.driver, 10).until(lambda _: url not in self.driver.current_url)
+    def wait_until_url_doesnt_contain(self, url, time=10):
+        return WebDriverWait(self.driver, time).until(lambda _: url not in self.driver.current_url)
 
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
@@ -578,7 +584,7 @@ class DashboardPage(BasePage):
             raise ValueError("Thousands separator pattern not matched")
         return s.replace(",", "")
 
-    @retry(RetryException, tries=10, delay=3)
+    @retry(RetryException, tries=10, delay=10)
     def get_total_message_count(self, message_type):
         if message_type == "email":
             target_div = DashboardPage.total_email_div
@@ -593,12 +599,15 @@ class DashboardPage(BasePage):
         except ValueError as e:
             raise RetryException("Count of messages on dashboard not loaded yet") from e
 
-
+    @retry(RetryException, tries=10, delay=10)
     def get_template_message_count(self, template_id):
         messages_sent_count_for_template_div = self._message_count_for_template_div(template_id)
         element = self.wait_for_element(messages_sent_count_for_template_div)
 
-        return int(self._assert_strip_thousands_commas(element.text))
+        try:
+            return int(self._assert_strip_thousands_commas(element.text))
+        except ValueError as e:
+            raise RetryException("Count of template messages on dashboard not loaded yet") from e
 
     def get_email_unsubscribe_requests_count(self):
         try:

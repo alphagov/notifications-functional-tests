@@ -8,6 +8,7 @@ from selenium.common.exceptions import TimeoutException
 from config import config, generate_unique_email, get_seeded_users_number_range
 from tests.pages import SignInPage
 from tests.test_utils import do_email_auth_verify, do_verify
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def sign_in(driver, account_type="normal", test_name=None):
@@ -20,6 +21,8 @@ def sign_in(driver, account_type="normal", test_name=None):
 
 def sign_in_email_auth(driver):
     _sign_in(driver, "email_auth")
+    WebDriverWait(driver, 10).until(lambda _: "/two-factor-email-sent" in driver.current_url)
+
     assert driver.current_url == config["notify_admin_url"] + "/two-factor-email-sent"
     do_email_auth_verify(driver)
 
