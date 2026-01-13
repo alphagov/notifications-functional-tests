@@ -46,7 +46,9 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
 
     # Extract the generated unsubscribe link
     dashboard_page.click_continue()
+    dashboard_page.wait_until_url_doesnt_contain("/notification/check")
     notification_id = dashboard_page.get_notification_id()
+
     # wait til its in sending/delivered/etc to make sure fields are populated that unsubscribe report expects
     one_off_email_data = retry_call(
         get_notification_by_id_via_api,
