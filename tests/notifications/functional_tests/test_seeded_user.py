@@ -334,7 +334,7 @@ def test_send_email_with_placeholders_to_one_recipient(request, driver, client_l
     assert list(placeholders[1].keys()) == ["things"]
 
     dashboard_page.click_continue()
-    dashboard_page.wait_until_url_contains("/notification")
+    dashboard_page.wait_until_url_doesnt_contain("/notification/check")
 
     notification_id = dashboard_page.get_notification_id()
     one_off_email = client_live_key.get_notification_by_id(notification_id)
