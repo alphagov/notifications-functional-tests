@@ -25,9 +25,10 @@ from tests.pages import (
     ManageFolderPage,
     PreviewLetterPage,
     SendLetterPreviewPage,
+    SendViaCsvPage,
     ShowTemplatesPage,
     TeamMembersPage,
-    UploadCsvPage,
+    UploadsPage,
     ViewFolderPage,
     ViewLetterTemplatePage,
 )
@@ -65,7 +66,7 @@ from tests.test_utils import (
     "message_type",
     ["sms", "email", pytest.param("letter", marks=pytest.mark.template_preview)],
 )
-def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, message_type):
+def test_send_via_csv(driver, login_seeded_user, client_live_key, client_test_key, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 
@@ -77,8 +78,23 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
 
     dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
 
-    upload_csv_page = UploadCsvPage(driver)
-    notification_id = send_notification_via_csv(upload_csv_page, message_type, seeded=True)
+    send_via_csv_page = SendViaCsvPage(driver)
+    job_page = send_notification_via_csv(send_via_csv_page, message_type, seeded=True)
+    notification_id = job_page.get_notification_id()
+    job_id = job_page.get_job_id()
+    job_page.click_uploads()
+
+    uploads_page = UploadsPage(job_page.driver)
+    uploads_page.wait_until_current()
+    _, statuses = uploads_page.get_job_info(job_id)
+
+    if message_type == "letter":
+        assert statuses == {
+            "letter": 1,
+        }
+    else:
+        assert sum(statuses.values()) == 1
+        assert statuses.keys() == {"delivering", "delivered", "failed"}
 
     notification = retry_call(
         get_notification_by_id_via_api,

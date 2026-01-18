@@ -117,11 +117,10 @@ class ManageLetterAttachPageLocators:
 
 class UploadCsvLocators:
     FILE_INPUT = (By.ID, "file")
-    SEND_BUTTON = (
-        By.CSS_SELECTOR,
-        "form button.govuk-button:not(.govuk-button--secondary)",
-    )
-    FIRST_NOTIFICATION_AFTER_UPLOAD = (By.CLASS_NAME, "table-row")
+
+
+class JobPageLocators:
+    FIRST_NOTIFICATION = (By.CLASS_NAME, "table-row")
 
 
 class TeamMembersPageLocators:
