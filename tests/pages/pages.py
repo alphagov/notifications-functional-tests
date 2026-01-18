@@ -40,6 +40,7 @@ from tests.pages.locators import (
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
+    JobPageLocators,
     LetterPreviewPageLocators,
     MainPageLocators,
     ManageLetterAttachPageLocators,
@@ -518,6 +519,7 @@ class DashboardPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
     sms_templates_link = (By.LINK_TEXT, "Text message templates")
     email_templates_link = (By.LINK_TEXT, "Email templates")
+    uploads_link = (By.LINK_TEXT, "Uploads")
     team_members_link = (By.LINK_TEXT, "Team members")
     api_keys_link = (By.LINK_TEXT, "API integration")
     total_email_div = (By.CSS_SELECTOR, "#total-email .big-number-number")
@@ -546,6 +548,10 @@ class DashboardPage(BasePage):
 
     def click_email_templates(self):
         element = self.wait_for_element(DashboardPage.email_templates_link)
+        element.click()
+
+    def click_uploads(self):
+        element = self.wait_for_element(DashboardPage.uploads_link)
         element.click()
 
     def click_team_members_link(self):
@@ -919,7 +925,6 @@ class EditEmailTemplatePage(BasePage):
 class UploadCsvPage(BasePage):
     file_input_element = FileInputElement()
     send_button = UploadCsvLocators.SEND_BUTTON
-    first_notification = UploadCsvLocators.FIRST_NOTIFICATION_AFTER_UPLOAD
 
     def click_send(self):
         element = self.wait_for_element(UploadCsvPage.send_button)
@@ -931,10 +936,22 @@ class UploadCsvPage(BasePage):
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
 
+    def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
+        url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
+        self.driver.get(url)
+
+
+class JobPage(BasePage):
+    uploads_link = (By.LINK_TEXT, "Uploads")
+    first_notification = JobPageLocators.FIRST_NOTIFICATION
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/jobs/", time=time)
+
     @retry(RetryException, tries=20, delay=10)
-    def get_notification_id_after_upload(self):
+    def get_notification_id(self):
         try:
-            element = self.wait_for_element(UploadCsvPage.first_notification)
+            element = self.wait_for_element(self.first_notification)
             notification_id = element.get_attribute("id")
             if not notification_id:
                 raise RetryException(f"No notification id yet {notification_id}")
@@ -943,9 +960,31 @@ class UploadCsvPage(BasePage):
         except StaleElementReferenceException as e:
             raise RetryException("Could not find element...") from e
 
-    def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
-        url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
-        self.driver.get(url)
+    def get_job_id(self):
+        return (self.driver.current_url.split("/jobs/")[1]).split("?")[0]
+
+    def click_uploads(self):
+        element = self.wait_for_element(self.uploads_link)
+        element.click()
+
+
+class UploadsPage(BasePage):
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/uploads", time=time)
+
+    def get_job_info(self, job_id):
+        link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
+        next_td = link_element.find_element(By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
+        next_td_text = next_td.get_property("innerText")
+
+        return link_element, {
+            k: int(m.group(1))
+            for k, m in (
+                (k, re.search(rf"\b(\d+)\s+{k}\b", next_td_text))
+                for k in ("delivering", "delivered", "failed", "letter", "letters")
+            )
+            if m is not None
+        }
 
 
 class TeamMembersPage(BasePage):

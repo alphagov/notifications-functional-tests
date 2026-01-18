@@ -110,6 +110,7 @@ def do_verify(driver, mobile_number):
     if not verify_page.verify_code_successful():
         raise RetryException
 
+
 def do_email_auth_verify(driver):
     do_email_verification(
         driver,

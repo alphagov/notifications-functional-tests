@@ -1,6 +1,7 @@
 from notifications_python_client.errors import HTTPError
 import uuid
 from config import config
+from tests.pages import JobPage
 from tests.test_utils import RetryException, create_temp_csv
 
 
@@ -40,9 +41,11 @@ def send_notification_via_csv(upload_csv_page, message_type, seeded=False):
 
     upload_csv_page.go_to_upload_csv_for_service_and_template(service_id, template_id)
     upload_csv_page.upload_csv(directory, filename)
-    notification_id = upload_csv_page.get_notification_id_after_upload()
 
-    return notification_id
+    job_page = JobPage(upload_csv_page.driver)
+    job_page.wait_until_current(time=20)
+
+    return job_page
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):
