@@ -640,6 +640,11 @@ class DashboardPage(BasePage):
             "template_messages_sent": template_messages_count,
         }
 
+    @staticmethod
+    def assert_stats_increased(stats_before, stats_after):
+        for k in stats_before.keys():
+            assert stats_after[k] > stats_before[k]
+
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")

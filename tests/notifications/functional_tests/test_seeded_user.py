@@ -121,7 +121,7 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
 
     dashboard_stats_after = dashboard_page.get_stats(message_type, template_id)
 
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+    dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
 
 
 # @recordtime
@@ -130,18 +130,16 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
 #     ["sms", "email"],
 # )
 # def upload_send_emergency_contact_list(driver, login_seeded_user, client_live_key, message_type):
-#     dashboard_page = DashboardPage(driver)
-#     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-# 
-#     template_id = {
-#         "email": config["service"]["templates"]["email"],
-#         "sms": config["service"]["templates"]["sms"],
-#         "letter": config["service"]["templates"]["letter"],
-#     }.get(message_type)
-# 
-#     dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
-# 
-#     
+    # dashboard_page = DashboardPage(driver)
+    # dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+    # 
+    # template_id = {
+    #     "email": config["service"]["templates"]["email"],
+    #     "sms": config["service"]["templates"]["sms"],
+    #     "letter": config["service"]["templates"]["letter"],
+    # }.get(message_type)
+    # 
+    # dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
 
 
 @recordtime
@@ -376,7 +374,7 @@ def test_send_email_with_placeholders_to_one_recipient(request, driver, client_l
 
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
     dashboard_stats_after = dashboard_page.get_stats("email", template_id)
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+    dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
 
     placeholders_test = send_notification_to_one_recipient(
         driver, template_name, "email", test=True, placeholders_number=2, test_name=test_name
@@ -407,7 +405,7 @@ def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, lo
     dashboard_page.click_continue()
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
     dashboard_stats_after = dashboard_page.get_stats("sms", template_id)
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+    dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
 
     # Test sending to ourselves (seeded user)
     placeholders_test = send_notification_to_one_recipient(
@@ -679,8 +677,3 @@ def _check_status_of_notification(page, functional_tests_service_id, reference_t
     page.expand_all_messages()
     notification_offset = page.find_notification_offset_for_client_reference(reference_to_check)
     assert status_to_check == page.get_notification_status_for_log_offset(notification_offset)
-
-
-def assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after):
-    for k in dashboard_stats_before.keys():
-        assert dashboard_stats_after[k] > dashboard_stats_before[k]
