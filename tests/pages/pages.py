@@ -626,7 +626,7 @@ class DashboardPage(BasePage):
         return int(self._assert_strip_thousands_commas(element.text))
 
     @retry_on_stale_element_exception
-    def get_dashboard_stats(self, message_type, template_id):
+    def get_stats(self, message_type, template_id):
         # Wait until loading indicator disappears
         self.wait_until_element_is_not_present(self.loading_indicator)
 
