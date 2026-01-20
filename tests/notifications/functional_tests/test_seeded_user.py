@@ -7,11 +7,9 @@ from io import BytesIO
 import pytest
 from pypdf import PdfReader
 from retry.api import retry_call
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from config import config
-from tests.decorators import retry_on_stale_element_exception
 from tests.notifications.functional_tests.consts import (
     correct_letter,
     pdf_with_virus,
@@ -124,6 +122,26 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
     dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
 
     assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+
+
+# @recordtime
+# @pytest.mark.parametrize(
+#     "message_type",
+#     ["sms", "email"],
+# )
+# def upload_send_emergency_contact_list(driver, login_seeded_user, client_live_key, message_type):
+#     dashboard_page = DashboardPage(driver)
+#     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+# 
+#     template_id = {
+#         "email": config["service"]["templates"]["email"],
+#         "sms": config["service"]["templates"]["sms"],
+#         "letter": config["service"]["templates"]["letter"],
+#     }.get(message_type)
+# 
+#     dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
+# 
+#     
 
 
 @recordtime
@@ -663,27 +681,6 @@ def _check_status_of_notification(page, functional_tests_service_id, reference_t
     assert status_to_check == page.get_notification_status_for_log_offset(notification_offset)
 
 
-@retry_on_stale_element_exception
-def get_dashboard_stats(dashboard_page, message_type, template_id):
-    # Wait until loading indicator disappears
-    loading_indicator_locator = (By.CSS_SELECTOR, ".big-number-with-status .big-number-smaller .loading-indicator")
-    dashboard_page.wait_until_element_is_not_present(loading_indicator_locator)
-
-    return {
-        "total_messages_sent": dashboard_page.get_total_message_count(message_type),
-        "template_messages_sent": _get_template_count(dashboard_page, template_id),
-    }
-
-
 def assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after):
     for k in dashboard_stats_before.keys():
         assert dashboard_stats_after[k] > dashboard_stats_before[k]
-
-
-def _get_template_count(dashboard_page, template_id):
-    try:
-        template_messages_count = dashboard_page.get_template_message_count(template_id)
-    except TimeoutException:
-        return 0  # template count may not exist yet if no messages sent
-    else:
-        return template_messages_count
