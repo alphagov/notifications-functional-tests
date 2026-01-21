@@ -947,10 +947,6 @@ class EditEmailTemplatePage(BasePage):
 class UploadCsvPage(BasePage):
     file_input_element = FileInputElement()
 
-    def click_send(self):
-        element = self.wait_for_element(UploadCsvPage.send_button)
-        element.click()
-
     def upload_csv(self, directory, path):
         file_path = os.path.join(directory, path)
         self.file_input_element = file_path
@@ -960,6 +956,10 @@ class UploadCsvPage(BasePage):
 
 class SendViaCsvPage(UploadCsvPage):
     send_button = SendViaCsvLocators.SEND_BUTTON
+
+    def click_send(self):
+        element = self.wait_for_element(self.send_button)
+        element.click()
 
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
