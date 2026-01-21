@@ -58,7 +58,7 @@ from tests.pages.locators import (
     SmsSenderLocators,
     TeamMembersPageLocators,
     TemplatePageLocators,
-    UploadCsvLocators,
+    SendViaCsvLocators,
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
@@ -946,7 +946,6 @@ class EditEmailTemplatePage(BasePage):
 
 class UploadCsvPage(BasePage):
     file_input_element = FileInputElement()
-    send_button = UploadCsvLocators.SEND_BUTTON
 
     def click_send(self):
         element = self.wait_for_element(UploadCsvPage.send_button)
@@ -957,6 +956,10 @@ class UploadCsvPage(BasePage):
         self.file_input_element = file_path
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
+
+
+class SendViaCsvPage(UploadCsvPage):
+    send_button = SendViaCsvLocators.SEND_BUTTON
 
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
@@ -1013,6 +1016,10 @@ class UploadsPage(BasePage):
     def click_upload_emergency_contact_list(self):
         element = self.wait_for_element(self.upload_emergency_contact_list_link)
         element.click()
+
+
+class UploadEmergencyContactListPage(BasePage):
+    pass
 
 
 class TeamMembersPage(BasePage):

@@ -27,7 +27,7 @@ from tests.pages import (
     SendLetterPreviewPage,
     ShowTemplatesPage,
     TeamMembersPage,
-    UploadCsvPage,
+    SendViaCsvPage,
     UploadsPage,
     ViewFolderPage,
     ViewLetterTemplatePage,
@@ -66,7 +66,7 @@ from tests.test_utils import (
     "message_type",
     ["sms", "email", pytest.param("letter", marks=pytest.mark.template_preview)],
 )
-def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, message_type):
+def test_send_via_csv(driver, login_seeded_user, client_live_key, client_test_key, message_type):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 
@@ -78,7 +78,7 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
 
     dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
 
-    upload_csv_page = UploadCsvPage(driver)
+    upload_csv_page = SendViaCsvPage(driver)
     job_page = send_notification_via_csv(upload_csv_page, message_type, seeded=True)
     notification_id = job_page.get_notification_id()
     job_id = job_page.get_job_id()
@@ -124,22 +124,22 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
     dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
 
 
-# @recordtime
-# @pytest.mark.parametrize(
-#     "message_type",
-#     ["sms", "email"],
-# )
-# def upload_send_emergency_contact_list(driver, login_seeded_user, client_live_key, message_type):
-    # dashboard_page = DashboardPage(driver)
-    # dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-    # 
-    # template_id = {
-    #     "email": config["service"]["templates"]["email"],
-    #     "sms": config["service"]["templates"]["sms"],
-    #     "letter": config["service"]["templates"]["letter"],
-    # }.get(message_type)
-    # 
-    # dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
+@recordtime
+@pytest.mark.parametrize(
+    "message_type",
+    ["sms", "email"],
+)
+def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, client_live_key, message_type):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+
+    template_id = {
+        "email": config["service"]["templates"]["email"],
+        "sms": config["service"]["templates"]["sms"],
+        "letter": config["service"]["templates"]["letter"],
+    }.get(message_type)
+
+    dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
 
 
 @recordtime

@@ -117,6 +117,9 @@ class ManageLetterAttachPageLocators:
 
 class UploadCsvLocators:
     FILE_INPUT = (By.ID, "file")
+
+
+class SendViaCsvLocators(UploadCsvLocators):
     SEND_BUTTON = (
         By.CSS_SELECTOR,
         "form button.govuk-button:not(.govuk-button--secondary)",

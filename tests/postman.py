@@ -24,7 +24,7 @@ def send_precompiled_letter_via_api(reference, client, pdf_file):
     return resp_json["id"]
 
 
-def send_notification_via_csv(upload_csv_page, message_type, seeded=False):
+def send_notification_via_csv(send_via_csv_page, message_type, seeded=False):
     service_id = config["service"]["id"] if seeded else config["service"]["id"]
     email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
     letter_contact = config["letter_contact_data"]
@@ -39,10 +39,10 @@ def send_notification_via_csv(upload_csv_page, message_type, seeded=False):
         template_id = config["service"]["templates"]["letter"]
         directory, filename = create_temp_csv(letter_contact)
 
-    upload_csv_page.go_to_upload_csv_for_service_and_template(service_id, template_id)
-    upload_csv_page.upload_csv(directory, filename)
+    send_via_csv_page.go_to_upload_csv_for_service_and_template(service_id, template_id)
+    send_via_csv_page.upload_csv(directory, filename)
 
-    job_page = JobPage(upload_csv_page.driver)
+    job_page = JobPage(send_via_csv_page.driver)
     job_page.wait_until_current(time=20)
 
     return job_page
