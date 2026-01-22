@@ -955,15 +955,15 @@ class EditEmailTemplatePage(BasePage):
 class UploadCsvPage(BasePage):
     file_input_element = FileInputElement()
 
+
+class SendViaCsvPage(UploadCsvPage):
+    send_button = SendViaCsvLocators.SEND_BUTTON
+
     def upload_csv(self, directory, path):
         file_path = os.path.join(directory, path)
         self.file_input_element = file_path
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
-
-
-class SendViaCsvPage(UploadCsvPage):
-    send_button = SendViaCsvLocators.SEND_BUTTON
 
     def click_send(self):
         element = self.wait_for_element(self.send_button)
@@ -1027,8 +1027,19 @@ class UploadsPage(BasePage):
 
 
 class UploadEmergencyContactListPage(UploadCsvPage):
+    url_re = r"/upload-contact-list(\?.*)?$"
+
+    def upload_csv(self, directory, path):
+        file_path = os.path.join(directory, path)
+        self.file_input_element = file_path
+        self.wait_until_not_current()
+        shutil.rmtree(directory, ignore_errors=True)
+
     def wait_until_current(self, time=10):
-        return self.wait_until_url_matches(r"/upload-contact-list(\?.*)?$", time=time)
+        return self.wait_until_url_matches(self.url_re, time=time)
+
+    def wait_until_not_current(self, time=10):
+        return self.wait_until_url_doesnt_match(self.url_re, time=time)
 
 
 class CheckEmergencyContactListPage(BasePage):
