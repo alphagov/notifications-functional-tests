@@ -148,6 +148,10 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     upload_contact_list_page = UploadEmergencyContactListPage(uploads_page.driver)
     upload_contact_list_page.wait_until_current()
 
+    assert upload_contact_list_page.get_preview_header() == [
+        {"email": "email address", "sms": "phone number"}[message_type]
+    ]
+
 
 @recordtime
 def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_key):
