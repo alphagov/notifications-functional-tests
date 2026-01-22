@@ -28,6 +28,7 @@ from tests.pages import (
     SendViaCsvPage,
     ShowTemplatesPage,
     TeamMembersPage,
+    UploadEmergencyContactListPage,
     UploadsPage,
     ViewFolderPage,
     ViewLetterTemplatePage,
@@ -140,6 +141,12 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     }.get(message_type)
 
     dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
+
+    dashboard_page.click_uploads()
+    uploads_page = UploadsPage(dashboard_page.driver)
+    uploads_page.click_upload_emergency_contact_list()
+    upload_contact_list_page = UploadEmergencyContactListPage(uploads_page.driver)
+    upload_contact_list_page.wait_until_current()
 
 
 @recordtime

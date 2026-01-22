@@ -203,6 +203,14 @@ class BasePage:
     def wait_until_url_doesnt_contain(self, url, time=10):
         return WebDriverWait(self.driver, time).until(lambda _: url not in self.driver.current_url)
 
+    def wait_until_url_matches(self, pattern: str | re.Pattern, time=10):
+        p = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+        return WebDriverWait(self.driver, time).until(lambda _: p.search(self.driver.current_url))
+
+    def wait_until_url_doesnt_match(self, pattern: str | re.Pattern, time=10):
+        p = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+        return WebDriverWait(self.driver, time).until(lambda _: not p.search(self.driver.current_url))
+
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
@@ -997,7 +1005,7 @@ class UploadsPage(BasePage):
     upload_emergency_contact_list_link = (By.LINK_TEXT, "Upload an emergency contact list")
 
     def wait_until_current(self, time=10):
-        return self.wait_until_url_contains("/uploads", time=time)
+        return self.wait_until_url_matches(r"/upload-contact-list(\?.*)?$", time=time)
 
     def get_job_info(self, job_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
@@ -1019,7 +1027,8 @@ class UploadsPage(BasePage):
 
 
 class UploadEmergencyContactListPage(UploadCsvPage):
-    pass
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_matches(r"/upload-contact-list(\?.*)?$", time=time)
 
 
 class CheckEmergencyContactListPage(BasePage):

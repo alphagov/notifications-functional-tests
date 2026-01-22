@@ -1,7 +1,7 @@
 from notifications_python_client.errors import HTTPError
 import uuid
 from config import config
-from tests.pages import JobPage, UploadsPage
+from tests.pages import JobPage, CheckEmergencyContactListPage
 from tests.test_utils import RetryException, create_temp_csv
 
 
@@ -59,10 +59,10 @@ def upload_contact_list_csv(upload_contact_list_csv_page, message_type: str, see
 
     upload_contact_list_csv_page.upload_csv(directory, filename)
 
-    uploads_page = UploadsPage(upload_contact_list_csv_page.driver)
-    uploads_page.wait_until_current(time=20)
+    check_page = CheckEmergencyContactListPage(upload_contact_list_csv_page.driver)
+    check_page.wait_until_current(time=20)
 
-    return uploads_page
+    return check_page
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):
