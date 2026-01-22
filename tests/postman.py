@@ -24,22 +24,22 @@ def send_precompiled_letter_via_api(reference, client, pdf_file):
     return resp_json["id"]
 
 
-def send_notification_via_csv(send_via_csv_page, message_type, seeded=False):
-    service_id = config["service"]["id"] if seeded else config["service"]["id"]
+def _get_template_temp_csv_for_message_type(message_type: str, seeded: bool = False) -> tuple[str, str, str]:
     email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
     letter_contact = config["letter_contact_data"]
 
     if message_type == "sms":
-        template_id = config["service"]["templates"]["sms"]
-        directory, filename = create_temp_csv({"phone number": config["user"]["mobile"]})
+        return config["service"]["templates"]["sms"], *create_temp_csv({"phone number": config["user"]["mobile"]})
     elif message_type == "email":
-        template_id = config["service"]["templates"]["email"]
-        directory, filename = create_temp_csv({"email address": email})
+        return config["service"]["templates"]["email"], *create_temp_csv({"email address": email})
     elif message_type == "letter":
-        template_id = config["service"]["templates"]["letter"]
-        directory, filename = create_temp_csv(letter_contact)
+        return config["service"]["templates"]["letter"], *create_temp_csv(letter_contact)
 
-    send_via_csv_page.go_to_upload_csv_for_service_and_template(service_id, template_id)
+
+def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool = False):
+    template_id, directory, filename = _get_template_temp_csv_for_message_type(message_type, seeded=seeded)
+
+    send_via_csv_page.go_to_upload_csv_for_service_and_template(config["service"]["id"], template_id)
     send_via_csv_page.upload_csv(directory, filename)
 
     job_page = JobPage(send_via_csv_page.driver)

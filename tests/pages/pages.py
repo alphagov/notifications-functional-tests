@@ -48,6 +48,7 @@ from tests.pages.locators import (
     NavigationLocators,
     RenameTemplatePageLocators,
     SendLetterPreviewPageLocators,
+    SendViaCsvLocators,
     ServiceJoinRequestApprovePageLocators,
     ServiceJoinRequestChoosePermissionsPageLocators,
     ServiceJoinRequestChooseServicePageLocators,
@@ -58,7 +59,6 @@ from tests.pages.locators import (
     SmsSenderLocators,
     TeamMembersPageLocators,
     TemplatePageLocators,
-    SendViaCsvLocators,
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
@@ -633,7 +633,7 @@ class DashboardPage(BasePage):
         try:
             template_messages_count = self.get_template_message_count(template_id)
         except TimeoutException:
-            template_messages_count =  0  # template count may not exist yet if no messages sent
+            template_messages_count = 0  # template count may not exist yet if no messages sent
 
         return {
             "total_messages_sent": self.get_total_message_count(message_type),
@@ -1018,7 +1018,7 @@ class UploadsPage(BasePage):
         element.click()
 
 
-class UploadEmergencyContactListPage(BasePage):
+class UploadEmergencyContactListPage(UploadCsvPage):
     pass
 
 
