@@ -1005,7 +1005,7 @@ class UploadsPage(BasePage):
     upload_emergency_contact_list_link = (By.LINK_TEXT, "Upload an emergency contact list")
 
     def wait_until_current(self, time=10):
-        return self.wait_until_url_matches(r"/upload-contact-list(\?.*)?$", time=time)
+        return self.wait_until_url_matches(r"/uploads(\?.*)?$", time=time)
 
     def get_job_info(self, job_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
