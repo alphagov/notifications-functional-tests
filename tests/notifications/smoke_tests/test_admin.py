@@ -17,8 +17,8 @@ from tests.test_utils import (
 def test_admin(driver, client_live_key, login_user):
     upload_csv_page = UploadCsvPage(driver)
 
-    csv_sms_notification_id = send_notification_via_csv(upload_csv_page, "sms")
-    csv_email_notification_id = send_notification_via_csv(upload_csv_page, "email")
+    csv_sms_notification_id = send_notification_via_csv(upload_csv_page, "sms").get_notification_id()
+    csv_email_notification_id = send_notification_via_csv(upload_csv_page, "email").get_notification_id()
 
     csv_sms_notification = retry_call(
         get_notification_by_id_via_api,

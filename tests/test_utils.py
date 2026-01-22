@@ -7,6 +7,7 @@ import tempfile
 import uuid
 from datetime import UTC, datetime
 import time
+from typing import Any
 
 from filelock import FileLock
 from notifications_python_client.notifications import NotificationsAPIClient
@@ -54,16 +55,40 @@ class NotificationStatuses:
     SENT = RECEIVED | DELIVERED | {"sending", "pending"}
 
 
-def create_temp_csv(fields):
+def create_temp_csv(fields: dict[str, Any], include_build_id: bool = True) -> tuple[str, str]:
     directory_name = tempfile.mkdtemp()
     csv_filename = f"{uuid.uuid4()}-sample.csv"
     csv_file_path = os.path.join(directory_name, csv_filename)
-    fields.update({"build_id": "No build id"})
+
+    if include_build_id:
+        fields.update({"build_id": "No build id"})
+
     with open(csv_file_path, "w") as csv_file:
         csv_writer = csv.DictWriter(csv_file, fieldnames=fields.keys())
         csv_writer.writeheader()
         csv_writer.writerow(fields)
+
     return directory_name, csv_filename
+
+
+def get_template_temp_csv_for_message_type(
+    message_type: str, seeded: bool = False, include_build_id: bool = True
+) -> tuple[str, str, str]:
+    email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
+    letter_contact = config["letter_contact_data"]
+
+    if message_type == "sms":
+        return config["service"]["templates"]["sms"], *create_temp_csv(
+            {"phone number": config["user"]["mobile"]}, include_build_id=include_build_id
+        )
+    elif message_type == "email":
+        return config["service"]["templates"]["email"], *create_temp_csv(
+            {"email address": email}, include_build_id=include_build_id
+        )
+    elif message_type == "letter":
+        return config["service"]["templates"]["letter"], *create_temp_csv(
+            letter_contact, include_build_id=include_build_id
+        )
 
 
 def convert_naive_utc_datetime_to_cap_standard_string(dt):
@@ -109,6 +134,7 @@ def do_verify(driver, mobile_number):
     verify_page.verify(verify_code)
     if not verify_page.verify_code_successful():
         raise RetryException
+
 
 def do_email_auth_verify(driver):
     do_email_verification(

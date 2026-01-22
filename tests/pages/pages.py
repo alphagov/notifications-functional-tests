@@ -17,6 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from config import config
+from tests.decorators import retry_on_stale_element_exception
 from tests.pages.element import (
     BasePageElement,
     EmailInputElement,
@@ -40,12 +41,14 @@ from tests.pages.locators import (
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
+    JobPageLocators,
     LetterPreviewPageLocators,
     MainPageLocators,
     ManageLetterAttachPageLocators,
     NavigationLocators,
     RenameTemplatePageLocators,
     SendLetterPreviewPageLocators,
+    SendViaCsvLocators,
     ServiceJoinRequestApprovePageLocators,
     ServiceJoinRequestChoosePermissionsPageLocators,
     ServiceJoinRequestChooseServicePageLocators,
@@ -56,7 +59,6 @@ from tests.pages.locators import (
     SmsSenderLocators,
     TeamMembersPageLocators,
     TemplatePageLocators,
-    UploadCsvLocators,
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
@@ -200,6 +202,14 @@ class BasePage:
 
     def wait_until_url_doesnt_contain(self, url, time=10):
         return WebDriverWait(self.driver, time).until(lambda _: url not in self.driver.current_url)
+
+    def wait_until_url_matches(self, pattern: str | re.Pattern, time=10):
+        p = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+        return WebDriverWait(self.driver, time).until(lambda _: p.search(self.driver.current_url))
+
+    def wait_until_url_doesnt_match(self, pattern: str | re.Pattern, time=10):
+        p = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+        return WebDriverWait(self.driver, time).until(lambda _: not p.search(self.driver.current_url))
 
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
@@ -518,6 +528,7 @@ class DashboardPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
     sms_templates_link = (By.LINK_TEXT, "Text message templates")
     email_templates_link = (By.LINK_TEXT, "Email templates")
+    uploads_link = (By.LINK_TEXT, "Uploads")
     team_members_link = (By.LINK_TEXT, "Team members")
     api_keys_link = (By.LINK_TEXT, "API integration")
     total_email_div = (By.CSS_SELECTOR, "#total-email .big-number-number")
@@ -527,6 +538,7 @@ class DashboardPage(BasePage):
     navigation = (By.CLASS_NAME, "navigation")
     email_unsubscribe_requests_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests")
     email_unsubscribe_requests_count_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests .banner-dashboard-count")
+    loading_indicator = (By.CSS_SELECTOR, ".big-number-with-status .big-number-smaller .loading-indicator")
 
     def _message_count_for_template_div(self, template_id):
         return (By.ID, template_id)
@@ -546,6 +558,10 @@ class DashboardPage(BasePage):
 
     def click_email_templates(self):
         element = self.wait_for_element(DashboardPage.email_templates_link)
+        element.click()
+
+    def click_uploads(self):
+        element = self.wait_for_element(DashboardPage.uploads_link)
         element.click()
 
     def click_team_members_link(self):
@@ -616,6 +632,26 @@ class DashboardPage(BasePage):
             return 0
 
         return int(self._assert_strip_thousands_commas(element.text))
+
+    @retry_on_stale_element_exception
+    def get_stats(self, message_type, template_id):
+        # Wait until loading indicator disappears
+        self.wait_until_element_is_not_present(self.loading_indicator)
+
+        try:
+            template_messages_count = self.get_template_message_count(template_id)
+        except TimeoutException:
+            template_messages_count = 0  # template count may not exist yet if no messages sent
+
+        return {
+            "total_messages_sent": self.get_total_message_count(message_type),
+            "template_messages_sent": template_messages_count,
+        }
+
+    @staticmethod
+    def assert_stats_increased(stats_before, stats_after):
+        for k in stats_before.keys():
+            assert stats_after[k] > stats_before[k]
 
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
@@ -918,12 +954,10 @@ class EditEmailTemplatePage(BasePage):
 
 class UploadCsvPage(BasePage):
     file_input_element = FileInputElement()
-    send_button = UploadCsvLocators.SEND_BUTTON
-    first_notification = UploadCsvLocators.FIRST_NOTIFICATION_AFTER_UPLOAD
 
-    def click_send(self):
-        element = self.wait_for_element(UploadCsvPage.send_button)
-        element.click()
+
+class SendViaCsvPage(UploadCsvPage):
+    send_button = SendViaCsvLocators.SEND_BUTTON
 
     def upload_csv(self, directory, path):
         file_path = os.path.join(directory, path)
@@ -931,10 +965,26 @@ class UploadCsvPage(BasePage):
         self.click_send()
         shutil.rmtree(directory, ignore_errors=True)
 
+    def click_send(self):
+        element = self.wait_for_element(self.send_button)
+        element.click()
+
+    def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
+        url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
+        self.driver.get(url)
+
+
+class JobPage(BasePage):
+    uploads_link = (By.LINK_TEXT, "Uploads")
+    first_notification = JobPageLocators.FIRST_NOTIFICATION
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/jobs/", time=time)
+
     @retry(RetryException, tries=20, delay=10)
-    def get_notification_id_after_upload(self):
+    def get_notification_id(self):
         try:
-            element = self.wait_for_element(UploadCsvPage.first_notification)
+            element = self.wait_for_element(self.first_notification)
             notification_id = element.get_attribute("id")
             if not notification_id:
                 raise RetryException(f"No notification id yet {notification_id}")
@@ -943,9 +993,69 @@ class UploadCsvPage(BasePage):
         except StaleElementReferenceException as e:
             raise RetryException("Could not find element...") from e
 
-    def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
-        url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
-        self.driver.get(url)
+    def get_job_id(self):
+        return (self.driver.current_url.split("/jobs/")[1]).split("?")[0]
+
+    def click_uploads(self):
+        element = self.wait_for_element(self.uploads_link)
+        element.click()
+
+
+class UploadsPage(BasePage):
+    upload_emergency_contact_list_link = (By.LINK_TEXT, "Upload an emergency contact list")
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_matches(r"/uploads(\?.*)?$", time=time)
+
+    def get_job_info(self, job_id):
+        link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
+        next_td = link_element.find_element(By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
+        next_td_text = next_td.text
+
+        return link_element, {
+            k: int(m.group(1))
+            for k, m in (
+                (k, re.search(rf"\b(\d+)\s+{k}\b", next_td_text))
+                for k in ("delivering", "delivered", "failed", "letter", "letters")
+            )
+            if m is not None
+        }
+
+    def click_upload_emergency_contact_list(self):
+        element = self.wait_for_element(self.upload_emergency_contact_list_link)
+        element.click()
+
+
+class UploadEmergencyContactListPage(UploadCsvPage):
+    url_re = r"/upload-contact-list(\?.*)?$"
+
+    def upload_csv(self, directory, path):
+        file_path = os.path.join(directory, path)
+        self.file_input_element = file_path
+        self.wait_until_not_current()
+        shutil.rmtree(directory, ignore_errors=True)
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_matches(self.url_re, time=time)
+
+    def wait_until_not_current(self, time=10):
+        return self.wait_until_url_doesnt_match(self.url_re, time=time)
+
+
+class CheckEmergencyContactListPage(BasePage):
+    preview_header_cells = (By.XPATH, ".//table[contains(./caption, '.csv')]//tr[./th][1]/th")
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/check-contact-list/", time=time)
+
+    def get_contact_list_id(self):
+        return (self.driver.current_url.split("/check-contact-list/")[1]).split("?")[0]
+
+    def get_preview_header(self):
+        cells = self.wait_for_elements(self.preview_header_cells)
+        all_contents = [cell.text for cell in cells]
+        assert all_contents[0] == "1"
+        return all_contents[1:]
 
 
 class TeamMembersPage(BasePage):
