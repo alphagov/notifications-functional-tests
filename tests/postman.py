@@ -1,7 +1,7 @@
 from notifications_python_client.errors import HTTPError
 import uuid
 from config import config
-from tests.pages import JobPage
+from tests.pages import JobPage, UploadsPage
 from tests.test_utils import RetryException, create_temp_csv
 
 
@@ -24,7 +24,9 @@ def send_precompiled_letter_via_api(reference, client, pdf_file):
     return resp_json["id"]
 
 
-def _get_template_temp_csv_for_message_type(message_type: str, seeded: bool = False) -> tuple[str, str, str]:
+def _get_template_temp_csv_for_message_type(
+    message_type: str, seeded: bool = False, include_build_id: bool = True
+) -> tuple[str, str, str]:
     email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
     letter_contact = config["letter_contact_data"]
 
@@ -37,7 +39,9 @@ def _get_template_temp_csv_for_message_type(message_type: str, seeded: bool = Fa
 
 
 def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool = False):
-    template_id, directory, filename = _get_template_temp_csv_for_message_type(message_type, seeded=seeded)
+    template_id, directory, filename = _get_template_temp_csv_for_message_type(
+        message_type, seeded=seeded, include_build_id=True
+    )
 
     send_via_csv_page.go_to_upload_csv_for_service_and_template(config["service"]["id"], template_id)
     send_via_csv_page.upload_csv(directory, filename)
@@ -46,6 +50,19 @@ def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool
     job_page.wait_until_current(time=20)
 
     return job_page
+
+
+def upload_contact_list_csv(upload_contact_list_csv_page, message_type: str, seeded: bool = False):
+    template_id, directory, filename = _get_template_temp_csv_for_message_type(
+        message_type, seeded=seeded, include_build_id=False
+    )
+
+    upload_contact_list_csv_page.upload_csv(directory, filename)
+
+    uploads_page = UploadsPage(upload_contact_list_csv_page.driver)
+    uploads_page.wait_until_current(time=20)
+
+    return uploads_page
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):

@@ -1002,7 +1002,7 @@ class UploadsPage(BasePage):
     def get_job_info(self, job_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
         next_td = link_element.find_element(By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
-        next_td_text = next_td.get_property("innerText")
+        next_td_text = next_td.text
 
         return link_element, {
             k: int(m.group(1))
@@ -1020,6 +1020,20 @@ class UploadsPage(BasePage):
 
 class UploadEmergencyContactListPage(UploadCsvPage):
     pass
+
+
+class CheckEmergencyContactListPage(BasePage):
+    preview_header_cells = (By.XPATH, ".//table[contains(./caption, '.csv')]//tr[./th][1]/th")
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/check-contact-list/", time=time)
+
+    def get_contact_list_id(self):
+        return (self.driver.current_url.split("/check-contact-list/")[1]).split("?")[0]
+
+    def get_preview_header(self):
+        cells = self.wait_for_elements(self.preview_header_cells)
+        return [cell.text for cell in cells]
 
 
 class TeamMembersPage(BasePage):
