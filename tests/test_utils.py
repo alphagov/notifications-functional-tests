@@ -78,11 +78,17 @@ def get_template_temp_csv_for_message_type(
     letter_contact = config["letter_contact_data"]
 
     if message_type == "sms":
-        return config["service"]["templates"]["sms"], *create_temp_csv({"phone number": config["user"]["mobile"]})
+        return config["service"]["templates"]["sms"], *create_temp_csv(
+            {"phone number": config["user"]["mobile"]}, include_build_id=include_build_id
+        )
     elif message_type == "email":
-        return config["service"]["templates"]["email"], *create_temp_csv({"email address": email})
+        return config["service"]["templates"]["email"], *create_temp_csv(
+            {"email address": email}, include_build_id=include_build_id
+        )
     elif message_type == "letter":
-        return config["service"]["templates"]["letter"], *create_temp_csv(letter_contact)
+        return config["service"]["templates"]["letter"], *create_temp_csv(
+            letter_contact, include_build_id=include_build_id
+        )
 
 
 def convert_naive_utc_datetime_to_cap_standard_string(dt):
