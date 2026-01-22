@@ -39,6 +39,7 @@ from tests.postman import (
     get_pdf_for_letter_via_api,
     send_notification_via_csv,
     send_precompiled_letter_via_api,
+    upload_contact_list_csv,
 )
 from tests.test_utils import (
     NotificationStatuses,
@@ -148,7 +149,10 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     upload_contact_list_page = UploadEmergencyContactListPage(uploads_page.driver)
     upload_contact_list_page.wait_until_current()
 
-    assert upload_contact_list_page.get_preview_header() == [
+    check_contact_list_page = upload_contact_list_csv(upload_contact_list_page, message_type, seeded=True)
+    check_contact_list_page.wait_until_current()
+
+    assert check_contact_list_page.get_preview_header() == [
         {"email": "email address", "sms": "phone number"}[message_type]
     ]
 
