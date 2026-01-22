@@ -18,6 +18,7 @@ from tests.notifications.functional_tests.consts import (
 from tests.pages import (
     ApiIntegrationPage,
     ChangeLetterLanguagePage,
+    CheckEmergencyContactListPage,
     DashboardPage,
     EditEmailTemplatePage,
     EditLetterTemplatePage,
@@ -39,7 +40,6 @@ from tests.postman import (
     get_pdf_for_letter_via_api,
     send_notification_via_csv,
     send_precompiled_letter_via_api,
-    upload_contact_list_csv,
 )
 from tests.test_utils import (
     NotificationStatuses,
@@ -53,6 +53,7 @@ from tests.test_utils import (
     edit_email_template,
     edit_sms_template,
     get_downloaded_document,
+    get_template_temp_csv_for_message_type,
     go_to_templates_page,
     manage_letter_attachment,
     pdf_page_has_text,
@@ -149,7 +150,13 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     upload_contact_list_page = UploadEmergencyContactListPage(uploads_page.driver)
     upload_contact_list_page.wait_until_current()
 
-    check_contact_list_page = upload_contact_list_csv(upload_contact_list_page, message_type, seeded=True)
+    template_id, directory, filename = get_template_temp_csv_for_message_type(
+        message_type, seeded=True, include_build_id=False
+    )
+
+    upload_contact_list_page.upload_csv(directory, filename)
+
+    check_contact_list_page = CheckEmergencyContactListPage(upload_contact_list_page.driver)
     check_contact_list_page.wait_until_current()
 
     assert check_contact_list_page.get_preview_header() == [

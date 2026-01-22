@@ -1,8 +1,8 @@
 from notifications_python_client.errors import HTTPError
 import uuid
 from config import config
-from tests.pages import JobPage, CheckEmergencyContactListPage
-from tests.test_utils import RetryException, create_temp_csv
+from tests.pages import JobPage
+from tests.test_utils import RetryException, get_template_temp_csv_for_message_type
 
 
 def send_notification_via_api(client, template_id, to, message_type):
@@ -24,22 +24,8 @@ def send_precompiled_letter_via_api(reference, client, pdf_file):
     return resp_json["id"]
 
 
-def _get_template_temp_csv_for_message_type(
-    message_type: str, seeded: bool = False, include_build_id: bool = True
-) -> tuple[str, str, str]:
-    email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
-    letter_contact = config["letter_contact_data"]
-
-    if message_type == "sms":
-        return config["service"]["templates"]["sms"], *create_temp_csv({"phone number": config["user"]["mobile"]})
-    elif message_type == "email":
-        return config["service"]["templates"]["email"], *create_temp_csv({"email address": email})
-    elif message_type == "letter":
-        return config["service"]["templates"]["letter"], *create_temp_csv(letter_contact)
-
-
 def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool = False):
-    template_id, directory, filename = _get_template_temp_csv_for_message_type(
+    template_id, directory, filename = get_template_temp_csv_for_message_type(
         message_type, seeded=seeded, include_build_id=True
     )
 
@@ -50,19 +36,6 @@ def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool
     job_page.wait_until_current(time=20)
 
     return job_page
-
-
-def upload_contact_list_csv(upload_contact_list_csv_page, message_type: str, seeded: bool = False):
-    template_id, directory, filename = _get_template_temp_csv_for_message_type(
-        message_type, seeded=seeded, include_build_id=False
-    )
-
-    upload_contact_list_csv_page.upload_csv(directory, filename)
-
-    check_page = CheckEmergencyContactListPage(upload_contact_list_csv_page.driver)
-    check_page.wait_until_current(time=20)
-
-    return check_page
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):
