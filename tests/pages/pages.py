@@ -1057,7 +1057,7 @@ class CheckEmergencyContactListPage(BasePage):
         return self.wait_for_element(self.preview_table)
 
     def get_preview_header(self):
-        cells = self.get_preview_table().find_elements(".//tr[./th][1]/th")
+        cells = self.get_preview_table().find_elements(By.XPATH, ".//tr[./th][1]/th")
         all_contents = [cell.text for cell in cells]
         assert all_contents[0] == "1"
         return all_contents[1:]
