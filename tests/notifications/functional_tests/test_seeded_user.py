@@ -158,9 +158,11 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     check_contact_list_page = CheckEmergencyContactListPage(upload_contact_list_page.driver)
     check_contact_list_page.wait_until_current()
 
+    assert check_contact_list_page.get_h1() == filename
+
     # check we can make our lazy assumptions first
     assert len(csv_data) == 1
-    assert len(csv_data.keys()) == 1
+    assert len(csv_data[0].keys()) == 1
 
     assert check_contact_list_page.get_preview_header() == list(csv_data[0].keys())
     assert check_contact_list_page.get_preview_data() == [list(csv_data[0].values())]

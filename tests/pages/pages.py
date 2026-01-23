@@ -1043,6 +1043,7 @@ class UploadEmergencyContactListPage(UploadCsvPage):
 
 
 class CheckEmergencyContactListPage(BasePage):
+    h1 = (By.CSS_SELECTOR, "h1")
     preview_table = (By.XPATH, ".//table[contains(./caption, '.csv')]")
     save_button = (
         By.CSS_SELECTOR,
@@ -1069,14 +1070,17 @@ class CheckEmergencyContactListPage(BasePage):
             [cell.text for cell in row.find_elements(By.XPATH, "./td")]
             for row in self.get_preview_table().find_elements(By.XPATH, ".//tr[./td]")
         ]
+        # check then strip line numbers
         assert [int(row[0]) for row in all_data] == list(range(2, 2 + len(all_data)))
-
         return [row[1:] for row in all_data]
 
     def click_save(self):
         element = self.wait_for_element(self.save_button)
         assert element.text == "Save contact list"
         element.click()
+
+    def get_h1(self):
+        return self.wait_for_element(self.h1).text
 
 
 class TeamMembersPage(BasePage):
