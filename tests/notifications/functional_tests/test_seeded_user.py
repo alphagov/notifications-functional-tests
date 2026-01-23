@@ -158,6 +158,8 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     check_contact_list_page = CheckEmergencyContactListPage(upload_contact_list_page.driver)
     check_contact_list_page.wait_until_current()
 
+    contact_list_id = check_contact_list_page.get_contact_list_id()
+
     assert check_contact_list_page.get_h1() == filename
 
     # check we can make our lazy assumptions first
@@ -168,6 +170,9 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     assert check_contact_list_page.get_preview_data() == [list(csv_data[0].values())]
 
     check_contact_list_page.click_save()
+
+    uploads_page = UploadsPage(check_contact_list_page.driver)
+    uploads_page.wait_until_current()
 
 
 @recordtime
