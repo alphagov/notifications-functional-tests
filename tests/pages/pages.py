@@ -1053,6 +1053,7 @@ class CheckEmergencyContactListPage(BasePage):
 
     def get_preview_header(self):
         cells = self.wait_for_elements(self.preview_header_cells)
+        print(cells)
         all_contents = [cell.text for cell in cells]
         assert all_contents[0] == "1"
         return all_contents[1:]
