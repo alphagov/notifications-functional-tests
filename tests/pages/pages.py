@@ -83,10 +83,10 @@ class AntiStale:
         self.element = self.webdriverwait_func(self.locator)
 
     @retry(RetryException, tries=5)
-    def retry_on_stale(self, callable, extra_exceptions=()):
+    def retry_on_stale(self, callable):
         try:
             return callable()
-        except (StaleElementReferenceException, *extra_exceptions):
+        except StaleElementReferenceException:
             self.reset_element()
 
     def reset_element(self):
@@ -113,14 +113,14 @@ class AntiStaleElement(AntiStale):
         return self.retry_on_stale(lambda: getattr(self.element, attr))
 
 
-class AntiStaleElementList(AntiStale, Sequence):
+class AntiStaleElementList(AntiStale):
     def __getitem__(self, index):
         class AntiStaleListItem:
             def click(item_self):
-                return self.retry_on_stale(lambda: self.element[index].click(), extra_exceptions=(IndexError,))
+                return self.retry_on_stale(lambda: self.element[index].click())
 
             def __getattr__(item_self, attr):
-                return self.retry_on_stale(lambda: getattr(self.element[index], attr), extra_exceptions=(IndexError,))
+                return self.retry_on_stale(lambda: getattr(self.element[index], attr))
 
         return AntiStaleListItem()
 
@@ -1044,7 +1044,8 @@ class UploadEmergencyContactListPage(UploadCsvPage):
 
 
 class CheckEmergencyContactListPage(BasePage):
-    preview_header_cells = (By.XPATH, ".//table[contains(./caption, '.csv')]//tr[./th][1]/th")
+    preview_table = (By.XPATH, ".//table[contains(./caption, '.csv')]")
+    # preview_header_cells = (By.XPATH, ".//table[contains(./caption, '.csv')]//tr[./th][1]/th")
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_contains("/check-contact-list/", time=time)
@@ -1052,8 +1053,11 @@ class CheckEmergencyContactListPage(BasePage):
     def get_contact_list_id(self):
         return (self.driver.current_url.split("/check-contact-list/")[1]).split("?")[0]
 
+    def get_preview_table(self):
+        return self.wait_for_element(self.preview_table)
+
     def get_preview_header(self):
-        cells = self.wait_for_elements(self.preview_header_cells)
+        cells = self.get_preview_table().find_elements(".//tr[./th][1]/th")
         all_contents = [cell.text for cell in cells]
         assert all_contents[0] == "1"
         return all_contents[1:]
