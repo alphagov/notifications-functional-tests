@@ -1010,7 +1010,7 @@ class UploadsPage(BasePage):
     def get_job_info(self, job_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
         next_td = link_element.find_element(By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
-        next_td_text = next_td.get_property("innerText")
+        next_td_text = next_td.text
 
         return link_element, {
             k: int(m.group(1))
@@ -1045,8 +1045,8 @@ class UploadEmergencyContactListPage(UploadCsvPage):
 class CheckEmergencyContactListPage(BasePage):
     preview_table = (By.XPATH, ".//table[contains(./caption, '.csv')]")
     save_button = (
-        By.XPATH,
-        ".//form//button[@class~='govuk-button'][not(@class~='govuk-button--secondary')][normalize-space(.)='Save contact list']",
+        By.CSS_SELECTOR,
+        "form button.govuk-button:not(.govuk-button--secondary)",
     )
 
     def wait_until_current(self, time=10):
@@ -1060,13 +1060,22 @@ class CheckEmergencyContactListPage(BasePage):
 
     def get_preview_header(self):
         cells = self.get_preview_table().find_elements(By.XPATH, ".//tr[./th][1]/th")
-        all_contents = [cell.get_property("innerText") for cell in cells]
-        print(all_contents)
-        assert all_contents[0] == "1"
+        all_contents = [cell.text for cell in cells]
+        assert re.search(r"\s1$", all_contents[0])
         return all_contents[1:]
+
+    def get_preview_data(self):
+        all_data = [
+            [cell.text for cell in row.find_elements(By.XPATH, "./td")]
+            for row in self.get_preview_table().find_elements(By.XPATH, ".//tr[./td]")
+        ]
+        assert [int(row[0]) for row in all_data] == list(range(2, 2 + len(all_data)))
+
+        return [row[1:] for row in all_data]
 
     def click_save(self):
         element = self.wait_for_element(self.save_button)
+        assert element.text == "Save contact list"
         element.click()
 
 

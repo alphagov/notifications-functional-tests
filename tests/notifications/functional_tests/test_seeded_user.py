@@ -139,7 +139,6 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     template_id = {
         "email": config["service"]["templates"]["email"],
         "sms": config["service"]["templates"]["sms"],
-        "letter": config["service"]["templates"]["letter"],
     }.get(message_type)
 
     dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
@@ -150,7 +149,7 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     upload_contact_list_page = UploadEmergencyContactListPage(uploads_page.driver)
     upload_contact_list_page.wait_until_current()
 
-    template_id, directory, filename = get_template_temp_csv_for_message_type(
+    template_id, csv_data, directory, filename = get_template_temp_csv_for_message_type(
         message_type, seeded=True, include_build_id=False
     )
 
@@ -159,9 +158,12 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     check_contact_list_page = CheckEmergencyContactListPage(upload_contact_list_page.driver)
     check_contact_list_page.wait_until_current()
 
-    assert check_contact_list_page.get_preview_header() == [
-        {"email": "email address", "sms": "phone number"}[message_type]
-    ]
+    # check we can make our lazy assumptions first
+    assert len(csv_data) == 1
+    assert len(csv_data.keys()) == 1
+
+    assert check_contact_list_page.get_preview_header() == list(csv_data[0].keys())
+    assert check_contact_list_page.get_preview_data() == [list(csv_data[0].values())]
 
     check_contact_list_page.click_save()
 

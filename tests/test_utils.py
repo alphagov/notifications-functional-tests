@@ -7,6 +7,7 @@ import tempfile
 import uuid
 from datetime import UTC, datetime
 import time
+from collections.abc import Sequence
 from typing import Any
 
 from filelock import FileLock
@@ -68,12 +69,12 @@ def create_temp_csv(fields: dict[str, Any], include_build_id: bool = True) -> tu
         csv_writer.writeheader()
         csv_writer.writerow(fields)
 
-    return directory_name, csv_filename
+    return [fields], directory_name, csv_filename
 
 
 def get_template_temp_csv_for_message_type(
     message_type: str, seeded: bool = False, include_build_id: bool = True
-) -> tuple[str, str, str]:
+) -> tuple[str, Sequence[dict[str, str]], str, str]:
     email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
     letter_contact = config["letter_contact_data"]
 
