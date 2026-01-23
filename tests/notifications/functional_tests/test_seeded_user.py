@@ -163,6 +163,8 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
         {"email": "email address", "sms": "phone number"}[message_type]
     ]
 
+    check_contact_list_page.click_save()
+
 
 @recordtime
 def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_key):

@@ -2,7 +2,6 @@ import datetime
 import os
 import re
 import shutil
-from collections.abc import Sequence
 from typing import Literal
 from urllib.parse import urlparse, urlsplit
 
@@ -1011,7 +1010,7 @@ class UploadsPage(BasePage):
     def get_job_info(self, job_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
         next_td = link_element.find_element(By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
-        next_td_text = next_td.text
+        next_td_text = next_td.get_property("innerText")
 
         return link_element, {
             k: int(m.group(1))
@@ -1045,6 +1044,10 @@ class UploadEmergencyContactListPage(UploadCsvPage):
 
 class CheckEmergencyContactListPage(BasePage):
     preview_table = (By.XPATH, ".//table[contains(./caption, '.csv')]")
+    save_button = (
+        By.XPATH,
+        ".//form//button[@class~='govuk-button'][not(@class~='govuk-button--secondary')][normalize-space(.)='Save contact list']",
+    )
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_contains("/check-contact-list/", time=time)
@@ -1057,10 +1060,14 @@ class CheckEmergencyContactListPage(BasePage):
 
     def get_preview_header(self):
         cells = self.get_preview_table().find_elements(By.XPATH, ".//tr[./th][1]/th")
-        all_contents = [cell.text for cell in cells]
+        all_contents = [cell.get_property("innerText") for cell in cells]
         print(all_contents)
         assert all_contents[0] == "1"
         return all_contents[1:]
+
+    def click_save(self):
+        element = self.wait_for_element(self.save_button)
+        element.click()
 
 
 class TeamMembersPage(BasePage):
