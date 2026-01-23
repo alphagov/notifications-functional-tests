@@ -2,6 +2,7 @@ import datetime
 import os
 import re
 import shutil
+from collections.abc import Sequence
 from typing import Literal
 from urllib.parse import urlparse, urlsplit
 
@@ -112,7 +113,7 @@ class AntiStaleElement(AntiStale):
         return self.retry_on_stale(lambda: getattr(self.element, attr))
 
 
-class AntiStaleElementList(AntiStale):
+class AntiStaleElementList(AntiStale, Sequence):
     def __getitem__(self, index):
         class AntiStaleListItem:
             def click(item_self):
@@ -1053,7 +1054,6 @@ class CheckEmergencyContactListPage(BasePage):
 
     def get_preview_header(self):
         cells = self.wait_for_elements(self.preview_header_cells)
-        print(cells)
         all_contents = [cell.text for cell in cells]
         assert all_contents[0] == "1"
         return all_contents[1:]
