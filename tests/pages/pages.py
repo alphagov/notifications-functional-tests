@@ -83,10 +83,10 @@ class AntiStale:
         self.element = self.webdriverwait_func(self.locator)
 
     @retry(RetryException, tries=5)
-    def retry_on_stale(self, callable):
+    def retry_on_stale(self, callable, extra_exceptions=()):
         try:
             return callable()
-        except StaleElementReferenceException:
+        except (StaleElementReferenceException, *extra_exceptions):
             self.reset_element()
 
     def reset_element(self):
@@ -117,10 +117,10 @@ class AntiStaleElementList(AntiStale, Sequence):
     def __getitem__(self, index):
         class AntiStaleListItem:
             def click(item_self):
-                return self.retry_on_stale(lambda: self.element[index].click())
+                return self.retry_on_stale(lambda: self.element[index].click(), extra_exceptions=(IndexError,))
 
             def __getattr__(item_self, attr):
-                return self.retry_on_stale(lambda: getattr(self.element[index], attr))
+                return self.retry_on_stale(lambda: getattr(self.element[index], attr), extra_exceptions=(IndexError,))
 
         return AntiStaleListItem()
 
