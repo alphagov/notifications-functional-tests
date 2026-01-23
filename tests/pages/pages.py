@@ -1045,7 +1045,6 @@ class UploadEmergencyContactListPage(UploadCsvPage):
 
 class CheckEmergencyContactListPage(BasePage):
     preview_table = (By.XPATH, ".//table[contains(./caption, '.csv')]")
-    # preview_header_cells = (By.XPATH, ".//table[contains(./caption, '.csv')]//tr[./th][1]/th")
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_contains("/check-contact-list/", time=time)
@@ -1059,6 +1058,7 @@ class CheckEmergencyContactListPage(BasePage):
     def get_preview_header(self):
         cells = self.get_preview_table().find_elements(By.XPATH, ".//tr[./th][1]/th")
         all_contents = [cell.text for cell in cells]
+        print(all_contents)
         assert all_contents[0] == "1"
         return all_contents[1:]
 
