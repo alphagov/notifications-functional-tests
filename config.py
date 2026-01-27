@@ -5,6 +5,9 @@ import uuid
 import pytest
 
 
+assert os.environ["ENVIRONMENT"].lower() != "staging"
+
+
 def generate_unique_email(email, uuid):
     parts = email.split("@")
     return f"{parts[0]}+{uuid}@{parts[1]}"
