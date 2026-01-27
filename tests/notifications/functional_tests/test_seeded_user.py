@@ -177,7 +177,7 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     _, statuses = uploads_page.get_contact_list_info(contact_list_id)
 
     assert statuses == {
-        {"email": "email address", "sms": "phone number"}[message_type]: 1,
+        {"email": "saved email address", "sms": "saved phone number"}[message_type]: 1,
     }
 
 
