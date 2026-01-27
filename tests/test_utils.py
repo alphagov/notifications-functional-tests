@@ -295,7 +295,7 @@ def create_letter_template(driver, name, content=None):
         show_templates_page.select_letter()
 
         view_template_page = ViewLetterTemplatePage(driver)
-        view_template_page.click_edit_body()
+        view_template_page.click_edit()
 
         edit_template_page = EditLetterTemplatePage(driver)
         edit_template_page.create_template(content=content)

@@ -100,13 +100,16 @@ class RenameTemplatePageLocators:
     SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
 
 
-class ViewLetterTemplatePageLocators:
+class ViewTemplatePageLocators:
+    EDIT_BUTTON = (By.PARTIAL_LINK_TEXT, "Edit")
+    SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
+
+
+class ViewLetterTemplatePageLocators(ViewTemplatePageLocators):
     RENAME_LINK = (By.CLASS_NAME, "folder-heading-manage-link")
-    EDIT_BODY = (By.CLASS_NAME, "edit-template-link-letter-body")
     EDIT_WELSH_BODY = (By.XPATH, "//a/span[contains(text(), 'Welsh body')]/..")
     EDIT_ENGLISH_BODY = (By.XPATH, "//a/span[contains(text(), 'English body')]/..")
     ATTACH_BUTTON = (By.CLASS_NAME, "edit-template-link-attachment")
-    SEND_BUTTON = (By.CLASS_NAME, "edit-template-link-get-ready-to-send")
     CHANGE_LANGUAGE = (By.LINK_TEXT, "Change language")
 
 
@@ -231,11 +234,6 @@ class ServiceSettingsLocators:
 class ChangeNameLocators:
     CHANGE_NAME_FIELD = (By.ID, "name")
     PASSWORD_FIELD = (By.ID, "password")
-
-
-class ViewTemplatePageLocators:
-    EDIT_BUTTON = (By.PARTIAL_LINK_TEXT, "Edit")
-    SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
 
 
 class UploadAttachmentLocators:

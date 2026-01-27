@@ -137,8 +137,8 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 
     template_id = {
-        "email": config["service"]["templates"]["email"],
-        "sms": config["service"]["templates"]["sms"],
+        "email": config["service"]["templates"]["email_no_placeholder"],
+        "sms": config["service"]["templates"]["sms_no_placeholder"],
     }.get(message_type)
 
     dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
@@ -179,6 +179,11 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     assert statuses == {
         {"email": "saved email address", "sms": "saved phone number"}[message_type]: 1,
     }
+
+    view_template_page = ViewTemplatePage(uploads_page.driver)
+    view_template_page.go_to_view_template_page_for_service_and_template(config["service"]["id"], template_id)
+
+    view_template_page.click_send()
 
 
 @recordtime

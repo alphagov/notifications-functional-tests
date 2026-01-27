@@ -784,21 +784,29 @@ class EditSmsTemplatePage(BasePage):
         self.click_save()
 
 
-class ViewLetterTemplatePage(BasePage):
+class ViewTemplatePage(BasePage):
+    def click_edit(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.EDIT_BUTTON)
+        element.click()
+
+    def click_send(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.SEND_BUTTON)
+        element.click()
+
+    def go_to_view_template_page_for_service_and_template(self, service_id, template_id):
+        url = f"{self.base_url}/services/{service_id}/templates/{template_id}"
+        self.driver.get(url)
+
+
+class ViewLetterTemplatePage(ViewTemplatePage):
     rename_link = ViewLetterTemplatePageLocators.RENAME_LINK
-    edit_body = ViewLetterTemplatePageLocators.EDIT_BODY
     edit_welsh_body = ViewLetterTemplatePageLocators.EDIT_WELSH_BODY
     edit_english_body = ViewLetterTemplatePageLocators.EDIT_ENGLISH_BODY
     attach_button = ViewLetterTemplatePageLocators.ATTACH_BUTTON
-    send_button = ViewLetterTemplatePageLocators.SEND_BUTTON
     change_language_button = ViewLetterTemplatePageLocators.CHANGE_LANGUAGE
 
     def click_rename_link(self):
         element = self.wait_for_element(ViewLetterTemplatePage.rename_link)
-        element.click()
-
-    def click_edit_body(self):
-        element = self.wait_for_element(ViewLetterTemplatePage.edit_body)
         element.click()
 
     def click_edit_welsh_body(self):
@@ -811,10 +819,6 @@ class ViewLetterTemplatePage(BasePage):
 
     def click_attachment_button(self):
         element = self.wait_for_element(ViewLetterTemplatePage.attach_button)
-        element.click()
-
-    def click_send_button(self):
-        element = self.wait_for_element(ViewLetterTemplatePage.send_button)
         element.click()
 
     def click_change_language(self):
@@ -887,16 +891,6 @@ class SendEmailTemplatePage(BasePage):
 
     def click_add_new_template(self):
         element = self.wait_for_element(SendEmailTemplatePage.add_new_email_template_link)
-        element.click()
-
-
-class ViewTemplatePage(BasePage):
-    def click_edit(self):
-        element = self.wait_for_element(ViewTemplatePageLocators.EDIT_BUTTON)
-        element.click()
-
-    def click_send(self):
-        element = self.wait_for_element(ViewTemplatePageLocators.SEND_BUTTON)
         element.click()
 
 
