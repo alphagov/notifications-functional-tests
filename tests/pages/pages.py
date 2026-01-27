@@ -1007,19 +1007,25 @@ class UploadsPage(BasePage):
     def wait_until_current(self, time=10):
         return self.wait_until_url_matches(r"/uploads(\?.*)?$", time=time)
 
-    def get_job_info(self, job_id):
-        link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
+    def _get_row_info_from_link(self, link_element, info_keys):
         next_td = link_element.find_element(By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
         next_td_text = next_td.text
 
         return link_element, {
             k: int(m.group(1))
-            for k, m in (
-                (k, re.search(rf"\b(\d+)\s+{k}\b", next_td_text))
-                for k in ("delivering", "delivered", "failed", "letter", "letters")
-            )
+            for k, m in ((k, re.search(rf"\b(\d+)\s+{k}\b", next_td_text)) for k in info_keys)
             if m is not None
         }
+
+    def get_job_info(self, job_id):
+        link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
+        return self._get_row_info_from_link(link_element, ("delivering", "delivered", "failed", "letter", "letters"))
+
+    def get_contact_list_info(self, contact_list_id):
+        link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/contact-list/{contact_list_id}']"))
+        return self._get_row_info_from_link(
+            link_element, ("saved email address", "saved email addresses", "saved phone number", "saved phone numbers")
+        )
 
     def click_upload_emergency_contact_list(self):
         element = self.wait_for_element(self.upload_emergency_contact_list_link)

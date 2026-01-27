@@ -174,6 +174,12 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     uploads_page = UploadsPage(check_contact_list_page.driver)
     uploads_page.wait_until_current()
 
+    _, statuses = uploads_page.get_contact_list_info(contact_list_id)
+
+    assert statuses == {
+        {"email": "email address", "sms": "phone number"}[message_type]: 1,
+    }
+
 
 @recordtime
 def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_key):
