@@ -31,7 +31,7 @@ from tests.pages import (
     RegisterFromInvite,
     RegistrationPage,
     SendLetterPreviewPage,
-    SendOneRecipient,
+    SendOneRecipientPage,
     SendSetSenderPage,
     ShowTemplatesPage,
     SmsSenderPage,
@@ -73,22 +73,22 @@ def create_temp_csv(fields: dict[str, Any], include_build_id: bool = True) -> tu
     return [fields], directory_name, csv_filename
 
 
-def get_template_temp_csv_for_message_type(
+def get_temp_csv_for_message_type(
     message_type: str, seeded: bool = False, include_build_id: bool = True
-) -> tuple[str, Sequence[dict[str, str]], str, str]:
+) -> tuple[Sequence[dict[str, str]], str, str]:
     email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
     letter_contact = config["letter_contact_data"]
 
     if message_type == "sms":
-        return config["service"]["templates"]["sms"], *create_temp_csv(
+        return create_temp_csv(
             {"phone number": config["user"]["mobile"]}, include_build_id=include_build_id
         )
     elif message_type == "email":
-        return config["service"]["templates"]["email"], *create_temp_csv(
+        return create_temp_csv(
             {"email address": email}, include_build_id=include_build_id
         )
     elif message_type == "letter":
-        return config["service"]["templates"]["letter"], *create_temp_csv(
+        return create_temp_csv(
             letter_contact, include_build_id=include_build_id
         )
 
@@ -433,7 +433,7 @@ def send_notification_to_one_recipient(
         set_sender_page.choose_alternative_sender()
     set_sender_page.click_continue()
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     if test is True:
         send_to_one_recipient_page.send_to_myself(message_type)
     else:
@@ -472,7 +472,7 @@ def send_letter_to_one_recipient(driver, template_name, address, build_id):
     view_template_page = ViewTemplatePage(driver)
     view_template_page.click_send()
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     send_to_one_recipient_page.send_to_address(address)
     send_to_one_recipient_page.enter_placeholder_value(build_id)
     send_to_one_recipient_page.click_continue()
@@ -491,7 +491,7 @@ def send_bilingual_letter_to_one_recipient(driver, template_name, address, place
     view_template_page = ViewTemplatePage(driver)
     view_template_page.click_send()
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     send_to_one_recipient_page.send_to_address(address)
     for _ in range(len(placeholders)):
         send_to_one_recipient_page.enter_placeholder_value(
@@ -516,7 +516,7 @@ def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipien
 def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_email, test_name=None):
     from tests.pages.rollups import get_email_and_password
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     preview_rows = send_to_one_recipient_page.get_preview_contents()
     assert "From" in str(preview_rows[0].text)
     assert config["service"]["name"] in str(preview_rows[0].text)

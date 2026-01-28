@@ -997,29 +997,25 @@ class JobPage(BasePage):
 
 class UploadsPage(BasePage):
     upload_emergency_contact_list_link = (By.LINK_TEXT, "Upload an emergency contact list")
+    next_td_from_link = (By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_matches(r"/uploads(\?.*)?$", time=time)
 
-    def _get_row_info_from_link(self, link_element, info_keys):
-        next_td = link_element.find_element(By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
-        next_td_text = next_td.text
-
-        return link_element, {
-            k: int(m.group(1))
-            for k, m in ((k, re.search(rf"\b(\d+)\s+{k}\b", next_td_text)) for k in info_keys)
-            if m is not None
+    def _get_row_info_from_link(self, link_element):
+        next_td = link_element.find_element(*self.next_td_from_link)
+        return {
+            m.group(2): int(m.group(1))
+            for m in re.finditer(r"(\d+)\s+\b([A-Za-z -]+)\b", next_td.text)
         }
 
     def get_job_info(self, job_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
-        return self._get_row_info_from_link(link_element, ("delivering", "delivered", "failed", "letter", "letters"))
+        return link_element, self._get_row_info_from_link(link_element)
 
     def get_contact_list_info(self, contact_list_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/contact-list/{contact_list_id}']"))
-        return self._get_row_info_from_link(
-            link_element, ("saved email address", "saved email addresses", "saved phone number", "saved phone numbers")
-        )
+        return link_element, self._get_row_info_from_link(link_element)
 
     def click_upload_emergency_contact_list(self):
         element = self.wait_for_element(self.upload_emergency_contact_list_link)
@@ -1283,7 +1279,7 @@ class SendSetSenderPage(BasePage):
         radio.click()
 
 
-class SendOneRecipient(BasePage):
+class SendOneRecipientPage(BasePage):
     def is_placeholder_a_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
         if message_type == "email":
@@ -1317,6 +1313,16 @@ class SendOneRecipient(BasePage):
 
         button = self.wait_for_element(SingleRecipientLocators.CONTINUE_BUTTON)
         button.click()
+
+    def click_use_emergency_list(self):
+        element = self.wait_for_element(SingleRecipientLocators.USE_EMERGENCY_LIST)
+        element.click()
+
+
+class ChooseContactListPage(BasePage):
+    def get_link_for_contact_list(self, contact_list_id):
+        link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/from-contact-list/{contact_list_id}']"))
+        return link_element
 
 
 class ServiceSettingsPage(BasePage):

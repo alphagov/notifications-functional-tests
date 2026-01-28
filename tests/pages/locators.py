@@ -190,6 +190,7 @@ class SendLetterPreviewPageLocators(LetterPreviewPageLocators):
 class SingleRecipientLocators:
     USE_MY_EMAIL = (By.LINK_TEXT, "Use my email address")
     USE_MY_NUMBER = (By.LINK_TEXT, "Use my phone number")
+    USE_EMERGENCY_LIST = (By.LINK_TEXT, "Use an emergency list")
     PLACEHOLDER_NAME = (By.XPATH, "(//label[@for='placeholder_value'])")
     PLACEHOLDER_VALUE_INPUT = (By.NAME, "placeholder_value")
     PREVIEW_TABLE = (By.CLASS_NAME, "email-message-meta")

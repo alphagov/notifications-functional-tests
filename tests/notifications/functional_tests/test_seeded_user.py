@@ -19,6 +19,7 @@ from tests.pages import (
     ApiIntegrationPage,
     ChangeLetterLanguagePage,
     CheckEmergencyContactListPage,
+    ChooseContactListPage,
     DashboardPage,
     EditEmailTemplatePage,
     EditLetterTemplatePage,
@@ -26,6 +27,7 @@ from tests.pages import (
     ManageFolderPage,
     PreviewLetterPage,
     SendLetterPreviewPage,
+    SendOneRecipientPage,
     SendSetSenderPage,
     SendViaCsvPage,
     ShowTemplatesPage,
@@ -55,7 +57,7 @@ from tests.test_utils import (
     edit_email_template,
     edit_sms_template,
     get_downloaded_document,
-    get_template_temp_csv_for_message_type,
+    get_temp_csv_for_message_type,
     go_to_templates_page,
     manage_letter_attachment,
     pdf_page_has_text,
@@ -151,7 +153,7 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     upload_contact_list_page = UploadEmergencyContactListPage(uploads_page.driver)
     upload_contact_list_page.wait_until_current()
 
-    template_id, csv_data, directory, filename = get_template_temp_csv_for_message_type(
+    csv_data, directory, filename = get_temp_csv_for_message_type(
         message_type, seeded=True, include_build_id=False
     )
 
@@ -176,7 +178,9 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     uploads_page = UploadsPage(check_contact_list_page.driver)
     uploads_page.wait_until_current()
 
-    _, statuses = uploads_page.get_contact_list_info(contact_list_id)
+    contact_list_link, statuses = uploads_page.get_contact_list_info(contact_list_id)
+
+    assert contact_list_link.text == filename
 
     assert statuses == {
         {"email": "saved email address", "sms": "saved phone number"}[message_type]: 1,
@@ -196,6 +200,14 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
 
     set_sender_page.click_continue()
 
+    send_one_recipient_page = SendOneRecipientPage(set_sender_page.driver)
+    send_one_recipient_page.click_use_emergency_list()
+
+    choose_contact_list_page = ChooseContactListPage(send_one_recipient_page.driver)
+    choose_contact_list_link = choose_contact_list_page.get_link_for_contact_list(contact_list_id)
+    assert choose_contact_list_link.text == filename
+
+    choose_contact_list_link.click()
 
 @recordtime
 def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_key):
