@@ -193,11 +193,6 @@ class SingleRecipientLocators:
     PLACEHOLDER_NAME = (By.XPATH, "(//label[@for='placeholder_value'])")
     PLACEHOLDER_VALUE_INPUT = (By.NAME, "placeholder_value")
     PREVIEW_TABLE = (By.CLASS_NAME, "email-message-meta")
-    ALTERNATIVE_SENDER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
-    ALTERNATIVE_SENDER_SMS_RADIO = (
-        By.XPATH,
-        "//label[normalize-space(text())='func tests']/preceding-sibling::input[@type='radio']",
-    )
     ADDRESS_INPUT = (By.ID, "address")
     CONTINUE_BUTTON = (
         By.XPATH,

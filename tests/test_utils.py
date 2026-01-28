@@ -32,6 +32,7 @@ from tests.pages import (
     RegistrationPage,
     SendLetterPreviewPage,
     SendOneRecipient,
+    SendSetSenderPage,
     ShowTemplatesPage,
     SmsSenderPage,
     TeamMembersPage,
@@ -424,12 +425,15 @@ def send_notification_to_one_recipient(
     view_template_page = ViewTemplatePage(driver)
     view_template_page.click_send()
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    set_sender_page = SendSetSenderPage(driver)
+    set_sender_page.wait_until_current()
     if message_type == "sms":
-        send_to_one_recipient_page.choose_alternative_sms_sender()
+        set_sender_page.choose_alternative_sms_sender()
     else:
-        send_to_one_recipient_page.choose_alternative_sender()
-    send_to_one_recipient_page.click_continue()
+        set_sender_page.choose_alternative_sender()
+    set_sender_page.click_continue()
+
+    send_to_one_recipient_page = SendOneRecipient(driver)
     if test is True:
         send_to_one_recipient_page.send_to_myself(message_type)
     else:

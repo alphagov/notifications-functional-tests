@@ -148,7 +148,7 @@ class BasePage:
     def no_element_error_msg(self, locator):
         return f"Could not locate element {locator} on URL {self.current_url}"
 
-    def wait_for_design_system_checkbox_or_radio(self, locator):
+    def wait_for_design_system_checkbox_or_radio(self, locator, time=10):
         """GOV.UK Design System 'hides' the original HTML input for checkboxes/radios to provide more accessible
         visual alternatives. These end up making a `visibility_of_element_located` check fail, so for these specific
         elements lets bypass that condition.
@@ -156,7 +156,7 @@ class BasePage:
         return AntiStaleElement(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
+            lambda locator: WebDriverWait(self.driver, time).until(
                 EC.presence_of_element_located(locator),
                 self.no_element_error_msg(locator),
             ),
@@ -172,11 +172,11 @@ class BasePage:
             ),
         )
 
-    def wait_for_elements(self, locator):
+    def wait_for_elements(self, locator, time=10):
         return AntiStaleElementList(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
+            lambda locator: WebDriverWait(self.driver, time).until(
                 EC.visibility_of_all_elements_located(locator),
                 self.no_element_error_msg(locator),
             ),
@@ -1260,6 +1260,29 @@ class SendLetterPreviewPage(PreviewLetterPage):
         button.click()
 
 
+class SendSetSenderPage(BasePage):
+    last_radio_button = (By.XPATH, "(//input[@type='radio'][@name='sender'])[last()]")
+    alternative_sender_radio = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
+    alternative_sender_sms_radio = (
+        By.XPATH,
+        "//label[normalize-space(text())='func tests']/preceding-sibling::input[@type='radio']",
+    )
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_matches(r"/set-sender(\?.*)?$", time=time)
+
+    def get_last_radio_button(self):
+        return self.wait_for_design_system_checkbox_or_radio(self.last_radio_button)
+
+    def choose_alternative_sender(self):
+        radio = self.wait_for_design_system_checkbox_or_radio(self.alternative_sender_radio)
+        radio.click()
+
+    def choose_alternative_sms_sender(self):
+        radio = self.wait_for_design_system_checkbox_or_radio(self.alternative_sender_sms_radio)
+        radio.click()
+
+
 class SendOneRecipient(BasePage):
     def is_placeholder_a_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
@@ -1280,14 +1303,6 @@ class SendOneRecipient(BasePage):
         table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
         rows = table.find_elements(By.CSS_SELECTOR, ".govuk-summary-list__row")  # get all of the rows in the table
         return rows
-
-    def choose_alternative_sender(self):
-        radio = self.wait_for_design_system_checkbox_or_radio(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
-        radio.click()
-
-    def choose_alternative_sms_sender(self):
-        radio = self.wait_for_design_system_checkbox_or_radio(SingleRecipientLocators.ALTERNATIVE_SENDER_SMS_RADIO)
-        radio.click()
 
     def send_to_myself(self, message_type):
         if message_type == "email":

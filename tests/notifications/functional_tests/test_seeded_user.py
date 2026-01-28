@@ -26,6 +26,7 @@ from tests.pages import (
     ManageFolderPage,
     PreviewLetterPage,
     SendLetterPreviewPage,
+    SendSetSenderPage,
     SendViaCsvPage,
     ShowTemplatesPage,
     TeamMembersPage,
@@ -33,6 +34,7 @@ from tests.pages import (
     UploadsPage,
     ViewFolderPage,
     ViewLetterTemplatePage,
+    ViewTemplatePage,
 )
 from tests.pages.rollups import get_mobile_number, sign_in, sign_in_email_auth
 from tests.postman import (
@@ -184,6 +186,15 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     view_template_page.go_to_view_template_page_for_service_and_template(config["service"]["id"], template_id)
 
     view_template_page.click_send()
+
+    set_sender_page = SendSetSenderPage(view_template_page.driver)
+    set_sender_page.wait_until_current()
+
+    last_sender_radio = set_sender_page.get_last_radio_button()
+    last_sender_radio.click()
+    sender_name = last_sender_radio.get_property("labels")[0].text
+
+    set_sender_page.click_continue()
 
 
 @recordtime
