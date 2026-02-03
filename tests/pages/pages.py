@@ -146,7 +146,7 @@ class BasePage:
     def no_element_error_msg(self, locator):
         return f"Could not locate element {locator} on URL {self.current_url}"
 
-    def wait_for_design_system_checkbox_or_radio(self, locator):
+    def wait_for_design_system_checkbox_or_radio(self, locator, time=10):
         """GOV.UK Design System 'hides' the original HTML input for checkboxes/radios to provide more accessible
         visual alternatives. These end up making a `visibility_of_element_located` check fail, so for these specific
         elements lets bypass that condition.
@@ -154,7 +154,7 @@ class BasePage:
         return AntiStaleElement(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
+            lambda locator: WebDriverWait(self.driver, time).until(
                 EC.presence_of_element_located(locator),
                 self.no_element_error_msg(locator),
             ),
@@ -170,11 +170,11 @@ class BasePage:
             ),
         )
 
-    def wait_for_elements(self, locator):
+    def wait_for_elements(self, locator, time=10):
         return AntiStaleElementList(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
+            lambda locator: WebDriverWait(self.driver, time).until(
                 EC.visibility_of_all_elements_located(locator),
                 self.no_element_error_msg(locator),
             ),
@@ -200,6 +200,14 @@ class BasePage:
 
     def wait_until_url_doesnt_contain(self, url, time=10):
         return WebDriverWait(self.driver, time).until(lambda _: url not in self.driver.current_url)
+
+    def wait_until_url_matches(self, pattern: str | re.Pattern, time=10):
+        p = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+        return WebDriverWait(self.driver, time).until(lambda _: p.search(self.driver.current_url))
+
+    def wait_until_url_doesnt_match(self, pattern: str | re.Pattern, time=10):
+        p = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
+        return WebDriverWait(self.driver, time).until(lambda _: not p.search(self.driver.current_url))
 
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
