@@ -527,6 +527,7 @@ class DashboardPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
     sms_templates_link = (By.LINK_TEXT, "Text message templates")
     email_templates_link = (By.LINK_TEXT, "Email templates")
+    uploads_link = (By.LINK_TEXT, "Uploads")
     team_members_link = (By.LINK_TEXT, "Team members")
     api_keys_link = (By.LINK_TEXT, "API integration")
     total_email_div = (By.CSS_SELECTOR, "#total-email .big-number-number")
@@ -556,6 +557,10 @@ class DashboardPage(BasePage):
 
     def click_email_templates(self):
         element = self.wait_for_element(DashboardPage.email_templates_link)
+        element.click()
+
+    def click_uploads(self):
+        element = self.wait_for_element(DashboardPage.uploads_link)
         element.click()
 
     def click_team_members_link(self):
@@ -778,21 +783,37 @@ class EditSmsTemplatePage(BasePage):
         self.click_save()
 
 
-class ViewLetterTemplatePage(BasePage):
+class ViewTemplatePage(BasePage):
+    h1 = (By.CSS_SELECTOR, "h1")
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_matches(r"/templates/[^/]+(\?.*)?$", time=time)
+
+    def click_edit(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.EDIT_BUTTON)
+        element.click()
+
+    def click_send(self):
+        element = self.wait_for_element(ViewTemplatePageLocators.SEND_BUTTON)
+        element.click()
+
+    def go_to_view_template_page_for_service_and_template(self, service_id, template_id):
+        url = f"{self.base_url}/services/{service_id}/templates/{template_id}"
+        self.driver.get(url)
+
+    def get_h1(self):
+        return self.wait_for_element(self.h1).text
+
+
+class ViewLetterTemplatePage(ViewTemplatePage):
     rename_link = ViewLetterTemplatePageLocators.RENAME_LINK
-    edit_body = ViewLetterTemplatePageLocators.EDIT_BODY
     edit_welsh_body = ViewLetterTemplatePageLocators.EDIT_WELSH_BODY
     edit_english_body = ViewLetterTemplatePageLocators.EDIT_ENGLISH_BODY
     attach_button = ViewLetterTemplatePageLocators.ATTACH_BUTTON
-    send_button = ViewLetterTemplatePageLocators.SEND_BUTTON
     change_language_button = ViewLetterTemplatePageLocators.CHANGE_LANGUAGE
 
     def click_rename_link(self):
         element = self.wait_for_element(ViewLetterTemplatePage.rename_link)
-        element.click()
-
-    def click_edit_body(self):
-        element = self.wait_for_element(ViewLetterTemplatePage.edit_body)
         element.click()
 
     def click_edit_welsh_body(self):
@@ -805,10 +826,6 @@ class ViewLetterTemplatePage(BasePage):
 
     def click_attachment_button(self):
         element = self.wait_for_element(ViewLetterTemplatePage.attach_button)
-        element.click()
-
-    def click_send_button(self):
-        element = self.wait_for_element(ViewLetterTemplatePage.send_button)
         element.click()
 
     def click_change_language(self):
@@ -881,16 +898,6 @@ class SendEmailTemplatePage(BasePage):
 
     def click_add_new_template(self):
         element = self.wait_for_element(SendEmailTemplatePage.add_new_email_template_link)
-        element.click()
-
-
-class ViewTemplatePage(BasePage):
-    def click_edit(self):
-        element = self.wait_for_element(ViewTemplatePageLocators.EDIT_BUTTON)
-        element.click()
-
-    def click_send(self):
-        element = self.wait_for_element(ViewTemplatePageLocators.SEND_BUTTON)
         element.click()
 
 
@@ -1072,6 +1079,74 @@ class UploadsPage(PageWithUploadsList):
         element.click()
 
 
+class UploadEmergencyContactListPage(PageWithCsvUpload):
+    url_re = r"/upload-contact-list(\?.*)?$"
+
+
+class ContactListPage(PageWithCsvPreview, PageWithUploadsList):
+    delete_link = (By.LINK_TEXT, "Delete this contact list")
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/contact-list/", time=time)
+
+    def click_delete(self):
+        element = self.wait_for_element(self.delete_link)
+        element.click()
+
+
+class DeleteContactListPage(BasePage):
+    alert_banner = (By.XPATH, "//*[@role='alert']")
+    delete_button = (By.XPATH, "//button[normalize-space(.)='Yes, delete']")
+    h1 = (By.CSS_SELECTOR, "h1")
+    h2 = (By.CSS_SELECTOR, "h2")
+    table = (By.XPATH, "//table[.//tr/td]")
+    rows_from_table = (By.XPATH, ".//tr[./td]")
+    cells_from_row = (By.XPATH, "./td")
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_matches(r"/delete(\?.*)?$", time=time)
+
+    def get_alert_banner(self):
+        return self.wait_for_element(self.alert_banner)
+
+    def get_h1(self):
+        return self.wait_for_element(self.h1).text
+
+    def get_h2(self):
+        return self.wait_for_element(self.h2).text
+
+    def click_delete(self):
+        element = self.wait_for_element(self.delete_button)
+        element.click()
+
+    def get_table_data(self):
+        table = self.wait_for_element(self.table)
+        rows = table.find_elements(*self.rows_from_table)
+        return [[cell.text for cell in row.find_elements(*self.cells_from_row)] for row in rows]
+
+
+class CheckEmergencyContactListPage(PageWithCsvPreview):
+    h1 = (By.CSS_SELECTOR, "h1")
+    save_button = (
+        By.CSS_SELECTOR,
+        "form button.govuk-button:not(.govuk-button--secondary)",
+    )
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/check-contact-list/", time=time)
+
+    def get_contact_list_id(self):
+        return (self.driver.current_url.split("/check-contact-list/")[1]).split("?")[0]
+
+    def click_save(self):
+        element = self.wait_for_element(self.save_button)
+        assert element.text == "Save contact list"
+        element.click()
+
+    def get_h1(self):
+        return self.wait_for_element(self.h1).text
+
+
 class TeamMembersPage(BasePage):
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
@@ -1249,7 +1324,30 @@ class SendLetterPreviewPage(PreviewLetterPage):
         button.click()
 
 
-class SendOneRecipient(BasePage):
+class SendSetSenderPage(BasePage):
+    last_radio_button = (By.XPATH, "(//input[@type='radio'][@name='sender'])[last()]")
+    alternative_sender_radio = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
+    alternative_sender_sms_radio = (
+        By.XPATH,
+        "//label[normalize-space(text())='func tests']/preceding-sibling::input[@type='radio']",
+    )
+
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_matches(r"/set-sender(\?.*)?$", time=time)
+
+    def get_last_radio_button(self):
+        return self.wait_for_design_system_checkbox_or_radio(self.last_radio_button)
+
+    def choose_alternative_sender(self):
+        radio = self.wait_for_design_system_checkbox_or_radio(self.alternative_sender_radio)
+        radio.click()
+
+    def choose_alternative_sms_sender(self):
+        radio = self.wait_for_design_system_checkbox_or_radio(self.alternative_sender_sms_radio)
+        radio.click()
+
+
+class SendOneRecipientPage(BasePage):
     def is_placeholder_a_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
         if message_type == "email":
@@ -1270,14 +1368,6 @@ class SendOneRecipient(BasePage):
         rows = table.find_elements(By.CSS_SELECTOR, ".govuk-summary-list__row")  # get all of the rows in the table
         return rows
 
-    def choose_alternative_sender(self):
-        radio = self.wait_for_design_system_checkbox_or_radio(SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO)
-        radio.click()
-
-    def choose_alternative_sms_sender(self):
-        radio = self.wait_for_design_system_checkbox_or_radio(SingleRecipientLocators.ALTERNATIVE_SENDER_SMS_RADIO)
-        radio.click()
-
     def send_to_myself(self, message_type):
         if message_type == "email":
             element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
@@ -1291,6 +1381,21 @@ class SendOneRecipient(BasePage):
 
         button = self.wait_for_element(SingleRecipientLocators.CONTINUE_BUTTON)
         button.click()
+
+    def click_use_emergency_list(self):
+        element = self.wait_for_element(SingleRecipientLocators.USE_EMERGENCY_LIST)
+        element.click()
+
+
+class SendChooseContactListPage(PageWithUploadsList):
+    def get_contact_list_info(self, contact_list_id):
+        link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/from-contact-list/{contact_list_id}']"))
+        return link_element, self._get_row_info_from_link(link_element)
+
+
+class SendViaContactListPreviewPage(PageWithCsvPreview, PageWithSendToMultipleButton):
+    def wait_until_current(self, time=10):
+        return self.wait_until_url_contains("/check/", time=time)
 
 
 class ServiceSettingsPage(BasePage):

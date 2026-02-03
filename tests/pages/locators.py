@@ -100,13 +100,16 @@ class RenameTemplatePageLocators:
     SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
 
 
-class ViewLetterTemplatePageLocators:
+class ViewTemplatePageLocators:
+    EDIT_BUTTON = (By.PARTIAL_LINK_TEXT, "Edit")
+    SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
+
+
+class ViewLetterTemplatePageLocators(ViewTemplatePageLocators):
     RENAME_LINK = (By.CLASS_NAME, "folder-heading-manage-link")
-    EDIT_BODY = (By.CLASS_NAME, "edit-template-link-letter-body")
     EDIT_WELSH_BODY = (By.XPATH, "//a/span[contains(text(), 'Welsh body')]/..")
     EDIT_ENGLISH_BODY = (By.XPATH, "//a/span[contains(text(), 'English body')]/..")
     ATTACH_BUTTON = (By.CLASS_NAME, "edit-template-link-attachment")
-    SEND_BUTTON = (By.CLASS_NAME, "edit-template-link-get-ready-to-send")
     CHANGE_LANGUAGE = (By.LINK_TEXT, "Change language")
 
 
@@ -180,14 +183,10 @@ class SendLetterPreviewPageLocators(LetterPreviewPageLocators):
 class SingleRecipientLocators:
     USE_MY_EMAIL = (By.LINK_TEXT, "Use my email address")
     USE_MY_NUMBER = (By.LINK_TEXT, "Use my phone number")
+    USE_EMERGENCY_LIST = (By.LINK_TEXT, "Use an emergency list")
     PLACEHOLDER_NAME = (By.XPATH, "(//label[@for='placeholder_value'])")
     PLACEHOLDER_VALUE_INPUT = (By.NAME, "placeholder_value")
     PREVIEW_TABLE = (By.CLASS_NAME, "email-message-meta")
-    ALTERNATIVE_SENDER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
-    ALTERNATIVE_SENDER_SMS_RADIO = (
-        By.XPATH,
-        "//label[normalize-space(text())='func tests']/preceding-sibling::input[@type='radio']",
-    )
     ADDRESS_INPUT = (By.ID, "address")
     CONTINUE_BUTTON = (
         By.XPATH,
@@ -224,11 +223,6 @@ class ServiceSettingsLocators:
 class ChangeNameLocators:
     CHANGE_NAME_FIELD = (By.ID, "name")
     PASSWORD_FIELD = (By.ID, "password")
-
-
-class ViewTemplatePageLocators:
-    EDIT_BUTTON = (By.PARTIAL_LINK_TEXT, "Edit")
-    SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
 
 
 class UploadAttachmentLocators:

@@ -18,19 +18,29 @@ from tests.notifications.functional_tests.consts import (
 from tests.pages import (
     ApiIntegrationPage,
     ChangeLetterLanguagePage,
+    CheckEmergencyContactListPage,
+    ContactListPage,
     DashboardPage,
+    DeleteContactListPage,
     EditEmailTemplatePage,
     EditLetterTemplatePage,
     InviteUserPage,
+    JobPage,
     ManageFolderPage,
     PreviewLetterPage,
+    SendChooseContactListPage,
     SendLetterPreviewPage,
+    SendOneRecipientPage,
+    SendSetSenderPage,
+    SendViaContactListPreviewPage,
     SendViaCsvPage,
     ShowTemplatesPage,
     TeamMembersPage,
+    UploadEmergencyContactListPage,
     UploadsPage,
     ViewFolderPage,
     ViewLetterTemplatePage,
+    ViewTemplatePage,
 )
 from tests.pages.rollups import get_mobile_number, sign_in, sign_in_email_auth
 from tests.postman import (
@@ -51,6 +61,7 @@ from tests.test_utils import (
     edit_email_template,
     edit_sms_template,
     get_downloaded_document,
+    get_temp_csv_for_message_type,
     go_to_templates_page,
     manage_letter_attachment,
     pdf_page_has_text,
@@ -116,6 +127,162 @@ def test_send_via_csv(driver, login_seeded_user, client_live_key, client_test_ke
             tries=config["notification_retry_times"],
             delay=config["notification_retry_interval"],
         )
+
+    dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+
+    dashboard_stats_after = dashboard_page.get_stats(message_type, template_id)
+
+    dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
+
+
+@recordtime
+@pytest.mark.parametrize(
+    "message_type",
+    ["sms", "email"],
+)
+def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, client_live_key, message_type):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
+
+    template_id = {
+        "email": config["service"]["templates"]["email_no_placeholder"],
+        "sms": config["service"]["templates"]["sms_no_placeholder"],
+    }.get(message_type)
+    template_name = {
+        "email": "Functional Tests - Email Template without placeholders",
+        "sms": "Functional Tests - SMS template without placeholders",
+    }.get(message_type)
+
+    dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
+
+    dashboard_page.click_uploads()
+    uploads_page = UploadsPage(dashboard_page.driver)
+    uploads_page.click_upload_emergency_contact_list()
+    upload_contact_list_page = UploadEmergencyContactListPage(uploads_page.driver)
+    upload_contact_list_page.wait_until_current()
+
+    csv_data, directory, filename = get_temp_csv_for_message_type(message_type, seeded=True, include_build_id=False)
+
+    upload_contact_list_page.upload_csv(directory, filename)
+
+    check_contact_list_page = CheckEmergencyContactListPage(upload_contact_list_page.driver)
+    check_contact_list_page.wait_until_current()
+
+    contact_list_id = check_contact_list_page.get_contact_list_id()
+
+    assert check_contact_list_page.get_h1() == filename
+
+    # check we can make our lazy assumptions first
+    assert len(csv_data) == 1
+    assert len(csv_data[0].keys()) == 1
+
+    orig_preview_header = check_contact_list_page.get_preview_header()
+    assert orig_preview_header == list(csv_data[0].keys())
+    orig_preview_data = check_contact_list_page.get_preview_data()
+    assert orig_preview_data == [list(csv_data[0].values())]
+
+    check_contact_list_page.click_save()
+
+    uploads_page = UploadsPage(check_contact_list_page.driver)
+    uploads_page.wait_until_current()
+
+    contact_list_link, statuses = uploads_page.get_contact_list_info(contact_list_id)
+
+    assert contact_list_link.text == filename
+
+    assert statuses == {
+        {"email": "saved email address", "sms": "saved phone number"}[message_type]: 1,
+    }
+
+    view_template_page = ViewTemplatePage(uploads_page.driver)
+    view_template_page.go_to_view_template_page_for_service_and_template(config["service"]["id"], template_id)
+    view_template_page.wait_until_current()
+
+    assert view_template_page.get_h1() == template_name
+
+    view_template_page.click_send()
+
+    set_sender_page = SendSetSenderPage(view_template_page.driver)
+    set_sender_page.wait_until_current()
+
+    last_sender_radio = set_sender_page.get_last_radio_button()
+    last_sender_radio.click()
+    sender_name = last_sender_radio.get_property("labels")[0].text
+    # TODO currently looks like it's impossible to assert sender_name against the final message as it's never returned
+    # by the API
+
+    set_sender_page.click_continue()
+
+    send_one_recipient_page = SendOneRecipientPage(set_sender_page.driver)
+    send_one_recipient_page.click_use_emergency_list()
+
+    choose_contact_list_page = SendChooseContactListPage(send_one_recipient_page.driver)
+    choose_contact_list_link, statuses = choose_contact_list_page.get_contact_list_info(contact_list_id)
+    assert choose_contact_list_link.text == filename
+    assert statuses == {
+        {"email": "email address", "sms": "phone number"}[message_type]: 1,
+    }
+
+    choose_contact_list_link.click()
+
+    send_via_contact_list_preview_page = SendViaContactListPreviewPage(choose_contact_list_link.driver)
+    send_via_contact_list_preview_page.wait_until_current()
+
+    assert send_via_contact_list_preview_page.get_preview_header() == orig_preview_header
+    assert send_via_contact_list_preview_page.get_preview_data() == orig_preview_data
+
+    send_button = send_via_contact_list_preview_page.get_send_button()
+    assert send_button.text == "Send 1 " + ({"email": "email", "sms": "text message"}[message_type])
+    send_button.click()
+
+    job_page = JobPage(send_via_contact_list_preview_page.driver)
+    job_page.wait_until_current()
+    notification_id = job_page.get_notification_id()
+    job_id = job_page.get_job_id()
+    job_page.click_uploads()
+
+    uploads_page = UploadsPage(job_page.driver)
+    uploads_page.wait_until_current()
+    uploads_page.assert_no_link_to_job(job_id)
+    contact_list_link, _ = uploads_page.get_contact_list_info(contact_list_id)
+    contact_list_link.click()
+
+    contact_list_page = ContactListPage(uploads_page.driver)
+    contact_list_page.wait_until_current()
+    job_link, statuses = contact_list_page.get_job_info(job_id)
+
+    assert job_link.text == template_name
+
+    assert sum(statuses.values()) == 1
+    assert statuses.keys() == {"delivering", "delivered", "failed"}
+
+    notification = retry_call(
+        get_notification_by_id_via_api,
+        fargs=[
+            client_live_key,
+            notification_id,
+            NotificationStatuses.SENT,
+        ],
+        tries=config["notification_retry_times"],
+        delay=config["notification_retry_interval"],
+    )
+    assert_notification_body(notification_id, notification)
+
+    contact_list_page.click_delete()
+
+    delete_page = DeleteContactListPage(contact_list_page.driver)
+    delete_page.wait_until_current()
+
+    assert delete_page.get_h1() == filename
+    assert delete_page.get_h2() == "1 saved " + ({"email": "email address", "sms": "phone number"}[message_type])
+    assert delete_page.get_table_data() == orig_preview_data
+
+    delete_page.click_delete()
+
+    uploads_page = UploadsPage(delete_page.driver)
+    uploads_page.wait_until_current()
+
+    uploads_page.assert_no_link_to_contact_list(contact_list_id)
 
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 

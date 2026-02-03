@@ -120,6 +120,8 @@ def setup_functional_tests_config(unique_seeder_user_tests=None):
                     "email": os.environ["FUNCTIONAL_TEST_EMAIL_TEMPLATE_ID"],
                     "sms": os.environ["FUNCTIONAL_TEST_SMS_TEMPLATE_ID"],
                     "letter": os.environ["FUNCTIONAL_TEST_LETTER_TEMPLATE_ID"],
+                    "email_no_placeholder": os.environ["FUNCTIONAL_TEST_EMAIL_NO_PLACEHOLDER_TEMPLATE_ID"],
+                    "sms_no_placeholder": os.environ["FUNCTIONAL_TEST_SMS_NO_PLACEHOLDER_TEMPLATE_ID"],
                 },
                 "inbound_number": os.environ["FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER"],
             },
