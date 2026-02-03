@@ -17,6 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from config import config
+from tests.decorators import retry_on_stale_element_exception
 from tests.pages.element import (
     BasePageElement,
     EmailInputElement,
@@ -535,6 +536,7 @@ class DashboardPage(BasePage):
     navigation = (By.CLASS_NAME, "navigation")
     email_unsubscribe_requests_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests")
     email_unsubscribe_requests_count_link = (By.CSS_SELECTOR, "#total-unsubscribe-requests .banner-dashboard-count")
+    loading_indicator = (By.CSS_SELECTOR, ".big-number-with-status .big-number-smaller .loading-indicator")
 
     def _message_count_for_template_div(self, template_id):
         return (By.ID, template_id)
@@ -624,6 +626,26 @@ class DashboardPage(BasePage):
             return 0
 
         return int(self._assert_strip_thousands_commas(element.text))
+
+    @retry_on_stale_element_exception
+    def get_stats(self, message_type, template_id):
+        # Wait until loading indicator disappears
+        self.wait_until_element_is_not_present(self.loading_indicator)
+
+        try:
+            template_messages_count = self.get_template_message_count(template_id)
+        except TimeoutException:
+            template_messages_count = 0  # template count may not exist yet if no messages sent
+
+        return {
+            "total_messages_sent": self.get_total_message_count(message_type),
+            "template_messages_sent": template_messages_count,
+        }
+
+    @staticmethod
+    def assert_stats_increased(stats_before, stats_after):
+        for k in stats_before.keys():
+            assert stats_after[k] > stats_before[k]
 
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):

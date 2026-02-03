@@ -7,11 +7,9 @@ from io import BytesIO
 import pytest
 from pypdf import PdfReader
 from retry.api import retry_call
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from config import config
-from tests.decorators import retry_on_stale_element_exception
 from tests.notifications.functional_tests.consts import (
     correct_letter,
     pdf_with_virus,
@@ -77,7 +75,7 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
         "letter": config["service"]["templates"]["letter"],
     }.get(message_type)
 
-    dashboard_stats_before = get_dashboard_stats(dashboard_page, message_type, template_id)
+    dashboard_stats_before = dashboard_page.get_stats(message_type, template_id)
 
     upload_csv_page = UploadCsvPage(driver)
     notification_id = send_notification_via_csv(upload_csv_page, message_type, seeded=True)
@@ -105,9 +103,9 @@ def test_send_csv(driver, login_seeded_user, client_live_key, client_test_key, m
 
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 
-    dashboard_stats_after = get_dashboard_stats(dashboard_page, message_type, template_id)
+    dashboard_stats_after = dashboard_page.get_stats(message_type, template_id)
 
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+    dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
 
 
 @recordtime
@@ -320,7 +318,7 @@ def test_send_email_with_placeholders_to_one_recipient(request, driver, client_l
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-    dashboard_stats_before = get_dashboard_stats(dashboard_page, "email", template_id)
+    dashboard_stats_before = dashboard_page.get_stats("email", template_id)
 
     placeholders = send_notification_to_one_recipient(
         driver,
@@ -341,8 +339,8 @@ def test_send_email_with_placeholders_to_one_recipient(request, driver, client_l
     assert one_off_email.get("created_by_name") == f"Preview admin tests user - {test_name}"
 
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-    dashboard_stats_after = get_dashboard_stats(dashboard_page, "email", template_id)
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+    dashboard_stats_after = dashboard_page.get_stats("email", template_id)
+    dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
 
     placeholders_test = send_notification_to_one_recipient(
         driver, template_name, "email", test=True, placeholders_number=2, test_name=test_name
@@ -362,7 +360,7 @@ def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, lo
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-    dashboard_stats_before = get_dashboard_stats(dashboard_page, "sms", template_id)
+    dashboard_stats_before = dashboard_page.get_stats("sms", template_id)
 
     placeholders = send_notification_to_one_recipient(
         driver, template_name, "sms", test=False, recipient_data=os.environ["TEST_NUMBER"], placeholders_number=2
@@ -372,8 +370,8 @@ def test_send_sms_with_placeholders_to_one_recipient(driver, client_live_key, lo
 
     dashboard_page.click_continue()
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
-    dashboard_stats_after = get_dashboard_stats(dashboard_page, "sms", template_id)
-    assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after)
+    dashboard_stats_after = dashboard_page.get_stats("sms", template_id)
+    dashboard_page.assert_stats_increased(dashboard_stats_before, dashboard_stats_after)
 
     # Test sending to ourselves (seeded user)
     placeholders_test = send_notification_to_one_recipient(
@@ -645,29 +643,3 @@ def _check_status_of_notification(page, functional_tests_service_id, reference_t
     page.expand_all_messages()
     notification_offset = page.find_notification_offset_for_client_reference(reference_to_check)
     assert status_to_check == page.get_notification_status_for_log_offset(notification_offset)
-
-
-@retry_on_stale_element_exception
-def get_dashboard_stats(dashboard_page, message_type, template_id):
-    # Wait until loading indicator disappears
-    loading_indicator_locator = (By.CSS_SELECTOR, ".big-number-with-status .big-number-smaller .loading-indicator")
-    dashboard_page.wait_until_element_is_not_present(loading_indicator_locator)
-
-    return {
-        "total_messages_sent": dashboard_page.get_total_message_count(message_type),
-        "template_messages_sent": _get_template_count(dashboard_page, template_id),
-    }
-
-
-def assert_dashboard_stats(dashboard_stats_before, dashboard_stats_after):
-    for k in dashboard_stats_before.keys():
-        assert dashboard_stats_after[k] > dashboard_stats_before[k]
-
-
-def _get_template_count(dashboard_page, template_id):
-    try:
-        template_messages_count = dashboard_page.get_template_message_count(template_id)
-    except TimeoutException:
-        return 0  # template count may not exist yet if no messages sent
-    else:
-        return template_messages_count
