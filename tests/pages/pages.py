@@ -321,9 +321,17 @@ class AddServicePage(BasePage):
     service_input = ServiceInputElement()
     org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
+    trial_mode_page_continue_button = AddServicePageLocators.TRIAL_MODE_PAGE_CONTINUE_BUTTON
 
     def wait_until_current(self):
         return self.wait_until_url_contains(self.base_url + "/add-service")
+    
+    def click_trial_page_continue__button(self):
+        element = self.wait_for_element(AddServicePage.trial_mode_page_continue_button)
+        element.click()
+
+    def wait_until_name_service_page(self):
+        return self.wait_until_url_contains(self.base_url + "/add-service/name-your-service")
 
     def add_service(self, name):
         self.service_input = name
