@@ -1,7 +1,8 @@
 from notifications_python_client.errors import HTTPError
 import uuid
 from config import config
-from tests.test_utils import RetryException, create_temp_csv
+from tests.pages import JobPage, SendViaCsvPreviewPage
+from tests.test_utils import RetryException, get_temp_csv_for_message_type
 
 
 def send_notification_via_api(client, template_id, to, message_type):
@@ -23,26 +24,20 @@ def send_precompiled_letter_via_api(reference, client, pdf_file):
     return resp_json["id"]
 
 
-def send_notification_via_csv(upload_csv_page, message_type, seeded=False):
-    service_id = config["service"]["id"] if seeded else config["service"]["id"]
-    email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
-    letter_contact = config["letter_contact_data"]
+def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool = False):
+    template_id = config["service"]["templates"][message_type]
+    _, directory, filename = get_temp_csv_for_message_type(message_type, seeded=seeded, include_build_id=True)
 
-    if message_type == "sms":
-        template_id = config["service"]["templates"]["sms"]
-        directory, filename = create_temp_csv({"phone number": config["user"]["mobile"]})
-    elif message_type == "email":
-        template_id = config["service"]["templates"]["email"]
-        directory, filename = create_temp_csv({"email address": email})
-    elif message_type == "letter":
-        template_id = config["service"]["templates"]["letter"]
-        directory, filename = create_temp_csv(letter_contact)
+    send_via_csv_page.go_to_upload_csv_for_service_and_template(config["service"]["id"], template_id)
+    send_via_csv_page.upload_csv(directory, filename)
 
-    upload_csv_page.go_to_upload_csv_for_service_and_template(service_id, template_id)
-    upload_csv_page.upload_csv(directory, filename)
-    notification_id = upload_csv_page.get_notification_id_after_upload()
+    send_via_csv_preview_page = SendViaCsvPreviewPage(send_via_csv_page.driver)
+    send_via_csv_preview_page.click_send()
 
-    return notification_id
+    job_page = JobPage(send_via_csv_preview_page.driver)
+    job_page.wait_until_current(time=20)
+
+    return job_page
 
 
 def get_notification_by_id_via_api(client, notification_id, expected_statuses):

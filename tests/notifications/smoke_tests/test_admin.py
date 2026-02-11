@@ -1,7 +1,7 @@
 from retry.api import retry_call
 
 from config import config
-from tests.pages import UploadCsvPage
+from tests.pages import SendViaCsvPage
 from tests.postman import (
     get_notification_by_id_via_api,
     send_notification_via_csv,
@@ -15,10 +15,10 @@ from tests.test_utils import (
 
 @recordtime
 def test_admin(driver, client_live_key, login_user):
-    upload_csv_page = UploadCsvPage(driver)
+    send_via_csv_page = SendViaCsvPage(driver)
 
-    csv_sms_notification_id = send_notification_via_csv(upload_csv_page, "sms")
-    csv_email_notification_id = send_notification_via_csv(upload_csv_page, "email")
+    csv_sms_notification_id = send_notification_via_csv(send_via_csv_page, "sms").get_notification_id()
+    csv_email_notification_id = send_notification_via_csv(send_via_csv_page, "email").get_notification_id()
 
     csv_sms_notification = retry_call(
         get_notification_by_id_via_api,
@@ -44,4 +44,4 @@ def test_admin(driver, client_live_key, login_user):
     )
     assert_notification_body(csv_email_notification_id, csv_email_notification)
 
-    upload_csv_page.sign_out()
+    send_via_csv_page.sign_out()

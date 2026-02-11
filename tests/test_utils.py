@@ -7,6 +7,8 @@ import tempfile
 import uuid
 from datetime import UTC, datetime
 import time
+from collections.abc import Sequence
+from typing import Any
 
 from filelock import FileLock
 from notifications_python_client.notifications import NotificationsAPIClient
@@ -29,7 +31,8 @@ from tests.pages import (
     RegisterFromInvite,
     RegistrationPage,
     SendLetterPreviewPage,
-    SendOneRecipient,
+    SendOneRecipientPage,
+    SendSetSenderPage,
     ShowTemplatesPage,
     SmsSenderPage,
     TeamMembersPage,
@@ -54,16 +57,34 @@ class NotificationStatuses:
     SENT = RECEIVED | DELIVERED | {"sending", "pending"}
 
 
-def create_temp_csv(fields):
+def create_temp_csv(fields: dict[str, Any], include_build_id: bool = True) -> tuple[str, str]:
     directory_name = tempfile.mkdtemp()
     csv_filename = f"{uuid.uuid4()}-sample.csv"
     csv_file_path = os.path.join(directory_name, csv_filename)
-    fields.update({"build_id": "No build id"})
+
+    if include_build_id:
+        fields.update({"build_id": "No build id"})
+
     with open(csv_file_path, "w") as csv_file:
         csv_writer = csv.DictWriter(csv_file, fieldnames=fields.keys())
         csv_writer.writeheader()
         csv_writer.writerow(fields)
-    return directory_name, csv_filename
+
+    return [fields], directory_name, csv_filename
+
+
+def get_temp_csv_for_message_type(
+    message_type: str, seeded: bool = False, include_build_id: bool = True
+) -> tuple[Sequence[dict[str, str]], str, str]:
+    email = config["service"]["seeded_user"]["email"] if seeded else config["user"]["email"]
+    letter_contact = config["letter_contact_data"]
+
+    if message_type == "sms":
+        return create_temp_csv({"phone number": config["user"]["mobile"]}, include_build_id=include_build_id)
+    elif message_type == "email":
+        return create_temp_csv({"email address": email}, include_build_id=include_build_id)
+    elif message_type == "letter":
+        return create_temp_csv(letter_contact, include_build_id=include_build_id)
 
 
 def convert_naive_utc_datetime_to_cap_standard_string(dt):
@@ -109,6 +130,7 @@ def do_verify(driver, mobile_number):
     verify_page.verify(verify_code)
     if not verify_page.verify_code_successful():
         raise RetryException
+
 
 def do_email_auth_verify(driver):
     do_email_verification(
@@ -268,7 +290,7 @@ def create_letter_template(driver, name, content=None):
         show_templates_page.select_letter()
 
         view_template_page = ViewLetterTemplatePage(driver)
-        view_template_page.click_edit_body()
+        view_template_page.click_edit()
 
         edit_template_page = EditLetterTemplatePage(driver)
         edit_template_page.create_template(content=content)
@@ -397,12 +419,15 @@ def send_notification_to_one_recipient(
     view_template_page = ViewTemplatePage(driver)
     view_template_page.click_send()
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    set_sender_page = SendSetSenderPage(driver)
+    set_sender_page.wait_until_current()
     if message_type == "sms":
-        send_to_one_recipient_page.choose_alternative_sms_sender()
+        set_sender_page.choose_alternative_sms_sender()
     else:
-        send_to_one_recipient_page.choose_alternative_sender()
-    send_to_one_recipient_page.click_continue()
+        set_sender_page.choose_alternative_sender()
+    set_sender_page.click_continue()
+
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     if test is True:
         send_to_one_recipient_page.send_to_myself(message_type)
     else:
@@ -441,7 +466,7 @@ def send_letter_to_one_recipient(driver, template_name, address, build_id):
     view_template_page = ViewTemplatePage(driver)
     view_template_page.click_send()
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     send_to_one_recipient_page.send_to_address(address)
     send_to_one_recipient_page.enter_placeholder_value(build_id)
     send_to_one_recipient_page.click_continue()
@@ -460,7 +485,7 @@ def send_bilingual_letter_to_one_recipient(driver, template_name, address, place
     view_template_page = ViewTemplatePage(driver)
     view_template_page.click_send()
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     send_to_one_recipient_page.send_to_address(address)
     for _ in range(len(placeholders)):
         send_to_one_recipient_page.enter_placeholder_value(
@@ -485,7 +510,7 @@ def _assert_one_off_sms_filled_in_properly(driver, template_name, test, recipien
 def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipient_email, test_name=None):
     from tests.pages.rollups import get_email_and_password
 
-    send_to_one_recipient_page = SendOneRecipient(driver)
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
     preview_rows = send_to_one_recipient_page.get_preview_contents()
     assert "From" in str(preview_rows[0].text)
     assert config["service"]["name"] in str(preview_rows[0].text)
