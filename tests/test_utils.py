@@ -169,6 +169,8 @@ def do_user_add_new_service(driver):
 
     add_service_page = AddServicePage(driver)
     add_service_page.wait_until_current()
+    add_service_page.click_trial_page_continue__button()
+    add_service_page.wait_until_name_service_page()
     add_service_page.add_service(config["service_name"])
 
     dashboard_page = DashboardPage(driver)

@@ -32,6 +32,7 @@ class VerifyPageLocators:
 
 
 class AddServicePageLocators:
+    TRIAL_MODE_PAGE_CONTINUE_BUTTON = (By.LINK_TEXT, "Continue")
     SERVICE_INPUT = (By.NAME, "name")
     ORG_TYPE_INPUT = (By.ID, "organisation_type-0")
     ADD_SERVICE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
