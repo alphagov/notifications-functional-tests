@@ -13,7 +13,7 @@ def test_provider_inbound_sms_delivery_via_api(client_live_key):
         personalisation={"build_id": unique_content},
     )["id"]
 
-    print(f"Sent outbound sms with notification_id {outbound_id}")
+    print(f"Sent outbound sms with notification_id {outbound_id}")  # noqa: T201
 
     retry_call(
         get_inbound_sms,
