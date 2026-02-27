@@ -104,9 +104,7 @@ pdf2image==1.16.3
 phonenumbers==9.0.25
     # via notifications-utils
 pillow==12.1.1
-    # via
-    #   -r requirements_for_test.in
-    #   pdf2image
+    # via pdf2image
 pluggy==1.6.0
     # via pytest
 py==1.11.0
