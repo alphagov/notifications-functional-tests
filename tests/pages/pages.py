@@ -334,7 +334,7 @@ class AddServicePage(BasePage):
 
     def wait_until_current(self):
         return self.wait_until_url_contains(self.base_url + "/add-service")
-    
+
     def click_trial_page_continue__button(self):
         element = self.wait_for_element(AddServicePage.trial_mode_page_continue_button)
         element.click()

@@ -207,7 +207,7 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
 
     last_sender_radio = set_sender_page.get_last_radio_button()
     last_sender_radio.click()
-    sender_name = last_sender_radio.get_property("labels")[0].text
+    sender_name = last_sender_radio.get_property("labels")[0].text  # noqa: F841
     # TODO currently looks like it's impossible to assert sender_name against the final message as it's never returned
     # by the API
 

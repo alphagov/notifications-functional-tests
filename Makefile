@@ -54,10 +54,13 @@ env-smoke-tests: env-environment-check
 env-provider-tests: env-environment-check
 	@./scripts/env-test.sh "${ENVIRONMENT}" tests/provider_delivery/test_provider_delivery_email.py tests/provider_delivery/test_provider_delivery_sms.py
 
-.PHONY: test
-test: clean ## Run functional tests against local environment
+.PHONY: lint
+lint: ## Run static analysis
 	ruff check .
 	ruff format --check .
+
+.PHONY: test
+test: clean lint ## Run functional tests against local environment
 	pytest tests/notifications/functional_tests -n auto --dist loadgroup ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
 	pytest tests/document_download/functional_tests ${FUNCTIONAL_TESTS_EXTRA_PYTEST_ARGS}
 

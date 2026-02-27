@@ -4,11 +4,11 @@ import tempfile
 
 from filelock import FileLock
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
 
 from config import config, generate_unique_email, get_seeded_users_number_range
 from tests.pages import SignInPage
 from tests.test_utils import do_email_auth_verify, do_verify
-from selenium.webdriver.support.ui import WebDriverWait
 
 
 def sign_in(driver, account_type="normal", test_name=None):
