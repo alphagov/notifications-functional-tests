@@ -113,10 +113,8 @@ py==1.11.0
     # via retry
 pyjwt==2.11.0
     # via notifications-python-client
-pypdf==3.17.0
-    # via
-    #   -r requirements_for_test.in
-    #   notifications-utils
+pypdf==6.7.3
+    # via notifications-utils
 pysocks==1.7.1
     # via urllib3
 pytest==8.3.4
