@@ -111,7 +111,7 @@ py==1.11.0
     # via retry
 pyjwt==2.11.0
     # via notifications-python-client
-pypdf==6.7.3
+pypdf==6.7.5
     # via notifications-utils
 pysocks==1.7.1
     # via urllib3
