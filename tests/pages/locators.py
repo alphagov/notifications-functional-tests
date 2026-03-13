@@ -114,6 +114,16 @@ class ViewLetterTemplatePageLocators(ViewTemplatePageLocators):
     CHANGE_LANGUAGE = (By.LINK_TEXT, "Change language")
 
 
+class ViewEmailTemplatePageLocators(ViewTemplatePageLocators):
+    ATTACH_FILES_BUTTON = (By.XPATH, "//button[contains(text(),'Attach files')]")
+
+
+class AddFileToEmailTemplatePageLocators:
+    CHOOSE_FILE_BUTTON = (By.XPATH, "//button[contains(text(),'Choose file')]")
+    FILE_INPUT = (By.CSS_SELECTOR, "input[id='file']")
+    SUBMIT_BUTTON = (By.CSS_SELECTOR, "button[type='submit']")
+
+
 class ManageLetterAttachPageLocators:
     DELETE_BUTTON = (By.LINK_TEXT, "Remove attachment")
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")

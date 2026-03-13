@@ -61,7 +61,7 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
-    YourServicesPageLocators,
+    YourServicesPageLocators, ViewEmailTemplatePageLocators, AddFileToEmailTemplatePageLocators,
 )
 
 
@@ -839,6 +839,26 @@ class ViewLetterTemplatePage(ViewTemplatePage):
     def click_change_language(self):
         element = self.wait_for_element(self.change_language_button)
         element.click()
+
+
+class ViewEmailTemplatePage(ViewTemplatePage):
+    attach_files_button = ViewEmailTemplatePageLocators.ATTACH_FILES_BUTTON
+
+    def click_attach_files_button(self):
+        element = self.wait_for_element(ViewLetterTemplatePage.attach_button)
+        element.click()
+
+
+class AddFileToEmailTemplatePage(BasePage):
+    choose_file_button = AddFileToEmailTemplatePageLocators.CHOOSE_FILE_BUTTON
+    file_input_element = AddFileToEmailTemplatePageLocators.FILE_INPUT
+
+    def visible_choose_file_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.choose_file_button)
+        return element
+
+    def upload_file(self, file_path):
+        self.file_input_element = file_path
 
 
 class EditLetterTemplatePage(BasePage):
@@ -1631,6 +1651,13 @@ class UploadAttachmentPage(BasePage):
     file_input_element = FileInputElement()
 
     def upload_attachment(self, file_path):
+        self.file_input_element = file_path
+
+
+class UploadFIleToEmailTemplatePage(BasePage):
+    file_input_element = AddFileToEmailTemplatePage.get_file_input_element()
+
+    def attach_file(self, file_path):
         self.file_input_element = file_path
 
 
