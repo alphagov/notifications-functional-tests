@@ -114,6 +114,31 @@ class ViewLetterTemplatePageLocators(ViewTemplatePageLocators):
     CHANGE_LANGUAGE = (By.LINK_TEXT, "Change language")
 
 
+class ViewEmailTemplatePageLocators(ViewTemplatePageLocators):
+    ATTACH_FILES_BUTTON = (By.XPATH, "//a[contains(text(), 'Attach files')]")
+    MANAGE_FILES_BUTTON = (By.XPATH, "//a[contains(text(), 'Manage files')]")
+    FILE_ADDED_COUNT_TEXT = (By.CSS_SELECTOR, "span[class='email-files-selected-counter']")
+    PAGE_BANNER_TEXT = (By.CSS_SELECTOR, "div[class='banner-default-with-tick']")
+    DELETE_TEMPLATE_LINK = (By.XPATH, "//a[contains(text(), 'Delete this template')]")
+    TEMPLATE_DELETION_CONFIRMATION_BUTTON = (By.CSS_SELECTOR, "button[name='delete'][type='submit']")
+
+
+class AddFileToEmailTemplatePageLocators:
+    CHOOSE_FILE_BUTTON = (By.XPATH, "//button[contains(text(),'Choose file')]")
+    FILE_INPUT = (By.ID, "hidden-file")
+    SUBMIT_BUTTON = (By.CSS_SELECTOR, "button[type='submit']")
+
+
+class ManageEmailTemplateFilePageLocators:
+    REMOVE_FILE_LINK = (By.LINK_TEXT, "Remove this file")
+    ADD_TO_TEMPLATE_BUTTON = (By.CSS_SELECTOR, "button[type='submit']")
+    REMOVE_FILE_DIALOG_BUTTON = (By.CSS_SELECTOR, "button[name='delete'][type='submit']")
+
+
+class ManageFilesForEmailTemplatePageLocators:
+    pass
+
+
 class ManageLetterAttachPageLocators:
     DELETE_BUTTON = (By.LINK_TEXT, "Remove attachment")
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
