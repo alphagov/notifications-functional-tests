@@ -42,7 +42,8 @@ from tests.pages import (
     ViewTemplatePage,
     YourServicesPage,
 )
-from tests.pages.pages import RenameLetterTemplatePage
+from tests.pages.pages import RenameLetterTemplatePage, ViewEmailTemplatePage, AddFileToEmailTemplatePage
+
 
 logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
 
@@ -375,6 +376,25 @@ def add_letter_attachment_for_template(driver, name, service="service"):
     template_page.click_attachment_button()
     upload_page = UploadAttachmentPage(driver)
     upload_page.upload_attachment(os.path.join(os.getcwd(), "tests/test_files/attachment.pdf"))
+
+
+def add_file_to_an_email_template(driver, template_name, file_path, service_id):
+    show_templates_page = ShowTemplatesPage(driver)
+    try:
+        show_templates_page.click_template_by_link_text(template_name)
+    except TimeoutException:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.go_to_dashboard_for_service(service_id)
+        dashboard_page.click_templates()
+        show_templates_page.click_template_by_link_text(template_name)
+    template_page = ViewEmailTemplatePage(driver)
+    template_page.click_attach_files_button()
+    assert driver.find_element(By.CSS_SELECTOR, "h1").text.strip() == "Add a file"
+    add_a_file_page = AddFileToEmailTemplatePage(driver)
+    assert add_a_file_page.visible_choose_file_button().is_displayed()
+    os_file_path = os.path.join(os.getcwd(), file_path)
+    add_a_file_page.upload_file(os_file_path)
+
 
 
 def manage_letter_attachment(driver):

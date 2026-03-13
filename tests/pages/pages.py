@@ -61,7 +61,7 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
-    YourServicesPageLocators,
+    YourServicesPageLocators, ViewEmailTemplatePageLocators, AddFileToEmailTemplatePageLocators,
 )
 
 
@@ -177,6 +177,16 @@ class BasePage:
             locator,
             lambda locator: WebDriverWait(self.driver, time).until(
                 EC.visibility_of_all_elements_located(locator),
+                self.no_element_error_msg(locator),
+            ),
+        )
+
+    def wait_for_presence_of_element(self, locator, time=10):
+        return AntiStaleElementList(
+            self.driver,
+            locator,
+            lambda locator: WebDriverWait(self.driver, time).until(
+                EC.presence_of_all_elements_located(locator),
                 self.no_element_error_msg(locator),
             ),
         )
@@ -839,6 +849,34 @@ class ViewLetterTemplatePage(ViewTemplatePage):
     def click_change_language(self):
         element = self.wait_for_element(self.change_language_button)
         element.click()
+
+
+class ViewEmailTemplatePage(ViewTemplatePage):
+    attach_files_button = ViewEmailTemplatePageLocators.ATTACH_FILES_BUTTON
+
+    def click_attach_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.attach_files_button)
+        element.click()
+
+
+class AddFileToEmailTemplatePage(BasePage):
+    choose_file_button = AddFileToEmailTemplatePageLocators.CHOOSE_FILE_BUTTON
+    file_input = AddFileToEmailTemplatePageLocators.FILE_INPUT
+    submit_button = AddFileToEmailTemplatePageLocators.SUBMIT_BUTTON
+
+    def visible_choose_file_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.choose_file_button)
+        return element
+
+    def click_submit_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.submit_button)
+        element.click()
+
+    def upload_file(self, file_path):
+        element = self.wait_for_presence_of_element(AddFileToEmailTemplatePage.file_input)
+        # Fill in the hidden file input bypassing the OS file management dialog
+        element[0].send_keys(file_path)
+
 
 
 class EditLetterTemplatePage(BasePage):

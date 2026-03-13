@@ -145,7 +145,8 @@ def test_upload_send_via_emergency_contact_list(driver, login_seeded_user, clien
     dashboard_page.go_to_dashboard_for_service(service_id=config["service"]["id"])
 
     template_id = {
-        "email": config["service"]["templates"]["email_no_placeholder"],
+        "email": config["service"]["templates"],
+        # "email": config["service"]["templates"]["email_no_placeholder"],
         "sms": config["service"]["templates"]["sms_no_placeholder"],
     }.get(message_type)
     template_name = {
