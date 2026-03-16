@@ -2,35 +2,41 @@ import uuid
 
 from selenium.webdriver.common.by import By
 
-from config import config
-from tests.pages import ShowTemplatesPage, EditEmailTemplatePage, ViewEmailTemplatePage, AddFileToEmailTemplatePage, \
-    DashboardPage
+from tests.pages import ViewEmailTemplatePage, ManageFilesForEmailTemplatePage
 from tests.test_utils import (
-    create_email_template,
-    go_to_templates_page,
-    recordtime, add_file_to_an_email_template,
+    recordtime,
+    delete_file_from_email_template_via_manage_files_page, delete_template,
+    create_an_email_template_and_add_attach_a_file,
 )
+
 
 @recordtime
 def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_seeded_user, client_live_key):
     # Create an email template
-    template_name = f"upload/delete file to email template {uuid.uuid4()}"
-    content = "Hi ((name)), download these files:"
-    go_to_templates_page(driver)
-    create_email_template(driver, name=template_name, content=content, has_unsubscribe_link=True)
-    go_to_templates_page(driver)
-    dashboard_page = DashboardPage(driver)
-    service_id = config["service"]["id"]
-    dashboard_page.go_to_dashboard_for_service(service_id=service_id)
-
-    # Upload file
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(service_id=service_id)
+    template_name = f"Functional Tests - upload/delete file to email template - {uuid.uuid4()}"
+    content = "Hi ((name)), download this file:"
     file_name = "attachment.pdf"
-    file_path = f"tests/test_files/{file_name}"
-    add_file_to_an_email_template(driver, template_name, file_path, service_id)
+    create_an_email_template_and_add_attach_a_file(driver, file_name, template_name, content)
+    assert driver.find_element(By.CSS_SELECTOR, "h1").text.strip() == template_name
+    assert driver.find_element(By.CSS_SELECTOR, "span[class='email-files-selected-counter']").text.strip() == \
+           "1 file added"
 
-    # Go to file management page and delete the file
-    assert driver.find_element(By.CSS_SELECTOR, "h1").text.strip() == file_name
+    # Go to files list page
+    template_page = ViewEmailTemplatePage(driver)
+    template_page.click_manage_files_button()
+    assert driver.find_element(By.CSS_SELECTOR, "h1").text.strip() == "Manage files"
 
+    # Go to file management page and delete file
+    manage_files_page = ManageFilesForEmailTemplatePage(driver)
+    manage_files_page.click_manage_link(file_name)
+    delete_file_from_email_template_via_manage_files_page(driver)
+    assert driver.find_element(By.CSS_SELECTOR, "h1").text.strip() == template_name
+    assert driver.find_element(By.CSS_SELECTOR, "div[class='banner-default-with-tick']").text.strip() == \
+           f"‘{file_name}’ has been removed"
+    assert driver.find_element(By.CSS_SELECTOR, "span[class='email-files-selected-counter']").text.strip() == \
+           "No files added"
 
+    # delete template
+    delete_template(driver, template_name)
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+    assert template_name not in current_templates

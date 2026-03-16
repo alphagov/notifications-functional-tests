@@ -62,6 +62,7 @@ from tests.pages.locators import (
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
     YourServicesPageLocators, ViewEmailTemplatePageLocators, AddFileToEmailTemplatePageLocators,
+    ManageEmailTemplateFilePageLocators, ManageFilesForEmailTemplatePageLocators,
 )
 
 
@@ -853,9 +854,14 @@ class ViewLetterTemplatePage(ViewTemplatePage):
 
 class ViewEmailTemplatePage(ViewTemplatePage):
     attach_files_button = ViewEmailTemplatePageLocators.ATTACH_FILES_BUTTON
+    manage_files_button = ViewEmailTemplatePageLocators.MANAGE_FILES_BUTTON
 
     def click_attach_files_button(self):
         element = self.wait_for_element(ViewEmailTemplatePage.attach_files_button)
+        element.click()
+
+    def click_manage_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.manage_files_button)
         element.click()
 
 
@@ -877,6 +883,33 @@ class AddFileToEmailTemplatePage(BasePage):
         # Fill in the hidden file input bypassing the OS file management dialog
         element[0].send_keys(file_path)
 
+
+class ManageEmailTemplateFilePage(BasePage):
+    file_link = ManageEmailTemplateFilePageLocators.REMOVE_FILE_LINK
+    add_to_template = ManageEmailTemplateFilePageLocators.ADD_TO_TEMPLATE_BUTTON
+    remove_file_dialog_button = ManageEmailTemplateFilePageLocators.REMOVE_FILE_DIALOG_BUTTON
+
+    def click_remove_file_link(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.file_link)
+        element.click()
+
+    def click_add_to_template(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.add_to_template)
+        element.click()
+
+    def click_remove_file_dialog_button(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.remove_file_dialog_button)
+        element.click()
+
+
+class ManageFilesForEmailTemplatePage(BasePage):
+
+    def click_manage_link(self, file_name):
+        # The current implementation of the manage link is such that there could be multiple links
+        # with the file name displayed in a hidden span tag being the only differentiator
+        # This method needs to be dynamic to filter on the file nane.
+        element = self.wait_for_element((By.XPATH, f"//a[contains(text(), 'Manage')][contains(., 'attachment.pdf')]"))
+        element.click()
 
 
 class EditLetterTemplatePage(BasePage):

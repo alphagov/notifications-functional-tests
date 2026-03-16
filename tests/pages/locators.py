@@ -115,13 +115,24 @@ class ViewLetterTemplatePageLocators(ViewTemplatePageLocators):
 
 
 class ViewEmailTemplatePageLocators(ViewTemplatePageLocators):
-    ATTACH_FILES_BUTTON = (By.CSS_SELECTOR, "a.attach-files__button")
+    ATTACH_FILES_BUTTON = (By.XPATH, "//a[contains(text(), 'Attach files')]")
+    MANAGE_FILES_BUTTON = (By.XPATH, "//a[contains(text(), 'Manage files')]")
 
 
 class AddFileToEmailTemplatePageLocators:
     CHOOSE_FILE_BUTTON = (By.XPATH, "//button[contains(text(),'Choose file')]")
     FILE_INPUT = (By.ID, "hidden-file")
     SUBMIT_BUTTON = (By.CSS_SELECTOR, "button[type='submit']")
+
+
+class ManageEmailTemplateFilePageLocators:
+    REMOVE_FILE_LINK = (By.LINK_TEXT, "Remove this file")
+    ADD_TO_TEMPLATE_BUTTON = (By.CSS_SELECTOR, "button[type='submit']")
+    REMOVE_FILE_DIALOG_BUTTON = (By.CSS_SELECTOR, "button[name='delete'][type='submit']")
+
+
+class ManageFilesForEmailTemplatePageLocators:
+    pass
 
 
 class ManageLetterAttachPageLocators:
