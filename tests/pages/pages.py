@@ -61,7 +61,8 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
-    YourServicesPageLocators,
+    YourServicesPageLocators, ViewEmailTemplatePageLocators, AddFileToEmailTemplatePageLocators,
+    ManageEmailTemplateFilePageLocators, ManageFilesForEmailTemplatePageLocators,
 )
 
 
@@ -177,6 +178,16 @@ class BasePage:
             locator,
             lambda locator: WebDriverWait(self.driver, time).until(
                 EC.visibility_of_all_elements_located(locator),
+                self.no_element_error_msg(locator),
+            ),
+        )
+
+    def wait_for_presence_of_element(self, locator, time=10):
+        return AntiStaleElementList(
+            self.driver,
+            locator,
+            lambda locator: WebDriverWait(self.driver, time).until(
+                EC.presence_of_all_elements_located(locator),
                 self.no_element_error_msg(locator),
             ),
         )
@@ -838,6 +849,66 @@ class ViewLetterTemplatePage(ViewTemplatePage):
 
     def click_change_language(self):
         element = self.wait_for_element(self.change_language_button)
+        element.click()
+
+
+class ViewEmailTemplatePage(ViewTemplatePage):
+    attach_files_button = ViewEmailTemplatePageLocators.ATTACH_FILES_BUTTON
+    manage_files_button = ViewEmailTemplatePageLocators.MANAGE_FILES_BUTTON
+
+    def click_attach_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.attach_files_button)
+        element.click()
+
+    def click_manage_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.manage_files_button)
+        element.click()
+
+
+class AddFileToEmailTemplatePage(BasePage):
+    choose_file_button = AddFileToEmailTemplatePageLocators.CHOOSE_FILE_BUTTON
+    file_input = AddFileToEmailTemplatePageLocators.FILE_INPUT
+    submit_button = AddFileToEmailTemplatePageLocators.SUBMIT_BUTTON
+
+    def visible_choose_file_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.choose_file_button)
+        return element
+
+    def click_submit_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.submit_button)
+        element.click()
+
+    def upload_file(self, file_path):
+        element = self.wait_for_presence_of_element(AddFileToEmailTemplatePage.file_input)
+        # Fill in the hidden file input bypassing the OS file management dialog
+        element[0].send_keys(file_path)
+
+
+class ManageEmailTemplateFilePage(BasePage):
+    file_link = ManageEmailTemplateFilePageLocators.REMOVE_FILE_LINK
+    add_to_template = ManageEmailTemplateFilePageLocators.ADD_TO_TEMPLATE_BUTTON
+    remove_file_dialog_button = ManageEmailTemplateFilePageLocators.REMOVE_FILE_DIALOG_BUTTON
+
+    def click_remove_file_link(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.file_link)
+        element.click()
+
+    def click_add_to_template(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.add_to_template)
+        element.click()
+
+    def click_remove_file_dialog_button(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.remove_file_dialog_button)
+        element.click()
+
+
+class ManageFilesForEmailTemplatePage(BasePage):
+
+    def click_manage_link(self, file_name):
+        # The current implementation of the manage link is such that there could be multiple links
+        # with the file name displayed in a hidden span tag being the only differentiator
+        # This method needs to be dynamic to filter on the file nane.
+        element = self.wait_for_element((By.XPATH, f"//a[contains(text(), 'Manage')][contains(., 'attachment.pdf')]"))
         element.click()
 
 
