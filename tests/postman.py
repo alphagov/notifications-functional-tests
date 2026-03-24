@@ -1,5 +1,7 @@
-from notifications_python_client.errors import HTTPError
 import uuid
+
+from notifications_python_client.errors import HTTPError
+
 from config import config
 from tests.pages import JobPage, SendViaCsvPreviewPage
 from tests.test_utils import RetryException, get_temp_csv_for_message_type

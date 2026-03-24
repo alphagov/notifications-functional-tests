@@ -4,10 +4,10 @@ import logging
 import os
 import re
 import tempfile
-import uuid
-from datetime import UTC, datetime
 import time
+import uuid
 from collections.abc import Sequence
+from datetime import UTC, datetime
 from typing import Any
 
 from filelock import FileLock
@@ -42,8 +42,12 @@ from tests.pages import (
     ViewTemplatePage,
     YourServicesPage,
 )
-from tests.pages.pages import RenameLetterTemplatePage, ViewEmailTemplatePage, AddFileToEmailTemplatePage, \
-    ManageEmailTemplateFilePage
+from tests.pages.pages import (
+    AddFileToEmailTemplatePage,
+    ManageEmailTemplateFilePage,
+    RenameLetterTemplatePage,
+    ViewEmailTemplatePage,
+)
 
 logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
 
