@@ -249,11 +249,13 @@ class BasePage:
         return search_text in normalized_page_source
 
     def get_template_id(self):
-        # e.g.
-        # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit
-        # circle back and do better
-        self.wait_until_url_contains("/templates/")
-        return self.driver.current_url.split("/templates/")[1].split("/")[0]
+        # Extract ID only once we're on a UUID-based template URL.
+        # This avoids races where current_url is still /templates/add-email.
+        template_id_pattern = re.compile(r"/templates/([0-9a-fA-F-]{36})(?:/|$)")
+        self.wait_until_url_matches(template_id_pattern)
+        match = template_id_pattern.search(self.driver.current_url)
+        assert match, f"Could not parse template ID from URL: {self.driver.current_url}"
+        return match.group(1)
 
     def click_element_by_link_text(self, link_text):
         element = self.wait_for_element((By.LINK_TEXT, link_text))
