@@ -277,6 +277,7 @@ def create_sms_template(driver, name, content=None):
 
     template_page = EditSmsTemplatePage(driver)
     template_page.fill_template(name=name, content=content)
+    template_page.wait_until_url_doesnt_contain("/templates/add-sms")
     return template_page.get_template_id()
 
 
