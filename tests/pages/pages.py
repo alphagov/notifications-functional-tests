@@ -885,6 +885,9 @@ class RenameLetterTemplatePage(BasePage):
     def rename_template(self, name="Test letter template"):
         self.name_input = name
         self.click_save()
+        # Ensure rename has completed before the caller navigates away.
+        self.wait_until_url_doesnt_contain("/rename", time=20)
+        WebDriverWait(self.driver, 20).until(lambda _: self.is_text_present_on_page(name))
 
 
 class ConfirmEditLetterTemplatePage(BasePage):
