@@ -724,6 +724,7 @@ def test_creating_moving_and_deleting_template_folders(driver, login_seeded_user
     # move template out of folder
     view_folder_page.select_template_checkbox(template_id)
     view_folder_page.move_to_root_template_folder()
+    view_folder_page.wait_until_element_is_not_present(view_folder_page.template_checkbox(template_id), time=20)
 
     # delete folder
     view_folder_page.click_manage_folder()
