@@ -115,4 +115,5 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
     unsubscribe_request_reports_summary_page.click_latest_unsubscribe_request_report_by_link()
     report_page.select_mark_as_complete_checkbox()
     report_page.click_continue()
-    assert driver.find_element(By.CSS_SELECTOR, "tr td span").text == "Completed"
+    unsubscribe_request_reports_summary_page.wait_until_url_contains("/unsubscribe-requests/summary")
+    assert driver.find_element(By.CSS_SELECTOR, "tbody tr:first-child td span").text.strip() == "Completed"
