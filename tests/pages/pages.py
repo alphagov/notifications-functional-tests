@@ -34,6 +34,7 @@ from tests.pages.element import (
     TemplateContentElement,
 )
 from tests.pages.locators import (
+    AddFileToEmailTemplatePageLocators,
     AddServicePageLocators,
     ApiIntegrationPageLocators,
     ChangeNameLocators,
@@ -44,6 +45,7 @@ from tests.pages.locators import (
     JobPageLocators,
     LetterPreviewPageLocators,
     MainPageLocators,
+    ManageEmailTemplateFilePageLocators,
     ManageLetterAttachPageLocators,
     NavigationLocators,
     RenameTemplatePageLocators,
@@ -59,6 +61,7 @@ from tests.pages.locators import (
     TeamMembersPageLocators,
     TemplatePageLocators,
     VerifyPageLocators,
+    ViewEmailTemplatePageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
     YourServicesPageLocators,
@@ -129,6 +132,8 @@ class AntiStaleElementList(AntiStale):
 class BasePage:
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
     profile_page_link = NavigationLocators.PROFILE_LINK
+    h1_text = (By.CSS_SELECTOR, "h1")
+    templates_link = NavigationLocators.TEMPLATES_LINK
 
     def __init__(self, driver):
         self.base_url = config["notify_admin_url"]
@@ -181,6 +186,16 @@ class BasePage:
             ),
         )
 
+    def wait_for_presence_of_element(self, locator, time=10):
+        return AntiStaleElementList(
+            self.driver,
+            locator,
+            lambda locator: WebDriverWait(self.driver, time).until(
+                EC.presence_of_all_elements_located(locator),
+                self.no_element_error_msg(locator),
+            ),
+        )
+
     def wait_until_element_is_not_present(self, locator, time=10):
         return WebDriverWait(self.driver, time).until(
             EC.invisibility_of_element_located(locator),
@@ -195,6 +210,10 @@ class BasePage:
         sign_out_link.click()
 
         self.driver.delete_all_cookies()
+
+    def click_templates_link(self):
+        element = self.wait_for_element(BasePage.templates_link)
+        element.click()
 
     def wait_until_url_contains(self, url, time=10):
         return WebDriverWait(self.driver, time).until(lambda _: url in self.driver.current_url)
@@ -267,6 +286,10 @@ class BasePage:
     def click_back_link(self):
         element = self.wait_for_element(CommonPageLocators.BACK_LINK)
         element.click()
+
+    def get_h1_text(self):
+        element = self.wait_for_element(BasePage.h1_text)
+        return element.text.strip()
 
 
 class PageWithStickyNavMixin:
@@ -678,6 +701,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_folder_textbox = BasePageElement(name="add_new_folder_name")
     add_to_new_folder_textbox = BasePageElement(name="move_to_new_folder_name")
 
+    all_templates_listed = (By.CSS_SELECTOR, ".template-list-item-label .govuk-visually-hidden")
+
     root_template_folder_radio = (
         By.CSS_SELECTOR,
         "input[type='radio'][value='__NONE__']",
@@ -763,6 +788,14 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         except TimeoutException:
             return None
 
+    def get_all_listed_templates(self):
+        locator = (By.CLASS_NAME, "template-list-item-label")
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(locator))
+
+        elements = self.driver.find_elements(*locator)
+
+        return [element.get_attribute("textContent").strip() for element in elements]
+
 
 class SendSmsTemplatePage(BasePage):
     new_sms_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
@@ -838,6 +871,142 @@ class ViewLetterTemplatePage(ViewTemplatePage):
 
     def click_change_language(self):
         element = self.wait_for_element(self.change_language_button)
+        element.click()
+
+
+class ViewEmailTemplatePage(ViewTemplatePage):
+    attach_files_button = ViewEmailTemplatePageLocators.ATTACH_FILES_BUTTON
+    manage_files_button = ViewEmailTemplatePageLocators.MANAGE_FILES_BUTTON
+    file_added_count_text = ViewEmailTemplatePageLocators.FILE_ADDED_COUNT_TEXT
+    page_banner_text = ViewEmailTemplatePageLocators.PAGE_BANNER_TEXT
+    delete_template_link = ViewEmailTemplatePageLocators.DELETE_TEMPLATE_LINK
+    template_deletion_confirmation_button = ViewEmailTemplatePageLocators.TEMPLATE_DELETION_CONFIRMATION_BUTTON
+    email_message_body_content = (By.XPATH, "//div[contains(@class, 'email-message-body')]")
+
+    def click_attach_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.attach_files_button)
+        element.click()
+
+    def click_manage_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.manage_files_button)
+        element.click()
+
+    def get_file_added_count_text(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.file_added_count_text)
+        return element.text.strip()
+
+    def get_page_banner_text(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.page_banner_text)
+        return element.text.strip()
+
+    def click_delete_template_link(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.delete_template_link)
+        element.click()
+
+    def click_template_deletion_confirmation_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.template_deletion_confirmation_button)
+        element.click()
+
+    def get_email_message_body_content(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.email_message_body_content)
+        return element.text.strip()
+
+
+class AddFileToEmailTemplatePage(BasePage):
+    choose_file_button = AddFileToEmailTemplatePageLocators.CHOOSE_FILE_BUTTON
+    file_input = AddFileToEmailTemplatePageLocators.FILE_INPUT
+    submit_button = AddFileToEmailTemplatePageLocators.SUBMIT_BUTTON
+
+    def visible_choose_file_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.choose_file_button)
+        return element
+
+    def click_submit_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.submit_button)
+        element.click()
+
+    def upload_file(self, file_path):
+        element = self.wait_for_presence_of_element(AddFileToEmailTemplatePage.file_input)
+        # Fill in the hidden file input bypassing the OS file management dialog
+        element[0].send_keys(file_path)
+
+
+class ManageEmailTemplateFilePage(BasePage):
+    file_link = ManageEmailTemplateFilePageLocators.REMOVE_FILE_LINK
+    add_to_template = ManageEmailTemplateFilePageLocators.ADD_TO_TEMPLATE_BUTTON
+    remove_file_dialog_button = ManageEmailTemplateFilePageLocators.REMOVE_FILE_DIALOG_BUTTON
+
+    def click_remove_file_link(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.file_link)
+        element.click()
+
+    def click_add_to_template(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.add_to_template)
+        element.click()
+
+    def click_remove_file_dialog_button(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.remove_file_dialog_button)
+        element.click()
+
+    def get_file_setting_value(self, label):
+        xpath = f"//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., '{label}')]]//dd[contains(@class, 'govuk-summary-list__value')]"
+        element = self.wait_for_element((By.XPATH, xpath))
+        return element.get_attribute("textContent").strip()
+
+    def click_change_file_setting(self, label):
+        xpath = f"//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., '{label}')]]//a[contains(., 'Change')]"
+        element = self.wait_for_element((By.XPATH, xpath))
+        element.click()
+
+
+class ChangeLinkTextForEmailFilePage(BasePage):
+    link_text_input = (By.CSS_SELECTOR, "input[name='link_text'][id='link_text']")
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ChangeLinkTextForEmailFilePage.continue_button)
+        element.click()
+
+    def fill_in_link_text(self, value):
+        element = self.wait_for_element(ChangeLinkTextForEmailFilePage.link_text_input)
+        element.clear()
+        element.send_keys(value)
+
+
+class ChangeRentionPeriodForEmailFilePage(BasePage):
+    retention_period_input = (By.CSS_SELECTOR, "input[name='retention_period'][id='retention_period']")
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.continue_button)
+        element.click()
+
+    def fill_in_retention_period(self, value):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.retention_period_input)
+        element.clear()
+        element.send_keys(value)
+
+
+class EmailConfirmationSettingForEmailFilePage(BasePage):
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.continue_button)
+        element.click()
+
+    def select_email_confirmation_option(self, value):
+        xpath = f"//div[fieldset[legend[contains(., 'confirm their email address')]]]//label[contains(., '{value}')]"
+        element = self.wait_for_element((By.XPATH, xpath))
+        element.click()
+
+
+class ManageFilesForEmailTemplatePage(BasePage):
+    def click_manage_link(self, file_name):
+        # The current implementation of the manage link is such that there could be multiple links
+        # with the file name displayed in a hidden span tag being the only differentiator
+        # This method needs to be dynamic to filter on the file nane.
+        element = self.wait_for_element((By.XPATH, "//a[contains(text(), 'Manage')][contains(., 'attachment.pdf')]"))
+
         element.click()
 
 
@@ -1339,6 +1508,7 @@ class SendSetSenderPage(BasePage):
         By.XPATH,
         "//label[normalize-space(text())='func tests']/preceding-sibling::input[@type='radio']",
     )
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_matches(r"/set-sender(\?.*)?$", time=time)
@@ -1353,6 +1523,10 @@ class SendSetSenderPage(BasePage):
     def choose_alternative_sms_sender(self):
         radio = self.wait_for_design_system_checkbox_or_radio(self.alternative_sender_sms_radio)
         radio.click()
+
+    def click_continue_button(self):
+        element = self.wait_for_element(SendSetSenderPage.continue_button)
+        element.click()
 
 
 class SendOneRecipientPage(BasePage):
@@ -1392,6 +1566,29 @@ class SendOneRecipientPage(BasePage):
 
     def click_use_emergency_list(self):
         element = self.wait_for_element(SingleRecipientLocators.USE_EMERGENCY_LIST)
+        element.click()
+
+
+class SendEmailPreviewPage(BasePage):
+    send_button = (By.CSS_SELECTOR, "button[type='submit'")
+
+    def click_send_button(self):
+        element = self.wait_for_element(SendEmailPreviewPage.send_button)
+        element.click()
+
+
+class SendEmailConfirmationPage(BasePage):
+    notification_status = (
+        By.XPATH,
+        "//p[contains(@class, 'notification-status')]"
+    )
+
+    def get_notification_status(self):
+        element = self.wait_for_element(SendEmailConfirmationPage.notification_status)
+        return element.get_attribute("textContent").strip()
+
+    def click_file_download_link(self, link_text):
+        element = self.wait_for_element((By.XPATH, f"//a[contains(., '{link_text}')]"))
         element.click()
 
 
@@ -1679,3 +1876,24 @@ class UnsubscribeRequestReportPage(BasePage):
     def click_update_button(self):
         element = self.wait_for_element(UnsubscribeRequestReportPage.update_report_button)
         element.click()
+
+
+class YouHaveAFileToDownloadPage(BasePage):
+    continue_button = (By.XPATH, "//a[@role='button'][@class='govuk-button']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(YouHaveAFileToDownloadPage.continue_button)
+        element.click()
+
+
+class ConfirmYourEmailAddressPage(BasePage):
+    email_address_input = (By.CSS_SELECTOR, "input[name='email_address'][id='email_address']")
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ConfirmYourEmailAddressPage.continue_button)
+        element.click()
+
+    def fill_in_link_text(self, value):
+        element = self.wait_for_element(ConfirmYourEmailAddressPage.email_address_input)
+        element.send_keys(value)
