@@ -61,7 +61,8 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
-    YourServicesPageLocators,
+    YourServicesPageLocators, ViewEmailTemplatePageLocators, AddFileToEmailTemplatePageLocators,
+    ManageEmailTemplateFilePageLocators, ManageFilesForEmailTemplatePageLocators,
 )
 
 
@@ -129,6 +130,7 @@ class AntiStaleElementList(AntiStale):
 class BasePage:
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
     profile_page_link = NavigationLocators.PROFILE_LINK
+    h1_text = (By.CSS_SELECTOR, "h1")
 
     def __init__(self, driver):
         self.base_url = config["notify_admin_url"]
@@ -177,6 +179,16 @@ class BasePage:
             locator,
             lambda locator: WebDriverWait(self.driver, time).until(
                 EC.visibility_of_all_elements_located(locator),
+                self.no_element_error_msg(locator),
+            ),
+        )
+
+    def wait_for_presence_of_element(self, locator, time=10):
+        return AntiStaleElementList(
+            self.driver,
+            locator,
+            lambda locator: WebDriverWait(self.driver, time).until(
+                EC.presence_of_all_elements_located(locator),
                 self.no_element_error_msg(locator),
             ),
         )
@@ -267,6 +279,10 @@ class BasePage:
     def click_back_link(self):
         element = self.wait_for_element(CommonPageLocators.BACK_LINK)
         element.click()
+
+    def get_h1_text(self):
+        element = self.wait_for_element(BasePage.h1_text)
+        return element.text.strip()
 
 
 class PageWithStickyNavMixin:
@@ -678,6 +694,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_folder_textbox = BasePageElement(name="add_new_folder_name")
     add_to_new_folder_textbox = BasePageElement(name="move_to_new_folder_name")
 
+    all_templates_listed = (By.CSS_SELECTOR, ".template-list-item-label .govuk-visually-hidden")
+
     root_template_folder_radio = (
         By.CSS_SELECTOR,
         "input[type='radio'][value='__NONE__']",
@@ -763,6 +781,16 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         except TimeoutException:
             return None
 
+    def get_all_listed_templates(self):
+        locator = (By.CLASS_NAME, "template-list-item-label")
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(locator)
+        )
+
+        elements = self.driver.find_elements(*locator)
+
+        return [element.get_attribute("textContent").strip() for element in elements]
+
 
 class SendSmsTemplatePage(BasePage):
     new_sms_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
@@ -838,6 +866,86 @@ class ViewLetterTemplatePage(ViewTemplatePage):
 
     def click_change_language(self):
         element = self.wait_for_element(self.change_language_button)
+        element.click()
+
+
+class ViewEmailTemplatePage(ViewTemplatePage):
+    attach_files_button = ViewEmailTemplatePageLocators.ATTACH_FILES_BUTTON
+    manage_files_button = ViewEmailTemplatePageLocators.MANAGE_FILES_BUTTON
+    file_added_count_text = ViewEmailTemplatePageLocators.FILE_ADDED_COUNT_TEXT
+    page_banner_text = ViewEmailTemplatePageLocators.PAGE_BANNER_TEXT
+    delete_template_link = ViewEmailTemplatePageLocators.DELETE_TEMPLATE_LINK
+    template_deletion_confirmation_button = ViewEmailTemplatePageLocators.TEMPLATE_DELETION_CONFIRMATION_BUTTON
+
+    def click_attach_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.attach_files_button)
+        element.click()
+
+    def click_manage_files_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.manage_files_button)
+        element.click()
+
+    def get_file_added_count_text(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.file_added_count_text)
+        return element.text.strip()
+
+    def get_page_banner_text(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.page_banner_text)
+        return element.text.strip()
+
+    def click_delete_template_link(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.delete_template_link)
+        element.click()
+
+    def click_template_deletion_confirmation_button(self):
+        element = self.wait_for_element(ViewEmailTemplatePage.template_deletion_confirmation_button)
+        element.click()
+
+
+class AddFileToEmailTemplatePage(BasePage):
+    choose_file_button = AddFileToEmailTemplatePageLocators.CHOOSE_FILE_BUTTON
+    file_input = AddFileToEmailTemplatePageLocators.FILE_INPUT
+    submit_button = AddFileToEmailTemplatePageLocators.SUBMIT_BUTTON
+
+    def visible_choose_file_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.choose_file_button)
+        return element
+
+    def click_submit_button(self):
+        element = self.wait_for_element(AddFileToEmailTemplatePage.submit_button)
+        element.click()
+
+    def upload_file(self, file_path):
+        element = self.wait_for_presence_of_element(AddFileToEmailTemplatePage.file_input)
+        # Fill in the hidden file input bypassing the OS file management dialog
+        element[0].send_keys(file_path)
+
+
+class ManageEmailTemplateFilePage(BasePage):
+    file_link = ManageEmailTemplateFilePageLocators.REMOVE_FILE_LINK
+    add_to_template = ManageEmailTemplateFilePageLocators.ADD_TO_TEMPLATE_BUTTON
+    remove_file_dialog_button = ManageEmailTemplateFilePageLocators.REMOVE_FILE_DIALOG_BUTTON
+
+    def click_remove_file_link(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.file_link)
+        element.click()
+
+    def click_add_to_template(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.add_to_template)
+        element.click()
+
+    def click_remove_file_dialog_button(self):
+        element = self.wait_for_element(ManageEmailTemplateFilePage.remove_file_dialog_button)
+        element.click()
+
+
+class ManageFilesForEmailTemplatePage(BasePage):
+
+    def click_manage_link(self, file_name):
+        # The current implementation of the manage link is such that there could be multiple links
+        # with the file name displayed in a hidden span tag being the only differentiator
+        # This method needs to be dynamic to filter on the file nane.
+        element = self.wait_for_element((By.XPATH, f"//a[contains(text(), 'Manage')][contains(., '{file_name}')]"))
         element.click()
 
 
