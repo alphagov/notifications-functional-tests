@@ -935,10 +935,6 @@ class ManageEmailTemplateFilePage(BasePage):
     file_link = ManageEmailTemplateFilePageLocators.REMOVE_FILE_LINK
     add_to_template = ManageEmailTemplateFilePageLocators.ADD_TO_TEMPLATE_BUTTON
     remove_file_dialog_button = ManageEmailTemplateFilePageLocators.REMOVE_FILE_DIALOG_BUTTON
-    change_link_text_change = (
-        By.XPATH,
-        "//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., 'Link text')]]//a[contains(., 'Change')]",
-    )
 
     def click_remove_file_link(self):
         element = self.wait_for_element(ManageEmailTemplateFilePage.file_link)
@@ -952,8 +948,14 @@ class ManageEmailTemplateFilePage(BasePage):
         element = self.wait_for_element(ManageEmailTemplateFilePage.remove_file_dialog_button)
         element.click()
 
-    def click_change_link_text(self):
-        element = self.wait_for_element(ManageEmailTemplateFilePage.change_link_text_change)
+    def get_file_setting_value(self, label):
+        xpath = f"//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., '{label}')]]//dd[contains(@class, 'govuk-summary-list__value')]"
+        element = self.wait_for_element((By.XPATH, xpath))
+        return element.get_attribute("textContent").strip()
+
+    def click_change_file_setting(self, label):
+        xpath = f"//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., '{label}')]]//a[contains(., 'Change')]"
+        element = self.wait_for_element((By.XPATH, xpath))
         element.click()
 
 
@@ -967,7 +969,35 @@ class ChangeLinkTextForEmailFilePage(BasePage):
 
     def fill_in_link_text(self, value):
         element = self.wait_for_element(ChangeLinkTextForEmailFilePage.link_text_input)
+        element.clear()
         element.send_keys(value)
+
+
+class ChangeRentionPeriodForEmailFilePage(BasePage):
+    retention_period_input = (By.CSS_SELECTOR, "input[name='retention_period'][id='retention_period']")
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.continue_button)
+        element.click()
+
+    def fill_in_retention_period(self, value):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.retention_period_input)
+        element.clear()
+        element.send_keys(value)
+
+
+class EmailConfirmationSettingForEmailFilePage(BasePage):
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.continue_button)
+        element.click()
+
+    def select_email_confirmation_option(self, value):
+        xpath = f"//div[fieldset[legend[contains(., 'confirm their email address')]]]//label[contains(., '{value}')]"
+        element = self.wait_for_element((By.XPATH, xpath))
+        element.click()
 
 
 class ManageFilesForEmailTemplatePage(BasePage):
