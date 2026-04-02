@@ -1602,6 +1602,10 @@ class ViewFolderPage(ShowTemplatesPage):
         link.click()
 
     def assert_name_equals(self, expected_name):
+        WebDriverWait(self.driver, 10).until(
+            EC.text_to_be_present_in_element(self.template_name, expected_name),
+            f"Folder name did not update to '{expected_name}' on URL {self.current_url}",
+        )
         h1 = self.wait_for_element(self.template_name)
         assert expected_name in h1.text
 
