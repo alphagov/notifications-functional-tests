@@ -222,6 +222,9 @@ class BasePage:
         p = pattern if isinstance(pattern, re.Pattern) else re.compile(pattern)
         return WebDriverWait(self.driver, time).until(lambda _: not p.search(self.driver.current_url))
 
+    def wait_until_contains_text(self, search_text, time=10):
+        return WebDriverWait(self.driver, time).until(lambda _: self.is_text_present_on_page(search_text))
+
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
@@ -995,6 +998,9 @@ class RenameLetterTemplatePage(BasePage):
     def rename_template(self, name="Test letter template"):
         self.name_input = name
         self.click_save()
+        # Ensure rename has completed before the caller navigates away.
+        self.wait_until_url_doesnt_contain("/rename", time=20)
+        self.wait_until_contains_text(name, time=20)
 
 
 class ConfirmEditLetterTemplatePage(BasePage):
