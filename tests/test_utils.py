@@ -42,8 +42,12 @@ from tests.pages import (
     ViewTemplatePage,
     YourServicesPage,
 )
-from tests.pages.pages import RenameLetterTemplatePage, ViewEmailTemplatePage, AddFileToEmailTemplatePage, \
-    ManageEmailTemplateFilePage
+from tests.pages.pages import (
+    AddFileToEmailTemplatePage,
+    ManageEmailTemplateFilePage,
+    RenameLetterTemplatePage,
+    ViewEmailTemplatePage,
+)
 
 logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
 
