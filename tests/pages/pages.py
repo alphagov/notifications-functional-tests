@@ -34,6 +34,7 @@ from tests.pages.element import (
     TemplateContentElement,
 )
 from tests.pages.locators import (
+    AddFileToEmailTemplatePageLocators,
     AddServicePageLocators,
     ApiIntegrationPageLocators,
     ChangeNameLocators,
@@ -44,6 +45,7 @@ from tests.pages.locators import (
     JobPageLocators,
     LetterPreviewPageLocators,
     MainPageLocators,
+    ManageEmailTemplateFilePageLocators,
     ManageLetterAttachPageLocators,
     NavigationLocators,
     RenameTemplatePageLocators,
@@ -59,10 +61,10 @@ from tests.pages.locators import (
     TeamMembersPageLocators,
     TemplatePageLocators,
     VerifyPageLocators,
+    ViewEmailTemplatePageLocators,
     ViewLetterTemplatePageLocators,
     ViewTemplatePageLocators,
-    YourServicesPageLocators, ViewEmailTemplatePageLocators, AddFileToEmailTemplatePageLocators,
-    ManageEmailTemplateFilePageLocators, ManageFilesForEmailTemplatePageLocators,
+    YourServicesPageLocators,
 )
 
 
@@ -788,9 +790,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
 
     def get_all_listed_templates(self):
         locator = (By.CLASS_NAME, "template-list-item-label")
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(locator)
-        )
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(locator))
 
         elements = self.driver.find_elements(*locator)
 
@@ -945,7 +945,6 @@ class ManageEmailTemplateFilePage(BasePage):
 
 
 class ManageFilesForEmailTemplatePage(BasePage):
-
     def click_manage_link(self, file_name):
         # The current implementation of the manage link is such that there could be multiple links
         # with the file name displayed in a hidden span tag being the only differentiator

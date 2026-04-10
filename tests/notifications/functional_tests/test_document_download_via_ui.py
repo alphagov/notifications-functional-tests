@@ -1,10 +1,10 @@
 import uuid
 
-from tests.pages import ViewEmailTemplatePage, ManageFilesForEmailTemplatePage, ShowTemplatesPage
+from tests.pages import ManageFilesForEmailTemplatePage, ShowTemplatesPage, ViewEmailTemplatePage
 from tests.test_utils import (
-    recordtime,
-    delete_file_from_email_template_via_manage_files_page, delete_template,
     create_an_email_template_and_attach_a_file,
+    delete_file_from_email_template_via_manage_files_page,
+    recordtime,
 )
 
 

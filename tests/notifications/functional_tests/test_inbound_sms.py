@@ -10,6 +10,7 @@ Test:
     look at inbox page - assert that the new message is in the conversation
 """
 
+import uuid
 from datetime import UTC, datetime
 from urllib.parse import quote_plus
 
@@ -21,10 +22,10 @@ from config import config
 from tests.pages import ConversationPage, DashboardPage, InboxPage
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def inbound_sms():
     # the message has the func test user's name in it - which has a unique uuid
-    message = "Inbound message from {}".format(config["user"]["name"])
+    message = f"Inbound message from {uuid.uuid4()}"
 
     # hand-craft a request to receive messages API.
     mmg_inbound_body = {
