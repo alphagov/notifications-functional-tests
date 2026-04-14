@@ -38,12 +38,14 @@ def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_s
     template_name = f"Functional Tests - upload/delete file to email template - {uuid.uuid4()}"
     content = "Hi ((name)), download this file:"
     file_name = "attachment.pdf"
-    create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
-
-    # Confirm file has been attached to template on the Preview email template page
     view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    create_an_email_template_and_attach_a_file(
+        driver=driver,
+        file_name=file_name,
+        template_name=template_name,
+        content=content,
+        view_email_template_page=view_email_template_page
+    )
 
     # Test removing the file from the template
     view_email_template_page.click_manage_files_button()
@@ -74,12 +76,14 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
     template_name = f"Functional Tests - send one off email with file via ui - {uuid.uuid4()}"
     content = "Testing sending a one off email notification. with an email file. Test file below:"
     file_name = "attachment.pdf"
-    create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
-
-    # Confirm file has been attached to template on the Preview email template page
     view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    create_an_email_template_and_attach_a_file(
+        driver=driver,
+        file_name=file_name,
+        template_name=template_name,
+        content=content,
+        view_email_template_page=view_email_template_page,
+    )
 
     # go to the individual file management page and change the link text
     view_email_template_page.click_manage_files_button()
@@ -157,12 +161,14 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     template_name = f"Functional Tests - test email file management settings- {uuid.uuid4()}"
     content = "Hi ((name)), download this file:"
     file_name = "attachment.pdf"
-    create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
-
-    # Confirm file has been attached to template on the Preview email template page
     view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    create_an_email_template_and_attach_a_file(
+        driver=driver,
+        file_name=file_name,
+        template_name=template_name,
+        content=content,
+        view_email_template_page=view_email_template_page,
+    )
 
     # Go to file management page
     view_email_template_page.click_manage_files_button()
