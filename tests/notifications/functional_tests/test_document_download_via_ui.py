@@ -16,6 +16,7 @@ from tests.pages import (
     SendEmailPreviewPage,
     SendOneRecipientPage,
     SendSetSenderPage,
+    SendViaCsvPage,
     SentEmailMessagePage,
     PreviewConfirmYourEmailAddressPage,
     PreviewDownloadYourFilePage,
@@ -23,6 +24,7 @@ from tests.pages import (
     ShowTemplatesPage,
     ViewEmailTemplatePage,
 )
+from tests.postman import send_notification_via_csv
 from tests.test_utils import (
     create_an_email_template_and_attach_a_file,
     delete_file_from_email_template_via_manage_files_page,
@@ -71,7 +73,8 @@ def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_s
 
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
-def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
+@pytest.mark.parametrize("sending_mode", ["one_off", "via_csv"])
+def test_send_email_with_file_via_ui(driver, login_seeded_user, sending_mode):
     # Create an email template
     template_name = f"Functional Tests - send one off email with file via ui - {uuid.uuid4()}"
     content = "Testing sending a one off email notification. with an email file. Test file below:"
@@ -104,30 +107,36 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
     # send the email
     assert view_email_template_page.get_h1_text() == template_name
     assert link_text in view_email_template_page.get_email_message_body_content()
+
+    template_id = view_email_template_page.get_template_id()
     view_email_template_page.click_send()
 
     set_sender_page = SendSetSenderPage(driver)
     set_sender_page.wait_until_current()
     assert set_sender_page.get_h1_text() == "Where should replies come back to?"
     set_sender_page.click_continue_button()
+    if sending_mode == "one_off":
+        send_to_one_recipient_page = SendOneRecipientPage(driver)
+        assert send_to_one_recipient_page.get_h1_text() == f"Send ‘{template_name}’"
+        send_to_one_recipient_page.send_to_myself("email")
 
-    send_to_one_recipient_page = SendOneRecipientPage(driver)
-    assert send_to_one_recipient_page.get_h1_text() == f"Send ‘{template_name}’"
-    send_to_one_recipient_page.send_to_myself("email")
+        preview_send_one_recepient_page = SendEmailPreviewPage(driver)
+        assert preview_send_one_recepient_page.get_h1_text() == f"Preview of ‘{template_name}’"
+        preview_send_one_recepient_page.click_send_button()
 
-    preview_send_one_recepient_page = SendEmailPreviewPage(driver)
-    assert preview_send_one_recepient_page.get_h1_text() == f"Preview of ‘{template_name}’"
-    preview_send_one_recepient_page.click_send_button()
+    elif sending_mode == "via_csv":
+        send_via_csv_page = SendViaCsvPage(driver)
+        job_page = send_notification_via_csv(send_via_csv_page, "email", seeded=True, template_id=template_id)
+        job_page.go_to_notification_page()
 
-    # confirm that the email is being delivered
-    send_email_confirmation_page = SentEmailMessagePage(driver)
-    assert send_email_confirmation_page.get_h1_text() == "Email"
-    assert "Delivering" in send_email_confirmation_page.get_notification_status()
+    # confirm that the email was sent
+    sent_email_message_page = SentEmailMessagePage(driver)
+    assert sent_email_message_page.get_h1_text() == "Email"
 
     # Confirm that the file download link sent to the recipient works
     # There are smoke tests and other tests covering the process of a recipient downloading
     # a document, so the whole journey will not be covered here
-    send_email_confirmation_page.click_file_download_link(link_text)
+    sent_email_message_page.click_file_download_link(link_text)
     you_have_a_file_to_download_page = DocumentDownloadLandingPage(driver)
     assert you_have_a_file_to_download_page.get_h1_text() == "You have a file to download"
     you_have_a_file_to_download_page.go_to_download_page()
