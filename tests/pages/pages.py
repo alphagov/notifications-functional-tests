@@ -953,12 +953,54 @@ class ManageEmailTemplateFilePage(BasePage):
         element = self.wait_for_element(ManageEmailTemplateFilePage.remove_file_dialog_button)
         element.click()
 
+    def get_file_setting_value(self, label):
+        xpath = f"//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., '{label}')]]//dd[contains(@class, 'govuk-summary-list__value')]"  # noqa: E501
+        element = self.wait_for_element((By.XPATH, xpath))
+        return element.get_attribute("textContent").strip()
+
     def click_change_file_setting(self, label):
         xpath = (
             f"//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., '{label}')]]//a[contains(., 'Change')]"
         )
         element = self.wait_for_element((By.XPATH, xpath))
         element.click()
+
+
+class ManageFilesForEmailTemplatePage(BasePage):
+    def click_manage_link(self, file_name):
+        # The current implementation of the manage link is such that there could be multiple links
+        # with the file name displayed in a hidden span tag being the only differentiator
+        # This method needs to be dynamic to filter on the file nane.
+        element = self.wait_for_element((By.XPATH, f"//a[contains(text(), 'Manage')][contains(., {file_name})]"))
+
+        element.click()
+
+
+class EmailConfirmationSettingForEmailFilePage(BasePage):
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.continue_button)
+        element.click()
+
+    def select_email_confirmation_option(self, value):
+        xpath = f"//div[fieldset[legend[contains(., 'confirm their email address')]]]//label[contains(., '{value}')]"
+        element = self.wait_for_element((By.XPATH, xpath))
+        element.click()
+
+
+class ChangeRentionPeriodForEmailFilePage(BasePage):
+    retention_period_input = (By.CSS_SELECTOR, "input[name='retention_period'][id='retention_period']")
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.continue_button)
+        element.click()
+
+    def fill_in_retention_period(self, value):
+        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.retention_period_input)
+        element.clear()
+        element.send_keys(value)
 
 
 class ChangeLinkTextForEmailFilePage(BasePage):
@@ -971,16 +1013,8 @@ class ChangeLinkTextForEmailFilePage(BasePage):
 
     def fill_in_link_text(self, value):
         element = self.wait_for_element(ChangeLinkTextForEmailFilePage.link_text_input)
+        element.clear()
         element.send_keys(value)
-
-
-class ManageFilesForEmailTemplatePage(BasePage):
-    def click_manage_link(self, file_name):
-        # The current implementation of the manage link is such that there could be multiple links
-        # with the file name displayed in a hidden span tag being the only differentiator
-        # This method needs to be dynamic to filter on the file nane.
-        element = self.wait_for_element((By.XPATH, f"//a[contains(text(), 'Manage')][contains(., '{file_name}')]"))
-        element.click()
 
 
 class EditLetterTemplatePage(BasePage):
