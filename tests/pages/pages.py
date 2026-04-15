@@ -911,6 +911,9 @@ class ViewEmailTemplatePage(ViewTemplatePage):
     def get_email_message_body_content(self):
         element = self.wait_for_element(ViewEmailTemplatePage.email_message_body_content)
         return element.text.strip()
+    def click_file_link_text(self, link_text):
+        element = self.wait_for_element((By.XPATH, f"//a[contains(text(), '{link_text}')]"))
+        element.click()
 
 
 class AddFileToEmailTemplatePage(BasePage):
@@ -954,7 +957,11 @@ class ManageEmailTemplateFilePage(BasePage):
         element.click()
 
     def get_file_setting_value(self, label):
-        xpath = f"//div[contains(@class, 'govuk-summary-list__row')][dt[contains(., '{label}')]]//dd[contains(@class, 'govuk-summary-list__value')]"  # noqa: E501
+        xpath = (
+            f"//div[contains(@class, 'govuk-summary-list__row')]"
+            f"[dt[contains(., '{label}')]]"
+            f"//dd[contains(@class, 'govuk-summary-list__value')]"
+        )
         element = self.wait_for_element((By.XPATH, xpath))
         return element.get_attribute("textContent").strip()
 
@@ -980,7 +987,7 @@ class EmailConfirmationSettingForEmailFilePage(BasePage):
     continue_button = (By.CSS_SELECTOR, "button[type='submit']")
 
     def click_continue_button(self):
-        element = self.wait_for_element(ChangeRentionPeriodForEmailFilePage.continue_button)
+        element = self.wait_for_element(EmailConfirmationSettingForEmailFilePage.continue_button)
         element.click()
 
     def select_email_confirmation_option(self, value):
@@ -1893,3 +1900,54 @@ class UnsubscribeRequestReportPage(BasePage):
     def click_update_button(self):
         element = self.wait_for_element(UnsubscribeRequestReportPage.update_report_button)
         element.click()
+
+
+class PreviewSendFileViaEmailDownloadPages(BasePage):
+    BANNER_TITLE = (By.CSS_SELECTOR, "#govuk-notification-banner-title")
+    BANNER_HEADER = (By.CSS_SELECTOR, "p[class='govuk-notification-banner__heading']")
+
+    def get_banner_title(self):
+        element = self.wait_for_element(PreviewSendFileViaEmailDownloadPages.BANNER_TITLE)
+        return element.get_attribute("textContent").strip()
+
+    def get_banner_heading(self):
+        element = self.wait_for_element(PreviewSendFileViaEmailDownloadPages.BANNER_HEADER)
+        return element.get_attribute("textContent").strip()
+
+
+class PreviewYouHaveAFileToDownloadPage(PreviewSendFileViaEmailDownloadPages):
+    continue_button = (By.CSS_SELECTOR, "a[role='button'][class='govuk-button']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(PreviewYouHaveAFileToDownloadPage.continue_button)
+        element.click()
+
+
+class PreviewConfirmYourEmailAddressPage(PreviewSendFileViaEmailDownloadPages):
+    email_input = (By.ID, "email_address")
+    continue_button = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def click_continue_button(self):
+        element = self.wait_for_element(PreviewConfirmYourEmailAddressPage.continue_button)
+        element.click()
+
+    def fill_in_email_address(self, value):
+        element = self.wait_for_element(PreviewConfirmYourEmailAddressPage.email_input)
+        element.send_keys(value)
+
+    def get_errors(self):
+        error_message = (By.CSS_SELECTOR, "#email_address-error")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
+
+class PreviewDownloadYourFilePage(PreviewSendFileViaEmailDownloadPages):
+    download_link = (By.PARTIAL_LINK_TEXT, "Download this")
+
+    def click_download_link(self):
+        element = self.wait_for_element(PreviewDownloadYourFilePage.download_link)
+        element.click()
+
+    def get_download_link(self):
+        element = self.wait_for_element(PreviewDownloadYourFilePage.download_link)
+        return element.get_attribute("href")

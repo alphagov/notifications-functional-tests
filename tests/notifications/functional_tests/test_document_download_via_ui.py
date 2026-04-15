@@ -3,6 +3,9 @@ import uuid
 import pytest
 
 from config import config
+from pypdf import PdfReader
+
+from config import config, generate_unique_email
 from tests.pages import (
     ChangeLinkTextForEmailFilePage,
     ChangeRentionPeriodForEmailFilePage,
@@ -14,12 +17,16 @@ from tests.pages import (
     SendOneRecipientPage,
     SendSetSenderPage,
     SentEmailMessagePage,
+    PreviewConfirmYourEmailAddressPage,
+    PreviewDownloadYourFilePage,
+    PreviewYouHaveAFileToDownloadPage,
     ShowTemplatesPage,
     ViewEmailTemplatePage,
 )
 from tests.test_utils import (
     create_an_email_template_and_attach_a_file,
     delete_file_from_email_template_via_manage_files_page,
+    get_downloaded_document,
     recordtime,
 )
 
@@ -221,5 +228,90 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
 
     # confirm template has been deleted
     templates_page = ShowTemplatesPage(driver)
+    assert templates_page.get_h1_text() == "Templates"
+    assert template_name not in templates_page.get_all_listed_templates()
+
+
+@recordtime
+@pytest.mark.xdist_group(name="send-files-via-ui-flow")
+def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_directory):
+    # Test Creating an email template and attach a file to it
+    template_name = f"Functional Tests - test email template file preview pages - {uuid.uuid4()}"
+    content = "Hi ((name)), download this file:"
+    file_name = "attachment.pdf"
+    create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
+
+    # go to the individual file management page and change the link text
+    view_email_template_page = ViewEmailTemplatePage(driver)
+    view_email_template_page.click_manage_files_button()
+    manage_files_page = ManageFilesForEmailTemplatePage(driver)
+    link_text_label = "Link text"
+    new_link_text = "file_download_link"
+    manage_files_page.click_manage_link(file_name)
+    manage_a_file_page = ManageEmailTemplateFilePage(driver)
+    manage_a_file_page.click_change_file_setting(link_text_label)
+    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
+    change_link_text_page.fill_in_link_text(new_link_text)
+    change_link_text_page.click_continue_button()
+
+    # go to template page and click on file link
+    manage_a_file_page.click_back_link()
+    manage_files_page.click_back_link()
+    assert view_email_template_page.get_h1_text() == template_name
+    view_email_template_page.click_file_link_text(new_link_text)
+
+    # Test you have a file to download preview page
+    preview_you_have_a_file_page = PreviewYouHaveAFileToDownloadPage(driver)
+    banner_title = "Preview"
+    banner_heading = "This is a preview of the page your recipients will see"
+    assert preview_you_have_a_file_page.get_banner_title() == banner_title
+    assert preview_you_have_a_file_page.get_banner_heading() == banner_heading
+    assert preview_you_have_a_file_page.get_h1_text() == "You have a file to download"
+    preview_you_have_a_file_page.click_continue_button()
+
+    # Test confirm your email address preview page
+    preview_confirm_email_page = PreviewConfirmYourEmailAddressPage(driver)
+    banner_title = "Preview"
+    banner_heading = "This is a preview of the page your recipients will see"
+    assert preview_confirm_email_page.get_banner_title() == banner_title
+    assert preview_confirm_email_page.get_banner_heading() == banner_heading
+    assert preview_confirm_email_page.get_h1_text() == "Confirm your email address"
+    # We need the seeded user email address generated for the test run
+    seeded_user_email = generate_unique_email(
+        config["service"]["seeded_user"]["email"], "test_send_file_via_ui_preview_pages"
+    )
+    preview_confirm_email_page.fill_in_email_address(seeded_user_email)
+    preview_confirm_email_page.click_continue_button()
+
+    # Test the download your file preview page
+    preview_download_file_page = PreviewDownloadYourFilePage(driver)
+    banner_title = "Preview"
+    banner_heading = "This is a preview of the page your recipients will see"
+    assert preview_download_file_page.get_banner_title() == banner_title
+    assert preview_download_file_page.get_banner_heading() == banner_heading
+    assert preview_download_file_page.get_h1_text() == "Download your file"
+
+    # Download the file and confirm the file has been downloaded
+    preview_download_file_page.click_download_link()
+
+    document_path = get_downloaded_document(download_directory, file_name)
+    pdf_reader = PdfReader(document_path)
+    pdf_text = pdf_reader.pages[0].extract_text()
+    result_text = " ".join(pdf_text).split()
+    expected_text = " ".join("This is an attachment").split()
+    assert result_text == expected_text
+
+    # delete the template which will also archive the file attached
+    service_templates_url = f"{config['notify_admin_url']}/services/{config['service']['id']}/templates"
+    preview_download_file_page.get(service_templates_url)
+    assert view_email_template_page.get_h1_text() == "Templates"
+    templates_page = ShowTemplatesPage(driver)
+    templates_page.click_template_by_link_text(template_name)
+    assert view_email_template_page.get_h1_text() == template_name
+    view_email_template_page.click_delete_template_link()
+    view_email_template_page.click_template_deletion_confirmation_button()
+
+    # confirm template has been deleted
+
     assert templates_page.get_h1_text() == "Templates"
     assert template_name not in templates_page.get_all_listed_templates()
