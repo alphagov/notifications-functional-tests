@@ -368,6 +368,12 @@ def delete_template(driver, template_name, service="service"):
     template_page.click_delete()
 
 
+def confirm_template_was_deleted(driver, template_name):
+    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
+
+    assert template_name not in current_templates
+
+
 def add_letter_attachment_for_template(driver, name, service="service"):
     show_templates_page = ShowTemplatesPage(driver)
     try:

@@ -900,17 +900,10 @@ class ViewEmailTemplatePage(ViewTemplatePage):
         element = self.wait_for_element(ViewEmailTemplatePage.page_banner_text)
         return element.text.strip()
 
-    def click_delete_template_link(self):
-        element = self.wait_for_element(ViewEmailTemplatePage.delete_template_link)
-        element.click()
-
-    def click_template_deletion_confirmation_button(self):
-        element = self.wait_for_element(ViewEmailTemplatePage.template_deletion_confirmation_button)
-        element.click()
-
     def get_email_message_body_content(self):
         element = self.wait_for_element(ViewEmailTemplatePage.email_message_body_content)
         return element.text.strip()
+
     def click_file_link_text(self, link_text):
         element = self.wait_for_element((By.XPATH, f"//a[contains(text(), '{link_text}')]"))
         element.click()

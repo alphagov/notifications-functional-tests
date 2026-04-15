@@ -1,8 +1,6 @@
 import uuid
 
 import pytest
-
-from config import config
 from pypdf import PdfReader
 
 from config import config, generate_unique_email
@@ -13,22 +11,24 @@ from tests.pages import (
     EmailConfirmationSettingForEmailFilePage,
     ManageEmailTemplateFilePage,
     ManageFilesForEmailTemplatePage,
+    PreviewConfirmYourEmailAddressPage,
+    PreviewDownloadYourFilePage,
+    PreviewYouHaveAFileToDownloadPage,
     SendEmailPreviewPage,
     SendOneRecipientPage,
     SendSetSenderPage,
     SendViaCsvPage,
     SentEmailMessagePage,
-    PreviewConfirmYourEmailAddressPage,
-    PreviewDownloadYourFilePage,
-    PreviewYouHaveAFileToDownloadPage,
-    ShowTemplatesPage,
     ViewEmailTemplatePage,
 )
 from tests.postman import send_notification_via_csv
 from tests.test_utils import (
+    confirm_template_was_deleted,
     create_an_email_template_and_attach_a_file,
     delete_file_from_email_template_via_manage_files_page,
+    delete_template,
     get_downloaded_document,
+    go_to_templates_page,
     recordtime,
 )
 
@@ -46,7 +46,7 @@ def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_s
         file_name=file_name,
         template_name=template_name,
         content=content,
-        view_email_template_page=view_email_template_page
+        view_email_template_page=view_email_template_page,
     )
 
     # Test removing the file from the template
@@ -60,15 +60,11 @@ def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_s
     assert view_email_template_page.get_page_banner_text() == f"‘{file_name}’ has been removed"
     assert view_email_template_page.get_file_added_count_text() == "No files added"
 
-    # delete template
-    assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
+    # delete the template
+    go_to_templates_page(driver)
+    delete_template(driver, template_name)
 
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    confirm_template_was_deleted(driver, template_name)
 
 
 @recordtime
@@ -141,23 +137,11 @@ def test_send_email_with_file_via_ui(driver, login_seeded_user, sending_mode):
     assert you_have_a_file_to_download_page.get_h1_text() == "You have a file to download"
     you_have_a_file_to_download_page.go_to_download_page()
 
-    # Go to service templates page and select the template
-    base_url = config["notify_admin_url"]
-    service_template_page_url = f"{base_url}/services/{config['service']['id']}/templates"
-    you_have_a_file_to_download_page.get(service_template_page_url)
-    templates_pages = ShowTemplatesPage(driver)
-    assert templates_pages.get_h1_text() == "Templates"
-    templates_pages.click_template_by_link_text(template_name)
+    # delete the template which will also archive the file attached
+    go_to_templates_page(driver)
+    delete_template(driver, template_name)
 
-    # delete the template
-    assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    confirm_template_was_deleted(driver, template_name)
 
 
 @recordtime
@@ -224,46 +208,46 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     assert manage_single_file_page.get_h1_text() == file_name
     assert manage_single_file_page.get_file_setting_value(email_confirmation_label) == new_confirmation_label_choice
 
-    # delete template which would also delete file
-    manage_single_file_page.click_back_link()
-    manage_files_page.click_back_link()
-    assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
+    # delete the template which will also archive the file attached
+    go_to_templates_page(driver)
+    delete_template(driver, template_name)
 
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    confirm_template_was_deleted(driver, template_name)
 
 
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
 def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_directory):
-    # Test Creating an email template and attach a file to it
-    template_name = f"Functional Tests - test email template file preview pages - {uuid.uuid4()}"
-    content = "Hi ((name)), download this file:"
+    # Create an email template
+    template_name = f"Functional Tests - send one off email with file via ui - {uuid.uuid4()}"
+    content = "Testing sending a one off email notification. with an email file. Test file below:"
     file_name = "attachment.pdf"
-    create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
-
-    # go to the individual file management page and change the link text
     view_email_template_page = ViewEmailTemplatePage(driver)
-    view_email_template_page.click_manage_files_button()
+    create_an_email_template_and_attach_a_file(
+        driver=driver,
+        file_name=file_name,
+        template_name=template_name,
+        content=content,
+        view_email_template_page=view_email_template_page,
+    )
+    # Change link text for the email file
+    link_text = "file_download_link"
     manage_files_page = ManageFilesForEmailTemplatePage(driver)
-    link_text_label = "Link text"
-    new_link_text = "file_download_link"
-    manage_files_page.click_manage_link(file_name)
-    manage_a_file_page = ManageEmailTemplateFilePage(driver)
-    manage_a_file_page.click_change_file_setting(link_text_label)
-    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
-    change_link_text_page.fill_in_link_text(new_link_text)
-    change_link_text_page.click_continue_button()
+    manage_single_file_page = ManageEmailTemplateFilePage(driver)
+    change_link_text_for_email_file(
+        driver=driver,
+        file_name=file_name,
+        link_text=link_text,
+        view_email_template_page=view_email_template_page,
+        manage_files_page=manage_files_page,
+        manage_single_file_page=manage_single_file_page,
+    )
 
     # go to template page and click on file link
-    manage_a_file_page.click_back_link()
+    manage_single_file_page.click_back_link()
     manage_files_page.click_back_link()
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_file_link_text(new_link_text)
+    view_email_template_page.click_file_link_text(link_text)
 
     # Test you have a file to download preview page
     preview_you_have_a_file_page = PreviewYouHaveAFileToDownloadPage(driver)
@@ -307,23 +291,15 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     assert result_text == expected_text
 
     # delete the template which will also archive the file attached
-    service_templates_url = f"{config['notify_admin_url']}/services/{config['service']['id']}/templates"
-    preview_download_file_page.get(service_templates_url)
-    assert view_email_template_page.get_h1_text() == "Templates"
-    templates_page = ShowTemplatesPage(driver)
-    templates_page.click_template_by_link_text(template_name)
-    assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
+    go_to_templates_page(driver)
+    delete_template(driver, template_name)
 
-    # confirm template has been deleted
+    confirm_template_was_deleted(driver, template_name)
 
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
 
 def change_link_text_for_email_file(
-        driver, file_name, link_text, view_email_template_page, manage_files_page, manage_single_file_page
-    ):
+    driver, file_name, link_text, view_email_template_page, manage_files_page, manage_single_file_page
+):
     view_email_template_page.click_manage_files_button()
     assert manage_files_page.get_h1_text() == "Manage files"
     manage_files_page.click_manage_link(file_name)
@@ -333,4 +309,3 @@ def change_link_text_for_email_file(
     assert change_link_text_page.get_h1_text() == "Add link text"
     change_link_text_page.fill_in_link_text(link_text)
     change_link_text_page.click_continue_button()
-
