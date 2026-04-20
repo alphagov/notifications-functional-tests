@@ -59,13 +59,7 @@ def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_s
 
     # delete template
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 
 @recordtime
@@ -142,14 +136,7 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
 
     # delete the template
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
-
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
@@ -224,13 +211,7 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     manage_a_file_page.click_back_link()
     manage_files_page.click_back_link()
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 
 @recordtime
@@ -309,13 +290,7 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     templates_page = ShowTemplatesPage(driver)
     templates_page.click_template_by_link_text(template_name)
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
@@ -399,6 +374,10 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
 
     # delete the template
     assert view_email_template_page.get_h1_text() == template_name
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
+
+
+def delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name):
     view_email_template_page.click_delete_template_link()
     view_email_template_page.click_template_deletion_confirmation_button()
 
