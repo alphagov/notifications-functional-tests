@@ -150,7 +150,6 @@ class UploadCsvLocators:
 
 class JobPageLocators:
     FIRST_NOTIFICATION = (By.CLASS_NAME, "table-row")
-    NOTIFICATION_LINK = (By.CLASS_NAME, "file-list-filename")
 
 
 class TeamMembersPageLocators:

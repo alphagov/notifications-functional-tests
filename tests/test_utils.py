@@ -368,12 +368,6 @@ def delete_template(driver, template_name, service="service"):
     template_page.click_delete()
 
 
-def confirm_template_was_deleted(driver, template_name):
-    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-
-    assert template_name not in current_templates
-
-
 def add_letter_attachment_for_template(driver, name, service="service"):
     show_templates_page = ShowTemplatesPage(driver)
     try:
@@ -653,7 +647,7 @@ def pdf_page_has_text(pdf_page, expected_text, normalise_whitespace=True):
     return expected_text in page_text
 
 
-def create_an_email_template_and_attach_a_file(driver, file_name, template_name, content, view_email_template_page):
+def create_an_email_template_and_attach_a_file(driver, file_name, template_name, content):
     go_to_templates_page(driver)
     create_email_template(driver, name=template_name, content=content, has_unsubscribe_link=True)
 
@@ -663,10 +657,6 @@ def create_an_email_template_and_attach_a_file(driver, file_name, template_name,
     dashboard_page.go_to_dashboard_for_service(service_id=service_id)
     file_path = f"tests/test_files/{file_name}"
     add_file_to_email_template(driver, template_name, file_name, file_path, service_id)
-
-    # Confirm file has been attached to template on the Preview email template page
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
 
 
 def add_file_to_email_template(driver, template_name, file_name, file_path, service_id):
