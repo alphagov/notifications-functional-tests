@@ -53,6 +53,7 @@ from tests.test_utils import (
     NotificationStatuses,
     add_letter_attachment_for_template,
     assert_notification_body,
+    confirm_template_was_deleted,
     create_email_template,
     create_letter_template,
     create_sms_template,
@@ -316,11 +317,8 @@ def test_edit_and_delete_email_template(driver, login_seeded_user, client_live_k
     assert template_name not in current_templates
     assert new_template_name in current_templates
 
-    delete_template(driver, template_name)
-    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-
-    assert template_name not in current_templates
-    assert new_template_name not in current_templates
+    delete_template(driver, new_template_name)
+    confirm_template_was_deleted(driver, new_template_name)
 
 
 @recordtime
@@ -349,10 +347,7 @@ def test_edit_and_delete_sms_template(driver, login_seeded_user, client_live_key
     assert new_template_name in current_templates
 
     delete_template(driver, new_template_name)
-    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-
-    assert template_name not in current_templates
-    assert new_template_name not in current_templates
+    confirm_template_was_deleted(driver, new_template_name)
 
 
 @recordtime
@@ -367,9 +362,7 @@ def test_edit_and_delete_letter_template(driver, login_seeded_user, client_live_
     assert template_name in current_templates
 
     delete_template(driver, template_name)
-    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-
-    assert template_name not in current_templates
+    confirm_template_was_deleted(driver, template_name)
 
 
 @recordtime
@@ -430,9 +423,7 @@ def test_send_bilingual_letter(driver, login_seeded_user, client_live_key, downl
 
     change_language_page.click_templates()
     delete_template(driver, template_name)
-    current_templates = [x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")]
-
-    assert template_name not in current_templates
+    confirm_template_was_deleted(driver, template_name)
 
 
 @recordtime
