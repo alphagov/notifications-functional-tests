@@ -196,6 +196,16 @@ class BasePage:
             ),
         )
 
+    def wait_for_element_to_be_clickable(self, locator, time=10):
+        return AntiStaleElement(
+            self.driver,
+            locator,
+            lambda locator: WebDriverWait(self.driver, time).until(
+                EC.element_to_be_clickable(locator),
+                self.no_element_error_msg(locator),
+            ),
+        )
+
     def wait_until_element_is_not_present(self, locator, time=10):
         return WebDriverWait(self.driver, time).until(
             EC.invisibility_of_element_located(locator),
@@ -1216,6 +1226,7 @@ class SendViaCsvPreviewPage(PageWithCsvPreview, PageWithSendToMultipleButton):
 class JobPage(BasePage):
     uploads_link = (By.LINK_TEXT, "Uploads")
     first_notification = JobPageLocators.FIRST_NOTIFICATION
+    notification_link = (By.CLASS_NAME, "file-list-filename")
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_contains("/jobs/", time=time)
@@ -1238,6 +1249,14 @@ class JobPage(BasePage):
     def click_uploads(self):
         element = self.wait_for_element(self.uploads_link)
         element.click()
+
+    @retry(RetryException, tries=20, delay=10)
+    def go_to_notification_page(self):
+        try:
+            element = self.wait_for_element_to_be_clickable(self.notification_link)
+            element.click()
+        except TimeoutException as e:
+            raise RetryException("Could not find element...") from e
 
 
 class PageWithUploadsList(BasePage):

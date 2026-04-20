@@ -26,7 +26,7 @@ def send_precompiled_letter_via_api(reference, client, pdf_file):
     return resp_json["id"]
 
 
-def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool = False):
+def send_notification_via_csv(send_via_csv_page, message_type: str, seeded: bool = False, template_id=None):
     template_id = config["service"]["templates"][message_type]
     _, directory, filename = get_temp_csv_for_message_type(message_type, seeded=seeded, include_build_id=True)
 
