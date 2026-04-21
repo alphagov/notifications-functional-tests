@@ -1,9 +1,8 @@
 import uuid
 
 import pytest
-
-from config import config
 from pypdf import PdfReader
+from selenium.webdriver.common.by import By
 
 from config import config, generate_unique_email
 from tests.pages import (
@@ -11,20 +10,25 @@ from tests.pages import (
     ChangeRentionPeriodForEmailFilePage,
     DocumentDownloadLandingPage,
     EmailConfirmationSettingForEmailFilePage,
+    JobPage,
     ManageEmailTemplateFilePage,
     ManageFilesForEmailTemplatePage,
-    SendEmailPreviewPage,
-    SendOneRecipientPage,
-    SendSetSenderPage,
-    SentEmailMessagePage,
     PreviewConfirmYourEmailAddressPage,
     PreviewDownloadYourFilePage,
     PreviewYouHaveAFileToDownloadPage,
+    SendEmailPreviewPage,
+    SendFilesViaUiUploadCsvPage,
+    SendOneRecipientPage,
+    SendSetSenderPage,
+    SendViaCsvPage,
+    SendViaCsvPreviewPage,
+    SentEmailMessagePage,
     ShowTemplatesPage,
     ViewEmailTemplatePage,
 )
 from tests.test_utils import (
     create_an_email_template_and_attach_a_file,
+    create_temp_csv,
     delete_file_from_email_template_via_manage_files_page,
     get_downloaded_document,
     recordtime,
@@ -58,13 +62,7 @@ def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_s
 
     # delete template
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 
 @recordtime
@@ -141,13 +139,7 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
 
     # delete the template
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 
 @recordtime
@@ -223,13 +215,7 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     manage_a_file_page.click_back_link()
     manage_files_page.click_back_link()
     assert view_email_template_page.get_h1_text() == template_name
-    view_email_template_page.click_delete_template_link()
-    view_email_template_page.click_template_deletion_confirmation_button()
-
-    # confirm template has been deleted
-    templates_page = ShowTemplatesPage(driver)
-    assert templates_page.get_h1_text() == "Templates"
-    assert template_name not in templates_page.get_all_listed_templates()
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 
 @recordtime
@@ -308,10 +294,103 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     templates_page = ShowTemplatesPage(driver)
     templates_page.click_template_by_link_text(template_name)
     assert view_email_template_page.get_h1_text() == template_name
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
+
+
+@recordtime
+@pytest.mark.xdist_group(name="send-files-via-ui-flow")
+def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded_user):
+    # Create an email template
+    template_name = f"Functional Tests - send email with file via csv - {uuid.uuid4()}"
+    content = "Testing sending a one off email notification. with an email file. Test file below:"
+    file_name = "attachment.pdf"
+    template_id = create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
+
+    # Confirm file has been attached to template on the Preview email template page
+    view_email_template_page = ViewEmailTemplatePage(driver)
+    assert view_email_template_page.get_h1_text() == template_name
+    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+
+    # go to the individual file management page and change the link text
+    view_email_template_page.click_manage_files_button()
+    manage_files_page = ManageFilesForEmailTemplatePage(driver)
+    assert manage_files_page.get_h1_text() == "Manage files"
+    link_text_label = "Link text"
+    link_text = "file_download_link"
+    manage_files_page.click_manage_link(file_name)
+    manage_file_page = ManageEmailTemplateFilePage(driver)
+    assert manage_file_page.get_h1_text() == file_name
+    manage_file_page.click_change_file_setting(link_text_label)
+    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
+    assert change_link_text_page.get_h1_text() == "Add link text"
+    change_link_text_page.fill_in_link_text(link_text)
+    change_link_text_page.click_continue_button()
+
+    manage_file_page.click_back_link()
+    assert manage_file_page.get_h1_text() == "Manage files"
+    manage_file_page.click_back_link()
+
+    # send the email
+    assert view_email_template_page.get_h1_text() == template_name
+    assert link_text in view_email_template_page.get_email_message_body_content()
+    view_email_template_page.click_send()
+
+    set_sender_page = SendSetSenderPage(driver)
+    set_sender_page.wait_until_current()
+    assert set_sender_page.get_h1_text() == "Where should replies come back to?"
+    set_sender_page.click_continue_button()
+
+    send_via_csv_page = SendViaCsvPage(driver)
+    assert send_via_csv_page.get_h1_text() == f"Send ‘{template_name}’"
+    # create temp csv for this test
+    send_via_csv_page.go_to_upload_csv_for_service_and_template(config["service"]["id"], template_id)
+    upload_csv_page = SendFilesViaUiUploadCsvPage(driver)
+    assert send_via_csv_page.get_h1_text() == "Upload a list of email addresses"
+    seeded_user_email = generate_unique_email(
+        config["service"]["seeded_user"]["email"], "test_send_file_via_ui_preview_pages"
+    )
+    _, directory, csv_filename = create_temp_csv({"email address": seeded_user_email}, include_build_id=True)
+    upload_csv_page.upload_csv(directory, csv_filename)
+    send_via_csv_preview_page = SendViaCsvPreviewPage(send_via_csv_page.driver)
+    assert send_via_csv_preview_page.get_h1_text() == f"Preview of {template_name}"
+    send_via_csv_preview_page.click_send()
+    job_page = JobPage(driver)
+    assert job_page.get_h1_text() == f"{csv_filename}"
+    job_page.go_to_notification_page()
+
+    # confirm that the email is being delivered
+    send_email_confirmation_page = SentEmailMessagePage(driver)
+    assert send_email_confirmation_page.get_h1_text() == "Email"
+    status = send_email_confirmation_page.get_notification_status()
+    assert "Delivering" in status or "Delivered"  # Either status pops up, depending on the test run
+
+    # Confirm that the file download link sent to the recipient works
+    # There are smoke tests and other tests covering the process of a recipient downloading
+    # a document, so the whole journey will not be covered here. we will just check that the link
+    # goes to the download page and that it is not the preview landing page
+    send_email_confirmation_page.click_file_download_link(link_text)
+    document_download_landing_page = DocumentDownloadLandingPage(driver)
+    assert document_download_landing_page.get_h1_text() == "You have a file to download"
+    assert len(driver.find_elements(By.CLASS_NAME, "govuk-notification-banner")) == 0  # No banner present
+
+    # Go to service templates page and select the template
+    base_url = config["notify_admin_url"]
+    service_template_page_url = f"{base_url}/services/{config['service']['id']}/templates"
+    document_download_landing_page.get(service_template_page_url)
+    templates_pages = ShowTemplatesPage(driver)
+    assert templates_pages.get_h1_text() == "Templates"
+    templates_pages.click_template_by_link_text(template_name)
+
+    # delete the template
+    assert view_email_template_page.get_h1_text() == template_name
+    delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
+
+
+def delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name):
     view_email_template_page.click_delete_template_link()
     view_email_template_page.click_template_deletion_confirmation_button()
 
     # confirm template has been deleted
-
+    templates_page = ShowTemplatesPage(driver)
     assert templates_page.get_h1_text() == "Templates"
     assert template_name not in templates_page.get_all_listed_templates()

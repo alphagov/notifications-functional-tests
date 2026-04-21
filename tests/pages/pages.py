@@ -196,6 +196,16 @@ class BasePage:
             ),
         )
 
+    def wait_for_element_to_be_clickable(self, locator, time=10):
+        return AntiStaleElement(
+            self.driver,
+            locator,
+            lambda locator: WebDriverWait(self.driver, time).until(
+                EC.element_to_be_clickable(locator),
+                self.no_element_error_msg(locator),
+            ),
+        )
+
     def wait_until_element_is_not_present(self, locator, time=10):
         return WebDriverWait(self.driver, time).until(
             EC.invisibility_of_element_located(locator),
@@ -911,6 +921,7 @@ class ViewEmailTemplatePage(ViewTemplatePage):
     def get_email_message_body_content(self):
         element = self.wait_for_element(ViewEmailTemplatePage.email_message_body_content)
         return element.text.strip()
+
     def click_file_link_text(self, link_text):
         element = self.wait_for_element((By.XPATH, f"//a[contains(text(), '{link_text}')]"))
         element.click()
@@ -1172,6 +1183,30 @@ class SendViaCsvPage(PageWithCsvUpload):
         self.driver.get(url)
 
 
+class SendFilesViaUiUploadCsvPage(SendViaCsvPage):
+    """
+    This class overrides the csv upload methods of the
+    SendViaCsvPage class to be a better fit for the send file via ui flow.
+    The SendViaCsvPage class covers both the "send template" page and the
+    "upload csv pages". This splits out csv upload page.
+    work wil be done to reconcile the differences with the other csv upload test flows
+    """
+
+    file_input = (By.ID, "hidden-file")
+
+    def upload_csv(self, directory, path):
+        file_path = os.path.join(directory, path)
+        element = self.wait_for_presence_of_element(self.file_input)
+        # Fill in the hidden file input bypassing the OS file management dialog
+        element[0].send_keys(file_path)
+        self.wait_until_not_current()
+        shutil.rmtree(directory, ignore_errors=True)
+
+    def wait_until_not_current(self, time=13):
+        # slightly increasing the time here so that the browser has more time to read the file before it is removed
+        return self.wait_until_url_doesnt_match(self.url_re, time=time)
+
+
 class PageWithCsvPreview(BasePage):
     preview_table = (By.XPATH, ".//table[contains(./caption, '.csv')]")
 
@@ -1216,6 +1251,7 @@ class SendViaCsvPreviewPage(PageWithCsvPreview, PageWithSendToMultipleButton):
 class JobPage(BasePage):
     uploads_link = (By.LINK_TEXT, "Uploads")
     first_notification = JobPageLocators.FIRST_NOTIFICATION
+    notification_link = (By.CLASS_NAME, "file-list-filename")
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_contains("/jobs/", time=time)
@@ -1238,6 +1274,14 @@ class JobPage(BasePage):
     def click_uploads(self):
         element = self.wait_for_element(self.uploads_link)
         element.click()
+
+    @retry(RetryException, tries=20, delay=10)
+    def go_to_notification_page(self):
+        try:
+            element = self.wait_for_element_to_be_clickable(self.notification_link)
+            element.click()
+        except TimeoutException as e:
+            raise RetryException("Could not find element...") from e
 
 
 class PageWithUploadsList(BasePage):
