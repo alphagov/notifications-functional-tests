@@ -1,9 +1,8 @@
 import uuid
 
 import pytest
-
-from config import config
 from pypdf import PdfReader
+from selenium.webdriver.common.by import By
 
 from config import config, generate_unique_email
 from tests.pages import (
@@ -11,24 +10,28 @@ from tests.pages import (
     ChangeRentionPeriodForEmailFilePage,
     DocumentDownloadLandingPage,
     EmailConfirmationSettingForEmailFilePage,
+    JobPage,
     ManageEmailTemplateFilePage,
     ManageFilesForEmailTemplatePage,
-    SendEmailPreviewPage,
-    SendOneRecipientPage,
-    SendSetSenderPage,
-    SentEmailMessagePage,
     PreviewConfirmYourEmailAddressPage,
     PreviewDownloadYourFilePage,
     PreviewYouHaveAFileToDownloadPage,
+    SendEmailPreviewPage,
+    SendFilesViaUiUploadCsvPage,
+    SendOneRecipientPage,
+    SendSetSenderPage,
+    SendViaCsvPage,
+    SendViaCsvPreviewPage,
+    SentEmailMessagePage,
     ShowTemplatesPage,
-    ViewEmailTemplatePage, SendViaCsvPage, SendViaCsvPreviewPage, JobPage,
+    ViewEmailTemplatePage,
 )
-from tests.postman import send_notification_via_csv
 from tests.test_utils import (
     create_an_email_template_and_attach_a_file,
+    create_temp_csv,
     delete_file_from_email_template_via_manage_files_page,
     get_downloaded_document,
-    recordtime, create_temp_csv,
+    recordtime,
 )
 
 
@@ -137,6 +140,7 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
     # delete the template
     assert view_email_template_page.get_h1_text() == template_name
     delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
+
 
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
@@ -292,6 +296,7 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     assert view_email_template_page.get_h1_text() == template_name
     delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
+
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
 def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded_user):
@@ -336,13 +341,16 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
     set_sender_page.click_continue_button()
 
     send_via_csv_page = SendViaCsvPage(driver)
+    assert send_via_csv_page.get_h1_text() == f"Send ‘{template_name}’"
     # create temp csv for this test
+    send_via_csv_page.go_to_upload_csv_for_service_and_template(config["service"]["id"], template_id)
+    upload_csv_page = SendFilesViaUiUploadCsvPage(driver)
+    assert send_via_csv_page.get_h1_text() == "Upload a list of email addresses"
     seeded_user_email = generate_unique_email(
         config["service"]["seeded_user"]["email"], "test_send_file_via_ui_preview_pages"
     )
     _, directory, csv_filename = create_temp_csv({"email address": seeded_user_email}, include_build_id=True)
-    send_via_csv_page.go_to_upload_csv_for_service_and_template(config["service"]["id"], template_id)
-    send_via_csv_page.upload_csv(directory, csv_filename)
+    upload_csv_page.upload_csv(directory, csv_filename)
     send_via_csv_preview_page = SendViaCsvPreviewPage(send_via_csv_page.driver)
     assert send_via_csv_preview_page.get_h1_text() == f"Preview of {template_name}"
     send_via_csv_preview_page.click_send()
@@ -358,16 +366,17 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
 
     # Confirm that the file download link sent to the recipient works
     # There are smoke tests and other tests covering the process of a recipient downloading
-    # a document, so the whole journey will not be covered here
+    # a document, so the whole journey will not be covered here. we will just check that the link
+    # goes to the download page and that it is not the preview landing page
     send_email_confirmation_page.click_file_download_link(link_text)
-    you_have_a_file_to_download_page = DocumentDownloadLandingPage(driver)
-    assert you_have_a_file_to_download_page.get_h1_text() == "You have a file to download"
-    you_have_a_file_to_download_page.go_to_download_page()
+    document_download_landing_page = DocumentDownloadLandingPage(driver)
+    assert document_download_landing_page.get_h1_text() == "You have a file to download"
+    assert len(driver.find_elements(By.CLASS_NAME, "govuk-notification-banner")) == 0  # No banner present
 
     # Go to service templates page and select the template
     base_url = config["notify_admin_url"]
     service_template_page_url = f"{base_url}/services/{config['service']['id']}/templates"
-    you_have_a_file_to_download_page.get(service_template_page_url)
+    document_download_landing_page.get(service_template_page_url)
     templates_pages = ShowTemplatesPage(driver)
     assert templates_pages.get_h1_text() == "Templates"
     templates_pages.click_template_by_link_text(template_name)

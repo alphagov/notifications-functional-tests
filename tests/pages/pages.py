@@ -921,6 +921,7 @@ class ViewEmailTemplatePage(ViewTemplatePage):
     def get_email_message_body_content(self):
         element = self.wait_for_element(ViewEmailTemplatePage.email_message_body_content)
         return element.text.strip()
+
     def click_file_link_text(self, link_text):
         element = self.wait_for_element((By.XPATH, f"//a[contains(text(), '{link_text}')]"))
         element.click()
@@ -1180,6 +1181,30 @@ class SendViaCsvPage(PageWithCsvUpload):
     def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
         url = f"{self.base_url}/services/{service_id}/send/{template_id}/csv"
         self.driver.get(url)
+
+
+class SendFilesViaUiUploadCsvPage(SendViaCsvPage):
+    """
+    This class overrides the csv upload methods of the
+    SendViaCsvPage class to be a better fit for the send file via ui flow.
+    The SendViaCsvPage class covers both the "send template" page and the
+    "upload csv pages". This splits out csv upload page.
+    work wil be done to reconcile the differences with the other csv upload test flows
+    """
+
+    file_input = (By.ID, "hidden-file")
+
+    def upload_csv(self, directory, path):
+        file_path = os.path.join(directory, path)
+        element = self.wait_for_presence_of_element(self.file_input)
+        # Fill in the hidden file input bypassing the OS file management dialog
+        element[0].send_keys(file_path)
+        self.wait_until_not_current()
+        shutil.rmtree(directory, ignore_errors=True)
+
+    def wait_until_not_current(self, time=13):
+        # slightly increasing the time here so that the browser has more time to read the file before it is removed
+        return self.wait_until_url_doesnt_match(self.url_re, time=time)
 
 
 class PageWithCsvPreview(BasePage):
