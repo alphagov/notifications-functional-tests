@@ -37,8 +37,8 @@ from tests.test_utils import (
 
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
-def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_seeded_user):
-    # Test Creating an email template and attach a file to it
+def test_attaching_a_file_to_an_email_template_and_also_removing_the_file(driver, login_seeded_user):
+    # Creat an email template and attach a file to it
     template_name = f"Functional Tests - upload/delete file to email template - {uuid.uuid4()}"
     content = "Hi ((name)), download this file:"
     file_name = "attachment.pdf"
@@ -68,7 +68,7 @@ def test_attaching_files_to_emails_and_also_deleting_them_via_ui(driver, login_s
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
 def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
-    # Create an email template
+    # # Creat an email template and attach a file to it
     template_name = f"Functional Tests - send one off email with file via ui - {uuid.uuid4()}"
     content = "Testing sending a one off email notification. with an email file. Test file below:"
     file_name = "attachment.pdf"
@@ -145,7 +145,7 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
 def test_email_template_file_management_settings(driver, login_seeded_user):
-    # Test Creating an email template and attach a file to it
+    # Creat an email template and attach a file to it
     template_name = f"Functional Tests - test email file management settings- {uuid.uuid4()}"
     content = "Hi ((name)), download this file:"
     file_name = "attachment.pdf"
@@ -221,7 +221,7 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
 def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_directory):
-    # Test Creating an email template and attach a file to it
+    # Creat an email template and attach a file to it
     template_name = f"Functional Tests - test email template file preview pages - {uuid.uuid4()}"
     content = "Hi ((name)), download this file:"
     file_name = "attachment.pdf"
@@ -300,7 +300,7 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
 def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded_user):
-    # Create an email template
+    # Creat an email template and attach a file to it
     template_name = f"Functional Tests - send email with file via csv - {uuid.uuid4()}"
     content = "Testing sending a one off email notification. with an email file. Test file below:"
     file_name = "attachment.pdf"
