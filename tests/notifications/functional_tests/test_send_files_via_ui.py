@@ -27,11 +27,12 @@ from tests.pages import (
     ViewEmailTemplatePage,
 )
 from tests.test_utils import (
+    assert_file_has_been_attached_to_email_template,
     create_an_email_template_and_attach_a_file,
     create_temp_csv,
     delete_file_from_email_template_via_manage_files_page,
     get_downloaded_document,
-    recordtime,
+    recordtime, go_to_file_management_page_from_email_template_preview,
 )
 
 
@@ -45,11 +46,10 @@ def test_attaching_a_file_to_an_email_template_and_also_removing_the_file(driver
     create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
 
     # Confirm file has been attached to template on the Preview email template page
-    view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    assert_file_has_been_attached_to_email_template(driver, template_name)
 
-    # Test removing the file from the template
+    # Remove the file from the template
+    view_email_template_page = ViewEmailTemplatePage(driver)
     view_email_template_page.click_manage_files_button()
     manage_files_page = ManageFilesForEmailTemplatePage(driver)
     assert manage_files_page.get_h1_text() == "Manage files"
@@ -75,19 +75,17 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
     create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
 
     # Confirm file has been attached to template on the Preview email template page
-    view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    assert_file_has_been_attached_to_email_template(driver, template_name)
 
-    # go to the individual file management page and change the link text
-    view_email_template_page.click_manage_files_button()
-    manage_files_page = ManageFilesForEmailTemplatePage(driver)
-    assert manage_files_page.get_h1_text() == "Manage files"
+    # go to the individual file management page
+    view_email_template_page = ViewEmailTemplatePage(driver)
+    manage_file_page = go_to_file_management_page_from_email_template_preview(
+        driver, file_name, view_email_template_page
+    )
+
+    # change the link text
     link_text_label = "Link text"
     link_text = "file_download_link"
-    manage_files_page.click_manage_link(file_name)
-    manage_file_page = ManageEmailTemplateFilePage(driver)
-    assert manage_file_page.get_h1_text() == file_name
     manage_file_page.click_change_file_setting(link_text_label)
     change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
     assert change_link_text_page.get_h1_text() == "Add link text"
@@ -152,17 +150,13 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
 
     # Confirm file has been attached to template on the Preview email template page
-    view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    assert_file_has_been_attached_to_email_template(driver, template_name)
 
-    # Go to file management page
-    view_email_template_page.click_manage_files_button()
-    manage_files_page = ManageFilesForEmailTemplatePage(driver)
-    assert manage_files_page.get_h1_text() == "Manage files"
-    manage_files_page.click_manage_link(file_name)
-    manage_a_file_page = ManageEmailTemplateFilePage(driver)
-    assert manage_a_file_page.get_h1_text() == file_name
+    # go to the individual file management page
+    view_email_template_page = ViewEmailTemplatePage(driver)
+    manage_a_file_page, manage_files_page = go_to_file_management_page_from_email_template_preview(
+        driver, file_name, view_email_template_page
+    )
 
     # Change link text
     link_text_label = "Link text"
@@ -227,14 +221,20 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     file_name = "attachment.pdf"
     create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
 
-    # go to the individual file management page and change the link text
+    # Confirm file has been attached to template on the Preview email template page
+    assert_file_has_been_attached_to_email_template(driver, template_name)
+
+    # go to the individual file management page
+    # go to the individual file management page
     view_email_template_page = ViewEmailTemplatePage(driver)
-    view_email_template_page.click_manage_files_button()
-    manage_files_page = ManageFilesForEmailTemplatePage(driver)
+    manage_a_file_page, manage_files_page = go_to_file_management_page_from_email_template_preview(
+        driver, file_name, view_email_template_page
+    )
+
+    # change the link text
     link_text_label = "Link text"
     new_link_text = "file_download_link"
-    manage_files_page.click_manage_link(file_name)
-    manage_a_file_page = ManageEmailTemplateFilePage(driver)
+
     manage_a_file_page.click_change_file_setting(link_text_label)
     change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
     change_link_text_page.fill_in_link_text(new_link_text)
@@ -307,28 +307,26 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
     template_id = create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
 
     # Confirm file has been attached to template on the Preview email template page
-    view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    assert_file_has_been_attached_to_email_template(driver, template_name)
 
-    # go to the individual file management page and change the link text
-    view_email_template_page.click_manage_files_button()
-    manage_files_page = ManageFilesForEmailTemplatePage(driver)
-    assert manage_files_page.get_h1_text() == "Manage files"
+    # go to the individual file management page
+    view_email_template_page = ViewEmailTemplatePage(driver)
+    manage_a_file_page, manage_files_page = go_to_file_management_page_from_email_template_preview(
+        driver, file_name, view_email_template_page
+    )
+
+    # change the link text
     link_text_label = "Link text"
     link_text = "file_download_link"
-    manage_files_page.click_manage_link(file_name)
-    manage_file_page = ManageEmailTemplateFilePage(driver)
-    assert manage_file_page.get_h1_text() == file_name
-    manage_file_page.click_change_file_setting(link_text_label)
+    manage_a_file_page.click_change_file_setting(link_text_label)
     change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
     assert change_link_text_page.get_h1_text() == "Add link text"
     change_link_text_page.fill_in_link_text(link_text)
     change_link_text_page.click_continue_button()
 
-    manage_file_page.click_back_link()
-    assert manage_file_page.get_h1_text() == "Manage files"
-    manage_file_page.click_back_link()
+    manage_a_file_page.click_back_link()
+    assert manage_a_file_page.get_h1_text() == "Manage files"
+    manage_a_file_page.click_back_link()
 
     # send the email
     assert view_email_template_page.get_h1_text() == template_name

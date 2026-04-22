@@ -46,7 +46,7 @@ from tests.pages.pages import (
     AddFileToEmailTemplatePage,
     ManageEmailTemplateFilePage,
     RenameLetterTemplatePage,
-    ViewEmailTemplatePage,
+    ViewEmailTemplatePage, ManageFilesForEmailTemplatePage,
 )
 
 logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
@@ -650,12 +650,13 @@ def pdf_page_has_text(pdf_page, expected_text, normalise_whitespace=True):
 def create_an_email_template_and_attach_a_file(driver, file_name, template_name, content):
     go_to_templates_page(driver)
     template_id = create_email_template(driver, name=template_name, content=content, has_unsubscribe_link=True)
-    add_file_to_email_template(driver, file_name)
+    add_file_to_email_template(driver, file_name, template_name)
     return template_id
 
 
-def add_file_to_email_template(driver, file_name):
+def add_file_to_email_template(driver, file_name, template_name):
     view_email_template_page = ViewEmailTemplatePage(driver)
+    assert view_email_template_page.get_h1_text() == template_name
     view_email_template_page.click_attach_files_button()
     add_file_to_email_template_page = AddFileToEmailTemplatePage(driver)
     assert add_file_to_email_template_page.get_h1_text() == "Add a file"
@@ -669,7 +670,24 @@ def add_file_to_email_template(driver, file_name):
     manage_file_page.click_add_to_template()
 
 
+def assert_file_has_been_attached_to_email_template(driver, template_name):
+    view_email_template_page = ViewEmailTemplatePage(driver)
+    assert view_email_template_page.get_h1_text() == template_name
+    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+
+
 def delete_file_from_email_template_via_manage_files_page(driver):
     manage_a_file_page = ManageEmailTemplateFilePage(driver)
     manage_a_file_page.click_remove_file_link()
     manage_a_file_page.click_remove_file_dialog_button()
+
+
+def go_to_file_management_page_from_email_template_preview(driver, file_name, view_email_template_page):
+    view_email_template_page.click_manage_files_button()
+    manage_files_page = ManageFilesForEmailTemplatePage(driver)
+    assert manage_files_page.get_h1_text() == "Manage files"
+    manage_files_page.click_manage_link(file_name)
+    manage_file_page = ManageEmailTemplateFilePage(driver)
+    assert manage_file_page.get_h1_text() == file_name
+    return manage_file_page, manage_files_page
+
