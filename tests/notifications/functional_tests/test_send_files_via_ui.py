@@ -31,7 +31,8 @@ from tests.test_utils import (
     get_downloaded_document,
     go_to_file_management_page_from_email_template_preview,
     recordtime, change_email_template_retention_period, change_email_template_email_confirmation,
-    go_back_to_email_template_from_file_management_page
+    go_back_to_email_template_from_file_management_page, send_email_notification_with_file_attached_to_one_recipient,
+    go_to_email_template_preview_page_from_a_document_download_pages
 )
 
 
@@ -86,6 +87,8 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
     link_text_label = "Link text"
     new_link_text = "file_download_link"
     change_email_template_file_link_text(driver, manage_a_file_page, link_text_label,  new_link_text, file_name)
+    # confirm link text change
+    assert manage_a_file_page.get_file_setting_value(link_text_label) == new_link_text
 
     # Go back to email template preview page
     go_back_to_email_template_from_file_management_page(file_name, manage_a_file_page, template_name,
@@ -93,45 +96,31 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
 
     # send the email
     assert new_link_text in view_email_template_page.get_email_message_body_content()
-    view_email_template_page.click_send()
-
-    set_sender_page = SendSetSenderPage(driver)
-    set_sender_page.wait_until_current()
-    assert set_sender_page.get_h1_text() == "Where should replies come back to?"
-    set_sender_page.click_continue_button()
-
-    send_to_one_recipient_page = SendOneRecipientPage(driver)
-    assert send_to_one_recipient_page.get_h1_text() == f"Send ‘{template_name}’"
-    send_to_one_recipient_page.send_to_myself("email")
-
-    preview_send_one_recepient_page = SendEmailPreviewPage(driver)
-    assert preview_send_one_recepient_page.get_h1_text() == f"Preview of ‘{template_name}’"
-    preview_send_one_recepient_page.click_send_button()
+    send_email_notification_with_file_attached_to_one_recipient(driver, view_email_template_page, template_name)
 
     # confirm that the email is being delivered
     send_email_confirmation_page = SentEmailMessagePage(driver)
     assert send_email_confirmation_page.get_h1_text() == "Email"
-    assert "Delivering" in send_email_confirmation_page.get_notification_status()
+    status = send_email_confirmation_page.get_notification_status()
+    assert "Delivering" in status or "Delivered"  # Either status pops up, depending on the state of the page during test run
 
     # Confirm that the file download link sent to the recipient works
     # There are smoke tests and other tests covering the process of a recipient downloading
     # a document, so the whole journey will not be covered here
     send_email_confirmation_page.click_file_download_link(new_link_text)
-    you_have_a_file_to_download_page = DocumentDownloadLandingPage(driver)
-    assert you_have_a_file_to_download_page.get_h1_text() == "You have a file to download"
-    you_have_a_file_to_download_page.go_to_download_page()
+    document_download_landing_page = DocumentDownloadLandingPage(driver)
+    assert document_download_landing_page.get_h1_text() == "You have a file to download"
+    document_download_landing_page.go_to_download_page()
 
     # Go to service templates page and select the template
-    base_url = config["notify_admin_url"]
-    service_template_page_url = f"{base_url}/services/{config['service']['id']}/templates"
-    you_have_a_file_to_download_page.get(service_template_page_url)
-    templates_pages = ShowTemplatesPage(driver)
-    assert templates_pages.get_h1_text() == "Templates"
-    templates_pages.click_template_by_link_text(template_name)
+    go_to_email_template_preview_page_from_a_document_download_pages(driver, template_name,
+                                                                   document_download_landing_page)
 
     # delete the template
     assert view_email_template_page.get_h1_text() == template_name
     delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
+
+
 
 
 @recordtime
@@ -322,6 +311,7 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
     send_via_csv_page = SendViaCsvPage(driver)
     assert send_via_csv_page.get_h1_text() == f"Send ‘{template_name}’"
     # create temp csv for this test
+
     send_via_csv_page.go_to_upload_csv_for_service_and_template(config["service"]["id"], template_id)
     upload_csv_page = SendFilesViaUiUploadCsvPage(driver)
     assert send_via_csv_page.get_h1_text() == "Upload a list of email addresses"

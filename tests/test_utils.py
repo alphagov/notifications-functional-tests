@@ -49,6 +49,7 @@ from tests.pages.pages import (
     ManageFilesForEmailTemplatePage,
     RenameLetterTemplatePage,
     ViewEmailTemplatePage, ChangeRentionPeriodForEmailFilePage, EmailConfirmationSettingForEmailFilePage,
+    SendEmailPreviewPage,
 )
 
 logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
@@ -734,3 +735,28 @@ def go_back_to_email_template_from_file_management_page(file_name, manage_a_file
     assert manage_a_file_page.get_h1_text() == "Manage files"
     manage_a_file_page.click_back_link()
     assert view_email_template_page.get_h1_text() == template_name
+
+
+def send_email_notification_with_file_attached_to_one_recipient(driver, view_email_template_page, template_name):
+    view_email_template_page.click_send()
+    set_sender_page = SendSetSenderPage(driver)
+    set_sender_page.wait_until_current()
+    assert set_sender_page.get_h1_text() == "Where should replies come back to?"
+    set_sender_page.click_continue_button()
+    send_to_one_recipient_page = SendOneRecipientPage(driver)
+    assert send_to_one_recipient_page.get_h1_text() == f"Send ‘{template_name}’"
+    send_to_one_recipient_page.send_to_myself("email")
+    preview_send_one_recepient_page = SendEmailPreviewPage(driver)
+    assert preview_send_one_recepient_page.get_h1_text() == f"Preview of ‘{template_name}’"
+    preview_send_one_recepient_page.click_send_button()
+
+
+def go_to_email_template_preview_page_from_a_document_download_pages(driver, template_name,
+                                                                   document_download_page):
+    base_url = config["notify_admin_url"]
+    service_template_page_url = f"{base_url}/services/{config['service']['id']}/templates"
+    document_download_page.get(service_template_page_url)
+    templates_pages = ShowTemplatesPage(driver)
+    assert templates_pages.get_h1_text() == "Templates"
+    templates_pages.click_template_by_link_text(template_name)
+
