@@ -43,7 +43,6 @@ from tests.pages import (
     YourServicesPage,
 )
 from tests.pages.pages import (
-    ManageEmailTemplateFilePage,
     RenameLetterTemplatePage,
 )
 
@@ -319,6 +318,13 @@ def go_to_templates_page(driver, service="service"):
     dashboard_page.click_templates()
 
 
+def go_to_view_template_page(driver, template_name):
+    go_to_templates_page(driver)
+    templates_page = ShowTemplatesPage(driver)
+    templates_page.click_template_by_link_text(template_name)
+    assert templates_page.get_h1_text() == template_name
+
+
 def edit_sms_template(driver, template_name, new_template_name, content, service="service"):
     show_templates_page = ShowTemplatesPage(driver)
     try:
@@ -517,6 +523,7 @@ def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipi
     from tests.pages.rollups import get_email_and_password
 
     send_to_one_recipient_page = SendOneRecipientPage(driver)
+
     preview_rows = send_to_one_recipient_page.get_preview_contents()
     assert "From" in str(preview_rows[0].text)
     assert config["service"]["name"] in str(preview_rows[0].text)
@@ -643,18 +650,3 @@ def pdf_page_has_text(pdf_page, expected_text, normalise_whitespace=True):
         page_text = re.sub(r"\s+", " ", page_text.replace("\n", " "))
 
     return expected_text in page_text
-
-
-def delete_file_from_email_template_via_manage_files_page(driver):
-    manage_a_file_page = ManageEmailTemplateFilePage(driver)
-    manage_a_file_page.click_remove_file_link()
-    manage_a_file_page.click_remove_file_dialog_button()
-
-
-def go_to_email_template_preview_page_from_a_document_download_pages(driver, template_name, document_download_page):
-    base_url = config["notify_admin_url"]
-    service_template_page_url = f"{base_url}/services/{config['service']['id']}/templates"
-    document_download_page.get(service_template_page_url)
-    templates_pages = ShowTemplatesPage(driver)
-    assert templates_pages.get_h1_text() == "Templates"
-    templates_pages.click_template_by_link_text(template_name)
