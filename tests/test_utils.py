@@ -44,9 +44,11 @@ from tests.pages import (
 )
 from tests.pages.pages import (
     AddFileToEmailTemplatePage,
+    ChangeLinkTextForEmailFilePage,
     ManageEmailTemplateFilePage,
+    ManageFilesForEmailTemplatePage,
     RenameLetterTemplatePage,
-    ViewEmailTemplatePage, ManageFilesForEmailTemplatePage,
+    ViewEmailTemplatePage, ChangeRentionPeriodForEmailFilePage, EmailConfirmationSettingForEmailFilePage,
 )
 
 logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
@@ -665,9 +667,9 @@ def add_file_to_email_template(driver, file_name, template_name):
     file_path = f"tests/test_files/{file_name}"
     os_file_path = os.path.join(os.getcwd(), file_path)
     add_a_file_page.upload_file(os_file_path)
-    manage_file_page = ManageEmailTemplateFilePage(driver)
-    assert manage_file_page.get_h1_text() == file_name
-    manage_file_page.click_add_to_template()
+    manage_a_file_page = ManageEmailTemplateFilePage(driver)
+    assert manage_a_file_page.get_h1_text() == file_name
+    manage_a_file_page.click_add_to_template()
 
 
 def assert_file_has_been_attached_to_email_template(driver, template_name):
@@ -687,7 +689,39 @@ def go_to_file_management_page_from_email_template_preview(driver, file_name, vi
     manage_files_page = ManageFilesForEmailTemplatePage(driver)
     assert manage_files_page.get_h1_text() == "Manage files"
     manage_files_page.click_manage_link(file_name)
-    manage_file_page = ManageEmailTemplateFilePage(driver)
-    assert manage_file_page.get_h1_text() == file_name
-    return manage_file_page, manage_files_page
+    manage_a_file_page = ManageEmailTemplateFilePage(driver)
+    assert manage_a_file_page.get_h1_text() == file_name
+    return manage_a_file_page, manage_files_page
 
+
+def change_email_template_file_link_text(driver, manage_a_file_page, link_text_label, new_link_text, file_name):
+    default_link_text = manage_a_file_page.get_file_setting_value(link_text_label)
+    assert default_link_text == "Not set"
+    manage_a_file_page.click_change_file_setting(link_text_label)
+    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
+    assert change_link_text_page.get_h1_text() == "Add link text"
+    change_link_text_page.fill_in_link_text(new_link_text)
+    change_link_text_page.click_continue_button()
+    return change_link_text_page
+
+
+def change_email_template_retention_period(change_link_text_page, driver, manage_a_file_page, new_retention_period,
+                                           retention_period_label):
+    default_retention_period_text = manage_a_file_page.get_file_setting_value(retention_period_label)
+    assert default_retention_period_text == "26 weeks after sending\n        (about 6 months)"
+    manage_a_file_page.click_change_file_setting(retention_period_label)
+    assert change_link_text_page.get_h1_text() == "How long the file is available"
+    change_retention_period = ChangeRentionPeriodForEmailFilePage(driver)
+    change_retention_period.fill_in_retention_period(new_retention_period)
+    change_retention_period.click_continue_button()
+
+
+def change_email_template_email_confirmation(driver, email_confirmation_label, manage_a_file_page,
+                                             new_confirmation_label_choice):
+    confirmation_label_choice = manage_a_file_page.get_file_setting_value(email_confirmation_label)
+    assert confirmation_label_choice == "Yes"
+    manage_a_file_page.click_change_file_setting(email_confirmation_label)
+    email_confirmation_page = EmailConfirmationSettingForEmailFilePage(driver)
+    assert email_confirmation_page.get_h1_text() == "Ask recipient for their email address"
+    email_confirmation_page.select_email_confirmation_option(new_confirmation_label_choice)
+    email_confirmation_page.click_continue_button()

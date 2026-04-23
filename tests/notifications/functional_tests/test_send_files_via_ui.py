@@ -6,12 +6,8 @@ from selenium.webdriver.common.by import By
 
 from config import config, generate_unique_email
 from tests.pages import (
-    ChangeLinkTextForEmailFilePage,
-    ChangeRentionPeriodForEmailFilePage,
     DocumentDownloadLandingPage,
-    EmailConfirmationSettingForEmailFilePage,
     JobPage,
-    ManageEmailTemplateFilePage,
     ManageFilesForEmailTemplatePage,
     PreviewConfirmYourEmailAddressPage,
     PreviewDownloadYourFilePage,
@@ -28,11 +24,13 @@ from tests.pages import (
 )
 from tests.test_utils import (
     assert_file_has_been_attached_to_email_template,
+    change_email_template_file_link_text,
     create_an_email_template_and_attach_a_file,
     create_temp_csv,
     delete_file_from_email_template_via_manage_files_page,
     get_downloaded_document,
-    recordtime, go_to_file_management_page_from_email_template_preview,
+    go_to_file_management_page_from_email_template_preview,
+    recordtime, change_email_template_retention_period, change_email_template_email_confirmation
 )
 
 
@@ -79,26 +77,24 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
 
     # go to the individual file management page
     view_email_template_page = ViewEmailTemplatePage(driver)
-    manage_file_page = go_to_file_management_page_from_email_template_preview(
+    manage_a_file_page, manage_files_page = go_to_file_management_page_from_email_template_preview(
         driver, file_name, view_email_template_page
     )
 
     # change the link text
     link_text_label = "Link text"
-    link_text = "file_download_link"
-    manage_file_page.click_change_file_setting(link_text_label)
-    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
-    assert change_link_text_page.get_h1_text() == "Add link text"
-    change_link_text_page.fill_in_link_text(link_text)
-    change_link_text_page.click_continue_button()
+    new_link_text = "file_download_link"
+    change_email_template_file_link_text(driver, link_text_label, manage_a_file_page, new_link_text, file_name)
 
-    manage_file_page.click_back_link()
-    assert manage_file_page.get_h1_text() == "Manage files"
-    manage_file_page.click_back_link()
+    # Go back to email template preview page
+    assert manage_a_file_page.get_h1_text() == file_name
+    manage_a_file_page.click_back_link()
+    assert manage_a_file_page.get_h1_text() == "Manage files"
+    manage_a_file_page.click_back_link()
 
     # send the email
     assert view_email_template_page.get_h1_text() == template_name
-    assert link_text in view_email_template_page.get_email_message_body_content()
+    assert new_link_text in view_email_template_page.get_email_message_body_content()
     view_email_template_page.click_send()
 
     set_sender_page = SendSetSenderPage(driver)
@@ -122,7 +118,7 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
     # Confirm that the file download link sent to the recipient works
     # There are smoke tests and other tests covering the process of a recipient downloading
     # a document, so the whole journey will not be covered here
-    send_email_confirmation_page.click_file_download_link(link_text)
+    send_email_confirmation_page.click_file_download_link(new_link_text)
     you_have_a_file_to_download_page = DocumentDownloadLandingPage(driver)
     assert you_have_a_file_to_download_page.get_h1_text() == "You have a file to download"
     you_have_a_file_to_download_page.go_to_download_page()
@@ -159,29 +155,20 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     )
 
     # Change link text
-    link_text_label = "Link text"
-    original_link_text = manage_a_file_page.get_file_setting_value(link_text_label)
-    assert original_link_text == "Not set"
-    manage_a_file_page.click_change_file_setting(link_text_label)
-    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
-    assert change_link_text_page.get_h1_text() == "Add link text"
     new_link_text = "file_download_link"
-    change_link_text_page.fill_in_link_text(new_link_text)
-    change_link_text_page.click_continue_button()
+    link_text_label = "Link text"
+    change_link_text_page = change_email_template_file_link_text(
+        driver, manage_a_file_page, link_text_label, new_link_text, file_name
+    )
 
     # confirm link text change
     assert manage_a_file_page.get_file_setting_value(link_text_label) == new_link_text
 
     # Change retention period
-    retention_period_label = "Available for"
-    original_retention_period_text = manage_a_file_page.get_file_setting_value(retention_period_label)
-    assert original_retention_period_text == "26 weeks after sending\n        (about 6 months)"
-    manage_a_file_page.click_change_file_setting(retention_period_label)
-    assert change_link_text_page.get_h1_text() == "How long the file is available"
-    change_retention_period = ChangeRentionPeriodForEmailFilePage(driver)
     new_retention_period = "50"
-    change_retention_period.fill_in_retention_period(new_retention_period)
-    change_retention_period.click_continue_button()
+    retention_period_label = "Available for"
+    change_email_template_retention_period(change_link_text_page, driver, manage_a_file_page, new_retention_period,
+                                           retention_period_label)
 
     # confirm retention period change
     assert (
@@ -192,20 +179,15 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
 
     # Change email confirmation
     email_confirmation_label = "Ask recipient for email address"
-    confirmation_label_choice = manage_a_file_page.get_file_setting_value(email_confirmation_label)
-    assert confirmation_label_choice == "Yes"
-    manage_a_file_page.click_change_file_setting(email_confirmation_label)
-    email_confirmation_page = EmailConfirmationSettingForEmailFilePage(driver)
-    assert email_confirmation_page.get_h1_text() == "Ask recipient for their email address"
     new_confirmation_label_choice = "No"
-    email_confirmation_page.select_email_confirmation_option(new_confirmation_label_choice)
-    email_confirmation_page.click_continue_button()
+    change_email_template_email_confirmation(driver, email_confirmation_label, manage_a_file_page,
+                                             new_confirmation_label_choice)
 
     # confirm email confirmation option change
     assert manage_a_file_page.get_h1_text() == file_name
     assert manage_a_file_page.get_file_setting_value(email_confirmation_label) == new_confirmation_label_choice
 
-    # delete template which would also delete file
+    # Go to templates page and delete the template which would also delete file
     manage_a_file_page.click_back_link()
     manage_files_page.click_back_link()
     assert view_email_template_page.get_h1_text() == template_name
@@ -235,10 +217,10 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     link_text_label = "Link text"
     new_link_text = "file_download_link"
 
-    manage_a_file_page.click_change_file_setting(link_text_label)
-    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
-    change_link_text_page.fill_in_link_text(new_link_text)
-    change_link_text_page.click_continue_button()
+    change_email_template_file_link_text(driver, manage_a_file_page, link_text_label, new_link_text, file_name)
+
+    # confirm link text change
+    assert manage_a_file_page.get_file_setting_value(link_text_label) == new_link_text
 
     # go to template page and click on file link
     manage_a_file_page.click_back_link()
@@ -317,20 +299,22 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
 
     # change the link text
     link_text_label = "Link text"
-    link_text = "file_download_link"
-    manage_a_file_page.click_change_file_setting(link_text_label)
-    change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
-    assert change_link_text_page.get_h1_text() == "Add link text"
-    change_link_text_page.fill_in_link_text(link_text)
-    change_link_text_page.click_continue_button()
+    new_link_text = "file_download_link"
+    change_email_template_file_link_text(
+        driver, manage_a_file_page, link_text_label, new_link_text, file_name
+    )
 
+    # confirm link text change
+    assert manage_a_file_page.get_file_setting_value(link_text_label) == new_link_text
+
+    # Go to the email template preview page
     manage_a_file_page.click_back_link()
     assert manage_a_file_page.get_h1_text() == "Manage files"
     manage_a_file_page.click_back_link()
 
     # send the email
     assert view_email_template_page.get_h1_text() == template_name
-    assert link_text in view_email_template_page.get_email_message_body_content()
+    assert new_link_text in view_email_template_page.get_email_message_body_content()
     view_email_template_page.click_send()
 
     set_sender_page = SendSetSenderPage(driver)
@@ -366,7 +350,7 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
     # There are smoke tests and other tests covering the process of a recipient downloading
     # a document, so the whole journey will not be covered here. we will just check that the link
     # goes to the download page and that it is not the preview landing page
-    send_email_confirmation_page.click_file_download_link(link_text)
+    send_email_confirmation_page.click_file_download_link(new_link_text)
     document_download_landing_page = DocumentDownloadLandingPage(driver)
     assert document_download_landing_page.get_h1_text() == "You have a file to download"
     assert len(driver.find_elements(By.CLASS_NAME, "govuk-notification-banner")) == 0  # No banner present
