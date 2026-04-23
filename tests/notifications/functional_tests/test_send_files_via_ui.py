@@ -30,7 +30,8 @@ from tests.test_utils import (
     delete_file_from_email_template_via_manage_files_page,
     get_downloaded_document,
     go_to_file_management_page_from_email_template_preview,
-    recordtime, change_email_template_retention_period, change_email_template_email_confirmation
+    recordtime, change_email_template_retention_period, change_email_template_email_confirmation,
+    go_back_to_email_template_from_file_management_page
 )
 
 
@@ -84,16 +85,13 @@ def test_send_one_off_email_with_file_via_ui(driver, login_seeded_user):
     # change the link text
     link_text_label = "Link text"
     new_link_text = "file_download_link"
-    change_email_template_file_link_text(driver, link_text_label, manage_a_file_page, new_link_text, file_name)
+    change_email_template_file_link_text(driver, manage_a_file_page, link_text_label,  new_link_text, file_name)
 
     # Go back to email template preview page
-    assert manage_a_file_page.get_h1_text() == file_name
-    manage_a_file_page.click_back_link()
-    assert manage_a_file_page.get_h1_text() == "Manage files"
-    manage_a_file_page.click_back_link()
+    go_back_to_email_template_from_file_management_page(file_name, manage_a_file_page, template_name,
+                                                        view_email_template_page)
 
     # send the email
-    assert view_email_template_page.get_h1_text() == template_name
     assert new_link_text in view_email_template_page.get_email_message_body_content()
     view_email_template_page.click_send()
 
@@ -188,9 +186,9 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     assert manage_a_file_page.get_file_setting_value(email_confirmation_label) == new_confirmation_label_choice
 
     # Go to templates page and delete the template which would also delete file
-    manage_a_file_page.click_back_link()
-    manage_files_page.click_back_link()
-    assert view_email_template_page.get_h1_text() == template_name
+    go_back_to_email_template_from_file_management_page(file_name, manage_a_file_page, template_name,
+                                                        view_email_template_page)
+
     delete_email_template_for_send_file_via_ui_tests(driver, view_email_template_page, template_name)
 
 
@@ -223,9 +221,9 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     assert manage_a_file_page.get_file_setting_value(link_text_label) == new_link_text
 
     # go to template page and click on file link
-    manage_a_file_page.click_back_link()
-    manage_files_page.click_back_link()
-    assert view_email_template_page.get_h1_text() == template_name
+    go_back_to_email_template_from_file_management_page(file_name, manage_a_file_page, template_name,
+                                                        view_email_template_page)
+
     view_email_template_page.click_file_link_text(new_link_text)
 
     # Test you have a file to download preview page
@@ -308,9 +306,8 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
     assert manage_a_file_page.get_file_setting_value(link_text_label) == new_link_text
 
     # Go to the email template preview page
-    manage_a_file_page.click_back_link()
-    assert manage_a_file_page.get_h1_text() == "Manage files"
-    manage_a_file_page.click_back_link()
+    go_back_to_email_template_from_file_management_page(file_name, manage_a_file_page, template_name,
+                                                        view_email_template_page)
 
     # send the email
     assert view_email_template_page.get_h1_text() == template_name

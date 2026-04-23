@@ -725,3 +725,12 @@ def change_email_template_email_confirmation(driver, email_confirmation_label, m
     assert email_confirmation_page.get_h1_text() == "Ask recipient for their email address"
     email_confirmation_page.select_email_confirmation_option(new_confirmation_label_choice)
     email_confirmation_page.click_continue_button()
+
+
+def go_back_to_email_template_from_file_management_page(file_name, manage_a_file_page, template_name,
+                                                        view_email_template_page):
+    assert manage_a_file_page.get_h1_text() == file_name
+    manage_a_file_page.click_back_link()
+    assert manage_a_file_page.get_h1_text() == "Manage files"
+    manage_a_file_page.click_back_link()
+    assert view_email_template_page.get_h1_text() == template_name
