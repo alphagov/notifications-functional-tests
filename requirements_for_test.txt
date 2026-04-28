@@ -4,7 +4,7 @@ attrs==26.1.0
     # via
     #   outcome
     #   trio
-awscrt==0.31.2
+awscrt==0.32.2
     # via botocore
 beautifulsoup4==4.12.3
     # via -r requirements_for_test_common.in
