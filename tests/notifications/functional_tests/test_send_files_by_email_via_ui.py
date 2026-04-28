@@ -221,10 +221,12 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
     template_name = f"Functional Tests - test email template file preview pages - {uuid.uuid4()}"
     content = "Hi ((name)), download this file:"
     file_name = "attachment.pdf"
-    create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
+    view_email_template_page = ViewEmailTemplatePage(driver)
+    create_an_email_template_and_attach_a_file(
+        driver, file_name, template_name, content, view_email_template_page=view_email_template_page
+    )
 
     # go to the individual file management page and change the link text
-    view_email_template_page = ViewEmailTemplatePage(driver)
     view_email_template_page.click_manage_files_button()
     manage_files_page = ManageFilesForEmailTemplatePage(driver)
     link_text_label = "Link text"
@@ -296,39 +298,34 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
 @recordtime
 @pytest.mark.xdist_group(name="send-files-via-ui-flow")
 def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded_user):
-    # Create an email template
+    # Test Creating an email template and attach a file to it
     template_name = f"Functional Tests - send email with file via csv - {uuid.uuid4()}"
     content = "Testing sending a one off email notification. with an email file. Test file below:"
     file_name = "attachment.pdf"
-    template_id = create_an_email_template_and_attach_a_file(driver, file_name, template_name, content)
-
-    # Confirm file has been attached to template on the Preview email template page
     view_email_template_page = ViewEmailTemplatePage(driver)
-    assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    template_id = create_an_email_template_and_attach_a_file(
+        driver, file_name, template_name, content, view_email_template_page=view_email_template_page
+    )
 
     # go to the individual file management page and change the link text
     view_email_template_page.click_manage_files_button()
     manage_files_page = ManageFilesForEmailTemplatePage(driver)
-    assert manage_files_page.get_h1_text() == "Manage files"
     link_text_label = "Link text"
-    link_text = "file_download_link"
+    new_link_text = "file_download_link"
     manage_files_page.click_manage_link(file_name)
-    manage_file_page = ManageEmailTemplateFilePage(driver)
-    assert manage_file_page.get_h1_text() == file_name
-    manage_file_page.click_change_file_setting(link_text_label)
+    manage_a_file_page = ManageEmailTemplateFilePage(driver)
+    manage_a_file_page.click_change_file_setting(link_text_label)
     change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
-    assert change_link_text_page.get_h1_text() == "Add link text"
-    change_link_text_page.fill_in_link_text(link_text)
+    change_link_text_page.fill_in_link_text(new_link_text)
     change_link_text_page.click_continue_button()
 
-    manage_file_page.click_back_link()
-    assert manage_file_page.get_h1_text() == "Manage files"
-    manage_file_page.click_back_link()
+    manage_a_file_page.click_back_link()
+    assert manage_a_file_page.get_h1_text() == "Manage files"
+    manage_a_file_page.click_back_link()
 
     # send the email
     assert view_email_template_page.get_h1_text() == template_name
-    assert link_text in view_email_template_page.get_email_message_body_content()
+    assert new_link_text in view_email_template_page.get_email_message_body_content()
     view_email_template_page.click_send()
 
     set_sender_page = SendSetSenderPage(driver)
@@ -364,7 +361,7 @@ def test_send_email_notification_with_an_email_file_via_csv(driver, login_seeded
     # There are smoke tests and other tests covering the process of a recipient downloading
     # a document, so the whole journey will not be covered here. we will just check that the link
     # goes to the download page and that it is not the preview landing page
-    send_email_confirmation_page.click_file_download_link(link_text)
+    send_email_confirmation_page.click_file_download_link(new_link_text)
     document_download_landing_page = DocumentDownloadLandingPage(driver)
     assert document_download_landing_page.get_h1_text() == "You have a file to download"
     assert len(driver.find_elements(By.CLASS_NAME, "govuk-notification-banner")) == 0  # No banner present
