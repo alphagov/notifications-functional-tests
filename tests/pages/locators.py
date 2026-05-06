@@ -45,7 +45,7 @@ class YourServicesPageLocators:
 
 class ServiceJoinRequestChooseServicePageLocators:
     SEARCH_SERVICE_INPUT = (By.ID, "search")
-    SELECT_SERVICE_NAME_LINK = (By.LINK_TEXT, "Functional Tests")
+    SELECT_SERVICE_NAME_LINK = (By.PARTIAL_LINK_TEXT, "Functional Tests")
 
 
 class ServiceJoinRequestJoinAskPageLocators:
