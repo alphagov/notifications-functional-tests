@@ -273,7 +273,6 @@ class BasePage:
 
     def is_text_present_on_page(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
-
         return search_text in normalized_page_source
 
     def get_template_id(self):
@@ -1591,6 +1590,8 @@ class SendSetSenderPage(BasePage):
 
 
 class SendOneRecipientPage(BasePage):
+    placeholder_value = (By.NAME, "placeholder_value")
+
     def is_placeholder_a_recipient_field(self, message_type):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
         if message_type == "email":
@@ -1605,6 +1606,10 @@ class SendOneRecipientPage(BasePage):
     def enter_placeholder_value(self, placeholder_value):
         element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
         element.send_keys(placeholder_value)
+
+    def get_placeholder_value(self):
+        element = self.wait_for_element(self.placeholder_value)
+        return element.get_attribute("value")
 
     def get_preview_contents(self):
         table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)

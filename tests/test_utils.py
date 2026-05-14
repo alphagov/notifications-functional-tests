@@ -43,10 +43,7 @@ from tests.pages import (
     YourServicesPage,
 )
 from tests.pages.pages import (
-    AddFileToEmailTemplatePage,
-    ManageEmailTemplateFilePage,
     RenameLetterTemplatePage,
-    ViewEmailTemplatePage,
 )
 
 logging.basicConfig(filename=f"./logs/test_run_{datetime.now(UTC)}.log", level=logging.INFO)
@@ -321,6 +318,13 @@ def go_to_templates_page(driver, service="service"):
     dashboard_page.click_templates()
 
 
+def go_to_view_template_page(driver, template_name):
+    go_to_templates_page(driver)
+    templates_page = ShowTemplatesPage(driver)
+    templates_page.click_template_by_link_text(template_name)
+    assert templates_page.get_h1_text() == template_name
+
+
 def edit_sms_template(driver, template_name, new_template_name, content, service="service"):
     show_templates_page = ShowTemplatesPage(driver)
     try:
@@ -519,6 +523,7 @@ def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipi
     from tests.pages.rollups import get_email_and_password
 
     send_to_one_recipient_page = SendOneRecipientPage(driver)
+
     preview_rows = send_to_one_recipient_page.get_preview_contents()
     assert "From" in str(preview_rows[0].text)
     assert config["service"]["name"] in str(preview_rows[0].text)
@@ -645,44 +650,3 @@ def pdf_page_has_text(pdf_page, expected_text, normalise_whitespace=True):
         page_text = re.sub(r"\s+", " ", page_text.replace("\n", " "))
 
     return expected_text in page_text
-
-
-def create_an_email_template_and_attach_a_file(driver, file_name, template_name, content):
-    go_to_templates_page(driver)
-    template_id = create_email_template(driver, name=template_name, content=content, has_unsubscribe_link=True)
-
-    # Upload file and add it to the template
-    dashboard_page = DashboardPage(driver)
-    service_id = config["service"]["id"]
-    dashboard_page.go_to_dashboard_for_service(service_id=service_id)
-    file_path = f"tests/test_files/{file_name}"
-    add_file_to_email_template(driver, template_name, file_name, file_path, service_id)
-    return template_id
-
-
-def add_file_to_email_template(driver, template_name, file_name, file_path, service_id):
-    show_templates_page = ShowTemplatesPage(driver)
-    try:
-        show_templates_page.click_template_by_link_text(template_name)
-    except TimeoutException:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.go_to_dashboard_for_service(service_id)
-        dashboard_page.click_templates()
-        show_templates_page.click_template_by_link_text(template_name)
-    template_page = ViewEmailTemplatePage(driver)
-    template_page.click_attach_files_button()
-    add_file_to_email_template_page = AddFileToEmailTemplatePage(driver)
-    assert add_file_to_email_template_page.get_h1_text() == "Add a file"
-    add_a_file_page = AddFileToEmailTemplatePage(driver)
-    assert add_a_file_page.visible_choose_file_button().is_displayed()
-    os_file_path = os.path.join(os.getcwd(), file_path)
-    add_a_file_page.upload_file(os_file_path)
-    manage_file_page = ManageEmailTemplateFilePage(driver)
-    assert manage_file_page.get_h1_text() == file_name
-    manage_file_page.click_add_to_template()
-
-
-def delete_file_from_email_template_via_manage_files_page(driver):
-    manage_a_file_page = ManageEmailTemplateFilePage(driver)
-    manage_a_file_page.click_remove_file_link()
-    manage_a_file_page.click_remove_file_dialog_button()
