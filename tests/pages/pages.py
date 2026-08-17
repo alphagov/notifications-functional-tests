@@ -302,28 +302,26 @@ class BasePage:
 
 
 class PageWithStickyNavMixin:
-    def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
-        namespace = "window.GOVUK.stickAtBottomWhenScrolling"
-        if stuckToBottom is False:
-            namespace = "window.GOVUK.stickAtTopWhenScrolling"
-
+    def scrollToRevealElement(self, selector=None, xpath=None):
         if selector is not None:
-            js_str = (
-                f"if ('scrollToRevealElement' in {namespace}){namespace}."
-                "scrollToRevealElement(document.querySelector('{selector}'))"
-            )
-            self.driver.execute_script(js_str)
+            js_str = """
+                var el = document.querySelector(arguments[0]);
+                if (el) {
+                    el.focus();
+                    el.dispatchEvent(new Event('focus', { bubbles: true }));
+                }
+            """
+            self.driver.execute_script(js_str, selector)
         elif xpath is not None:
-            js_str = f"""(function (document) {{
-                             if ('scrollToRevealElement' in {namespace}) {{
-                                 var matches = document.evaluate("{xpath}", document, null, XPathResult.ANY_TYPE, null);
-                                 if (matches) {{
-                                     {namespace}.scrollToRevealElement(matches.iterateNext());
-                                 }}
-                             }}
-                         }}(document));"""
-            self.driver.execute_script(js_str)
-
+            js_str = """
+                var result = document.evaluate(arguments[0], document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                var el = result.singleNodeValue;
+                if (el) {
+                    el.focus();
+                    el.dispatchEvent(new Event('focus', { bubbles: true }));
+                }
+            """
+            self.driver.execute_script(js_str, xpath)
 
 class HomePage(BasePage):
     def accept_cookie_warning(self):
