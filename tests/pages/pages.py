@@ -302,53 +302,34 @@ class BasePage:
 
 
 class PageWithStickyNavMixin:
-    def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
 
-        current_url = self.driver.current_url
-        
-        if "staging-notify.works" in current_url:
-            base_url = "https://static.staging-notify.works"
-        else:
-            # Fallback to the url from the globally imported config
-            base_url = config["notify_admin_url"]
-
-        module_url = f"{base_url}/assets/javascripts/esm/stick-to-window-when-scrolling.mjs"
-
-        # Flattened directly onto window
-        prop_name = "stickAtBottomWhenScrolling" if stuckToBottom else "stickAtTopWhenScrolling"
-        namespace = f"window.{prop_name}"
-
+    def scrollToRevealElement(
+        self, selector=None, xpath=None
+    ):
         if selector is not None:
-            js_str = (
-                f"if ('scrollToRevealElement' in {namespace}){namespace}."
-                "scrollToRevealElement(document.querySelector('{selector}'))"
-            )
-            self.driver.execute_script(js_str)
+            js_target = f"document.querySelector('{selector}')"
         elif xpath is not None:
-            element = f'(document.evaluate("{xpath}", document, null, XPathResult.ANY_TYPE, null)).iterateNext()'
+            # Safely escape backslashes and double quotes in the XPath string for JS injection
+            safe_xpath = xpath.replace("\\", "\\\\").replace('"', '\\"')
+            js_target = f'document.evaluate("{safe_xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue'
         else:
             return
 
         js_str = f"""
-        var callback = arguments[arguments.length - 1];
-        
-        import('{module_url}')
-            .then(module => {{
-                window['{prop_name}'] = module.default || module;
-
-                if ({namespace} && typeof {namespace}.scrollToRevealElement === 'function') {{
-                    var targetNode = {element};
-                    if (targetNode) {namespace}.scrollToRevealElement(targetNode);
-                }}
-                callback(null);
-            }})
-            .catch(err => callback('JS Import Error: ' + err.message));
+        var targetNode = {js_target};
+        if (targetNode) {{
+            // Resolve to nearest interactive container if target is a inner element (e.g., <span> inside an <a>)
+            var focusable = targetNode.closest('a, button, input, [tabindex]') || targetNode;
+            
+            // Set browser focus on target element
+            focusable.focus();
+            
+            // Dispatch bubbling 'focusin' event for parent container sticky nav listeners
+            focusable.dispatchEvent(new Event('focusin', {{ bubbles: true }}));
+        }}
         """
 
-        error_msg = self.driver.execute_async_script(js_str)
-        if error_msg:
-            raise RuntimeError(error_msg)
-
+        self.driver.execute_script(js_str)
 
 class HomePage(BasePage):
     def accept_cookie_warning(self):
