@@ -316,17 +316,7 @@ class PageWithStickyNavMixin:
             return
 
         js_str = f"""
-        var targetNode = {js_target};
-        if (targetNode) {{
-            // Resolve to nearest interactive container if target is a inner element (e.g., <span> inside an <a>)
-            var focusable = targetNode.closest('a, button, input, [tabindex]') || targetNode;
-            
-            // Set browser focus on target element
-            focusable.focus();
-            
-            // Dispatch bubbling 'focusin' event for parent container sticky nav listeners
-            focusable.dispatchEvent(new Event('focusin', {{ bubbles: true }}));
-        }}
+        console.log({js_target});
         """
 
         self.driver.execute_script(js_str)
