@@ -140,7 +140,11 @@ class UploadCsvLocators:
 
 
 class JobPageLocators:
-    FIRST_NOTIFICATION = (By.CLASS_NAME, "table-row")
+    FIRST_NOTIFICATION = (
+        By.CSS_SELECTOR,
+        "tr.table-row, "
+        ".govuk-summary-list__row",
+    )
 
 
 class TeamMembersPageLocators:
