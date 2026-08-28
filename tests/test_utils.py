@@ -61,6 +61,19 @@ class NotificationStatuses:
     SENT = RECEIVED | DELIVERED | {"sending", "pending"}
 
 
+class FTNotificationsAPIClient(NotificationsAPIClient):
+    _client_id: uuid.UUID
+
+    def __init__(self, *args, **kwargs):
+        self._client_id = uuid.uuid4()
+        super().__init__(*args, **kwargs)
+
+    def generate_headers(self, api_token):
+        r = super().generate_headers(api_token)
+        r["User-agent"] = f"{r["User-agent"]}/client-{self._client_id}"
+        return r
+
+
 def create_temp_csv(fields: dict[str, Any], include_build_id: bool = True) -> tuple[list, str, str]:
     directory_name = tempfile.mkdtemp()
     csv_filename = f"{uuid.uuid4()}-sample.csv"
@@ -542,7 +555,7 @@ def _assert_one_off_email_filled_in_properly(driver, template_name, test, recipi
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
-    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
+    client = FTNotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
     resp = client.get("v2/notifications")
     for notification in resp["notifications"]:
         t_id = notification["template"]["id"]
