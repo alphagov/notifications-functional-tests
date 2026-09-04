@@ -42,7 +42,6 @@ from tests.pages.locators import (
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
-    JobPageLocators,
     LetterPreviewPageLocators,
     MainPageLocators,
     ManageEmailTemplateFilePageLocators,
@@ -1255,11 +1254,7 @@ class SendViaCsvPreviewPage(PageWithCsvPreview, PageWithSendToMultipleButton):
 
 class JobPage(BasePage):
     uploads_link = (By.LINK_TEXT, "Uploads")
-    first_notification = JobPageLocators.FIRST_NOTIFICATION
-    notification_link = (
-        By.CSS_SELECTOR,
-        ".file-list-filename, "
-        ".notify-summary-list__filename",
+    notification_link = (By.CSS_SELECTOR, ".notify-summary-list__filename",
     )
 
     def wait_until_current(self, time=10):
@@ -1268,47 +1263,23 @@ class JobPage(BasePage):
     @retry(RetryException, tries=20, delay=10)
     def get_notification_id(self):
         try:
-            # Wait briefly for row; while holding <p> is shown, this times out
-            # No messages sent used be a row in the table
-            # It's now a paragaraph and the page list only
-            # appears on ajax refresh
-            element = self.wait_for_element(
-                self.first_notification
-            )
+            # wait directly for the notification link to render
+            link_el = self.wait_for_element(self.notification_link)
 
-            # Check for ID on container (legacy table support)
-            notification_id = element.get_attribute("id")
-
-            # Parse notification UUID from link href attribute
-            # as govukSummaryList does not support setting IDs on rows
-            if not notification_id:
-                link_el = (
-                    element
-                    if element.tag_name == "a"
-                    else element.find_element(*self.notification_link)
+            # extract UUID from URL
+            href = link_el.get_attribute("href") or ""
+            if "/notification/" in href:
+                notification_id = (
+                    href.split("/notification/")[1].split("?")[0].strip("/")
                 )
-                href = link_el.get_attribute("href") or ""
+                if notification_id:
+                    return notification_id
 
-                if "/notification/" in href:
-                    notification_id = (
-                        href.split("/notification/")[1].split("?")[0].strip("/")
-                    )
+            raise RetryException("Found link, but could not parse notification ID")
 
-            if not notification_id:
-                raise RetryException(
-                    "Notification list rendered, but ID not found yet"
-                )
-
-            return notification_id
-
-        # Catch TimeoutException & NoSuchElementException so @retry polls through the holding state
-        except (
-            TimeoutException,
-            NoSuchElementException,
-            StaleElementReferenceException,
-        ) as e:
+        except (NoSuchElementException, StaleElementReferenceException) as e:
             raise RetryException(
-                "Waiting for notification list to replace holding message..."
+                "Waiting for notification link to render..."
             ) from e
 
     def get_job_id(self):

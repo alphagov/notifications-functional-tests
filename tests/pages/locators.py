@@ -139,14 +139,6 @@ class UploadCsvLocators:
     FILE_INPUT = (By.ID, "file")
 
 
-class JobPageLocators:
-    FIRST_NOTIFICATION = (
-        By.CSS_SELECTOR,
-        "tr.table-row, "
-        ".govuk-summary-list__row",
-    )
-
-
 class TeamMembersPageLocators:
     H1 = (By.TAG_NAME, "h1")
     INVITE_TEAM_MEMBER_BUTTON = (By.CSS_SELECTOR, "a.govuk-button")
