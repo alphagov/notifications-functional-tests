@@ -1256,7 +1256,11 @@ class SendViaCsvPreviewPage(PageWithCsvPreview, PageWithSendToMultipleButton):
 class JobPage(BasePage):
     uploads_link = (By.LINK_TEXT, "Uploads")
     first_notification = JobPageLocators.FIRST_NOTIFICATION
-    notification_link = (By.CLASS_NAME, "file-list-filename")
+    notification_link = (
+        By.CSS_SELECTOR,
+        ".file-list-filename, "
+        ".notify-summary-list__filename",
+    )
 
     def wait_until_current(self, time=10):
         return self.wait_until_url_contains("/jobs/", time=time)
@@ -1264,14 +1268,48 @@ class JobPage(BasePage):
     @retry(RetryException, tries=20, delay=10)
     def get_notification_id(self):
         try:
-            element = self.wait_for_element(self.first_notification)
+            # Wait briefly for row; while holding <p> is shown, this times out
+            # No messages sent used be a row in the table
+            # It's now a paragaraph and the page list only
+            # appears on ajax refresh
+            element = self.wait_for_element(
+                self.first_notification
+            )
+
+            # Check for ID on container (legacy table support)
             notification_id = element.get_attribute("id")
+
+            # Parse notification UUID from link href attribute
+            # as govukSummaryList does not support setting IDs on rows
             if not notification_id:
-                raise RetryException(f"No notification id yet {notification_id}")
-            else:
-                return notification_id
-        except StaleElementReferenceException as e:
-            raise RetryException("Could not find element...") from e
+                link_el = (
+                    element
+                    if element.tag_name == "a"
+                    else element.find_element(*self.notification_link)
+                )
+                href = link_el.get_attribute("href") or ""
+
+                if "/notification/" in href:
+                    notification_id = (
+                        href.split("/notification/")[1].split("?")[0].strip("/")
+                    )
+
+            if not notification_id:
+                raise RetryException(
+                    "Notification list rendered, but ID not found yet"
+                )
+
+            return notification_id
+
+        # Catch TimeoutException & NoSuchElementException so @retry polls through the holding state
+        except (
+            TimeoutException,
+            NoSuchElementException,
+            StaleElementReferenceException,
+        ) as e:
+            raise RetryException(
+                "Waiting for notification list to replace holding message..."
+            ) from e
 
     def get_job_id(self):
         return (self.driver.current_url.split("/jobs/")[1]).split("?")[0]
@@ -1290,11 +1328,15 @@ class JobPage(BasePage):
 
 
 class PageWithUploadsList(BasePage):
-    next_td_from_link = (By.XPATH, "./ancestor::*[parent::tr][1]/following-sibling::*[1]")
+    next_container_from_link = (
+        By.XPATH, 
+       "./ancestor::*[self::td or self::th or contains(@class, 'govuk-summary-list__key') or contains(@class, 'table-field')][1]"
+        "/following-sibling::*[self::td or self::th or contains(@class, 'govuk-summary-list__value')][last()]",
+    )
 
     def _get_row_info_from_link(self, link_element):
-        next_td = link_element.find_element(*self.next_td_from_link)
-        return {m.group(2): int(m.group(1)) for m in re.finditer(r"(\d+)\s+\b([A-Za-z -]+)\b", next_td.text)}
+        next_value = link_element.find_element(*self.next_container_from_link)
+        return {m.group(2): int(m.group(1)) for m in re.finditer(r"(\d+)\s+\b([A-Za-z -]+)\b", next_value.text)}
 
     def get_job_info(self, job_id):
         link_element = self.wait_for_element((By.CSS_SELECTOR, f"a[href*='/jobs/{job_id}']"))
