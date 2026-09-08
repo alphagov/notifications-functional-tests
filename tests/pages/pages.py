@@ -1277,7 +1277,11 @@ class JobPage(BasePage):
 
             raise RetryException("Found link, but could not parse notification ID")
 
-        except (NoSuchElementException, StaleElementReferenceException) as e:
+        except (
+            NoSuchElementException,
+            StaleElementReferenceException,
+            TimeoutException
+        ) as e:
             raise RetryException(
                 "Waiting for notification link to render..."
             ) from e
