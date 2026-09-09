@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 from typing import Literal
-from urllib.parse import urlparse, urlsplit
+from urllib.parse import urljoin, urlparse, urlsplit
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -301,28 +301,24 @@ class BasePage:
 
 
 class PageWithStickyNavMixin:
-    def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
-        namespace = "window.GOVUK.stickAtBottomWhenScrolling"
-        if stuckToBottom is False:
-            namespace = "window.GOVUK.stickAtTopWhenScrolling"
 
+    def scrollToRevealElement(
+        self, selector=None, xpath=None
+    ):
         if selector is not None:
-            js_str = (
-                f"if ('scrollToRevealElement' in {namespace}){namespace}."
-                "scrollToRevealElement(document.querySelector('{selector}'))"
-            )
-            self.driver.execute_script(js_str)
+            js_target = f"document.querySelector('{selector}')"
         elif xpath is not None:
-            js_str = f"""(function (document) {{
-                             if ('scrollToRevealElement' in {namespace}) {{
-                                 var matches = document.evaluate("{xpath}", document, null, XPathResult.ANY_TYPE, null);
-                                 if (matches) {{
-                                     {namespace}.scrollToRevealElement(matches.iterateNext());
-                                 }}
-                             }}
-                         }}(document));"""
-            self.driver.execute_script(js_str)
+            # Safely escape backslashes and double quotes in the XPath string for JS injection
+            safe_xpath = xpath.replace("\\", "\\\\").replace('"', '\\"')
+            js_target = f'document.evaluate("{safe_xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue'
+        else:
+            return
 
+        js_str = f"""
+        console.log({js_target});
+        """
+
+        self.driver.execute_script(js_str)
 
 class HomePage(BasePage):
     def accept_cookie_warning(self):
