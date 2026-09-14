@@ -93,11 +93,11 @@ pytest tests/notifications/functional_tests/test_seeded_user.py
 pytest tests/notifications/functional_tests/test_seeded_user.py --no-headless
 ```
 
-### Running the tests from your local machine against a dev environment or staging
+### Running the tests from your local machine against a dev environment
 
 - Choose a target environment:
   ```sh
-  ENVIRONMENT="staging" # or dev-a, etc.
+  ENVIRONMENT="dev-a" # or dev-b, etc.
   ```
 - Find the AWS account ID of the target account, either with `gds aws notify-${ENVIRONMENT} -d` or:
   ```sh
