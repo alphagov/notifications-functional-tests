@@ -3,7 +3,6 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.events import EventFiringWebDriver
@@ -12,6 +11,7 @@ from config import config, setup_shared_config
 from tests.event_listener import LoggingEventListener
 from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in, sign_in_email_auth
+from tests.test_utils import FTNotificationsAPIClient
 
 
 def pytest_addoption(parser):
@@ -124,12 +124,28 @@ def login_seeded_user(_driver, request: pytest.FixtureRequest):
 
 
 @pytest.fixture(scope="module")
-def client_live_key():
-    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"])
+def _client_live_key():
+    client = FTNotificationsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"])
     return client
 
 
 @pytest.fixture(scope="module")
-def client_test_key():
-    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"])
+def _client_test_key():
+    client = FTNotificationsAPIClient(base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"])
     return client
+
+
+@pytest.fixture(scope="function")
+def client_live_key(_client_live_key, request):
+    prev_failed_tests = request.session.testsfailed
+    yield _client_live_key
+    if prev_failed_tests != request.session.testsfailed:
+        print("client_live_key client id:", str(getattr(_client_live_key, "_client_id", None)))  # noqa: T201
+
+
+@pytest.fixture(scope="function")
+def client_test_key(_client_test_key, request):
+    prev_failed_tests = request.session.testsfailed
+    yield _client_test_key
+    if prev_failed_tests != request.session.testsfailed:
+        print("client_test_key client id:", str(getattr(_client_test_key, "_client_id", None)))  # noqa: T201
