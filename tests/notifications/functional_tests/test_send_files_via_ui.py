@@ -55,7 +55,10 @@ def test_attach_a_file_to_an_email_template_and_then_remove_the_file(driver, log
 
     # Confirm file has been removed on Preview email template page
     assert view_email_template_page.get_page_banner_text() == f"‘{file_name}’ has been removed"
-    assert view_email_template_page.get_file_added_count_text() == "No files added"
+    assert view_email_template_page.get_file_added_count_text() in {
+        "No files added",
+        "No files attached",
+    }
 
     # delete template
     assert view_email_template_page.get_h1_text() == template_name
@@ -383,4 +386,7 @@ def add_file_to_email_template(driver, file_name, template_name):
 def assert_file_has_been_attached_to_email_template(driver, template_name):
     view_email_template_page = ViewEmailTemplatePage(driver)
     assert view_email_template_page.get_h1_text() == template_name
-    assert view_email_template_page.get_file_added_count_text() == "1 file added"
+    assert view_email_template_page.get_file_added_count_text() in {
+        "1 file added",
+        "1 file attached",
+    }
