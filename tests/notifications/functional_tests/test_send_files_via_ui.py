@@ -91,7 +91,13 @@ def test_send_an_email_notification_with_a_file_attached(driver, login_seeded_us
 
     # change the link text
     new_link_text = "file_download_link"
-    change_email_template_file_link_text(driver, manage_a_file_page, new_link_text, file_name)
+    change_email_template_file_link_text(
+        driver,
+        manage_a_file_page,
+        old_link_text="attachment",
+        new_link_text=new_link_text,
+        file_name=file_name,
+    )
 
     # Go to email template preview page and send the email
     go_back_to_view_email_template_page_from_manage_files_page(
@@ -143,7 +149,13 @@ def test_email_template_file_management_settings(driver, login_seeded_user):
     # change the link text and confirm the change
     # change_email_template_file_link_text is used in other tests and confirms the change of the link text
     new_link_text = "file_download_link"
-    change_link_text_page = change_email_template_file_link_text(driver, manage_a_file_page, new_link_text, file_name)
+    change_link_text_page = change_email_template_file_link_text(
+        driver,
+        manage_a_file_page,
+        old_link_text="attachment",
+        new_link_text=new_link_text,
+        file_name=file_name,
+    )
 
     # Change retention period
     new_retention_period = "50"
@@ -199,7 +211,13 @@ def test_send_file_via_ui_preview_pages(driver, login_seeded_user, download_dire
 
     # change the link text
     new_link_text = "file_download_link"
-    change_email_template_file_link_text(driver, manage_a_file_page, new_link_text, file_name)
+    change_email_template_file_link_text(
+        driver,
+        manage_a_file_page,
+        old_link_text="attachment",
+        new_link_text=new_link_text,
+        file_name=file_name,
+    )
 
     go_back_to_view_email_template_page_from_manage_files_page(
         file_name, manage_a_file_page, template_name, view_email_template_page
@@ -264,10 +282,16 @@ def go_to_manage_file_page_from_view_email_template_page(driver, file_name):
     return manage_a_file_page, manage_files_page, view_email_template_page
 
 
-def change_email_template_file_link_text(driver, manage_a_file_page, new_link_text, file_name):
+def change_email_template_file_link_text(
+    driver,
+    manage_a_file_page,
+    *,
+    old_link_text,
+    new_link_text,
+    file_name,
+):
     link_text_label = "Link text"
-    default_link_text = manage_a_file_page.get_file_setting_value(link_text_label)
-    assert default_link_text == "Not set"
+    assert manage_a_file_page.get_file_setting_value(link_text_label) == old_link_text
     manage_a_file_page.click_change_file_setting(link_text_label)
     change_link_text_page = ChangeLinkTextForEmailFilePage(driver)
     assert change_link_text_page.get_h1_text() == "Add link text"
