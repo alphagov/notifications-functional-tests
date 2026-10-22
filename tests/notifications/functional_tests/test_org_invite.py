@@ -47,3 +47,5 @@ def test_org_invite(driver, login_seeded_user):
     # make sure we got to the dashboard page. It's their only account, so they'll be insta-redirected there.
     # They won't be able to see anything here tho since they're not a member of the service
     assert org_dashboard_page.is_current(config["service"]["organisation_id"])
+    # non-members get a 403 page without the organisation navigation
+    assert org_dashboard_page.wait_for_element(DashboardPage.team_members_link).text == "Team members"

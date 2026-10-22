@@ -7,8 +7,8 @@ from tests.pages import (
     NewPasswordPage,
     SignInPage,
 )
-from tests.pages.rollups import get_email_and_password, sign_in_email_auth
-from tests.test_utils import do_email_verification, recordtime
+from tests.pages.rollups import get_email_and_password, get_mobile_number, sign_in_email_auth
+from tests.test_utils import do_email_verification, do_verify, recordtime
 
 
 @recordtime
@@ -43,3 +43,6 @@ def test_reset_forgotten_password(driver, request, create_seeded_user):
     new_password_page.click_continue()
 
     assert new_password_page.is_page_title("Check your phone")
+
+    do_verify(driver, get_mobile_number(account_type="seeded", test_name=request.node.name))
+    new_password_page.sign_out()
