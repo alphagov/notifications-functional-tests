@@ -1,14 +1,10 @@
 import uuid
 
-import pytest
-
 from tests.pages import (
     ChooseExistingTemplatePage,
     CopyExistingTemplatePage,
     ShowTemplatesPage,
     ViewEmailTemplatePage,
-    ViewLetterTemplatePage,
-    ViewSMSTemplatePage,
     delete_template_from_view_template_page,
 )
 from tests.test_utils import (
@@ -19,16 +15,12 @@ from tests.test_utils import (
 
 
 @recordtime
-@pytest.mark.parametrize(
-    "template_type, view_class_name",
-    [("email", ViewEmailTemplatePage), ("sms", ViewSMSTemplatePage), ("letter", ViewLetterTemplatePage)],
-)
-def test_copying_an_existing_template(driver, login_seeded_user, template_type, view_class_name):
+def test_copying_an_existing_template(driver, login_seeded_user):
     go_to_templates_page(driver)
     content = "This is a test template"
 
     # Create a template
-    template_name = f"Functional Tests - copy {template_type} template - {uuid.uuid4()}"
+    template_name = f"Functional Tests - copy template - {uuid.uuid4()}"
     create_email_template(driver, name=template_name, content=content)
 
     # Confirm template was created
@@ -46,10 +38,10 @@ def test_copying_an_existing_template(driver, login_seeded_user, template_type, 
     choose_existing_template_page.click_template_by_link_text(template_name)
     copy_existing_template_page = CopyExistingTemplatePage(driver)
     assert copy_existing_template_page.get_h1_text() == "Copy an existing template"
-    new_template_name = f"Functional Tests - new copied {template_type} template - {uuid.uuid4()}"
+    new_template_name = f"Functional Tests - new copied template - {uuid.uuid4()}"
     copy_existing_template_page.change_template_name(new_template_name)
     copy_existing_template_page.click_copy_this_template_button()
-    view_template_page = view_class_name(driver)
+    view_template_page = ViewEmailTemplatePage(driver)
     assert view_template_page.get_h1_text() == new_template_name
 
     # Confirm new copy of the template was created

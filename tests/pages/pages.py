@@ -301,10 +301,19 @@ class BasePage:
 
 
 class PageWithStickyNavMixin:
+    def wait_for_sticky_nav_scripts(self, namespace, time=10):
+        # admin only sets these globals once all of its page JS has run, so until then the sticky nav isn't set up
+        return WebDriverWait(self.driver, time).until(
+            lambda driver: driver.execute_script(f"return !!(window.GOVUK && {namespace})"),
+            f"Sticky nav JS did not load on URL {self.current_url}",
+        )
+
     def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
         namespace = "window.GOVUK.stickAtBottomWhenScrolling"
         if stuckToBottom is False:
             namespace = "window.GOVUK.stickAtTopWhenScrolling"
+
+        self.wait_for_sticky_nav_scripts(namespace)
 
         if selector is not None:
             js_str = (
@@ -693,12 +702,21 @@ class DashboardPage(BasePage):
 
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
-    add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
-    add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
-    add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
+    # The grey sticky footer buttons are added by JS into #nothing_selected and #items_selected. Before that JS runs
+    # the page shows every form's submit button, which share the same values, so clicking those submits the form.
+    add_new_template_link = (By.CSS_SELECTOR, "#nothing_selected button[value='add-new-template']")
+    add_new_folder_link = (By.CSS_SELECTOR, "#nothing_selected button[value='add-new-folder']")
+    add_to_new_folder_link = (By.CSS_SELECTOR, "#items_selected button[value='move-to-new-folder']")
     move_to_existing_folder_link = (
         By.CSS_SELECTOR,
-        "button[value='move-to-existing-folder']",
+        "#items_selected button[value='move-to-existing-folder']",
+    )
+    add_new_template_continue_button = (By.CSS_SELECTOR, "#add_new_template_form button[value='add-new-template']")
+    add_new_folder_submit_button = (By.CSS_SELECTOR, "#add_new_folder_form button[value='add-new-folder']")
+    add_to_new_folder_submit_button = (By.CSS_SELECTOR, "#move_to_new_folder_form button[value='move-to-new-folder']")
+    move_to_existing_folder_submit_button = (
+        By.CSS_SELECTOR,
+        "#move_to_folder_radios button[value='move-to-existing-folder']",
     )
     email_filter_link = (By.LINK_TEXT, "Email")
 
@@ -742,7 +760,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.add_new_folder_textbox = folder_name
 
         # green submit button
-        element = self.wait_for_element(self.add_new_folder_link)
+        element = self.wait_for_element(self.add_new_folder_submit_button)
         element.click()
 
     def click_template_by_link_text(self, link_text):
@@ -751,12 +769,11 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element.click()
 
     def _select_template_type(self, type):
-        # wait for continue button to be displayed - sticky nav has rendered properly
-        # we've seen issues
         radio_element = self.wait_for_design_system_checkbox_or_radio(type)
         self.select_checkbox_or_radio(radio_element)
 
-        self.click_continue()
+        element = self.wait_for_element(self.add_new_template_continue_button)
+        element.click()
 
     def select_email(self):
         self._select_template_type(self.email_radio)
@@ -768,10 +785,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self._select_template_type(self.letter_radio)
 
     def select_copy_an_existing_template(self):
-        radio_element = self.wait_for_design_system_checkbox_or_radio(self.copy_an_existing_template)
-        self.select_checkbox_or_radio(radio_element)
-
-        self.click_continue()
+        self._select_template_type(self.copy_an_existing_template)
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_design_system_checkbox_or_radio(self.template_checkbox(template_id))
@@ -784,18 +798,18 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.add_to_new_folder_textbox = folder_name
 
         # green submit button
-        element = self.wait_for_element(self.add_to_new_folder_link)
+        element = self.wait_for_element(self.add_to_new_folder_submit_button)
         element.click()
 
     def move_to_root_template_folder(self):
         move_button = self.wait_for_element(self.move_to_existing_folder_link)
         move_button.click()
-        # wait for continue button to be displayed - sticky nav has rendered properly
-        # we've seen issues
         radio_element = self.wait_for_design_system_checkbox_or_radio(self.root_template_folder_radio)
-
         self.select_checkbox_or_radio(radio_element)
-        self.click_continue()
+
+        # green submit button
+        element = self.wait_for_element(self.move_to_existing_folder_submit_button)
+        element.click()
 
     def get_folder_by_name(self, folder_name):
         try:
