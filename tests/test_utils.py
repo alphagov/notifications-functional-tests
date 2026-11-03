@@ -154,7 +154,7 @@ def do_email_verification(driver, template_id, email_address):
         email_link = get_link(template_id, email_address)
         driver.get(email_link)
 
-        if driver.find_element(By.CLASS_NAME, "heading-large").text == "The link has expired":
+        if driver.find_element(By.TAG_NAME, "h1").text == "The link has expired":
             #  There was an error message (presumably we tried to use an email token that was already used/expired)
             raise RetryException
 
