@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 from typing import Literal
-from urllib.parse import urljoin, urlparse, urlsplit
+from urllib.parse import urlparse, urlsplit
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -301,16 +301,17 @@ class BasePage:
 
 
 class PageWithStickyNavMixin:
-
-    def scrollToRevealElement(
-        self, selector=None, xpath=None
-    ):
+    def scrollToRevealElement(self, selector=None, xpath=None):
         if selector is not None:
             js_target = f"document.querySelector('{selector}')"
         elif xpath is not None:
             # Safely escape backslashes and double quotes in the XPath string for JS injection
             safe_xpath = xpath.replace("\\", "\\\\").replace('"', '\\"')
-            js_target = f'document.evaluate("{safe_xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue'
+            js_target = (
+                f"document.evaluate("
+                f'"{safe_xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null'
+                f").singleNodeValue"
+            )
         else:
             return
 
@@ -319,16 +320,17 @@ class PageWithStickyNavMixin:
         if (targetNode) {{
             // Resolve to nearest interactive container if target is a inner element (e.g., <span> inside an <a>)
             var focusable = targetNode.closest('a, button, input, [tabindex]') || targetNode;
-            
+
             // Set browser focus on target element
             focusable.focus();
-            
+
             // Dispatch bubbling 'focusin' event for parent container sticky nav listeners
             focusable.dispatchEvent(new Event('focusin', {{ bubbles: true }}));
         }}
         """
 
         self.driver.execute_script(js_str)
+
 
 class HomePage(BasePage):
     def accept_cookie_warning(self):
@@ -1242,9 +1244,11 @@ class PageWithCsvPreview(BasePage):
 class PageWithSendToMultipleButton(BasePage):
     send_button = (
         By.XPATH,
-        "//*[self::a or self::button]"
-        "[contains(@class, 'govuk-button') and not(contains(@class, 'govuk-button--secondary'))]"
-        "[contains(., 'Send')]",
+        (
+            "//*[self::a or self::button]"
+            "[contains(@class, 'govuk-button') and not(contains(@class, 'govuk-button--secondary'))]"
+            "[contains(., 'Send')]"
+        ),
     )
 
     def get_send_button(self):
@@ -1260,7 +1264,9 @@ class SendViaCsvPreviewPage(PageWithCsvPreview, PageWithSendToMultipleButton):
 
 class JobPage(BasePage):
     uploads_link = (By.LINK_TEXT, "Uploads")
-    notification_link = (By.CSS_SELECTOR, ".notify-summary-list__filename",
+    notification_link = (
+        By.CSS_SELECTOR,
+        ".notify-summary-list__filename",
     )
 
     def wait_until_current(self, time=10):
@@ -1275,22 +1281,14 @@ class JobPage(BasePage):
             # extract UUID from URL
             href = link_el.get_attribute("href") or ""
             if "/notification/" in href:
-                notification_id = (
-                    href.split("/notification/")[1].split("?")[0].strip("/")
-                )
+                notification_id = href.split("/notification/")[1].split("?")[0].strip("/")
                 if notification_id:
                     return notification_id
 
             raise RetryException("Found link, but could not parse notification ID")
 
-        except (
-            NoSuchElementException,
-            StaleElementReferenceException,
-            TimeoutException
-        ) as e:
-            raise RetryException(
-                "Waiting for notification link to render..."
-            ) from e
+        except (NoSuchElementException, StaleElementReferenceException, TimeoutException) as e:
+            raise RetryException("Waiting for notification link to render...") from e
 
     def get_job_id(self):
         return (self.driver.current_url.split("/jobs/")[1]).split("?")[0]
@@ -1310,9 +1308,13 @@ class JobPage(BasePage):
 
 class PageWithUploadsList(BasePage):
     next_container_from_link = (
-        By.XPATH, 
-       "./ancestor::*[self::td or self::th or contains(@class, 'govuk-summary-list__key') or contains(@class, 'table-field')][1]"
-        "/following-sibling::*[self::td or self::th or contains(@class, 'govuk-summary-list__value')][last()]",
+        By.XPATH,
+        (
+            "./ancestor::*[self::td or self::th or contains(@class, 'govuk-summary-list__key')"
+            " or contains(@class, 'table-field')][1]"
+            "/following-sibling::*[self::td or self::th"
+            " or contains(@class, 'govuk-summary-list__value')][last()]"
+        ),
     )
 
     def _get_row_info_from_link(self, link_element):
@@ -1977,9 +1979,7 @@ class UnsubscribeRequestConfirmationPage(BasePage):
 
 
 class UnsubscribeRequestReportsSummaryPage(BasePage):
-    unsubscribe_request_report_link = (
-        By.CSS_SELECTOR, ".govuk-summary-list__key a"
-    )
+    unsubscribe_request_report_link = (By.CSS_SELECTOR, ".govuk-summary-list__key a")
 
     def click_latest_unsubscribe_request_report_by_link(self):
         element = self.wait_for_element(UnsubscribeRequestReportsSummaryPage.unsubscribe_request_report_link)
