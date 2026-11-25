@@ -10,7 +10,7 @@ help:
 .PHONY: bootstrap
 bootstrap: ## Install build dependencies
 	mkdir -p logs screenshots
-	pip install -r requirements_for_test.txt
+	uv pip install -r requirements_for_test.txt
 
 .PHONY: freeze-requirements
 freeze-requirements: ## create static requirements_for_test.txt
