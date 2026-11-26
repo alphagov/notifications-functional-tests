@@ -116,4 +116,7 @@ def test_unsubscribe_request_flow(request, driver, login_seeded_user, client_liv
     report_page.select_mark_as_complete_checkbox()
     report_page.click_continue()
     unsubscribe_request_reports_summary_page.wait_until_url_contains("/unsubscribe-requests/summary")
-    assert driver.find_element(By.CSS_SELECTOR, ".govuk-summary-list__value").text.strip() == "Completed"
+    assert (driver.find_element(
+        By.CSS_SELECTOR, ".govuk-summary-list__value"
+    ).text.strip() == "Completed"
+)

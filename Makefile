@@ -3,6 +3,9 @@ SHELL := /bin/bash
 
 NOTIFY_CREDENTIALS ?= ~/.notify-credentials
 
+EXCLUDE_REQUIREMENTS_NEWER_THAN_DAYS ?= 30
+
+
 .PHONY: help
 help:
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -10,7 +13,7 @@ help:
 .PHONY: bootstrap
 bootstrap: ## Install build dependencies
 	mkdir -p logs screenshots
-	uv pip install -r requirements_for_test.txt
+	pip install -r requirements_for_test.txt
 
 .PHONY: freeze-requirements
 freeze-requirements: ## create static requirements_for_test.txt
@@ -21,7 +24,7 @@ freeze-requirements: ## create static requirements_for_test.txt
 
 .PHONY: refreeze-requirements
 refreeze-requirements: ## Upgrade unpinned requirements
-	EXTRA_UV_PIP_COMPILE_FLAGS="--upgrade" make freeze-requirements
+	EXTRA_UV_PIP_COMPILE_FLAGS="--upgrade --exclude-newer $(EXCLUDE_REQUIREMENTS_NEWER_THAN_DAYS)d" make freeze-requirements
 
 .PHONY: clean
 clean: ## Remove temporary files
