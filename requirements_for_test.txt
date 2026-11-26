@@ -18,7 +18,7 @@ botocore==1.42.77
     #   s3transfer
 cachetools==7.0.5
     # via notifications-utils
-certifi==2026.2.25
+certifi==2026.10.23
     # via
     #   requests
     #   selenium
