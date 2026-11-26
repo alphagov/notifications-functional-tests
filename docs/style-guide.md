@@ -7,13 +7,13 @@ We do not want to test contents of the page except to:
 - check presence or status of an object before or after an action, for example:
 
 ```python
-  # reject an alert
-  prepare_alert_pages.click_element_by_link_text("Discard this alert")
+# reject an alert
+prepare_alert_pages.click_element_by_link_text("Discard this alert")
 
-  # check that the alert is in the rejected alerts
-  prepare_alert_pages.click_element_by_link_text('Rejected alerts')
-  rejected_alerts_page = BasePage(driver)
-  assert rejected_alerts_page.is_text_present_on_page(template_name)
+# check that the alert is in the rejected alerts
+prepare_alert_pages.click_element_by_link_text("Rejected alerts")
+rejected_alerts_page = BasePage(driver)
+assert rejected_alerts_page.is_text_present_on_page(template_name)
 ```
 
 ## Creating new classes for pages vs using BasePage
